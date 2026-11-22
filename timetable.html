@@ -1,0 +1,12 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Timetable — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="shared.js"></script></head>
+<body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
+<h1 class="text-2xl font-black">📅 Timetable</h1>
+<div class="flex gap-3 mt-4"><select id="ttClass" onchange="render()" class="border rounded-lg px-3 py-2"><option>Grade 10A</option><option>Grade 10B</option><option>Grade 11A</option><option>Grade 12A</option></select><p class="text-sm text-gray-500 self-center">Click any slot to edit</p></div>
+<div class="bg-white rounded-2xl mt-4 overflow-x-auto"><table class="w-full text-sm min-w-[800px]"><thead class="bg-gray-50"><tr><th class="p-3 text-left">Time</th><th class="p-3 text-left">Mon</th><th class="p-3 text-left">Tue</th><th class="p-3 text-left">Wed</th><th class="p-3 text-left">Thu</th><th class="p-3 text-left">Fri</th></tr></thead><tbody id="tbody"></tbody></table></div>
+<script>
+document.getElementById('nav').innerHTML=renderNav('timetable.html');
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday']; const TIMES=['08:00 - 09:00','09:00 - 10:00','10:30 - 11:30','11:30 - 12:30','12:30 - 13:30','13:30 - 14:30'];
+function render(){ let cls=document.getElementById('ttClass').value; let data=timetable[cls]||{}; document.getElementById('tbody').innerHTML=TIMES.map(t=>`<tr class="border-t"><td class="p-3 font-semibold bg-gray-50">${t}</td>`+DAYS.map(day=>{ let k=day+'|'+t; let slot=data[k]; if(!slot) return `<td class="p-2"><div onclick="edit('${day}','${t}')" class="p-3 rounded-xl bg-gray-50 text-center text-gray-400 text-xs cursor-pointer">+ Add</div></td>`; return `<td class="p-2"><div onclick="edit('${day}','${t}')" class="p-3 rounded-xl bg-blue-100 cursor-pointer"><p class="font-bold text-sm">${slot.subject}</p><p class="text-xs">${slot.teacher||''} • ${slot.room||''}</p></div></td>`; }).join('')+`</tr>`).join(''); }
+function edit(day,time){ let cls=document.getElementById('ttClass').value; let subj=prompt('Subject (leave blank to clear):', (timetable[cls]?.[day+'|'+time]?.subject||'')); if(subj===null) return; if(!timetable[cls]) timetable[cls]={}; let k=day+'|'+time; if(!subj) delete timetable[cls][k]; else timetable[cls][k]={subject:subj,teacher:prompt('Teacher?','')||'',room:prompt('Room?','')||''}; saveAll(); render(); }
+render();
+</script></body></html>
