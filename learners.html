@@ -1,0 +1,30 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Learners — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="shared.js"></script></head>
+<body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
+<h1 class="text-2xl font-black">👥 Learners — Full Names + Grade + Class + Contact (optional)</h1>
+<div class="bg-white p-5 rounded-2xl mt-4"><h3 class="font-bold mb-3">+ Add Learner</h3>
+<div class="grid md:grid-cols-2 gap-3">
+<input id="uName" placeholder="Full Names *" class="border rounded-lg px-3 py-2">
+<input id="uPhone" placeholder="Contact Number (optional)" class="border rounded-lg px-3 py-2">
+<select id="uGrade" onchange="autoFill()" class="border rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+<select id="uClass" onchange="autoFill()" class="border rounded-lg px-3 py-2"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+<input id="uId" readonly class="border rounded-lg px-3 py-2 bg-gray-50 font-bold text-blue-900" placeholder="Auto: 10A001">
+<input id="uParentEmail" placeholder="Parent Email (optional)" class="border rounded-lg px-3 py-2">
+</div><button onclick="saveLearner()" class="bg-blue-900 text-white px-6 py-2 rounded-lg mt-3">Save Learner</button></div>
+<div class="bg-white p-4 rounded-2xl mt-4 flex gap-3"><input id="search" oninput="render()" placeholder="Search Full Names, 10A001, Contact..." class="flex-1 border rounded-lg px-3 py-2 text-sm"><button onclick="exportLearners()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Export Excel</button></div>
+<div class="bg-white rounded-2xl mt-4 overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-4 text-left">Full Names (ID)</th><th class="p-4 text-left">Grade / Class</th><th class="p-4 text-left">Contact</th><th class="p-4 text-left">Books</th><th class="p-4 text-left">Action</th></tr></thead><tbody id="tbody"></tbody></table></div>
+<script>
+document.getElementById('nav').innerHTML=renderNav('learners.html');
+function autoFill(){ document.getElementById('uId').value=getNextUniqueLearnerID(document.getElementById('uGrade').value, document.getElementById('uClass').value); }
+function saveLearner(){
+  let fullName=document.getElementById('uName').value.trim(); if(!fullName) return alert('Enter Full Names *');
+  let grade=document.getElementById('uGrade').value, cls=document.getElementById('uClass').value, contact=document.getElementById('uPhone').value.trim();
+  let sid=getNextUniqueLearnerID(grade,cls);
+  users.push({id:Date.now(), name:fullName, grade, classLetter:cls, phone:contact||'', sid, email:fullName.toLowerCase().replace(/\s+/g,'.')+'@makhanani.co.za', role:'Student', dept:'Mathematics', parentEmail:document.getElementById('uParentEmail').value.trim(), status:'Active'});
+  saveAll(); render(); alert('✅ Saved: '+fullName+' — '+grade+' '+cls+' — '+sid+' — Contact: '+(contact||'Not provided'));
+  document.getElementById('uName').value=''; document.getElementById('uPhone').value=''; autoFill();
+}
+function render(){ let q=(document.getElementById('search').value||'').toLowerCase(); let f=users.filter(u=>u.role==='Student'&&(!q||u.name.toLowerCase().includes(q)||(u.sid||'').toLowerCase().includes(q)||(u.phone||'').includes(q))); document.getElementById('tbody').innerHTML=f.map(u=>`<tr class="border-t"><td class="p-4"><b>${u.name}</b><p class="text-xs text-blue-900 font-bold">${u.sid}</p></td><td class="p-4">${u.grade} ${u.classLetter}</td><td class="p-4">${u.phone||'<span class="text-gray-400">— No contact —</span>'}</td><td class="p-4">${issues.filter(i=>i.toId===u.id&&(i.status==='Issued'||i.status==='Overdue')).length} books</td><td class="p-4"><a href="stock.html?learner=${u.sid}" class="text-blue-900">Issue Book →</a> • <button onclick="del(${u.id})" class="text-red-500">Delete</button></td></tr>`).join('')||'<tr><td colspan="5" class="p-6 text-center text-gray-400">No learners</td></tr>'; }
+function del(id){ if(confirm('Delete?')){ users=users.filter(u=>u.id!==id); saveAll(); render(); } }
+function exportLearners(){ let data=[["Full Names","Grade","Class","Contact Number","Learner ID"]]; users.filter(u=>u.role==='Student').forEach(u=>data.push([u.name,u.grade,u.classLetter,u.phone||'',u.sid])); let ws=XLSX.utils.aoa_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Learners"); XLSX.writeFile(wb,"Makhanani_Learners.xlsx"); }
+autoFill(); render();
+</script></body></html>
