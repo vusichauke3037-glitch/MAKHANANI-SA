@@ -1,16 +1,23 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Settings — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="shared.js"></script></head>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Settings — Wordsworth High School • MAKHANANI-LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script></head>
 <body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
-<h1 class="text-2xl font-black">⚙️ Settings — Makhanani Academy</h1>
+<h1 class="text-2xl font-black">⚙️ Settings — Wordsworth High School</h1><p class="text-sm text-gray-500">MAKHANANI-LTSM • <span class="firebase-badge"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">● Offline</span></span></p>
 <div class="bg-white p-6 rounded-2xl max-w-lg mt-4 space-y-4">
-<div class="bg-green-50 p-4 rounded-xl text-sm"><b>School:</b> Makhanani Academy<br><b>WhatsApp:</b> 078 023 3263 • <a href="https://wa.me/27780233263" class="text-green-600 font-bold">wa.me/27780233263</a><br><b>Book Prefix:</b> MA • <b>Learner ID:</b> Grade + Class + 001 (10A001)</div>
-<div class="bg-blue-50 p-4 rounded-xl"><p class="font-bold text-sm">📚 LTSM</p><p class="text-xs mt-2">Low Stock Alert: <b id="lowTxt"></b> • Total Learners: <b id="uTxt"></b> • Total Copies: <b id="cTxt"></b></p><button onclick="exportAll()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm mt-3">⬇️ Export All Data (Backup)</button></div>
-<div class="bg-red-50 p-4 rounded-xl"><p class="font-bold text-sm text-red-600">Danger Zone</p><button onclick="clearAll()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm mt-2">Clear ALL Data</button><p class="text-xs text-gray-500 mt-1">This deletes everything on this device. Export backup first.</p></div>
+<div class="bg-green-50 p-4 rounded-xl text-sm"><b>School:</b> Wordsworth High School<br><b>Product:</b> MAKHANANI-LTSM<br><b>Company:</b> Xintimani Group Holdings (PTY) LTD<br><b>Reg:</b> 2026 / 934898 / 07<br><b>WhatsApp:</b> 078 023 3263 • <a href="https://wa.me/27780233263" class="text-green-600 font-bold">wa.me/27780233263</a><br><b>Firebase Project:</b> makhanani-ltsm<br><b>Database:</b> https://makhanani-ltsm-default-rtdb.firebaseio.com</div>
+<div class="bg-blue-50 p-4 rounded-xl"><p class="font-bold text-sm">📊 Live Stats</p><p class="text-xs mt-2">Low Stock: <b id="lowTxt"></b> • Learners: <b id="uTxt"></b> • Copies: <b id="cTxt"></b></p><button onclick="exportAll()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm mt-3">⬇️ Export All Data (Backup)</button><button onclick="pushToFirebase(); alert('✅ Pushed to Firebase 🔥')" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm mt-3 ml-2">🔥 Force Sync to Firebase</button></div>
+<div class="bg-orange-50 p-4 rounded-xl"><p class="font-bold text-sm">🔥 Firebase Rules</p><p class="text-xs mt-1">Go to Firebase Console → Realtime Database → Rules → Set to:</p><pre class="bg-white p-2 rounded-lg text-[11px] mt-2 overflow-x-auto">{"rules":{"makhanani-ltsm":{".read":true,".write":true}}}</pre></div>
+<div class="bg-red-50 p-4 rounded-xl"><p class="font-bold text-sm text-red-600">Danger Zone</p><button onclick="clearAll()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm mt-2">Clear ALL Local Data</button><p class="text-xs text-gray-500 mt-1">This deletes local data only. Firebase copy stays. Export backup first.</p></div>
 </div>
+<div id="footer"></div>
+<script src="shared.js"></script><script src="firebase.js"></script>
 <script>
-document.getElementById('nav').innerHTML=renderNav('settings.html');
-document.getElementById('lowTxt').textContent=ltsm.filter(i=>getAvailable(i)<=5).length+' titles low';
-document.getElementById('uTxt').textContent=users.filter(u=>u.role==='Student').length;
-document.getElementById('cTxt').textContent=ltsm.reduce((s,i)=>s+i.copies.length,0);
-function exportAll(){ let blob=new Blob([JSON.stringify({users,ltsm,issues,attendance,marks,fees,payments},null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Makhanani_Backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); }
-function clearAll(){ if(confirm('Clear ALL Makhanani data?')){ localStorage.clear(); location.reload(); } }
+  if(!checkPageAccess('settings.html')) throw new Error('Blocked');
+  startFirebaseSync();
+  document.getElementById('nav').innerHTML=renderNav('settings.html');
+  document.getElementById('footer').innerHTML=renderFooter();
+  document.getElementById('lowTxt').textContent=ltsm.filter(i=>getAvailable(i)<=5).length+' titles low';
+  document.getElementById('uTxt').textContent=users.filter(u=>u.role==='Student').length;
+  document.getElementById('cTxt').textContent=ltsm.reduce((s,i)=>s+i.copies.length,0);
+  function exportAll(){ let blob=new Blob([JSON.stringify({users,ltsm,issues,attendance,marks,fees,payments,school:"Wordsworth High School",product:"MAKHANANI-LTSM",company:"Xintimani Group Holdings (PTY) LTD",companyReg:"2026 / 934898 / 07"},null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MAKHANANI-LTSM_Backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); }
+  function clearAll(){ if(confirm('Clear ALL local data? Firebase copy stays.')){ localStorage.clear(); location.reload(); } }
+  window.onFirebaseUpdate = function(){ document.getElementById('uTxt').textContent=users.filter(u=>u.role==='Student').length; document.getElementById('cTxt').textContent=ltsm.reduce((s,i)=>s+i.copies.length,0); };
 </script></body></html>
