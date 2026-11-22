@@ -1,4 +1,5 @@
 // shared.js — MAKHANANI-LTSM • Wordsworth High School • A Product of Xintimani Group Holdings (PTY) LTD
+// CLEAN VERSION — No presaved books, No demo learners. Starts empty.
 const PRODUCT_NAME = "MAKHANANI-LTSM";
 const SCHOOL_NAME = "Wordsworth High School";
 const SCHOOL_WHATSAPP = "27780233263";
@@ -7,7 +8,7 @@ const COMPANY_REG = "2026 / 934898 / 07";
 const BRAND_LINE = "MAKHANANI-LTSM • Wordsworth High School";
 
 let users = JSON.parse(localStorage.getItem('makhanani_users')||'[]');
-let departments = JSON.parse(localStorage.getItem('makhanani_depts')||'[{"name":"Mathematics","hod":"Dr. Smith"},{"name":"Science","hod":"Mrs. Naidoo"},{"name":"English","hod":"Mr. Patel"}]');
+let departments = JSON.parse(localStorage.getItem('makhanani_depts')||'[{"name":"Mathematics","hod":""},{"name":"Science","hod":""},{"name":"English","hod":""},{"name":"Commerce","hod":""},{"name":"Social Sciences","hod":""},{"name":"Languages","hod":""},{"name":"Life Orientation","hod":""}]');
 let ltsm = JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
 let issues = JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
 let attendance = JSON.parse(localStorage.getItem('makhanani_attendance')||'{}');
@@ -47,8 +48,9 @@ function startFirebaseSync(){ if (typeof initFirebase === 'function') { if (init
 function beep(){ try{ let c=new (window.AudioContext||window.webkitAudioContext)(); let o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value=880; o.type='sine'; g.gain.setValueAtTime(0.3,c.currentTime); o.start(); o.stop(c.currentTime+0.15);}catch(e){} }
 
 // === BOOK NUMBER — WHS + 6 DIGITS — NO REPEAT, NO SKIP ===
-function getSchoolPrefix(){ return SCHOOL_NAME.split(/\s+/).map(w=>w.charAt(0).toUpperCase()).join(''); }
-function formatBookNo(n){ return getSchoolPrefix() + String(n).padStart(6,'0'); }
+// School: Wordsworth High School → W H S → WHS
+function getSchoolPrefix(){ return SCHOOL_NAME.split(/\s+/).map(w=>w.charAt(0).toUpperCase()).join(''); } // WHS
+function formatBookNo(n){ return getSchoolPrefix() + String(n).padStart(6,'0'); } // WHS000001
 function parseBookNoNum(bookNo){ let m = String(bookNo||'').toUpperCase().match(/(\d+)$/); return m ? parseInt(m[1],10) : null; }
 function getBookNoState(){
   let state = JSON.parse(localStorage.getItem('makhanani_bookNoState')||'null');
@@ -121,7 +123,7 @@ const DEMO_USERS = [
   { email:"hod@wordsworth.co.za", pass:"admin123", name:"HOD — Mathematics", role:"hod" },
   { email:"teacher@wordsworth.co.za", pass:"admin123", name:"Teacher", role:"teacher" },
   { email:"finance@wordsworth.co.za", pass:"admin123", name:"Finance Officer", role:"finance" },
-  { email:"parent@wordsworth.co.za", pass:"admin123", name:"Mama Mokoena (Parent)", role:"parent" }
+  { email:"parent@wordsworth.co.za", pass:"admin123", name:"Parent", role:"parent" }
 ];
 function getSession(){ try{ return JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){ return null; } }
 function requireLogin(){ let s=getSession(); if(!s){ window.location.href='login.html'; return null; } return s; }
@@ -136,17 +138,6 @@ function renderNav(active){
 }
 function checkPageAccess(page){ let s=requireLogin(); if(!s) return false; if(!canAccess(page,s.role)){ alert('⛔ Access denied for '+ROLES[s.role].label); window.location.href='home.html'; return false; } return true; }
 function renderFooter(){ return `<footer class="text-center text-[11px] text-gray-400 mt-8 pb-4 leading-relaxed">MAKHANANI-LTSM • Wordsworth High School<br>A Product of Xintimani Group Holdings (PTY) LTD • Reg: 2026 / 934898 / 07</footer>`; }
-if(users.length===0){
-  users=[
-    {id:1,name:"Thabo Mokoena",email:"thabo@wordsworth.co.za",role:"Student",dept:"Mathematics",grade:"Grade 10",classLetter:"A",phone:"082 123 4567",sid:"10A001",status:"Active",parentEmail:"parent@wordsworth.co.za"},
-    {id:2,name:"Lerato Nkosi",email:"lerato@wordsworth.co.za",role:"Student",dept:"Science",grade:"Grade 10",classLetter:"A",phone:"",sid:"10A002",status:"Active",parentEmail:""},
-    {id:3,name:"James Van Wyk",email:"james@wordsworth.co.za",role:"Student",dept:"English",grade:"Grade 10",classLetter:"B",phone:"083 333 4444",sid:"10B001",status:"Active",parentEmail:""}
-  ];
-  ltsm=[{id:1,title:"Platinum Mathematics Grade 10",category:"Textbook",grade:"Grade 10",dept:"Mathematics",subject:"Mathematics",author:"Pearson",price:350,min:5,copies:[{bookNo:"WHS000001",status:"Issued",issuedTo:"10A001"},{bookNo:"WHS000002",status:"Available",issuedTo:null},{bookNo:"WHS000003",status:"Available",issuedTo:null}],qty:3}];
-  issues=[{id:101,bookNo:"WHS000001",itemId:1,itemTitle:"Platinum Mathematics Grade 10",toId:1,toName:"Thabo Mokoena",toSID:"10A001",qty:1,issued:new Date().toISOString().slice(0,10),due:new Date(Date.now()+30*86400000).toISOString().slice(0,10),status:"Issued"}];
-  marks=[{id:1,studentId:1,studentName:"Thabo Mokoena",subject:"Mathematics",assessment:"Test 1",mark:82}];
-  fees=[{id:1,studentId:1,studentName:"Thabo Mokoena",type:"Tuition - Term 1",total:2500,paid:2500,due:"2026-02-28"},{id:2,studentId:2,studentName:"Lerato Nkosi",type:"Tuition - Term 1",total:2500,paid:1000,due:"2026-02-28"}];
-  payments=[{id:1,feeId:1,studentName:"Thabo Mokoena",amount:2500,method:"EFT",ref:"MAK-1001",date:new Date().toISOString().slice(0,10)}];
-  saveAllLocalOnly();
-  localStorage.setItem('makhanani_bookNoState', JSON.stringify({next:4, free:[], used:[1,2,3]}));
-}
+
+// NO DEMO DATA — Starts 100% empty. First real data you add is the only data.
+// No Thabo Mokoena, No Platinum Mathematics, No Study and Master — Nothing presaved.
