@@ -15,15 +15,11 @@
 </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-
-<!-- HEADER -->
 <div class="bg-blue-950 text-white px-4 py-4 sticky top-0 z-40 shadow">
   <div class="max-w-7xl mx-auto flex flex-wrap gap-2 items-center justify-between">
-    <div>
-      <div class="font-bold text-lg leading-none">WORDSWORTH HIGH SCHOOL • MAKHANANI - LTSM</div>
-      <div class="text-xs opacity-80 mt-1" id="statusLine">Loading...</div>
-    </div>
+    <div><div class="font-bold text-lg leading-none">WORDSWORTH HIGH SCHOOL • MAKHANANI - LTSM</div><div class="text-xs opacity-80 mt-1" id="statusLine">Loading...</div></div>
     <div class="flex flex-wrap gap-2">
+      <a href="librarian.html" class="bg-white text-blue-950 px-4 py-2 rounded-lg font-bold">← Return to Librarian Dashboard</a>
       <button onclick="openAdd()" class="bg-green-500 text-white px-4 py-2 rounded-lg font-bold">+ Add Title</button>
       <button onclick="document.getElementById('sheetWrap').scrollIntoView({behavior:'smooth'})" class="bg-white text-blue-950 px-4 py-2 rounded-lg font-bold">🖨️ Print Barcodes</button>
       <button onclick="exportData()" class="bg-yellow-400 text-black px-3 py-2 rounded-lg font-bold">⬇ Export</button>
@@ -31,26 +27,17 @@
     </div>
   </div>
 </div>
-
 <div class="max-w-7xl mx-auto p-4">
-  <!-- FILTERS -->
   <div class="bg-white rounded-2xl p-4 shadow flex flex-wrap gap-2 items-center">
     <input id="search" oninput="render()" placeholder="🔍 Search title, WHS number, author..." class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
     <select id="fDept" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Depts</option></select>
     <select id="fGrade" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
     <select id="fAvail" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Stock</option><option value="avail">Available Only</option><option value="issued">Issued Only</option></select>
     <button onclick="resetFilters()" class="bg-gray-100 px-3 py-2 rounded-lg">Clear</button>
-    <button onclick="renumberAll()" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold" title="Renumber WHS000001 onwards, remove gaps">♻ Renumber 1→N</button>
+    <button onclick="renumberAll()" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold">♻ Renumber 1→N</button>
   </div>
-
-  <!-- STOCK LIST -->
   <div id="list" class="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-  <div id="empty" class="hidden text-center py-16 bg-white rounded-2xl mt-4">
-    <div class="text-4xl">📚</div><div class="font-bold mt-2">No books yet</div>
-    <div class="text-sm text-gray-500">Click + Add Title to add your first 30 copies.</div>
-  </div>
-
-  <!-- BARCODE PRINT SECTION -->
+  <div id="empty" class="hidden text-center py-16 bg-white rounded-2xl mt-4"><div class="text-4xl">📚</div><div class="font-bold mt-2">No books yet</div><div class="text-sm text-gray-500">Click + Add Title to add your first 30 copies.</div></div>
   <div id="sheetWrap" class="bg-white rounded-2xl p-4 shadow mt-6">
     <div class="font-bold text-lg">WORDSWORTH HIGH SCHOOL • MAKHANANI - LTSM</div>
     <div class="text-sm text-gray-500">Print Barcodes — Centered • A4 • 3 per row</div>
@@ -65,214 +52,51 @@
     <div id="sheetInfo" class="text-center text-sm text-gray-500 mt-2"></div>
   </div>
 </div>
-
-<!-- ADD TITLE MODAL -->
 <div id="addModal" class="hidden fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50 overflow-y-auto">
   <div class="bg-white rounded-3xl w-full max-w-md p-6 my-2 max-h-[92vh] overflow-y-auto shadow-2xl">
-    <!-- ADD BUTTON AT TOP TOO - NEVER HIDDEN -->
-    <div class="flex gap-2 mb-3 sticky top-0 bg-white pt-1 pb-2 z-10">
-      <button onclick="saveAddWithQty()" class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold">Add + Auto WHS Numbers →</button>
-    </div>
+    <div class="flex gap-2 mb-3 sticky top-0 bg-white pt-1 pb-2 z-10"><button onclick="saveAddWithQty()" class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold">Add + Auto WHS Numbers →</button></div>
     <div class="flex justify-between items-center"><h2 class="font-bold text-xl">+ Add Title</h2><button onclick="closeAdd()" class="text-2xl">×</button></div>
     <div id="addPreview" class="bg-blue-50 rounded-lg p-3 mt-3 text-sm font-bold text-blue-900">Will create 0 copies</div>
-    <label class="text-xs font-bold mt-3 block">DEPARTMENT</label>
-    <select id="addDept" onchange="updPreview()" class="w-full border rounded-lg px-3 py-2"><option>Commerce</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Technology</option><option>Arts & Culture</option><option>Life Orientation</option></select>
-    <label class="text-xs font-bold mt-2 block">GRADE</label>
-    <select id="addGrade" onchange="updPreview()" class="w-full border rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-    <label class="text-xs font-bold mt-2 block">SUBJECT</label>
-    <input id="addSubject" oninput="updPreview()" value="Mathematics" class="w-full border rounded-lg px-3 py-2">
-    <label class="text-xs font-bold mt-2 block">TITLE *</label>
-    <input id="addTitle" oninput="updPreview()" placeholder="e.g. Platinum Mathematics Grade 10" class="w-full border rounded-lg px-3 py-2">
-    <label class="text-xs font-bold mt-2 block">AUTHOR</label>
-    <input id="addAuthor" value="Pearson" class="w-full border rounded-lg px-3 py-2">
-    <div class="grid grid-cols-2 gap-2">
-      <div><label class="text-xs font-bold mt-2 block">QUANTITY *</label><input id="addQty" type="number" value="30" min="1" oninput="updPreview()" class="w-full border rounded-lg px-3 py-2"></div>
-      <div><label class="text-xs font-bold mt-2 block">PRICE (R)</label><input id="addPrice" type="number" value="350" class="w-full border rounded-lg px-3 py-2"></div>
-    </div>
-    <!-- STICKY BOTTOM BUTTONS -->
-    <div class="flex gap-2 mt-4 sticky bottom-0 bg-white pt-2 pb-1">
-      <button onclick="closeAdd()" class="flex-1 bg-gray-100 py-3 rounded-lg">Cancel</button>
-      <button onclick="saveAddWithQty()" class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold">Add + Auto WHS Numbers →</button>
-    </div>
+    <label class="text-xs font-bold mt-3 block">DEPARTMENT</label><select id="addDept" onchange="updPreview()" class="w-full border rounded-lg px-3 py-2"><option>Commerce</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Technology</option><option>Arts & Culture</option><option>Life Orientation</option></select>
+    <label class="text-xs font-bold mt-2 block">GRADE</label><select id="addGrade" onchange="updPreview()" class="w-full border rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+    <label class="text-xs font-bold mt-2 block">SUBJECT</label><input id="addSubject" oninput="updPreview()" value="Mathematics" class="w-full border rounded-lg px-3 py-2">
+    <label class="text-xs font-bold mt-2 block">TITLE *</label><input id="addTitle" oninput="updPreview()" placeholder="e.g. Platinum Mathematics Grade 10" class="w-full border rounded-lg px-3 py-2">
+    <label class="text-xs font-bold mt-2 block">AUTHOR</label><input id="addAuthor" value="Pearson" class="w-full border rounded-lg px-3 py-2">
+    <div class="grid grid-cols-2 gap-2"><div><label class="text-xs font-bold mt-2 block">QUANTITY *</label><input id="addQty" type="number" value="30" min="1" oninput="updPreview()" class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-xs font-bold mt-2 block">PRICE (R)</label><input id="addPrice" type="number" value="350" class="w-full border rounded-lg px-3 py-2"></div></div>
+    <div class="flex gap-2 mt-4 sticky bottom-0 bg-white pt-2 pb-1"><button onclick="closeAdd()" class="flex-1 bg-gray-100 py-3 rounded-lg">Cancel</button><button onclick="saveAddWithQty()" class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold">Add + Auto WHS Numbers →</button></div>
     <div class="text-center text-xs text-gray-400 mt-1">If button hidden, press Ctrl + - or F12 → Console → <b>saveAddWithQty()</b></div>
   </div>
 </div>
-
-<!-- ADD COPIES MODAL -->
 <div id="copyModal" class="hidden fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50 overflow-y-auto">
-  <div class="bg-white rounded-3xl w-full max-w-sm p-6 my-4">
-    <h2 class="font-bold text-xl">+ Add Copies</h2>
-    <div id="copyInfo" class="text-sm text-gray-500 mt-1"></div>
-    <label class="text-xs font-bold mt-3 block">HOW MANY COPIES?</label>
-    <input id="copyQty" type="number" value="5" min="1" class="w-full border rounded-lg px-3 py-2">
-    <div class="flex gap-2 mt-4"><button onclick="closeCopy()" class="flex-1 bg-gray-100 py-3 rounded-lg">Cancel</button><button onclick="saveCopies()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold">Add Copies →</button></div>
-  </div>
+  <div class="bg-white rounded-3xl w-full max-w-sm p-6 my-4"><h2 class="font-bold text-xl">+ Add Copies</h2><div id="copyInfo" class="text-sm text-gray-500 mt-1"></div><label class="text-xs font-bold mt-3 block">HOW MANY COPIES?</label><input id="copyQty" type="number" value="5" min="1" class="w-full border rounded-lg px-3 py-2"><div class="flex gap-2 mt-4"><button onclick="closeCopy()" class="flex-1 bg-gray-100 py-3 rounded-lg">Cancel</button><button onclick="saveCopies()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold">Add Copies →</button></div></div>
 </div>
-
 <script>
-let ltsm = JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
-let issues = JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
-let bookState = JSON.parse(localStorage.getItem('makhanani_bookNoState')||'{"next":1,"free":[],"used":[]}');
-let curCopyId = null;
-
-function parseBookNoNum(s){ let m=(s||'').match(/(\d+)$/); return m?parseInt(m[1]):0; }
-function saveAll(){ localStorage.setItem('makhanani_ltsm',JSON.stringify(ltsm)); localStorage.setItem('makhanani_issues',JSON.stringify(issues)); localStorage.setItem('makhanani_bookNoState',JSON.stringify(bookState)); }
-function syncState(){
-  let all=[]; ltsm.forEach(it=>it.copies.forEach(c=>all.push(parseBookNoNum(c.bookNo))));
-  all.sort((a,b)=>a-b);
-  let max=all.length?Math.max(...all):0;
-  let usedSet=new Set(all);
-  let free=[]; for(let i=1;i<=max;i++){ if(!usedSet.has(i)) free.push(i); }
-  bookState.used=all; bookState.free=free; bookState.next=max+1;
-  // If no gaps and max=total, next = total+1. If gaps exist, next stays max+1 but free reused first
-  saveAll(); return {total:all.length, max, free};
-}
-function allocNumbers(n){
-  syncState();
-  let out=[];
-  while(out.length<n && bookState.free.length){ let num=bookState.free.shift(); out.push('WHS'+String(num).padStart(6,'0')); }
-  while(out.length<n){ let num=bookState.next++; out.push('WHS'+String(num).padStart(6,'0')); }
-  // Rebuild used/free after alloc - will be synced on save
-  syncState(); // recompute from ltsm after caller pushes copies, so we handle free correctly below
-  // Actually we consumed free/next, need to persist consumed numbers: we return them, caller will add copies then sync
-  // To keep next/free correct, store pending: set next to max allocated+1 if needed
-  return out;
-}
-function getNextPreview(n){
-  syncState();
-  let tmpFree=[...bookState.free]; let tmpNext=bookState.next; let out=[];
-  while(out.length<n && tmpFree.length){ out.push(tmpFree.shift()); }
-  while(out.length<n){ out.push(tmpNext++); }
-  return out.map(x=>'WHS'+String(x).padStart(6,'0'));
-}
-
-function updPreview(){
-  let q=parseInt(document.getElementById('addQty').value||0);
-  if(!q||q<1){ document.getElementById('addPreview').innerHTML='Enter quantity'; return; }
-  let nums=getNextPreview(q);
-  let gaps=syncState().free.length;
-  document.getElementById('addPreview').innerHTML=`Will create ${q} copies<br>Barcodes: ${nums[0]} → ${nums[nums.length-1]} (${q} numbers)<br>Next counter: WHS${String(bookState.next).padStart(6,'0')} • Free to reuse: ${gaps?gaps+' gaps — will be reused first':'None — No gaps ✅'}`;
-}
-function openAdd(){ document.getElementById('addModal').classList.remove('hidden'); updPreview(); setTimeout(()=>document.getElementById('addTitle').focus(),50); }
-function closeAdd(){ document.getElementById('addModal').classList.add('hidden'); }
-function closeCopy(){ document.getElementById('copyModal').classList.add('hidden'); }
-
-function saveAddWithQty(){
-  let dept=document.getElementById('addDept').value, grade=document.getElementById('addGrade').value, subject=document.getElementById('addSubject').value.trim()||'General';
-  let title=document.getElementById('addTitle').value.trim(); if(!title){ alert('Please enter Title'); return; }
-  let qty=parseInt(document.getElementById('addQty').value||0); if(!qty||qty<1){ alert('Enter quantity'); return; }
-  let price=parseFloat(document.getElementById('addPrice').value||0), author=document.getElementById('addAuthor').value.trim()||'Unknown';
-  let nums=getNextPreview(qty);
-  let id='T'+Date.now();
-  let copies=nums.map(no=>({bookNo:no,status:'Available',learner:'',date:''}));
-  ltsm.unshift({id,dept,grade,subject,title,author,price,copies});
-  syncState(); saveAll(); closeAdd(); render();
-  alert(`✅ ${title} — ${qty} copies created\nBarcodes: ${nums[0]} → ${nums[nums.length-1]}`);
-}
-function openCopy(id){ curCopyId=id; let it=ltsm.find(x=>x.id===id); document.getElementById('copyInfo').textContent=it.title+' • Current: '+it.copies.length; document.getElementById('copyQty').value=5; document.getElementById('copyModal').classList.remove('hidden'); }
-function saveCopies(){
-  let it=ltsm.find(x=>x.id===curCopyId); if(!it) return;
-  let qty=parseInt(document.getElementById('copyQty').value||0); if(!qty||qty<1) return;
-  let nums=getNextPreview(qty);
-  nums.forEach(no=>it.copies.push({bookNo:no,status:'Available',learner:'',date:''}));
-  syncState(); saveAll(); closeCopy(); render();
-  alert(`✅ Added ${qty} copies\nBarcodes: ${nums[0]} → ${nums[nums.length-1]}`);
-}
-function removeCopy(id){
-  let it=ltsm.find(x=>x.id===id); if(!it||!it.copies.length) return;
-  let last=it.copies[it.copies.length-1];
-  if(!confirm(`Remove last copy ${last.bookNo}?\nIts number will become FREE and be reused next time.`)) return;
-  it.copies.pop(); syncState(); saveAll(); render();
-}
-function deleteTitle(id){
-  let it=ltsm.find(x=>x.id===id); if(!confirm(`Delete "${it.title}" and all ${it.copies.length} copies?\nNumbers will become FREE and be reused.`)) return;
-  ltsm=ltsm.filter(x=>x.id!==id); syncState(); saveAll(); render();
-}
-function renumberAll(){
-  let all=[]; ltsm.forEach(it=>it.copies.forEach(c=>all.push({c,old:c.bookNo})));
-  if(!all.length){ alert('No books to renumber'); return; }
-  if(!confirm(`Renumber ${all.length} books to WHS000001 → WHS${String(all.length).padStart(6,'0')}?\nOld labels must be reprinted.`)) return;
-  all.sort((a,b)=>parseBookNoNum(a.old)-parseBookNoNum(b.old));
-  let map={}; all.forEach((e,i)=>{ let n='WHS'+String(i+1).padStart(6,'0'); map[e.old]=n; e.c.bookNo=n; });
-  issues.forEach(x=>{ if(map[x.bookNo]) x.bookNo=map[x.bookNo]; });
-  bookState={next:all.length+1,free:[],used:all.map((_,i)=>i+1)};
-  saveAll(); render(); alert(`✅ Renumbered ${all.length} → WHS000001 → WHS${String(all.length).padStart(6,'0')}\nNext: WHS${String(all.length+1).padStart(6,'0')} • Gaps: 0`);
-}
-function resetFilters(){ document.getElementById('search').value=''; document.getElementById('fDept').value=''; document.getElementById('fGrade').value=''; document.getElementById('fAvail').value=''; render(); }
-
-function render(){
-  let st=syncState();
-  let totalCopies=st.total, avail=0; ltsm.forEach(it=>it.copies.forEach(c=>{ if(c.status==='Available') avail++; }));
-  let issued=totalCopies-avail;
-  document.getElementById('statusLine').textContent=`Prefix: WHS • Total: ${totalCopies} • Avail: ${avail} • Issued: ${issued} • Next: WHS${String(st.max?st.max+1:1).padStart(6,'0')} • Free: ${st.free.length?st.free.length+' gaps — reused first':'None — No gaps ✅'} • Highest: ${st.max?'WHS'+String(st.max).padStart(6,'0'):'-'}`;
-
-  // Dept filter
-  let depts=[...new Set(ltsm.map(x=>x.dept))];
-  let fDept=document.getElementById('fDept'); fDept.innerHTML='<option value="">All Depts</option>'+depts.map(d=>`<option>${d}</option>`).join('');
-  // Keep selected dept if still exists
-  // Title filter for print
-  let pTitle=document.getElementById('pTitle'); let curP=pTitle.value; pTitle.innerHTML='<option value="">All Titles</option>'+ltsm.map(x=>`<option value="${x.id}">${x.title} (${x.grade}) — ${x.copies.length}</option>`).join(''); pTitle.value=curP;
-
-  let q=(document.getElementById('search').value||'').toLowerCase();
-  let fd=document.getElementById('fDept').value, fg=document.getElementById('fGrade').value, fa=document.getElementById('fAvail').value;
-  let filtered=ltsm.filter(it=>{
-    if(fd&&it.dept!==fd) return false; if(fg&&it.grade!==fg) return false;
-    if(q&&!(it.title.toLowerCase().includes(q)||it.author.toLowerCase().includes(q)||it.copies.some(c=>c.bookNo.toLowerCase().includes(q)))) return false;
-    if(fa==='avail'&&!it.copies.some(c=>c.status==='Available')) return false;
-    if(fa==='issued'&&!it.copies.some(c=>c.status!=='Available')) return false;
-    return true;
-  });
-  document.getElementById('empty').classList.toggle('hidden', filtered.length>0);
-  document.getElementById('list').innerHTML=filtered.map(it=>{
-    let av=it.copies.filter(c=>c.status==='Available').length; let iss=it.copies.length-av;
-    let first=it.copies[0]?it.copies[0].bookNo:'-';
-    let last=it.copies[it.copies.length-1]?it.copies[it.copies.length-1].bookNo:'-';
-    let range=it.copies.length?`${first} → ${last}`:'No copies';
-    return `<div class="bg-white rounded-2xl p-4 shadow">
-      <div class="font-bold">${it.title}</div>
-      <div class="text-xs text-gray-500">${it.dept} • ${it.grade} • ${it.subject} • ${it.author} • R${it.price||0}</div>
-      <div class="text-sm font-bold text-blue-900 mt-1">${range}</div>
-      <div class="text-sm">Total: ${it.copies.length} • Avail: ${av} • Issued: ${iss}</div>
-      <div class="text-xs text-gray-400 mt-1">Qty: ${it.copies.length} • To add more, click + Add Copies</div>
-      <div class="flex flex-wrap gap-1 mt-3">
-        <button onclick="openCopy('${it.id}')" class="bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold">+ Add Copies</button>
-        <button onclick="genForTitle('${it.id}')" class="bg-orange-400 px-3 py-1.5 rounded-lg text-sm font-bold">📷 Barcodes</button>
-        <button onclick="removeCopy('${it.id}')" class="bg-gray-100 px-2 py-1.5 rounded-lg text-sm">- Remove</button>
-        <button onclick="deleteTitle('${it.id}')" class="bg-red-50 text-red-600 px-2 py-1.5 rounded-lg text-sm">Delete</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function genForTitle(id){ document.getElementById('pTitle').value=id; genSheet(); document.getElementById('sheetWrap').scrollIntoView({behavior:'smooth'}); }
-function genSheet(){
-  let tid=document.getElementById('pTitle').value;
-  let type=document.getElementById('pType').value||'BOOK';
-  let items=tid?ltsm.filter(x=>x.id===tid):ltsm;
-  let copies=[]; items.forEach(it=>it.copies.forEach(c=>copies.push({it,c})));
-  copies.sort((a,b)=>parseBookNoNum(a.c.bookNo)-parseBookNoNum(b.c.bookNo));
-  let sheet=document.getElementById('sheet');
-  sheet.innerHTML=copies.map(({it,c})=>`
-    <div class="barcode-label">
-      <div style="font-size:9px;font-weight:800;letter-spacing:.5px;line-height:1.1">WORDSWORTH HIGH SCHOOL<br><span style="font-weight:600">MAKHANANI-LTSM</span></div>
-      <div style="margin:4px auto;background:#1e3a8a;color:#fff;font-size:8px;font-weight:800;padding:2px 10px;border-radius:999px;display:inline-block;width:auto">${type}</div>
-      <svg data-code="${c.bookNo}"></svg>
-      <div style="font-size:15px;font-weight:900;letter-spacing:.5px">${c.bookNo}</div>
-      <div style="font-size:8px;color:#555;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.title} • ${it.grade}</div>
-    </div>`).join('');
-  document.querySelectorAll('#sheet svg').forEach(s=>{ try{ JsBarcode(s,s.dataset.code,{format:'CODE128',width:1.4,height:48,displayValue:false,margin:0,flat:true}); }catch(e){} });
-  document.getElementById('sheetInfo').textContent=copies.length?`${copies.length} labels • Centered • Print A4 • Cut on dashed lines`:'No copies to print — Add a title first.';
-}
-function clearSheet(){ document.getElementById('sheet').innerHTML=''; document.getElementById('sheetInfo').textContent=''; }
-function exportData(){ let blob=new Blob([JSON.stringify({ltsm,issues,bookState})],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='makhanani-stock.json'; a.click(); }
-function importData(e){ let f=e.target.files[0]; if(!f) return; let r=new FileReader(); r.onload=()=>{ try{ let d=JSON.parse(r.result); ltsm=d.ltsm||d; issues=d.issues||[]; bookState=d.bookState||bookState; saveAll(); render(); alert('✅ Imported'); }catch(err){ alert('Invalid file'); } }; r.readAsText(f); }
-
-// Seed demo if empty first time - delete this block if you don't want demo
-if(!ltsm.length && !localStorage.getItem('makhanani_seeded')){
-  // No auto seed - start empty clean at WHS000001
-  localStorage.setItem('makhanani_seeded','1');
-}
-render(); updPreview();
+let ltsm=JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
+let issues=JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
+let bookState=JSON.parse(localStorage.getItem('makhanani_bookNoState')||'{"next":1,"free":[],"used":[]}');
+let curCopyId=null;
+function parseBookNoNum(s){let m=(s||'').match(/(\d+)$/);return m?parseInt(m[1]):0;}
+function saveAll(){localStorage.setItem('makhanani_ltsm',JSON.stringify(ltsm));localStorage.setItem('makhanani_issues',JSON.stringify(issues));localStorage.setItem('makhanani_bookNoState',JSON.stringify(bookState));}
+function syncState(){let all=[];ltsm.forEach(it=>it.copies.forEach(c=>all.push(parseBookNoNum(c.bookNo))));all.sort((a,b)=>a-b);let max=all.length?Math.max(...all):0;let usedSet=new Set(all);let free=[];for(let i=1;i<=max;i++){if(!usedSet.has(i))free.push(i);}bookState.used=all;bookState.free=free;bookState.next=max+1;saveAll();return{total:all.length,max,free};}
+function getNextPreview(n){syncState();let tmpFree=[...bookState.free];let tmpNext=bookState.next;let out=[];while(out.length<n&&tmpFree.length){out.push(tmpFree.shift());}while(out.length<n){out.push(tmpNext++);}return out.map(x=>'WHS'+String(x).padStart(6,'0'));}
+function updPreview(){let q=parseInt(document.getElementById('addQty').value||0);if(!q||q<1){document.getElementById('addPreview').innerHTML='Enter quantity';return;}let nums=getNextPreview(q);let gaps=syncState().free.length;document.getElementById('addPreview').innerHTML=`Will create ${q} copies<br>Barcodes: ${nums[0]} → ${nums[nums.length-1]} (${q} numbers)<br>Next counter: WHS${String(bookState.next).padStart(6,'0')} • Free to reuse: ${gaps?gaps+' gaps — will be reused first':'None — No gaps ✅'}`;}
+function openAdd(){document.getElementById('addModal').classList.remove('hidden');updPreview();setTimeout(()=>document.getElementById('addTitle').focus(),50);}
+function closeAdd(){document.getElementById('addModal').classList.add('hidden');}
+function closeCopy(){document.getElementById('copyModal').classList.add('hidden');}
+function saveAddWithQty(){let dept=document.getElementById('addDept').value,grade=document.getElementById('addGrade').value,subject=document.getElementById('addSubject').value.trim()||'General';let title=document.getElementById('addTitle').value.trim();if(!title){alert('Please enter Title');return;}let qty=parseInt(document.getElementById('addQty').value||0);if(!qty||qty<1){alert('Enter quantity');return;}let price=parseFloat(document.getElementById('addPrice').value||0),author=document.getElementById('addAuthor').value.trim()||'Unknown';let nums=getNextPreview(qty);let id='T'+Date.now();let copies=nums.map(no=>({bookNo:no,status:'Available',learner:'',date:''}));ltsm.unshift({id,dept,grade,subject,title,author,price,copies});syncState();saveAll();closeAdd();render();alert(`✅ ${title} — ${qty} copies created\nBarcodes: ${nums[0]} → ${nums[nums.length-1]}`);}
+function openCopy(id){curCopyId=id;let it=ltsm.find(x=>x.id===id);document.getElementById('copyInfo').textContent=it.title+' • Current: '+it.copies.length;document.getElementById('copyQty').value=5;document.getElementById('copyModal').classList.remove('hidden');}
+function saveCopies(){let it=ltsm.find(x=>x.id===curCopyId);if(!it)return;let qty=parseInt(document.getElementById('copyQty').value||0);if(!qty||qty<1)return;let nums=getNextPreview(qty);nums.forEach(no=>it.copies.push({bookNo:no,status:'Available',learner:'',date:''}));syncState();saveAll();closeCopy();render();alert(`✅ Added ${qty} copies\nBarcodes: ${nums[0]} → ${nums[nums.length-1]}`);}
+function removeCopy(id){let it=ltsm.find(x=>x.id===id);if(!it||!it.copies.length)return;let last=it.copies[it.copies.length-1];if(!confirm(`Remove last copy ${last.bookNo}?\nIts number will become FREE and be reused next time.`))return;it.copies.pop();syncState();saveAll();render();}
+function deleteTitle(id){let it=ltsm.find(x=>x.id===id);if(!confirm(`Delete "${it.title}" and all ${it.copies.length} copies?\nNumbers will become FREE and be reused.`))return;ltsm=ltsm.filter(x=>x.id!==id);syncState();saveAll();render();}
+function renumberAll(){let all=[];ltsm.forEach(it=>it.copies.forEach(c=>all.push({c,old:c.bookNo})));if(!all.length){alert('No books to renumber');return;}if(!confirm(`Renumber ${all.length} books to WHS000001 → WHS${String(all.length).padStart(6,'0')}?\nOld labels must be reprinted.`))return;all.sort((a,b)=>parseBookNoNum(a.old)-parseBookNoNum(b.old));let map={};all.forEach((e,i)=>{let n='WHS'+String(i+1).padStart(6,'0');map[e.old]=n;e.c.bookNo=n;});issues.forEach(x=>{if(map[x.bookNo])x.bookNo=map[x.bookNo];});bookState={next:all.length+1,free:[],used:all.map((_,i)=>i+1)};saveAll();render();alert(`✅ Renumbered ${all.length} → WHS000001 → WHS${String(all.length).padStart(6,'0')}\nNext: WHS${String(all.length+1).padStart(6,'0')} • Gaps: 0`);}
+function resetFilters(){document.getElementById('search').value='';document.getElementById('fDept').value='';document.getElementById('fGrade').value='';document.getElementById('fAvail').value='';render();}
+function render(){let st=syncState();let totalCopies=st.total,avail=0;ltsm.forEach(it=>it.copies.forEach(c=>{if(c.status==='Available')avail++;}));let issued=totalCopies-avail;document.getElementById('statusLine').textContent=`Prefix: WHS • Total: ${totalCopies} • Avail: ${avail} • Issued: ${issued} • Next: WHS${String(st.max?st.max+1:1).padStart(6,'0')} • Free: ${st.free.length?st.free.length+' gaps — reused first':'None — No gaps ✅'} • Highest: ${st.max?'WHS'+String(st.max).padStart(6,'0'):'-'}`;let depts=[...new Set(ltsm.map(x=>x.dept))];let fDept=document.getElementById('fDept');fDept.innerHTML='<option value="">All Depts</option>'+depts.map(d=>`<option>${d}</option>`).join('');let pTitle=document.getElementById('pTitle');let curP=pTitle.value;pTitle.innerHTML='<option value="">All Titles</option>'+ltsm.map(x=>`<option value="${x.id}">${x.title} (${x.grade}) — ${x.copies.length}</option>`).join('');pTitle.value=curP;let q=(document.getElementById('search').value||'').toLowerCase();let fd=document.getElementById('fDept').value,fg=document.getElementById('fGrade').value,fa=document.getElementById('fAvail').value;let filtered=ltsm.filter(it=>{if(fd&&it.dept!==fd)return false;if(fg&&it.grade!==fg)return false;if(q&&!(it.title.toLowerCase().includes(q)||it.author.toLowerCase().includes(q)||it.copies.some(c=>c.bookNo.toLowerCase().includes(q))))return false;if(fa==='avail'&&!it.copies.some(c=>c.status==='Available'))return false;if(fa==='issued'&&!it.copies.some(c=>c.status!=='Available'))return false;return true;});document.getElementById('empty').classList.toggle('hidden',filtered.length>0);document.getElementById('list').innerHTML=filtered.map(it=>{let av=it.copies.filter(c=>c.status==='Available').length;let iss=it.copies.length-av;let first=it.copies[0]?it.copies[0].bookNo:'-';let last=it.copies[it.copies.length-1]?it.copies[it.copies.length-1].bookNo:'-';let range=it.copies.length?`${first} → ${last}`:'No copies';return `<div class="bg-white rounded-2xl p-4 shadow"><div class="font-bold">${it.title}</div><div class="text-xs text-gray-500">${it.dept} • ${it.grade} • ${it.subject} • ${it.author} • R${it.price||0}</div><div class="text-sm font-bold text-blue-900 mt-1">${range}</div><div class="text-sm">Total: ${it.copies.length} • Avail: ${av} • Issued: ${iss}</div><div class="flex flex-wrap gap-1 mt-3"><button onclick="openCopy('${it.id}')" class="bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold">+ Add Copies</button><button onclick="genForTitle('${it.id}')" class="bg-orange-400 px-3 py-1.5 rounded-lg text-sm font-bold">📷 Barcodes</button><button onclick="removeCopy('${it.id}')" class="bg-gray-100 px-2 py-1.5 rounded-lg text-sm">- Remove</button><button onclick="deleteTitle('${it.id}')" class="bg-red-50 text-red-600 px-2 py-1.5 rounded-lg text-sm">Delete</button></div></div>`;}).join('');}
+function genForTitle(id){document.getElementById('pTitle').value=id;genSheet();document.getElementById('sheetWrap').scrollIntoView({behavior:'smooth'});}
+function genSheet(){let tid=document.getElementById('pTitle').value;let type=document.getElementById('pType').value||'BOOK';let items=tid?ltsm.filter(x=>x.id===tid):ltsm;let copies=[];items.forEach(it=>it.copies.forEach(c=>copies.push({it,c})));copies.sort((a,b)=>parseBookNoNum(a.c.bookNo)-parseBookNoNum(b.c.bookNo));let sheet=document.getElementById('sheet');sheet.innerHTML=copies.map(({it,c})=>`<div class="barcode-label"><div style="font-size:9px;font-weight:800;letter-spacing:.5px;line-height:1.1">WORDSWORTH HIGH SCHOOL<br><span style="font-weight:600">MAKHANANI-LTSM</span></div><div style="margin:4px auto;background:#1e3a8a;color:#fff;font-size:8px;font-weight:800;padding:2px 10px;border-radius:999px;display:inline-block;width:auto">${type}</div><svg data-code="${c.bookNo}"></svg><div style="font-size:15px;font-weight:900;letter-spacing:.5px">${c.bookNo}</div><div style="font-size:8px;color:#555;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.title} • ${it.grade}</div></div>`).join('');document.querySelectorAll('#sheet svg').forEach(s=>{try{JsBarcode(s,s.dataset.code,{format:'CODE128',width:1.4,height:48,displayValue:false,margin:0,flat:true});}catch(e){}});document.getElementById('sheetInfo').textContent=copies.length?`${copies.length} labels • Centered • Print A4 • Cut on dashed lines`:'No copies to print — Add a title first.';}
+function clearSheet(){document.getElementById('sheet').innerHTML='';document.getElementById('sheetInfo').textContent='';}
+function exportData(){let blob=new Blob([JSON.stringify({ltsm,issues,bookState})],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='makhanani-stock.json';a.click();}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);ltsm=d.ltsm||d;issues=d.issues||[];bookState=d.bookState||bookState;saveAll();render();alert('✅ Imported');}catch(err){alert('Invalid file');}};r.readAsText(f);}
+render();updPreview();
 </script>
 </body>
 </html>
