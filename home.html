@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Home — Wordsworth High School • MAKHANANI-LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script></head>
+<body class="bg-gray-100 p-4 md:p-8">
+<div class="flex justify-between items-center mb-4">
+  <div class="flex items-center gap-3"><img src="logo.png" alt="Wordsworth High School Logo" class="w-12 h-12 rounded-xl bg-white p-1 object-contain shadow border" onerror="this.style.display='none'"><div><h1 class="font-black text-lg leading-none">WORDSWORTH HIGH SCHOOL</h1><p class="text-xs text-gray-500">MAKHANANI-LTSM • Home</p><span class="firebase-badge"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">● Offline Mode</span></span></div></div>
+  <a href="index.html" class="bg-white px-4 py-2 rounded-full text-sm shadow">🌐 Landing Page</a>
+</div>
+<div id="nav"></div>
+<div class="bg-white p-6 rounded-2xl flex justify-between flex-wrap gap-4">
+  <div><h2 class="text-2xl font-black">Welcome, <span id="userName">User</span> 👋</h2><p class="text-sm text-gray-500">Role: <span id="userRole" class="font-bold text-blue-900"></span> • <span id="today"></span></p><p id="roleMsg" class="text-sm bg-blue-50 border border-blue-200 p-3 rounded-xl mt-3"></p></div>
+  <img src="logo.png" class="w-16 h-16 rounded-2xl bg-white p-1 object-contain border shadow" onerror="this.style.display='none'">
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Learners</p><p id="statUsers" class="text-3xl font-black">0</p></div>
+  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Book Copies</p><p id="statStock" class="text-3xl font-black text-blue-900">0</p></div>
+  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Available</p><p id="statAvail" class="text-3xl font-black text-green-600">0</p></div>
+  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Fees Outstanding</p><p id="statFees" class="text-3xl font-black text-red-600">R0</p></div>
+</div>
+<h3 class="font-bold mt-6 mb-3">What You Can Access — <span id="roleLabel2"></span></h3>
+<div id="cards" class="grid md:grid-cols-3 gap-4"></div>
+<div id="footer"></div>
+<script src="shared.js"></script><script src="firebase.js"></script>
+<script>
+  let s=requireLogin(); if(!s) throw new Error('No session');
+  startFirebaseSync();
+  document.getElementById('userName').textContent=s.name; document.getElementById('userRole').textContent=ROLES[s.role].label; document.getElementById('roleLabel2').textContent=ROLES[s.role].label;
+  document.getElementById('today').textContent=new Date().toDateString();
+  document.getElementById('nav').innerHTML=renderNav('home.html');
+  document.getElementById('footer').innerHTML=renderFooter();
+  function renderHome(){
+    let total=ltsm.reduce((a,i)=>a+i.copies.length,0), iss=issues.filter(i=>i.status==='Issued'||i.status==='Overdue').length;
+    document.getElementById('statUsers').textContent=users.filter(u=>u.role==='Student').length;
+    document.getElementById('statStock').textContent=total; document.getElementById('statAvail').textContent=total-iss;
+    document.getElementById('statFees').textContent='R'+fees.reduce((a,f)=>a+(f.total-f.paid),0).toLocaleString();
+    let allCards={ 'learners.html':{t:'👥 Learners',d:'Full Names + Grade + Class + Contact (optional) • ID 10A001'}, 'stock.html':{t:'📚 Stock / LTSM',d:'MA000001 • Issue • Print Barcodes A4 3x5 • Scan Beep'}, 'attendance.html':{t:'✅ Attendance',d:'Mark Present / Absent / Late'}, 'marks.html':{t:'🏆 Marks',d:'Add Marks • Avg • Grades A-F'}, 'fees.html':{t:'💰 Fees',d:'Invoicing • Payments • Receipts'}, 'timetable.html':{t:'📅 Timetable',d:'Click slot to edit'}, 'parent.html':{t:'❤️ Parent Portal',d:'Child Marks, Fees, Books'}, 'import.html':{t:'📥 Bulk Upload',d:'Upload Learners + Books in Excel'}, 'settings.html':{t:'⚙️ Settings',d:'Backup, Clear Data'} };
+    let allowed=ROLES[s.role].pages.filter(p=>p!=='home.html');
+    document.getElementById('cards').innerHTML=allowed.map(p=>`<a href="${p}" class="bg-white p-5 rounded-2xl block hover:shadow-lg"><h3 class="font-bold">${allCards[p].t}</h3><p class="text-sm text-gray-500 mt-1">${allCards[p].d}</p><p class="text-blue-900 font-bold text-sm mt-2">Open →</p></a>`).join('');
+  }
+  let msgs={ super:"✅ You can access EVERYTHING — All pages, Settings, Bulk Upload.", school_admin:"✅ Manage Learners, Stock, Attendance, Marks, Fees, Timetable, Parent & Bulk Upload. No Settings.", principal:"👔 View everything — Learners, Stock, Attendance, Marks, Fees, Timetable, Parent.", librarian:"📚 Librarian — Stock / LTSM ONLY. Issue, Return, Scan, Print Barcodes A4 3x5.", hod:"📖 HOD — Learners, Attendance, Marks, Timetable, Parent.", teacher:"👩‍🏫 Teacher — Learners, Attendance, Marks, Timetable.", finance:"💰 Finance — Learners, Fees & Parent.", parent:"❤️ Parent — Parent Portal ONLY." };
+  document.getElementById('roleMsg').textContent=msgs[s.role]||'';
+  renderHome(); window.onFirebaseUpdate = renderHome;
+</script></body></html>
