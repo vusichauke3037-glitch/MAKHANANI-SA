@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Attendance — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="shared.js"></script></head>
+<body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
+<h1 class="text-2xl font-black">✅ Attendance</h1>
+<div class="bg-white p-4 rounded-2xl mt-4 flex flex-wrap gap-3"><input id="attDate" type="date" class="border rounded-lg px-3 py-2"><select id="attDept" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Departments</option></select><button onclick="markAll('Present')" class="bg-green-100 px-3 py-2 rounded-lg text-sm">All Present</button><button onclick="saveAtt()" class="bg-blue-900 text-white px-6 py-2 rounded-lg text-sm ml-auto">💾 Save</button></div>
+<div class="grid grid-cols-3 gap-4 mt-4"><div class="bg-white p-4 rounded-2xl text-center"><p id="cP" class="text-2xl font-black text-green-600">0</p><p class="text-xs">Present</p></div><div class="bg-white p-4 rounded-2xl text-center"><p id="cA" class="text-2xl font-black text-red-600">0</p><p class="text-xs">Absent</p></div><div class="bg-white p-4 rounded-2xl text-center"><p id="cL" class="text-2xl font-black text-amber-600">0</p><p class="text-xs">Late</p></div></div>
+<div class="bg-white rounded-2xl mt-4 overflow-x-auto"><table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="p-4 text-left">Learner</th><th class="p-4 text-left">Status</th><th class="p-4 text-left">Note</th><th class="p-4 text-left">WhatsApp</th></tr></thead><tbody id="tbody"></tbody></table></div>
+<script>
+document.getElementById('nav').innerHTML=renderNav('attendance.html');
+document.getElementById('attDate').value=new Date().toISOString().slice(0,10);
+let temp={};
+document.getElementById('attDept').innerHTML='<option value="">All</option>'+departments.map(d=>`<option>${d.name}</option>`).join('');
+function render(){
+  let date=document.getElementById('attDate').value, dept=document.getElementById('attDept').value;
+  if(!temp[date]) temp[date]={}; if(attendance[date]) Object.keys(attendance[date]).forEach(id=>{ if(!temp[date][id]) temp[date][id]={...attendance[date][id]}; });
+  let students=users.filter(u=>u.role==='Student'&&(!dept||u.dept===dept));
+  document.getElementById('tbody').innerHTML=students.map(s=>{ let cur=temp[date][s.id]?.status||'Present'; if(!temp[date][s.id]) temp[date][s.id]={status:'Present',note:''}; return `<tr class="border-t"><td class="p-4"><b>${s.name}</b> <span class="text-xs text-blue-900 font-bold">${s.sid}</span><p class="text-xs text-gray-500">${s.grade} ${s.classLetter} • ${s.phone||'No contact'}</p></td><td class="p-4"><div class="flex gap-1"><button onclick="setSt(${s.id},'Present')" class="px-3 py-1 rounded-full border text-xs ${cur==='Present'?'bg-green-600 text-white':''}">Present</button><button onclick="setSt(${s.id},'Absent')" class="px-3 py-1 rounded-full border text-xs ${cur==='Absent'?'bg-red-600 text-white':''}">Absent</button><button onclick="setSt(${s.id},'Late')" class="px-3 py-1 rounded-full border text-xs ${cur==='Late'?'bg-amber-500 text-white':''}">Late</button></div></td><td class="p-4"><input onchange="temp['${date}']['${s.id}'].note=this.value" value="${temp[date][s.id].note||''}" class="border rounded-lg px-2 py-1 text-xs w-32"></td><td class="p-4"><button onclick="waAbsent(${s.id})" class="bg-green-100 px-2 py-1 rounded-full text-xs">📱 Absent</button></td></tr>`; }).join('');
+  let vals=Object.values(temp[date]||{}); document.getElementById('cP').textContent=vals.filter(v=>v.status==='Present').length; document.getElementById('cA').textContent=vals.filter(v=>v.status==='Absent').length; document.getElementById('cL').textContent=vals.filter(v=>v.status==='Late').length;
+}
+function setSt(id,s){ let d=document.getElementById('attDate').value; if(!temp[d][id]) temp[d][id]={status:s,note:''}; else temp[d][id].status=s; render(); }
+function markAll(s){ let d=document.getElementById('attDate').value; users.filter(u=>u.role==='Student').forEach(st=>{ if(!temp[d][st.id]) temp[d][st.id]={status:s,note:''}; else temp[d][st.id].status=s; }); render(); }
+function saveAtt(){ let d=document.getElementById('attDate').value; attendance[d]={...temp[d]}; saveAll(); alert('✅ Saved '+d); render(); }
+function waAbsent(id){ let c=users.find(u=>u.id===id); let pp=cleanPhone(c.phone||c.parentEmail); if(!c.phone) return alert('No contact for '+c.name); window.open(`https://wa.me/${cleanPhone(c.phone)}?text=${encodeURIComponent('Hi, Makhanani Academy. '+c.name+' ('+c.sid+') was marked ABSENT today.')}`,'_blank'); }
+render();
+</script></body></html>
