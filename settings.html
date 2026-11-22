@@ -1,0 +1,16 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Settings — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="shared.js"></script></head>
+<body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
+<h1 class="text-2xl font-black">⚙️ Settings — Makhanani Academy</h1>
+<div class="bg-white p-6 rounded-2xl max-w-lg mt-4 space-y-4">
+<div class="bg-green-50 p-4 rounded-xl text-sm"><b>School:</b> Makhanani Academy<br><b>WhatsApp:</b> 078 023 3263 • <a href="https://wa.me/27780233263" class="text-green-600 font-bold">wa.me/27780233263</a><br><b>Book Prefix:</b> MA • <b>Learner ID:</b> Grade + Class + 001 (10A001)</div>
+<div class="bg-blue-50 p-4 rounded-xl"><p class="font-bold text-sm">📚 LTSM</p><p class="text-xs mt-2">Low Stock Alert: <b id="lowTxt"></b> • Total Learners: <b id="uTxt"></b> • Total Copies: <b id="cTxt"></b></p><button onclick="exportAll()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm mt-3">⬇️ Export All Data (Backup)</button></div>
+<div class="bg-red-50 p-4 rounded-xl"><p class="font-bold text-sm text-red-600">Danger Zone</p><button onclick="clearAll()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm mt-2">Clear ALL Data</button><p class="text-xs text-gray-500 mt-1">This deletes everything on this device. Export backup first.</p></div>
+</div>
+<script>
+document.getElementById('nav').innerHTML=renderNav('settings.html');
+document.getElementById('lowTxt').textContent=ltsm.filter(i=>getAvailable(i)<=5).length+' titles low';
+document.getElementById('uTxt').textContent=users.filter(u=>u.role==='Student').length;
+document.getElementById('cTxt').textContent=ltsm.reduce((s,i)=>s+i.copies.length,0);
+function exportAll(){ let blob=new Blob([JSON.stringify({users,ltsm,issues,attendance,marks,fees,payments},null,2)],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Makhanani_Backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); }
+function clearAll(){ if(confirm('Clear ALL Makhanani data?')){ localStorage.clear(); location.reload(); } }
+</script></body></html>
