@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Parent Portal — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="shared.js"></script></head>
+<body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
+<h1 class="text-2xl font-black">❤️ Parent Portal</h1>
+<div class="bg-white p-4 rounded-2xl mt-4 flex gap-3"><select id="sel" onchange="render()" class="border rounded-lg px-3 py-2 flex-1"></select><button onclick="exportReport()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Download Report</button></div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4"><div class="bg-white p-5 rounded-2xl text-center"><p id="pAvg" class="text-3xl font-black text-blue-900">—</p><p class="text-xs">Avg</p></div><div class="bg-white p-5 rounded-2xl text-center"><p id="pAtt" class="text-3xl font-black text-green-600">—</p><p class="text-xs">Att %</p></div><div class="bg-white p-5 rounded-2xl text-center"><p id="pFees" class="text-3xl font-black text-red-600">R0</p><p class="text-xs">Fees Due</p></div><div class="bg-white p-5 rounded-2xl text-center"><p id="pBooks" class="text-3xl font-black text-indigo-600">0</p><p class="text-xs">Books</p></div></div>
+<div class="grid lg:grid-cols-2 gap-4 mt-4"><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold mb-3">Marks</h3><div id="pMarks"></div></div><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold mb-3">Books Issued</h3><div id="pLTSM"></div></div></div>
+<div class="grid lg:grid-cols-2 gap-4 mt-4"><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold mb-3">Fees</h3><div id="pFeeList"></div></div><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold mb-3">Contact School</h3><a href="https://wa.me/27780233263" target="_blank" class="block text-center bg-green-600 text-white py-2 rounded-lg text-sm font-bold">📱 WhatsApp 078 023 3263</a><p class="text-xs text-gray-500 mt-2 text-center">Makhanani Academy — MAKHANANI LTSM 2.0</p></div></div>
+<script>
+document.getElementById('nav').innerHTML=renderNav('parent.html');
+let params=new URLSearchParams(location.search);
+function render(){
+  document.getElementById('sel').innerHTML=users.filter(u=>u.role==='Student').map(s=>`<option value="${s.id}">${s.name} (${s.sid}) — ${s.grade} ${s.classLetter}</option>`).join('');
+  if(params.get('learner')){ let found=users.find(u=>u.sid===params.get('learner')); if(found) document.getElementById('sel').value=found.id; }
+  let cid=+document.getElementById('sel').value; let child=users.find(u=>u.id===cid); if(!child) return;
+  document.getElementById('pAvg').textContent=(getAvgMark(cid)||'—')+'%'; document.getElementById('pAtt').textContent=getAttPct(cid)+'%'; document.getElementById('pFees').textContent='R'+getStudentFeeBalance(cid).toLocaleString(); document.getElementById('pBooks').textContent=issues.filter(i=>i.toId===cid&&(i.status==='Issued'||i.status==='Overdue')).length;
+  document.getElementById('pMarks').innerHTML=marks.filter(m=>m.studentId===cid).map(m=>`<div class="flex justify-between bg-gray-50 p-3 rounded-lg mb-2"><span><b>${m.subject}</b> — ${m.assessment}</span><b>${m.mark}%</b></div>`).join('')||'No marks';
+  document.getElementById('pLTSM').innerHTML=issues.filter(i=>i.toId===cid&&(i.status==='Issued'||i.status==='Overdue')).map(i=>`<div class="flex justify-between bg-gray-50 p-3 rounded-lg mb-2"><span><b>${i.bookNo}</b> — ${i.itemTitle}</span><span>${i.status} • Due ${i.due}</span></div>`).join('')||'✅ No books';
+  document.getElementById('pFeeList').innerHTML=fees.filter(f=>f.studentId===cid).map(f=>`<div class="flex justify-between bg-gray-50 p-3 rounded-lg mb-2"><span>${f.type}</span><b>R${(f.total-f.paid).toLocaleString()}</b></div>`).join('')||'No fees';
+}
+function exportReport(){ let cid=+document.getElementById('sel').value; let child=users.find(u=>u.id===cid); let data=[["Makhanani Academy - Report"],["Full Names",child.name],["Learner ID",child.sid],["Grade",child.grade],["Class",child.classLetter],["Contact",child.phone||'Not provided'],["Avg",getAvgMark(cid)||'—'],["Att",getAttPct(cid)],["Fees",'R'+getStudentFeeBalance(cid)]]; let ws=XLSX.utils.aoa_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Report"); XLSX.writeFile(wb,"Makhanani_Report_"+child.name+".xlsx"); }
+render();
+</script></body></html>
