@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dashboard - Retrieval % - Wordsworth</title><script src="https://cdn.tailwindcss.com"></script><style>@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%}}</style></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-blue-950 text-white px-4 py-4 sticky top-0 z-40"><div class="max-w-7xl mx-auto flex flex-wrap gap-2 justify-between items-center"><div><div class="font-bold text-lg">DASHBOARD • WORDSWORTH HIGH SCHOOL • MAKHANANI-LTSM</div><div class="text-xs opacity-80">Stock + Issuing Record + % Retrieval — By Role</div></div><div class="flex gap-2"><a href="librarian.html" class="bg-white text-blue-950 px-3 py-2 rounded-lg font-bold text-sm">← Librarian</a><a href="teacher.html" class="bg-green-600 text-white px-3 py-2 rounded-lg font-bold text-sm">Teacher</a><a href="hod.html" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold text-sm">HOD</a><a href="stock.html" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-bold text-sm">Stock →</a></div></div></div>
+
+<div class="max-w-7xl mx-auto p-4">
+<!-- ROLE SWITCHER -->
+<div class="bg-white rounded-2xl p-4 shadow flex flex-wrap gap-2 items-center">
+  <span class="font-bold text-sm">VIEW AS:</span>
+  <select id="role" onchange="render()" class="border rounded-lg px-3 py-2 font-bold"><option value="librarian">Librarian / Principal — Whole School</option><option value="hod">HOD — Own Department</option><option value="teacher">Teacher — Own Classes</option></select>
+  <select id="selDept" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Departments</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option></select>
+  <select id="selTeacher" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Teachers</option></select>
+  <select id="selGrade" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+  <button onclick="window.print()" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold">🖨️ Print Dashboard (A4)</button>
+  <a href="record.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold">📄 Generate Issue / Retrieval Record (A4) →</a>
+</div>
+
+<!-- TOP CARDS -->
+<div id="printArea">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
+  <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">TOTAL STOCK</div><div id="cTotal" class="text-2xl font-bold">0</div></div>
+  <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">AVAILABLE</div><div id="cAvail" class="text-2xl font-bold text-green-600">0</div></div>
+  <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">ISSUED OUT</div><div id="cIssued" class="text-2xl font-bold text-orange-600">0</div></div>
+  <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">RETURNED</div><div id="cReturned" class="text-2xl font-bold text-blue-600">0</div></div>
+  <div class="bg-blue-950 text-white rounded-2xl p-4 shadow"><div class="text-xs opacity-80">% RETRIEVAL</div><div id="cRet" class="text-2xl font-bold">0%</div><div id="cRetBar" class="bg-white/20 h-2 rounded mt-2"><div id="cRetFill" class="bg-green-400 h-2 rounded" style="width:0%"></div></div><div id="cRetText" class="text-xs mt-1 opacity-80">Returned / Total Issued</div></div>
+</div>
+
+<!-- BY DEPARTMENT -->
+<div class="bg-white rounded-2xl p-4 shadow mt-4"><div class="flex justify-between"><div class="font-bold">📊 By Department / Group</div><div class="text-xs text-gray-400">Retrieval % = Returned ÷ Total Ever Issued</div></div><div id="byDept" class="mt-3 space-y-3"></div></div>
+
+<!-- BY SUBJECT -->
+<div class="bg-white rounded-2xl p-4 shadow mt-4"><div class="font-bold">📚 By Subject</div><div id="bySubject" class="mt-3 space-y-3"></div></div>
+
+<!-- BY TEACHER -->
+<div class="bg-white rounded-2xl p-4 shadow mt-4"><div class="font-bold">👩‍🏫 By Teacher</div><div id="byTeacher" class="mt-3 space-y-3"></div></div>
+
+<!-- BY GRADE / CLASS -->
+<div class="bg-white rounded-2xl p-4 shadow mt-4"><div class="font-bold">🎓 By Grade / Class</div><div id="byGrade" class="mt-3 space-y-3"></div></div>
+
+<!-- ISSUING RECORD TABLE -->
+<div class="bg-white rounded-2xl p-4 shadow mt-4"><div class="flex justify-between items-center"><div class="font-bold">📋 Issuing Record — Full Detail</div><div class="text-xs text-gray-500" id="recordCount"></div></div><div class="overflow-x-auto mt-2"><table class="w-full text-sm"><thead><tr class="bg-gray-100 text-left"><th class="p-2">Date</th><th class="p-2">WHS No</th><th class="p-2">Title</th><th class="p-2">Learner</th><th class="p-2">Learner ID</th><th class="p-2">Class</th><th class="p-2">Teacher</th><th class="p-2">Dept</th><th class="p-2">Status</th></tr></thead><tbody id="recordTable"></tbody></table></div></div>
+</div>
+</div>
+
+<script>
+let ltsm=JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
+let issues=JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
+let reqs=JSON.parse(localStorage.getItem('makhanani_requests')||'[]');
+function pct(ret, total){ if(!total) return 0; return Math.round(ret/total*100); }
+function bar(p){ let col=p>=80?'bg-green-500':p>=50?'bg-yellow-500':'bg-red-500'; return `<div class="flex items-center gap-2"><div class="flex-1 bg-gray-100 h-3 rounded"><div class="${col} h-3 rounded" style="width:${p}%"></div></div><b class="w-12 text-right">${p}%</b></div>`; }
+function rowCard(label, total, avail, issued, returned, retPct, sub){
+  return `<div class="border rounded-xl p-3"><div class="flex justify-between"><div><b>${label}</b> <span class="text-xs text-gray-400">${sub||''}</span></div><div class="text-sm">Stock: ${total} • Avail: ${avail} • Out: ${issued} • Returned: ${returned}</div></div><div class="mt-2">${bar(retPct)}</div><div class="text-xs text-gray-500 mt-1">Retrieval: ${returned} / ${returned+issued} ever issued = ${retPct}% ${retPct<50?'⚠️ Low — Follow up':retPct>=80?'✅ Excellent':''}</div></div>`;
+}
+function getBookInfo(bookNo){ for(let it of ltsm){ for(let c of it.copies){ if(c.bookNo===bookNo) return it; } } return null; }
+function render(){
+  let role=document.getElementById('role').value;
+  let fDept=document.getElementById('selDept').value;
+  let fTeacher=document.getElementById('selTeacher').value;
+  let fGrade=document.getElementById('selGrade').value;
+  // Role scoping
+  let scopedLtsm=ltsm;
+  let scopedIssues=issues;
+  if(role==='hod'){ let d=fDept||localStorage.getItem('makhanani_hod')?JSON.parse(localStorage.getItem('makhanani_hod')||'{"dept":"Mathematics"}').dept:'Mathematics'; if(fDept) d=fDept; scopedLtsm=ltsm.filter(x=>x.dept===d); scopedIssues=issues.filter(x=>x.dept===d); }
+  if(role==='teacher'){ let t=JSON.parse(localStorage.getItem('makhanani_teacher')||'{"name":"Ms. Dube - Mathematics","class":"Grade 10A"}'); scopedIssues=issues.filter(x=>x.teacher===t.name||x.class===t.class); scopedLtsm=ltsm.filter(x=>x.grade===t.class.split(' ')[0]||true); }
+  if(fDept) scopedIssues=scopedIssues.filter(x=>x.dept===fDept);
+  if(fTeacher) scopedIssues=scopedIssues.filter(x=>x.teacher===fTeacher);
+  if(fGrade) scopedIssues=scopedIssues.filter(x=>x.class && x.class.includes(fGrade));
+
+  // Teacher dropdown
+  let teachers=[...new Set(issues.map(x=>x.teacher))];
+  let selT=document.getElementById('selTeacher'); let cur=selT.value; selT.innerHTML='<option value="">All Teachers</option>'+teachers.map(t=>`<option>${t}</option>`).join(''); selT.value=cur;
+
+  // Top cards from scoped ltsm + issues
+  let total=0, avail=0; scopedLtsm.forEach(it=>it.copies.forEach(c=>{total++; if(c.status==='Available') avail++;}));
+  // For scoped issues, total ever issued = returned + still out
+  let stillOut=scopedIssues.filter(x=>!x.returned).length;
+  let returned=scopedIssues.filter(x=>x.returned).length;
+  let ever=stillOut+returned;
+  let retPct=pct(returned, ever);
+  document.getElementById('cTotal').textContent=total;
+  document.getElementById('cAvail').textContent=avail;
+  document.getElementById('cIssued').textContent=stillOut;
+  document.getElementById('cReturned').textContent=returned;
+  document.getElementById('cRet').textContent=retPct+'%';
+  document.getElementById('cRetFill').style.width=retPct+'%';
+  document.getElementById('cRetText').textContent=`Returned ${returned} / Ever Issued ${ever}`;
+
+  // By Dept
+  let depts=[...new Set(ltsm.map(x=>x.dept))];
+  document.getElementById('byDept').innerHTML=depts.map(d=>{
+    let items=ltsm.filter(x=>x.dept===d); let t=0,a=0; items.forEach(it=>it.copies.forEach(c=>{t++; if(c.status==='Available') a++;}));
+    let iss=issues.filter(x=>x.dept===d); let ret=iss.filter(x=>x.returned).length; let out=iss.filter(x=>!x.returned).length;
+    return rowCard(d, t, a, out, ret, pct(ret, ret+out), `Group: ${d}`);
+  }).join('')||'No data';
+
+  // By Subject
+  let subjects=[...new Set(ltsm.map(x=>x.subject))];
+  document.getElementById('bySubject').innerHTML=subjects.map(s=>{
+    let items=ltsm.filter(x=>x.subject===s); let t=0,a=0; items.forEach(it=>it.copies.forEach(c=>{t++; if(c.status==='Available') a++;}));
+    // Map subject via book title -> ltsm subject
+    let iss=issues.filter(x=>{ let it=getBookInfo(x.bookNo); return it && it.subject===s; });
+    let ret=iss.filter(x=>x.returned).length; let out=iss.filter(x=>!x.returned).length;
+    return rowCard(s, t, a, out, ret, pct(ret, ret+out), '');
+  }).join('')||'No data';
+
+  // By Teacher
+  let byT={}; issues.forEach(x=>{ if(!byT[x.teacher]) byT[x.teacher]={ret:0,out:0,dept:x.dept}; if(x.returned) byT[x.teacher].ret++; else byT[x.teacher].out++; });
+  document.getElementById('byTeacher').innerHTML=Object.entries(byT).map(([name,v])=>{
+    return rowCard(name, v.ret+v.out, 0, v.out, v.ret, pct(v.ret, v.ret+v.out), `Dept: ${v.dept} • Total handled: ${v.ret+v.out}`);
+  }).join('')||'No teacher issues yet';
+
+  // By Grade/Class
+  let classes=[...new Set(issues.map(x=>x.class))];
+  document.getElementById('byGrade').innerHTML=classes.map(cl=>{
+    let iss=issues.filter(x=>x.class===cl); let ret=iss.filter(x=>x.returned).length; let out=iss.filter(x=>!x.returned).length;
+    return rowCard(cl, ret+out, 0, out, ret, pct(ret, ret+out), '');
+  }).join('')||'No class data';
+
+  // Record table
+  let sorted=[...scopedIssues].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  document.getElementById('recordCount').textContent=sorted.length+' records';
+  document.getElementById('recordTable').innerHTML=sorted.map(x=>{
+    let it=getBookInfo(x.bookNo); let subj=it?it.subject:'-';
+    return `<tr class="border-b"><td class="p-2">${x.date||'-'}</td><td class="p-2 font-bold">${x.bookNo}</td><td class="p-2">${x.title}<br><span class="text-xs text-gray-400">${subj}</span></td><td class="p-2">${x.learner}</td><td class="p-2">${x.learnerId||'-'}</td><td class="p-2">${x.class||x.grade||'-'}</td><td class="p-2">${x.teacher||'-'}</td><td class="p-2">${x.dept||'-'}</td><td class="p-2"><span class="px-2 py-1 rounded text-xs font-bold ${x.returned?'bg-green-100 text-green-700':'bg-orange-100 text-orange-700'}">${x.returned?'RETURNED ✅':'ISSUED OUT'}</span></td></tr>`;
+  }).join('')||'<tr><td colspan="9" class="p-4 text-center text-gray-400">No records yet.</td></tr>';
+}
+render();
+</script></body></html>
