@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Stock — Wordsworth High School • MAKHANANI-LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script><style>.barcode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.barcode-label{border:1.5px dashed #111;border-radius:8px;padding:6px 4px;text-align:center;height:148px;display:flex;flex-direction:column;justify-content:space-between}@media print{body *{visibility:hidden}#sheet,#sheet *{visibility:visible}#sheet{position:absolute;left:0;top:0;width:100%}}</style></head>
 <body class="bg-gray-100 p-4 md:p-8"><div id="nav"></div>
 <h1 class="text-2xl font-black">📚 Stock — Title + Grade + Quantity → Auto WHS Number</h1><p class="text-sm text-gray-500">Wordsworth High School • MAKHANANI-LTSM • Prefix <b id="prefixLabel">WHS</b> • Format <b>WHS000001</b> • No Repeat • No Skipping • <span class="firebase-badge"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">● Offline</span></span></p>
-<div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mt-4 flex justify-between flex-wrap gap-3"><div><p class="font-bold text-sm">📦 Book Number Status</p><p id="bookNoStatus" class="text-xs mt-1">Loading...</p></div><button onclick="showBookNoAudit()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-xs">🔍 Audit — Check Gaps</button></div>
+<div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mt-4 flex justify-between flex-wrap gap-3"><div class="min-w-0"><p class="font-bold text-sm">📦 Book Number Status</p><p id="bookNoStatus" class="text-xs mt-1 leading-relaxed">Loading...</p><div id="freeListBox" class="hidden mt-2 bg-white border rounded-lg p-2 text-[11px] max-h-32 overflow-y-auto break-words"></div></div><div class="flex gap-2 shrink-0"><button onclick="toggleFreeList()" id="freeListBtn" class="bg-white border px-3 py-2 rounded-lg text-xs hidden">👁️ Show Gaps</button><button onclick="showBookNoAudit()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-xs">🔍 Audit — Check Gaps</button></div></div>
 <div id="deptSummary" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4"></div>
 <div class="bg-white p-4 rounded-2xl mt-4"><p class="font-bold text-sm mb-2">🔍 Filter — Dept → Grade → Subject</p><div class="flex gap-2 flex-wrap"><select id="fDept" onchange="onDeptChange(); renderStock()" class="border rounded-lg px-3 py-2 text-sm"><option value="">All Departments</option></select><select id="fGrade" onchange="onGradeChange(); renderStock()" class="border rounded-lg px-3 py-2 text-sm"><option value="">All Grades</option></select><select id="fSubject" onchange="renderStock()" class="border rounded-lg px-3 py-2 text-sm"><option value="">All Subjects</option></select><input id="fSearch" oninput="renderStock()" placeholder="Search title, WHS000001..." class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[180px]"><button onclick="resetFilters()" class="bg-gray-100 px-4 py-2 rounded-lg text-sm">Reset</button></div><p id="filterPath" class="text-xs text-blue-900 font-bold mt-2"></p></div>
 <div class="flex gap-2 mt-4 flex-wrap"><button onclick="openAdd()" class="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm">+ Add Title — Title + Grade + Qty</button><button onclick="openPrint()" class="bg-amber-400 px-4 py-2 rounded-lg text-sm font-bold">🖨️ Print Barcodes A4 3x5</button><button onclick="openScan()" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">📷 Scan — Beep</button><button onclick="exportStock()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Export Organized</button><button onclick="toggleView()" id="viewBtn" class="bg-white border px-4 py-2 rounded-lg text-sm">📂 Grouped View</button></div>
@@ -45,18 +45,48 @@
     let dept=document.getElementById('fDept').value, grade=document.getElementById('fGrade').value, subj=document.getElementById('fSubject').value, q=(document.getElementById('fSearch').value||'').toLowerCase();
     return ltsm.filter(it=>(!dept||it.dept===dept)&&(!grade||it.grade===grade)&&(!subj||it.subject===subj)&&(!q||it.title.toLowerCase().includes(q)||it.copies.some(c=>c.bookNo.toLowerCase().includes(q))));
   }
+
+  // === COMPACT BOOK NUMBER STATUS — Never show 1000+ numbers, show COUNT only ===
   function updateBookNoStatus(){
-    let st = getBookNoState();
-    let total = ltsm.reduce((s,i)=>s+i.copies.length,0);
-    let maxUsed = 0;
-    ltsm.forEach(i=>i.copies.forEach(c=>{ let n=parseBookNoNum(c.bookNo); if(n && n>maxUsed) maxUsed=n; }));
-    document.getElementById('bookNoStatus').innerHTML = `Prefix: <b>${getSchoolPrefix()}</b> (Wordsworth High School) • Total copies: <b>${total}</b> • Next number: <b>${formatBookNo(st.next)}</b> • Free to reuse (gaps): <b>${st.free.length ? st.free.map(n=>formatBookNo(n)).join(', ') : 'None — No gaps ✅'}</b> • Highest used: <b>${maxUsed?formatBookNo(maxUsed):'—'}</b>`;
+    try{
+      let st = getBookNoState();
+      let total = ltsm.reduce((s,i)=>s+i.copies.length,0);
+      let maxUsed = 0;
+      ltsm.forEach(i=>i.copies.forEach(c=>{ let n=parseBookNoNum(c.bookNo); if(n && n>maxUsed) maxUsed=n; }));
+      // COUNT ONLY — No huge list
+      let freeText = st.free.length ? `<b>${st.free.length} gaps</b> — will be reused first` : 'None — No gaps ✅';
+      document.getElementById('bookNoStatus').innerHTML = `Prefix: <b>${getSchoolPrefix()}</b> (Wordsworth High School) • Total copies: <b>${total}</b> • Next number: <b>${formatBookNo(st.next)}</b> • Free to reuse (gaps): ${freeText} • Highest used: <b>${maxUsed?formatBookNo(maxUsed):'—'}</b>`;
+      // Show / Hide View Gaps button
+      let btn = document.getElementById('freeListBtn');
+      if(st.free.length > 0){ btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); document.getElementById('freeListBox').classList.add('hidden'); }
+    }catch(e){
+      document.getElementById('bookNoStatus').innerHTML = `Prefix: <b>WHS</b> • Total: <b>${ltsm.reduce((s,i)=>s+i.copies.length,0)}</b> • Next: <b>WHS000001</b>`;
+    }
+  }
+  function toggleFreeList(){
+    let box = document.getElementById('freeListBox');
+    let btn = document.getElementById('freeListBtn');
+    if(box.classList.contains('hidden')){
+      let st = getBookNoState();
+      // Show max 200, with scroll — Never dump 1000+ into main page
+      let shown = st.free.slice(0,200).map(n=>formatBookNo(n)).join(', ');
+      box.innerHTML = `<b>${st.free.length} gaps (showing first 200):</b><br>${shown}${st.free.length>200?' ...':''}<br><span class="text-gray-400">These will be reused first when you add new books — No skipping ✅</span>`;
+      box.classList.remove('hidden'); btn.textContent = '🙈 Hide Gaps';
+    } else {
+      box.classList.add('hidden'); btn.textContent = '👁️ Show Gaps';
+    }
   }
   function showBookNoAudit(){
     let st = rebuildBookNoState();
-    alert(`🔍 AUDIT — WHS Numbers\n\nNext: ${formatBookNo(st.next)}\nFree (gaps to reuse): ${st.free.length?st.free.map(n=>formatBookNo(n)).join(', '):'None — Perfect, no gaps ✅'}\nTotal copies: ${ltsm.reduce((s,i)=>s+i.copies.length,0)}\n\nIf there were gaps, they are now in free pool and will be reused first.`);
+    let total = ltsm.reduce((s,i)=>s+i.copies.length,0);
+    // COUNT ONLY — Never alert 1000 numbers
+    let msg = `🔍 AUDIT — WHS Numbers\n\nNext: ${formatBookNo(st.next)}\nTotal copies: ${total}\nFree gaps: ${st.free.length} ${st.free.length ? '(will be reused first)' : '— Perfect, no gaps ✅'}\nHighest used: ${total?formatBookNo(Math.max(...ltsm.flatMap(i=>i.copies.map(c=>parseBookNoNum(c.bookNo)).filter(n=>n)))):'—'}`;
+    if(st.free.length > 0 && st.free.length <= 20) msg += `\nFree: ${st.free.map(n=>formatBookNo(n)).join(', ')}`;
+    if(st.free.length > 20) msg += `\n\nTip: Click "👁️ Show Gaps" to see first 200, or run Renumber to compact to 1-${total}.`;
+    alert(msg);
     renderStock();
   }
+  // === END COMPACT STATUS ===
 
   function renderStock(){
     refreshFilters(); updateBookNoStatus();
@@ -88,7 +118,8 @@
     let previewNos = []; let tmpFree = [...state.free]; let tmpNext = state.next; let remaining = qty;
     while(remaining > 0 && tmpFree.length > 0){ previewNos.push(formatBookNo(tmpFree.shift())); remaining--; }
     while(remaining > 0){ previewNos.push(formatBookNo(tmpNext)); tmpNext++; remaining--; }
-    document.getElementById('addPreview').innerHTML = qty > 0 ? `Will create <b>${qty} copies</b> of <b>${title}</b><br>Prefix: <b>${getSchoolPrefix()}</b> (Wordsworth High School)<br>Barcodes: <b>${previewNos[0] || '-'}</b> → <b>${previewNos[previewNos.length-1] || '-'}</b><br>Next counter: ${formatBookNo(state.next)} • Free to reuse: ${state.free.length ? state.free.map(n=>formatBookNo(n)).join(', ') : 'None — No gaps ✅'}` : `Enter quantity`;
+    // COMPACT PREVIEW — Show range only, not full list
+    document.getElementById('addPreview').innerHTML = qty > 0 ? `Will create <b>${qty} copies</b> of <b>${title}</b><br>Prefix: <b>${getSchoolPrefix()}</b> (Wordsworth High School)<br>Barcodes: <b>${previewNos[0] || '-'}</b> → <b>${previewNos[previewNos.length-1] || '-'}</b> <span class="text-gray-400">(${qty} numbers)</span><br>Next counter: ${formatBookNo(state.next)} • Free to reuse: ${state.free.length ? `<b>${state.free.length} gaps</b> — will be reused first` : 'None — No gaps ✅'}` : `Enter quantity`;
   }
   function saveAddWithQty(){
     let dept = document.getElementById('addDept').value;
@@ -141,7 +172,7 @@
     let removedNos = [];
     for(let i=it.copies.length-1; i>=0 && removedNos.length<qty; i--){ if(it.copies[i].status==='Available'){ removedNos.push(it.copies[i].bookNo); it.copies.splice(i,1); } }
     releaseBookNos(removedNos); it.qty = it.copies.length; saveAll(); renderStock();
-    alert(`✅ Removed ${removedNos.length} copies\nFreed: ${removedNos.join(', ')}\nNext new book will reuse ${removedNos.sort()[0]} first — No skipping ✅`);
+    alert(`✅ Removed ${removedNos.length} copies\nFreed: ${removedNos.length} numbers — Will be reused first — No skipping ✅`);
   }
   function delTitle(id){
     if(!confirm('Delete title? Available numbers will be freed for reuse.')) return;
