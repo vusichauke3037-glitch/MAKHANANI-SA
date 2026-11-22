@@ -1,19 +1,32 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dashboard — Makhanani</title><script src="https://cdn.tailwindcss.com"></script><script src="shared.js"></script></head>
-<body class="bg-gray-100 p-4 md:p-8">
-<div id="nav"></div>
-<h1 class="text-2xl font-black">MAKHANANI ACADEMY — Dashboard</h1>
-<p class="text-sm text-gray-500">MAKHANANI LTSM 2.0 • 078 023 3263</p>
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Total Copies</p><p id="statStock" class="text-3xl font-black text-blue-900">0</p></div>
-  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Available</p><p id="statAvail" class="text-3xl font-black text-green-600">0</p></div>
-  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Issued</p><p id="statIssued" class="text-3xl font-black text-indigo-600">0</p></div>
-  <div class="bg-white p-5 rounded-2xl"><p class="text-xs text-gray-500">Learners</p><p id="statUsers" class="text-3xl font-black">0</p></div>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Wordsworth High School — MAKHANANI-LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script></head>
+<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-amber-500 min-h-screen text-white">
+<div class="flex justify-between items-center p-4 md:p-6 max-w-6xl mx-auto">
+  <div class="flex items-center gap-3"><img src="logo.png" alt="Wordsworth High School Logo" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white p-1 object-contain shadow-lg" onerror="this.style.display='none'"><div><h1 class="font-black text-lg md:text-xl leading-none">WORDSWORTH HIGH SCHOOL</h1><p class="text-xs text-blue-200">MAKHANANI-LTSM</p></div></div>
+  <div class="flex gap-2"><span class="firebase-badge"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">● Offline Mode</span></span><a href="login.html" class="bg-white text-blue-900 px-5 py-2 rounded-full text-sm font-bold">Login →</a></div>
 </div>
-<div class="grid lg:grid-cols-2 gap-4 mt-4">
-  <a href="learners.html" class="bg-white p-5 rounded-2xl block"><h3 class="font-bold">👥 Learners →</h3><p class="text-sm text-gray-500">Full Names + Grade + Class + Contact (optional)</p></a>
-  <a href="stock.html" class="bg-white p-5 rounded-2xl block"><h3 class="font-bold">📚 Stock / LTSM →</h3><p class="text-sm text-gray-500">MA000001 • Issue • Print Barcodes A4 3x5</p></a>
+<div class="max-w-6xl mx-auto px-4 py-10 text-center">
+  <img src="logo.png" alt="Wordsworth High School" class="w-28 h-28 md:w-36 md:h-36 mx-auto rounded-3xl bg-white p-3 shadow-2xl object-contain" onerror="this.style.display='none'">
+  <div class="inline-block bg-white/20 border border-white/40 px-4 py-1 rounded-full text-xs font-bold mt-6">A Product of Xintimani Group Holdings (PTY) LTD</div>
+  <h2 class="text-3xl md:text-5xl font-black mt-4 leading-tight">Welcome to<br>Wordsworth High School</h2>
+  <p class="text-blue-100 mt-4 max-w-2xl mx-auto">Powered by <b>MAKHANANI-LTSM</b> — Learners, Books, Attendance, Marks, Fees & Parent Portal. Every book has 1 barcode. Every learner has 1 ID. Live sync with Firebase.</p>
+  <div class="flex gap-3 justify-center mt-6 flex-wrap"><a href="login.html" class="bg-amber-400 text-blue-900 px-8 py-3 rounded-full font-bold">🔐 Login to Portal →</a><a href="login.html?check=1" class="bg-white/20 border border-white/40 px-8 py-3 rounded-full font-bold">🎓 Learner Self-Check — 10A001</a></div>
+  <p class="text-xs text-blue-200 mt-4">📞 078 023 3263 • MAKHANANI-LTSM</p>
 </div>
-<script>document.getElementById('nav').innerHTML=renderNav('index.html');
-let total=ltsm.reduce((s,i)=>s+i.copies.length,0), iss=issues.filter(i=>i.status==='Issued'||i.status==='Overdue').length;
-document.getElementById('statStock').textContent=total; document.getElementById('statAvail').textContent=total-iss; document.getElementById('statIssued').textContent=iss; document.getElementById('statUsers').textContent=users.length;
+<div class="max-w-6xl mx-auto px-4 pb-12 grid md:grid-cols-3 gap-4">
+  <div class="bg-white text-gray-800 p-6 rounded-3xl"><div class="text-3xl">📚</div><h3 class="font-bold mt-2">LTSM / Stock</h3><p class="text-sm text-gray-500 mt-1">Book No MA000001 • 1 Book = 1 Barcode • Issue / Return • Print A4 3x5</p></div>
+  <div class="bg-white text-gray-800 p-6 rounded-3xl"><div class="text-3xl">👥</div><h3 class="font-bold mt-2">Learners</h3><p class="text-sm text-gray-500 mt-1">Full Names + Grade + Class + Contact (optional) • Learner ID 10A001</p></div>
+  <div class="bg-white text-gray-800 p-6 rounded-3xl"><div class="text-3xl">❤️</div><h3 class="font-bold mt-2">Parent Portal</h3><p class="text-sm text-gray-500 mt-1">Marks, Attendance, Fees, Books — in one place.</p></div>
+</div>
+<div class="max-w-6xl mx-auto px-4 pb-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black" id="cLearners">0</p><p class="text-xs">Learners</p></div>
+  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black" id="cBooks">0</p><p class="text-xs">Book Copies</p></div>
+  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black">100%</p><p class="text-xs">No Duplicate Barcodes</p></div>
+  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black">🔥 LIVE</p><p class="text-xs">Firebase Sync</p></div>
+</div>
+<div class="text-center pb-8 text-xs text-blue-200 space-y-1"><p>© 2026 Wordsworth High School • MAKHANANI-LTSM</p><p>A Product of <b>Xintimani Group Holdings (PTY) LTD</b> • Reg: 2026 / 934898 / 07</p></div>
+<script src="shared.js"></script><script src="firebase.js"></script>
+<script>
+  startFirebaseSync();
+  function updateCounts(){ document.getElementById('cLearners').textContent=users.filter(u=>u.role==='Student').length; document.getElementById('cBooks').textContent=ltsm.reduce((s,i)=>s+i.copies.length,0); }
+  updateCounts(); window.onFirebaseUpdate = updateCounts;
 </script></body></html>
