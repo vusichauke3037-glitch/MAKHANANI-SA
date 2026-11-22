@@ -1,8 +1,10 @@
-// shared.js — MAKHANANI ACADEMY — Shared Data + Functions
-const SCHOOL_NAME = "Makhanani Academy";
+// shared.js — MAKHANANI-LTSM • Wordsworth High School • A Product of Xintimani Group Holdings (PTY) LTD
+const PRODUCT_NAME = "MAKHANANI-LTSM";
+const SCHOOL_NAME = "Wordsworth High School";
 const SCHOOL_WHATSAPP = "27780233263";
-
-// --- DATA (shared across all pages) ---
+const COMPANY_NAME = "Xintimani Group Holdings (PTY) LTD";
+const COMPANY_REG = "2026 / 934898 / 07";
+const BRAND_LINE = "MAKHANANI-LTSM • Wordsworth High School";
 let users = JSON.parse(localStorage.getItem('makhanani_users')||'[]');
 let departments = JSON.parse(localStorage.getItem('makhanani_depts')||'[{"name":"Mathematics","hod":"Dr. Smith"},{"name":"Science","hod":"Mrs. Naidoo"},{"name":"English","hod":"Mr. Patel"}]');
 let ltsm = JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
@@ -17,8 +19,7 @@ let requests = JSON.parse(localStorage.getItem('makhanani_requests')||'[]');
 let suppliers = JSON.parse(localStorage.getItem('makhanani_suppliers')||'[]');
 let purchaseOrders = JSON.parse(localStorage.getItem('makhanani_pos')||'[]');
 let budgets = JSON.parse(localStorage.getItem('makhanani_budgets')||'[]');
-
-function saveAll(){
+function saveAllLocalOnly(){
   localStorage.setItem('makhanani_users',JSON.stringify(users));
   localStorage.setItem('makhanani_depts',JSON.stringify(departments));
   localStorage.setItem('makhanani_ltsm',JSON.stringify(ltsm));
@@ -34,40 +35,63 @@ function saveAll(){
   localStorage.setItem('makhanani_pos',JSON.stringify(purchaseOrders));
   localStorage.setItem('makhanani_budgets',JSON.stringify(budgets));
 }
-
-// --- BEEP ---
+function saveAll(){ saveAllLocalOnly(); if (typeof pushToFirebase === 'function') pushToFirebase(); }
+function startFirebaseSync(){ if (typeof initFirebase === 'function') { if (initFirebase()) { listenToFirebase(); } } }
 function beep(){ try{ let c=new (window.AudioContext||window.webkitAudioContext)(); let o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value=880; o.type='sine'; g.gain.setValueAtTime(0.3,c.currentTime); o.start(); o.stop(c.currentTime+0.15);}catch(e){} }
-
-// --- BOOK NO: MA + 6 digits, NO DUPLICATE, 1 Book = 1 Barcode ---
 function getAllBookNos(){ let s=new Set(); ltsm.forEach(it=>(it.copies||[]).forEach(c=>s.add(c.bookNo.toUpperCase()))); return s; }
 function getNextUniqueBookNo(){ let ex=getAllBookNos(); let max=0; ex.forEach(b=>{let m=b.match(/(\d+)$/); if(m) max=Math.max(max,parseInt(m[1]));}); let n=max+1, cand="MA"+String(n).padStart(6,'0'); while(ex.has(cand)){ n++; cand="MA"+String(n).padStart(6,'0'); } return cand; }
-
-// --- LEARNER ID: Grade + Class + 3 digits, NO DUPLICATE, 1 Learner = 1 Barcode ---
 function getAllLearnerIDs(){ let s=new Set(); users.forEach(u=>{ if(u.sid) s.add(u.sid.toUpperCase().trim()); }); return s; }
 function parseGradeClass(g,c){ let m=(g||'').toString().match(/(\d+)\s*([A-Z])?/i); let gn=m?m[1]:"10"; let cl=(m&&m[2])?m[2].toUpperCase():(c||'A').toString().charAt(0).toUpperCase(); return {gradeNum:gn, classLetter:cl}; }
 function getNextUniqueLearnerID(g,c){ let {gradeNum,classLetter}=parseGradeClass(g,c); let ex=getAllLearnerIDs(); let seq=1, cand=gradeNum+classLetter+String(seq).padStart(3,'0'); while(ex.has(cand)){ seq++; cand=gradeNum+classLetter+String(seq).padStart(3,'0'); } return cand; }
-
-// --- HELPERS ---
 function getAvailable(it){ return (it.copies||[]).filter(c=>c.status==='Available').length; }
 function getAttPct(uid){ let t=0,p=0; Object.values(attendance).forEach(d=>{ if(d[uid]){ t++; if(d[uid].status==='Present'||d[uid].status==='Late') p++; }}); return t?Math.round(p/t*100):100; }
 function getAvgMark(uid){ let m=marks.filter(x=>x.studentId===uid); return m.length?Math.round(m.reduce((s,x)=>s+x.mark,0)/m.length):null; }
-function getFeeStatus(f){ return f.paid>=f.total?'Paid':f.paid>0?'Partial':'Unpaid'; }
 function getStudentFeeBalance(uid){ return fees.filter(f=>f.studentId===uid).reduce((s,f)=>s+(f.total-f.paid),0); }
+function getFeeStatus(f){ return f.paid>=f.total?'Paid':f.paid>0?'Partial':'Unpaid'; }
 function cleanPhone(p){ if(!p) return null; let x=p.replace(/\D/g,''); if(x.startsWith('0')) x='27'+x.slice(1); return x; }
-
-// --- SHARED NAV (paste on every page) ---
+const ROLES = {
+  super: { label:"Super Admin", pages:["home.html","learners.html","stock.html","attendance.html","marks.html","fees.html","timetable.html","parent.html","import.html","settings.html"] },
+  school_admin: { label:"School Admin", pages:["home.html","learners.html","stock.html","attendance.html","marks.html","fees.html","timetable.html","parent.html","import.html"] },
+  principal: { label:"Principal", pages:["home.html","learners.html","stock.html","attendance.html","marks.html","fees.html","timetable.html","parent.html"] },
+  librarian: { label:"Librarian", pages:["home.html","stock.html"] },
+  hod: { label:"HOD", pages:["home.html","learners.html","attendance.html","marks.html","timetable.html","parent.html"] },
+  teacher: { label:"Teacher", pages:["home.html","learners.html","attendance.html","marks.html","timetable.html"] },
+  finance: { label:"Finance", pages:["home.html","learners.html","fees.html","parent.html"] },
+  parent: { label:"Parent", pages:["home.html","parent.html"] }
+};
+const DEMO_USERS = [
+  { email:"super@wordsworth.co.za", pass:"admin123", name:"Super Admin", role:"super" },
+  { email:"admin@wordsworth.co.za", pass:"admin123", name:"School Admin", role:"school_admin" },
+  { email:"principal@wordsworth.co.za", pass:"admin123", name:"Principal", role:"principal" },
+  { email:"librarian@wordsworth.co.za", pass:"admin123", name:"Librarian", role:"librarian" },
+  { email:"hod@wordsworth.co.za", pass:"admin123", name:"HOD — Mathematics", role:"hod" },
+  { email:"teacher@wordsworth.co.za", pass:"admin123", name:"Teacher", role:"teacher" },
+  { email:"finance@wordsworth.co.za", pass:"admin123", name:"Finance Officer", role:"finance" },
+  { email:"parent@wordsworth.co.za", pass:"admin123", name:"Mama Mokoena (Parent)", role:"parent" }
+];
+function getSession(){ try{ return JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){ return null; } }
+function requireLogin(){ let s=getSession(); if(!s){ window.location.href='login.html'; return null; } return s; }
+function canAccess(page, role){ return (ROLES[role]?.pages||[]).includes(page); }
+function logout(){ localStorage.removeItem('makhanani_session'); window.location.href='login.html'; }
 function renderNav(active){
-  let links = [
-    ['index.html','📊 Dashboard'],
-    ['learners.html','👥 Learners'],
-    ['stock.html','📚 Stock / LTSM'],
-    ['attendance.html','✅ Attendance'],
-    ['marks.html','🏆 Marks'],
-    ['fees.html','💰 Fees'],
-    ['timetable.html','📅 Timetable'],
-    ['parent.html','❤️ Parent'],
-    ['import.html','📥 Bulk Upload'],
-    ['settings.html','⚙️ Settings']
+  let s=getSession(); let role=s?s.role:'super'; let allowed=ROLES[role]?.pages||[];
+  let all=[['home.html','🏠 Home'],['learners.html','👥 Learners'],['stock.html','📚 Stock / LTSM'],['attendance.html','✅ Attendance'],['marks.html','🏆 Marks'],['fees.html','💰 Fees'],['timetable.html','📅 Timetable'],['parent.html','❤️ Parent'],['import.html','📥 Bulk Upload'],['settings.html','⚙️ Settings']];
+  let links=all.filter(([href])=>allowed.includes(href));
+  let userHtml = s?`<span class="bg-blue-900 text-white px-4 py-2 rounded-full text-sm">👤 ${s.name} • ${ROLES[role].label}</span> <button onclick="logout()" class="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm">Logout</button>`:`<a href="login.html" class="bg-blue-900 text-white px-4 py-2 rounded-full text-sm">Login</a>`;
+  return `<div class="flex justify-between items-center flex-wrap gap-3 mb-4"><div class="flex gap-2 overflow-x-auto">${links.map(([href,label])=>`<a href="${href}" class="${href===active?'bg-blue-900 text-white':'bg-white'} px-4 py-2 rounded-full text-sm shadow whitespace-nowrap">${label}</a>`).join('')}</div><div class="flex gap-2 items-center">${userHtml}</div></div>`;
+}
+function checkPageAccess(page){ let s=requireLogin(); if(!s) return false; if(!canAccess(page,s.role)){ alert('⛔ Access denied for '+ROLES[s.role].label); window.location.href='home.html'; return false; } return true; }
+function renderFooter(){ return `<footer class="text-center text-[11px] text-gray-400 mt-8 pb-4 leading-relaxed">MAKHANANI-LTSM • Wordsworth High School<br>A Product of Xintimani Group Holdings (PTY) LTD • Reg: 2026 / 934898 / 07</footer>`; }
+if(users.length===0){
+  users=[
+    {id:1,name:"Thabo Mokoena",email:"thabo@wordsworth.co.za",role:"Student",dept:"Mathematics",grade:"Grade 10",classLetter:"A",phone:"082 123 4567",sid:"10A001",status:"Active",parentEmail:"parent@wordsworth.co.za"},
+    {id:2,name:"Lerato Nkosi",email:"lerato@wordsworth.co.za",role:"Student",dept:"Science",grade:"Grade 10",classLetter:"A",phone:"",sid:"10A002",status:"Active",parentEmail:""},
+    {id:3,name:"James Van Wyk",email:"james@wordsworth.co.za",role:"Student",dept:"English",grade:"Grade 10",classLetter:"B",phone:"083 333 4444",sid:"10B001",status:"Active",parentEmail:""}
   ];
-  return `<nav class="flex gap-2 overflow-x-auto mb-4">` + links.map(([href,label])=>`<a href="${href}" class="${href===active?'bg-blue-900 text-white':'bg-white'} px-4 py-2 rounded-full text-sm shadow whitespace-nowrap">${label}</a>`).join('') + `</nav>`;
+  ltsm=[{id:1,title:"Platinum Mathematics Grade 10",category:"Textbook",grade:"Grade 10",dept:"Mathematics",subject:"Mathematics",author:"Pearson",price:350,min:5,copies:[{bookNo:"MA000001",status:"Issued",issuedTo:"10A001"},{bookNo:"MA000002",status:"Available",issuedTo:null},{bookNo:"MA000003",status:"Available",issuedTo:null}],qty:3}];
+  issues=[{id:101,bookNo:"MA000001",itemId:1,itemTitle:"Platinum Mathematics Grade 10",toId:1,toName:"Thabo Mokoena",toSID:"10A001",qty:1,issued:new Date().toISOString().slice(0,10),due:new Date(Date.now()+30*86400000).toISOString().slice(0,10),status:"Issued"}];
+  marks=[{id:1,studentId:1,studentName:"Thabo Mokoena",subject:"Mathematics",assessment:"Test 1",mark:82}];
+  fees=[{id:1,studentId:1,studentName:"Thabo Mokoena",type:"Tuition - Term 1",total:2500,paid:2500,due:"2026-02-28"},{id:2,studentId:2,studentName:"Lerato Nkosi",type:"Tuition - Term 1",total:2500,paid:1000,due:"2026-02-28"}];
+  payments=[{id:1,feeId:1,studentName:"Thabo Mokoena",amount:2500,method:"EFT",ref:"MAK-1001",date:new Date().toISOString().slice(0,10)}];
+  saveAllLocalOnly();
 }
