@@ -1,9 +1,39 @@
 {
-  "name": "Mathemate SA - 84 Classes",
-  "short_name": "Mathemate84",
+  "name": "Wordsworth High School - Makhanani LTSM",
+  "short_name": "Wordsworth LTSM",
+  "description": "Wordsworth High School - Makhanani LTSM - A Product of Xintimani Group Holdings (PTY) LTD",
+  "id": "/",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#F6F8FF",
-  "theme_color": "#2D6BFF",
-  "icons": [{"src": "https://via.placeholder.com/192","sizes":"192x192","type":"image/png"}]
+  "orientation": "portrait",
+  "background_color": "#0a0a5c",
+  "theme_color": "#0a0a5c",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }
