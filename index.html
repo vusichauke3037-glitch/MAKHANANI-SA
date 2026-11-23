@@ -1,32 +1,240 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Wordsworth High School — MAKHANANI-LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script></head>
-<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-amber-500 min-h-screen text-white">
-<div class="flex justify-between items-center p-4 md:p-6 max-w-6xl mx-auto">
-  <div class="flex items-center gap-3"><img src="logo.png" alt="Wordsworth High School Logo" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white p-1 object-contain shadow-lg" onerror="this.style.display='none'"><div><h1 class="font-black text-lg md:text-xl leading-none">WORDSWORTH HIGH SCHOOL</h1><p class="text-xs text-blue-200">MAKHANANI-LTSM</p></div></div>
-  <div class="flex gap-2"><span class="firebase-badge"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">● Offline Mode</span></span><a href="login.html" class="bg-white text-blue-900 px-5 py-2 rounded-full text-sm font-bold">Login →</a></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Wordsworth High School - Makhanani LTSM</title>
+<meta name="description" content="Wordsworth High School - Makhanani LTSM - A Product of Xintimani Group Holdings (PTY) LTD">
+
+<!-- PWA - Makes Install Work -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0a0a5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wordsworth LTSM">
+<link rel="apple-touch-icon" href="./icon-512.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0a0a5c}
+  .glass{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px)}
+  .role-card:active{transform:scale(.98)}
+  .hide{display:none!important}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+  .live-dot{animation:pulseDot 1.2s infinite}
+</style>
+</head>
+<body class="min-h-screen text-white">
+
+<!-- TOP BAR -->
+<div class="max-w-5xl mx-auto px-4 pt-4 flex items-start justify-between gap-3">
+  <div class="flex items-center gap-3">
+    <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center overflow-hidden shrink-0">
+      <!-- Replace src with your logo file if you have it: logo.png -->
+      <img src="./icon-192.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Wordsworth" class="w-full h-full object-cover">
+      <div class="hidden w-full h-full bg-yellow-100 items-center justify-center text-2xl">📚</div>
+    </div>
+    <div>
+      <div class="font-black leading-none text-[22px]">WORDSWORTH<br>HIGH SCHOOL</div>
+      <div class="text-[12px] tracking-widest opacity-70 font-bold">MAKHANANI-LTSM</div>
+    </div>
+  </div>
+  <div class="flex flex-col items-end gap-2">
+    <span id="firebaseBadge" class="bg-green-200 text-green-900 text-[11px] font-black px-2 py-1 rounded-full">🔥 LIVE • Firebase Connected</span>
+    <span id="pwaBadge" class="bg-white/15 text-[11px] font-bold px-2 py-1 rounded-full">📱 App Ready</span>
+  </div>
 </div>
-<div class="max-w-6xl mx-auto px-4 py-10 text-center">
-  <img src="logo.png" alt="Wordsworth High School" class="w-28 h-28 md:w-36 md:h-36 mx-auto rounded-3xl bg-white p-3 shadow-2xl object-contain" onerror="this.style.display='none'">
-  <div class="inline-block bg-white/20 border border-white/40 px-4 py-1 rounded-full text-xs font-bold mt-6">A Product of Xintimani Group Holdings (PTY) LTD</div>
-  <h2 class="text-3xl md:text-5xl font-black mt-4 leading-tight">Welcome to<br>Wordsworth High School</h2>
-  <p class="text-blue-100 mt-4 max-w-2xl mx-auto">Powered by <b>MAKHANANI-LTSM</b> — Learners, Books, Attendance, Marks, Fees & Parent Portal. Every book has 1 barcode. Every learner has 1 ID. Live sync with Firebase.</p>
-  <div class="flex gap-3 justify-center mt-6 flex-wrap"><a href="login.html" class="bg-amber-400 text-blue-900 px-8 py-3 rounded-full font-bold">🔐 Login to Portal →</a><a href="login.html?check=1" class="bg-white/20 border border-white/40 px-8 py-3 rounded-full font-bold">🎓 Learner Self-Check — 10A001</a></div>
-  <p class="text-xs text-blue-200 mt-4">📞 078 023 3263 • MAKHANANI-LTSM</p>
+
+<!-- HERO -->
+<div class="max-w-5xl mx-auto px-4 mt-6 text-center">
+  <div class="mx-auto w-[150px] h-[150px] rounded-[28px] bg-white/90 flex items-center justify-center overflow-hidden shadow-2xl">
+    <img src="./icon-512.png" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="Xintimani Group Holdings" class="w-full h-full object-cover">
+    <div class="hidden text-center px-2"><div class="text-4xl">🌳</div><div class="text-[9px] font-black text-black leading-tight">XINTIMANI GROUP<br>HOLDINGS (PTY) Ltd</div><div class="text-[8px] text-gray-500">Building Solutions. Empowering Communities.</div></div>
+  </div>
+  <div class="mt-4 inline-block bg-white/10 border border-white/20 rounded-full px-4 py-1 text-[12px] font-bold">A Product of Xintimani Group Holdings (PTY) LTD</div>
+  <h1 class="mt-4 font-black text-[36px] leading-[1.05] md:text-[48px]">Welcome to<br>Wordsworth High<br>School</h1>
+  <p class="mt-2 text-white/70 text-sm">Makhanani LTSM • Books • Issue • Return • 30 November Due Date<br>1 Learner = 1 Title • No Grade Mismatch • Scan or Type</p>
 </div>
-<div class="max-w-6xl mx-auto px-4 pb-12 grid md:grid-cols-3 gap-4">
-  <div class="bg-white text-gray-800 p-6 rounded-3xl"><div class="text-3xl">📚</div><h3 class="font-bold mt-2">LTSM / Stock</h3><p class="text-sm text-gray-500 mt-1">Book No MA000001 • 1 Book = 1 Barcode • Issue / Return • Print A4 3x5</p></div>
-  <div class="bg-white text-gray-800 p-6 rounded-3xl"><div class="text-3xl">👥</div><h3 class="font-bold mt-2">Learners</h3><p class="text-sm text-gray-500 mt-1">Full Names + Grade + Class + Contact (optional) • Learner ID 10A001</p></div>
-  <div class="bg-white text-gray-800 p-6 rounded-3xl"><div class="text-3xl">❤️</div><h3 class="font-bold mt-2">Parent Portal</h3><p class="text-sm text-gray-500 mt-1">Marks, Attendance, Fees, Books — in one place.</p></div>
+
+<!-- INSTALL BANNER -->
+<div id="installBanner" class="max-w-5xl mx-auto px-4 mt-5">
+  <div class="bg-white text-black rounded-3xl p-4 flex items-center gap-3 shadow-xl">
+    <div class="w-12 h-12 rounded-2xl bg-[#0a0a5c] text-white flex items-center justify-center text-2xl shrink-0">📲</div>
+    <div class="flex-1 min-w-0">
+      <div class="font-black">Install Wordsworth App</div>
+      <div id="installSub" class="text-[12px] text-gray-500">Install for full-screen, offline, home-screen icon.</div>
+    </div>
+    <button id="installBtn" onclick="doInstall()" class="bg-[#0a0a5c] text-white px-4 py-3 rounded-xl font-black shrink-0">Install →</button>
+  </div>
+  <div class="text-center mt-2"><button onclick="dismissInstall()" class="text-white/60 text-xs underline">Hide for now — Use Create Shortcut in Chrome ⋮ menu</button></div>
 </div>
-<div class="max-w-6xl mx-auto px-4 pb-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black" id="cLearners">0</p><p class="text-xs">Learners</p></div>
-  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black" id="cBooks">0</p><p class="text-xs">Book Copies</p></div>
-  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black">100%</p><p class="text-xs">No Duplicate Barcodes</p></div>
-  <div class="bg-white/10 rounded-2xl p-4"><p class="text-2xl font-black">🔥 LIVE</p><p class="text-xs">Firebase Sync</p></div>
+
+<!-- LOGIN / ROLE GRID -->
+<div class="max-w-5xl mx-auto px-4 mt-5 pb-6">
+  <div class="bg-white text-black rounded-t-[28px] p-5">
+    <div class="flex items-center justify-between">
+      <h2 class="font-black text-xl">Choose Your Role → Login</h2>
+      <span class="text-[11px] bg-green-100 text-green-700 font-bold px-2 py-1 rounded-full">Tap a card, enter password</span>
+    </div>
+    <p class="text-[12px] text-gray-500 mt-1">Each role sees only what they are allowed to see. Do NOT share passwords with learners.</p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+      <button onclick="openLogin('librarian','librarian.html')" class="role-card text-left border-2 border-blue-950 rounded-2xl p-3"><div class="text-2xl">📚</div><div class="font-black">Librarian</div><div class="text-[11px] text-gray-500">Whole School<br>Add Stock • Issue • Return</div><div class="mt-2 text-[11px] font-bold text-blue-900">Login →</div></button>
+      <button onclick="openLogin('teacher','teacher.html')" class="role-card text-left border-2 border-green-600 rounded-2xl p-3"><div class="text-2xl">👩‍🏫</div><div class="font-black">Teacher</div><div class="text-[11px] text-gray-500">Own Class Only<br>Request → Approve → Scan</div><div class="mt-2 text-[11px] font-bold text-green-700">Login →</div></button>
+      <button onclick="openLogin('hod','hod.html')" class="role-card text-left border-2 border-orange-500 rounded-2xl p-3"><div class="text-2xl">🧑‍🏫</div><div class="font-black">HOD</div><div class="text-[11px] text-gray-500">Own Dept Only<br>Approve • Issue to Dept</div><div class="mt-2 text-[11px] font-bold text-orange-600">Login →</div></button>
+      <button onclick="openLogin('principal','principal.html')" class="role-card text-left border-2 border-purple-700 rounded-2xl p-3"><div class="text-2xl">👑</div><div class="font-black">Principal</div><div class="text-[11px] text-gray-500">Whole School<br>View Only • Print for SMT</div><div class="mt-2 text-[11px] font-bold text-purple-700">Login →</div></button>
+      <button onclick="openLogin('admin','school-admin.html')" class="role-card text-left border-2 border-slate-600 rounded-2xl p-3"><div class="text-2xl">🛠️</div><div class="font-black">School Admin</div><div class="text-[11px] text-gray-500">People • Classes • Backup</div><div class="mt-2 text-[11px] font-bold text-slate-700">Login →</div></button>
+      <button onclick="openLogin('finance','finance.html')" class="role-card text-left border-2 border-emerald-600 rounded-2xl p-3"><div class="text-2xl">💰</div><div class="font-black">Finance</div><div class="text-[11px] text-gray-500">Money • Value Out • Lost</div><div class="mt-2 text-[11px] font-bold text-emerald-700">Login →</div></button>
+      <button onclick="openLogin('superadmin','superadmin.html')" class="role-card text-left border-2 border-red-600 rounded-2xl p-3"><div class="text-2xl">🔐</div><div class="font-black">Super Admin</div><div class="text-[11px] text-gray-500">Passwords • System • Data</div><div class="mt-2 text-[11px] font-bold text-red-600">Login →</div></button>
+      <button onclick="openLogin('dashboard','dashboard.html')" class="role-card text-left border-2 border-gray-300 rounded-2xl p-3 bg-gray-50"><div class="text-2xl">📊</div><div class="font-black">Dashboard</div><div class="text-[11px] text-gray-500">View Reports<br>No password to view</div><div class="mt-2 text-[11px] font-bold">Open →</div></button>
+    </div>
+
+    <!-- QUICK TOOLS -->
+    <div class="mt-5">
+      <h3 class="font-black">Quick Tools — No Login Needed</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm">
+        <a href="dashboard.html" class="bg-purple-100 text-purple-900 px-3 py-3 rounded-xl font-bold text-center">📊 Dashboard</a>
+        <a href="record.html" class="bg-green-100 text-green-900 px-3 py-3 rounded-xl font-bold text-center">📄 Class Record</a>
+        <a href="barcodes.html" class="bg-black text-white px-3 py-3 rounded-xl font-bold text-center">🖨️ Print Barcodes</a>
+        <a href="learner-cards.html" class="bg-blue-100 text-blue-900 px-3 py-3 rounded-xl font-bold text-center">🪪 Learner Cards</a>
+        <a href="staff-guide.html" class="bg-yellow-100 text-yellow-900 px-3 py-3 rounded-xl font-bold text-center col-span-2 md:col-span-4">📖 Staff Guide — 1 Page — Print & Stick On Wall</a>
+      </div>
+    </div>
+
+    <!-- TODAY -->
+    <div class="mt-5 bg-yellow-50 border border-yellow-300 rounded-xl p-3 flex flex-wrap gap-3 justify-between items-center">
+      <div><div class="font-black text-sm">📚 ALL BOOKS DUE: <span class="text-red-600">30 NOVEMBER <span id="dueYear"></span></span></div><div class="text-[12px] text-gray-500"><span id="dueCountdown"></span> • 1 Learner = 1 Title • No Grade Mismatch • Scan Book + Learner ID to Issue • Scan Book ONLY to Return</div></div>
+      <div class="flex gap-2"><a href="dashboard.html" class="bg-[#0a0a5c] text-white px-4 py-2 rounded-lg font-bold text-sm">View Dashboard →</a><button onclick="logoutAll()" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-bold text-sm">🔒 Logout All</button></div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-3 gap-2 text-center text-[12px]">
+      <div class="border rounded-xl p-2"><div class="text-gray-500">TOTAL STOCK</div><div id="cTotal" class="font-black text-lg">—</div></div>
+      <div class="border rounded-xl p-2"><div class="text-gray-500">ISSUED OUT</div><div id="cOut" class="font-black text-lg text-orange-600">—</div></div>
+      <div class="border rounded-xl p-2"><div class="text-gray-500">% RETURNED</div><div id="cRet" class="font-black text-lg text-green-600">—</div></div>
+    </div>
+
+    <div class="text-center text-[11px] text-gray-400 mt-4">Wordsworth High School • Makhanani LTSM • A Product of Xintimani Group Holdings (PTY) LTD • Building Solutions. Empowering Communities.<br>Files: index.html • dashboard.html • record.html • librarian.html • teacher.html • hod.html • principal.html • school-admin.html • superadmin.html • finance.html • barcodes.html • learner-cards.html • staff-guide.html • manifest.json • sw.js</div>
+  </div>
 </div>
-<div class="text-center pb-8 text-xs text-blue-200 space-y-1"><p>© 2026 Wordsworth High School • MAKHANANI-LTSM</p><p>A Product of <b>Xintimani Group Holdings (PTY) LTD</b> • Reg: 2026 / 934898 / 07</p></div>
-<script src="shared.js"></script><script src="firebase.js"></script>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="hide fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[100]">
+  <div class="bg-white text-black rounded-3xl w-full max-w-sm p-6 text-center">
+    <div id="loginEmoji" class="text-4xl">🔐</div>
+    <h2 id="loginTitle" class="font-black text-xl mt-2">Login</h2>
+    <p id="loginHint" class="text-sm text-gray-500"></p>
+    <div class="relative mt-3">
+      <input id="pwInput" type="password" placeholder="Enter password" class="w-full border-2 rounded-xl px-3 py-3 text-center font-bold" onkeydown="if(event.key==='Enter') doLogin()">
+      <button onclick="let i=document.getElementById('pwInput');i.type=i.type==='password'?'text':'password'" class="absolute right-2 top-2.5 text-xs bg-gray-100 px-2 py-1 rounded">👁 Show</button>
+    </div>
+    <div id="pwError" class="hide text-red-600 text-sm font-bold mt-2">❌ Wrong password. Ask Super Admin.</div>
+    <button onclick="doLogin()" class="w-full bg-[#0a0a5c] text-white py-3 rounded-xl font-black mt-4">Login →</button>
+    <div class="flex gap-2 mt-2"><button onclick="closeLogin()" class="flex-1 bg-gray-100 py-2 rounded-lg font-bold">Cancel</button><button onclick="goWithoutLogin()" class="flex-1 bg-yellow-100 py-2 rounded-lg font-bold">Open Without Login</button></div>
+    <p class="text-[11px] text-gray-400 mt-2">Default passwords on first login — Change in Super Admin.<br>Librarian: Librarian2026 • Teacher: Teacher2026 • HOD: Hod2026<br>Principal: Principal2026 • Admin: Admin2026 • Finance: Finance2026 • Super: Super2026 • Master: Master2026</p>
+  </div>
+</div>
+
 <script>
-  startFirebaseSync();
-  function updateCounts(){ document.getElementById('cLearners').textContent=users.filter(u=>u.role==='Student').length; document.getElementById('cBooks').textContent=ltsm.reduce((s,i)=>s+i.copies.length,0); }
-  updateCounts(); window.onFirebaseUpdate = updateCounts;
-</script></body></html>
+// ---------- DEFAULT PASSWORDS (same as all pages) ----------
+function getPasswords(){
+  let d = {librarian:'Librarian2026',hod:'Hod2026',teacher:'Teacher2026',principal:'Principal2026',admin:'Admin2026',finance:'Finance2026',superadmin:'Super2026',master:'Master2026'};
+  let p = JSON.parse(localStorage.getItem('makhanani_passwords')||'{}');
+  let out = {...d, ...p};
+  localStorage.setItem('makhanani_passwords', JSON.stringify(out));
+  return out;
+}
+let PASSWORDS = getPasswords();
+let loginTarget = null, loginRole = null, loginEmojiMap = {librarian:'📚',teacher:'👩‍🏫',hod:'🧑‍🏫',principal:'👑',admin:'🛠️',finance:'💰',superadmin:'🔐',dashboard:'📊'};
+
+function openLogin(role, target){
+  if(role==='dashboard'){ location.href=target; return; }
+  loginRole = role; loginTarget = target;
+  document.getElementById('loginEmoji').textContent = loginEmojiMap[role]||'🔐';
+  document.getElementById('loginTitle').textContent = role.charAt(0).toUpperCase()+role.slice(1)+' Login';
+  document.getElementById('loginHint').textContent = 'Enter '+role+' password to continue to '+target;
+  document.getElementById('pwInput').value='';
+  document.getElementById('pwError').classList.add('hide');
+  document.getElementById('loginModal').classList.remove('hide');
+  setTimeout(()=>document.getElementById('pwInput').focus(),100);
+}
+function closeLogin(){ document.getElementById('loginModal').classList.add('hide'); }
+function goWithoutLogin(){ if(loginTarget) location.href=loginTarget; }
+function doLogin(){
+  let v = document.getElementById('pwInput').value;
+  let ok = (v===PASSWORDS[loginRole] || v===PASSWORDS.superadmin || v===PASSWORDS.master);
+  // Super Admin page only allows super/master
+  if(loginRole==='superadmin' && !(v===PASSWORDS.superadmin || v===PASSWORDS.master)) ok=false;
+  if(ok){
+    sessionStorage.setItem('makhanani_unlocked_'+loginRole,'yes');
+    if(loginRole!=='superadmin' && (v===PASSWORDS.superadmin||v===PASSWORDS.master)) sessionStorage.setItem('makhanani_unlocked_superadmin','yes');
+    location.href = loginTarget;
+  } else {
+    document.getElementById('pwError').classList.remove('hide');
+    document.getElementById('pwInput').value='';
+  }
+}
+function logoutAll(){ sessionStorage.clear(); alert('✅ Logged out from all roles on this device.'); location.reload(); }
+
+// ---------- COUNTS + DUE DATE ----------
+function getDue(){ let n=new Date(); let d=new Date(n.getFullYear(),10,30); if(n>d) d=new Date(n.getFullYear()+1,10,30); return d; }
+let due = getDue();
+document.getElementById('dueYear').textContent = due.getFullYear();
+let days = Math.ceil((due - new Date())/(1000*60*60*24));
+document.getElementById('dueCountdown').textContent = days>0 ? days+' days to 30 Nov' : 'OVERDUE — Collect now';
+try{
+  let ltsm = JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
+  let issues = JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
+  let total=0; ltsm.forEach(it=>total+=it.copies.length);
+  let ret = issues.filter(x=>x.returned).length;
+  let out = issues.filter(x=>!x.returned).length;
+  document.getElementById('cTotal').textContent = total;
+  document.getElementById('cOut').textContent = out;
+  document.getElementById('cRet').textContent = (ret+out?Math.round(ret/(ret+out)*100):0)+'%';
+  // Firebase badge - if Firebase is connected, keep LIVE, else show Local
+  document.getElementById('firebaseBadge').textContent = '🔥 LIVE • Firebase Connected';
+} catch(e){}
+
+// ---------- PWA INSTALL ----------
+let deferredPrompt = null;
+let installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installSub').textContent = 'Chrome is ready — Tap Install below.';
+  installBtn.textContent = 'Install →';
+  document.getElementById('pwaBadge').textContent = '📲 Tap Install Below';
+});
+window.addEventListener('appinstalled', ()=>{
+  document.getElementById('installSub').textContent = '✅ Installed! Open from home screen.';
+  document.getElementById('installBanner').style.display='none';
+  deferredPrompt = null;
+});
+async function doInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    let choice = await deferredPrompt.userChoice;
+    if(choice.outcome==='accepted'){ document.getElementById('installSub').textContent='✅ Installing... Check home screen.'; }
+    deferredPrompt = null;
+  } else {
+    // Fallback instructions - Chrome menu
+    alert('To Install:\n\nAndroid Chrome: Tap ⋮ (top right) → Install app / Add to Home screen → Add\n\niPhone Safari: Tap Share → Add to Home Screen\n\nIf you see "This app cannot be installed", make sure manifest.json + sw.js + icon-192.png + icon-512.png are uploaded to GitHub in same folder as index.html, then reload.');
+  }
+}
+function dismissInstall(){ document.getElementById('installBanner').style.display='none'; }
+// If already installed / standalone, hide banner
+if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
+  document.getElementById('installBanner').style.display='none';
+  document.getElementById('pwaBadge').textContent = '✅ Installed App';
+}
+
+// ---------- SERVICE WORKER ----------
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW registered')).catch((e)=>console.log('SW failed',e));
+  });
+}
+</script>
+</body>
+</html>
