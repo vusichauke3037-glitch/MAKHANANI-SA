@@ -1,125 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Librarian Dashboard - Wordsworth High School</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian - Wordsworth</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
-
-<!-- HEADER -->
-<div class="bg-blue-950 text-white px-4 py-4 sticky top-0 z-40 shadow">
-  <div class="max-w-7xl mx-auto flex flex-wrap gap-2 items-center justify-between">
-    <div>
-      <div class="font-bold text-lg leading-none">WORDSWORTH HIGH SCHOOL • MAKHANANI - LTSM</div>
-      <div class="text-xs opacity-80 mt-1">Librarian Dashboard</div>
-    </div>
-    <div class="flex flex-wrap gap-2">
-      <a href="stock.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">📚 Go to Stock →</a>
-      <button onclick="openIssue()" class="bg-green-500 text-white px-4 py-2 rounded-lg font-bold">+ Issue Book</button>
-      <button onclick="openReturn()" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold">↩ Return Book</button>
-    </div>
-  </div>
+<div id="pwGuard" class="fixed inset-0 bg-blue-950 flex items-center justify-center p-4 z-[100]"><div class="bg-white rounded-3xl w-full max-w-sm p-6 text-center"><div class="text-4xl">📚</div><h2 class="font-bold text-xl mt-2">Librarian Access</h2><p class="text-sm text-gray-500">Default: <b>Librarian2026</b></p><div class="relative mt-3"><input id="pwInput" type="password" placeholder="Enter password" class="w-full border-2 rounded-lg px-3 py-3 text-center font-bold" onkeydown="if(event.key==='Enter') checkPagePw()"><button onclick="let i=document.getElementById('pwInput');i.type=i.type==='password'?'text':'password'" class="absolute right-2 top-2.5 text-xs bg-gray-100 px-2 py-1 rounded">👁 Show</button></div><div id="pwError" class="text-red-600 text-sm font-bold mt-2 hidden">❌ Wrong password.</div><button onclick="checkPagePw()" class="w-full bg-blue-950 text-white py-3 rounded-lg font-bold mt-4">Unlock →</button><a href="dashboard.html" class="block text-xs underline mt-2">← Back to Dashboard</a></div></div>
+<script>(function(){let passwords=JSON.parse(localStorage.getItem('makhanani_passwords')||'{"librarian":"Librarian2026","hod":"Hod2026","teacher":"Teacher2026","principal":"Principal2026","master":"Master2026"}');localStorage.setItem('makhanani_passwords',JSON.stringify(passwords));if(sessionStorage.getItem('makhanani_unlocked_librarian')==='yes'){document.getElementById('pwGuard').remove();return;}window.checkPagePw=function(){let v=document.getElementById('pwInput').value;if(v===passwords.librarian||v===passwords.master){sessionStorage.setItem('makhanani_unlocked_librarian','yes');document.getElementById('pwGuard').remove();}else{document.getElementById('pwError').classList.remove('hidden');document.getElementById('pwInput').value='';}};setTimeout(()=>document.getElementById('pwInput').focus(),200);})();</script>
+<div class="max-w-6xl mx-auto p-4">
+<div class="flex flex-wrap gap-2 items-center justify-between"><h1 class="font-black text-2xl">📚 WORDSWORTH — LIBRARIAN</h1><div class="flex gap-2"><a href="dashboard.html" class="bg-purple-700 text-white px-4 py-2 rounded-lg font-bold">📊 Dashboard</a><a href="record.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold">📄 Record</a><button onclick="logoutAll()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold">🔒 Logout</button></div></div>
+<div class="grid grid-cols-4 gap-2 mt-4 text-center"><div class="bg-white rounded-lg p-3"><div class="text-xs">TOTAL STOCK</div><div id="cTotal" class="font-bold text-xl">0</div></div><div class="bg-white rounded-lg p-3"><div class="text-xs">AVAILABLE</div><div id="cAvail" class="font-bold text-xl text-green-600">0</div></div><div class="bg-white rounded-lg p-3"><div class="text-xs">ISSUED OUT</div><div id="cOut" class="font-bold text-xl text-orange-600">0</div></div><div class="bg-white rounded-lg p-3"><div class="text-xs">% RETRIEVAL</div><div id="cRet" class="font-bold text-xl">0%</div></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-bold">➕ Add New Stock</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2"><select id="nDept" class="border rounded-lg px-3 py-2"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option></select><input id="nSubject" placeholder="Subject e.g. Maths" class="border rounded-lg px-3 py-2"><input id="nTitle" placeholder="Title e.g. Maths Gr10" class="border rounded-lg px-3 py-2"><input id="nGrade" placeholder="Grade e.g. Grade 10A" class="border rounded-lg px-3 py-2"><input id="nFrom" placeholder="From No e.g. WHS001" class="border rounded-lg px-3 py-2"><input id="nTo" placeholder="To No e.g. WHS030" class="border rounded-lg px-3 py-2"><input id="nPrice" type="number" placeholder="Price (R)" class="border rounded-lg px-3 py-2"><button onclick="addStock()" class="bg-blue-950 text-white py-2 rounded-lg font-bold">Add Stock →</button></div><p class="text-xs text-gray-400 mt-1">Creates WHS001 to WHS030 automatically. Use same prefix for range.</p></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><div class="flex justify-between"><h2 class="font-bold">📦 Stock List</h2><input id="search" oninput="render()" placeholder="Search title / WHS No..." class="border rounded-lg px-3 py-1"></div><div id="list" class="mt-2 space-y-2"></div></div>
 </div>
-
-<div class="max-w-7xl mx-auto p-4">
-  <!-- STATS -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">TOTAL COPIES</div><div id="stTotal" class="text-2xl font-bold">0</div></div>
-    <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">AVAILABLE</div><div id="stAvail" class="text-2xl font-bold text-green-600">0</div></div>
-    <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">ISSUED OUT</div><div id="stIssued" class="text-2xl font-bold text-orange-600">0</div></div>
-    <div class="bg-white rounded-2xl p-4 shadow"><div class="text-xs text-gray-500">TITLES</div><div id="stTitles" class="text-2xl font-bold">0</div></div>
-  </div>
-
-  <!-- SEARCH + ISSUED LIST -->
-  <div class="bg-white rounded-2xl p-4 shadow mt-4 flex flex-wrap gap-2">
-    <input id="search" oninput="render()" placeholder="🔍 Search WHS number, title, learner..." class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
-    <select id="fGrade" onchange="render()" class="border rounded-lg px-3 py-2"><option value="">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-    <button onclick="document.getElementById('search').value='';document.getElementById('fGrade').value='';render()" class="bg-gray-100 px-3 py-2 rounded-lg">Clear</button>
-  </div>
-
-  <div class="bg-white rounded-2xl p-4 shadow mt-4">
-    <div class="font-bold">📋 Issued Books — Who Has What</div>
-    <div id="issuedList" class="mt-3 space-y-2"></div>
-    <div id="noIssued" class="text-center text-gray-400 py-8 hidden">No books issued yet.<br>Click + Issue Book to issue.</div>
-  </div>
-
-  <div class="bg-white rounded-2xl p-4 shadow mt-4">
-    <div class="font-bold">📚 All Titles — Quick View</div>
-    <div id="titleList" class="mt-3 grid md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-  </div>
-
-  <div class="text-center mt-6">
-    <a href="stock.html" class="inline-block bg-blue-900 text-white px-6 py-3 rounded-xl font-bold">📚 Manage Stock & Print Barcodes →</a>
-  </div>
-</div>
-
-<!-- ISSUE MODAL -->
-<div id="issueModal" class="hidden fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50 overflow-y-auto">
-  <div class="bg-white rounded-3xl w-full max-w-md p-6 my-2 max-h-[92vh] overflow-y-auto">
-    <div class="flex justify-between"><h2 class="font-bold text-xl">+ Issue Book</h2><button onclick="closeIssue()" class="text-2xl">×</button></div>
-    <label class="text-xs font-bold mt-3 block">BOOK NUMBER (WHS...)</label>
-    <input id="issueBookNo" placeholder="WHS000001" class="w-full border rounded-lg px-3 py-2">
-    <label class="text-xs font-bold mt-2 block">LEARNER NAME</label>
-    <input id="issueLearner" placeholder="Full name" class="w-full border rounded-lg px-3 py-2">
-    <label class="text-xs font-bold mt-2 block">GRADE / CLASS</label>
-    <select id="issueGrade" class="w-full border rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
-    <div class="flex gap-2 mt-4 sticky bottom-0 bg-white pt-2"><button onclick="closeIssue()" class="flex-1 bg-gray-100 py-3 rounded-lg">Cancel</button><button onclick="saveIssue()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold">Issue →</button></div>
-  </div>
-</div>
-
-<!-- RETURN MODAL -->
-<div id="returnModal" class="hidden fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50 overflow-y-auto">
-  <div class="bg-white rounded-3xl w-full max-w-md p-6 my-2">
-    <div class="flex justify-between"><h2 class="font-bold text-xl">↩ Return Book</h2><button onclick="closeReturn()" class="text-2xl">×</button></div>
-    <label class="text-xs font-bold mt-3 block">BOOK NUMBER (WHS...)</label>
-    <input id="returnBookNo" placeholder="WHS000001" class="w-full border rounded-lg px-3 py-2">
-    <div class="flex gap-2 mt-4"><button onclick="closeReturn()" class="flex-1 bg-gray-100 py-3 rounded-lg">Cancel</button><button onclick="saveReturn()" class="flex-1 bg-yellow-400 py-3 rounded-lg font-bold">Return →</button></div>
-  </div>
-</div>
-
 <script>
-let ltsm=JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
-let issues=JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
-function saveAll(){localStorage.setItem('makhanani_ltsm',JSON.stringify(ltsm));localStorage.setItem('makhanani_issues',JSON.stringify(issues));}
-function openIssue(){document.getElementById('issueModal').classList.remove('hidden');}
-function closeIssue(){document.getElementById('issueModal').classList.add('hidden');}
-function openReturn(){document.getElementById('returnModal').classList.remove('hidden');}
-function closeReturn(){document.getElementById('returnModal').classList.add('hidden');}
-function findCopy(no){ for(let it of ltsm){ for(let c of it.copies){ if(c.bookNo.toUpperCase()===no.toUpperCase()) return {it,c}; } } return null; }
-function saveIssue(){
-  let no=document.getElementById('issueBookNo').value.trim(); let learner=document.getElementById('issueLearner').value.trim(); let grade=document.getElementById('issueGrade').value;
-  if(!no||!learner){alert('Enter Book No + Learner');return;}
-  let f=findCopy(no); if(!f){alert('Book not found: '+no);return;}
-  if(f.c.status!=='Available'){alert('Already issued to '+f.c.learner);return;}
-  f.c.status='Issued'; f.c.learner=learner; f.c.date=new Date().toLocaleDateString();
-  issues.unshift({bookNo:f.c.bookNo,title:f.it.title,learner,grade,date:f.c.date,returned:false});
-  saveAll(); closeIssue(); render(); alert(`✅ ${no} issued to ${learner}`);
-}
-function saveReturn(){
-  let no=document.getElementById('returnBookNo').value.trim(); if(!no){alert('Enter Book No');return;}
-  let f=findCopy(no); if(!f){alert('Book not found');return;}
-  f.c.status='Available'; f.c.learner=''; f.c.date='';
-  let iss=issues.find(x=>x.bookNo.toUpperCase()===no.toUpperCase()&&!x.returned); if(iss) iss.returned=true;
-  saveAll(); closeReturn(); render(); alert(`✅ ${no} returned — Available again`);
-}
-function returnByNo(no){ document.getElementById('returnBookNo').value=no; saveReturn(); }
-function render(){
-  let total=0, avail=0; ltsm.forEach(it=>it.copies.forEach(c=>{total++; if(c.status==='Available') avail++;}));
-  document.getElementById('stTotal').textContent=total;
-  document.getElementById('stAvail').textContent=avail;
-  document.getElementById('stIssued').textContent=total-avail;
-  document.getElementById('stTitles').textContent=ltsm.length;
-  let q=(document.getElementById('search').value||'').toLowerCase();
-  let fg=document.getElementById('fGrade').value;
-  let active=issues.filter(x=>!x.returned && (!q || x.bookNo.toLowerCase().includes(q)||x.title.toLowerCase().includes(q)||x.learner.toLowerCase().includes(q)) && (!fg || x.grade===fg));
-  document.getElementById('noIssued').classList.toggle('hidden', active.length>0);
-  document.getElementById('issuedList').innerHTML=active.map(x=>`<div class="flex flex-wrap gap-2 justify-between border rounded-xl p-3"><div><b>${x.bookNo}</b> • ${x.title}<br><span class="text-sm text-gray-500">${x.learner} • ${x.grade} • ${x.date}</span></div><button onclick="returnByNo('${x.bookNo}')" class="bg-yellow-400 px-3 py-1 rounded-lg font-bold text-sm">↩ Return</button></div>`).join('') || '<div class="text-gray-400 text-sm">No issued books matching search.</div>';
-  let filtered=ltsm.filter(it=>!q||it.title.toLowerCase().includes(q)||it.copies.some(c=>c.bookNo.toLowerCase().includes(q)));
-  document.getElementById('titleList').innerHTML=filtered.map(it=>{let av=it.copies.filter(c=>c.status==='Available').length; return `<div class="border rounded-xl p-3"><div class="font-bold">${it.title}</div><div class="text-xs text-gray-500">${it.grade} • ${it.subject} • ${it.author}</div><div class="text-sm mt-1">Total: ${it.copies.length} • Avail: ${av} • Issued: ${it.copies.length-av}</div><div class="text-xs text-blue-900 font-bold">${it.copies[0]?it.copies[0].bookNo+' → '+it.copies[it.copies.length-1].bookNo:'No copies'}</div></div>`}).join('')||'<div class="text-gray-400">No titles yet. Go to Stock to add.</div>';
-}
+let ltsm=JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');let issues=JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
+function save(){localStorage.setItem('makhanani_ltsm',JSON.stringify(ltsm));localStorage.setItem('makhanani_issues',JSON.stringify(issues));}
+function logoutAll(){if(!confirm('Logout?'))return;sessionStorage.clear();location.href='dashboard.html';}
+function addStock(){let dept=document.getElementById('nDept').value,subject=document.getElementById('nSubject').value.trim(),title=document.getElementById('nTitle').value.trim(),grade=document.getElementById('nGrade').value.trim(),from=document.getElementById('nFrom').value.trim().toUpperCase(),to=document.getElementById('nTo').value.trim().toUpperCase(),price=+document.getElementById('nPrice').value||0;if(!subject||!title||!from||!to){alert('Fill Subject, Title, From, To');return;}let prefix=from.replace(/[0-9]+$/,'');let start=parseInt(from.replace(prefix,'')),end=parseInt(to.replace(prefix,''));if(isNaN(start)||isNaN(end)||end<start){alert('Check WHS range');return;}let copies=[];for(let i=start;i<=end;i++){let no=prefix+String(i).padStart(3,'0');copies.push({bookNo:no,status:'Available'});}ltsm.push({dept,subject,title,grade,price,copies});save();render();alert(`✅ Added ${copies.length} books: ${from} to ${to}`);['nSubject','nTitle','nGrade','nFrom','nTo','nPrice'].forEach(id=>document.getElementById(id).value='');}
+function delItem(idx){if(!confirm('Delete this title + all its copies?'))return;ltsm.splice(idx,1);save();render();}
+function render(){let total=0,avail=0;ltsm.forEach(it=>it.copies.forEach(c=>{total++;if(c.status==='Available')avail++;}));let ret=issues.filter(x=>x.returned).length;let out=issues.filter(x=>!x.returned).length;let p=ret+out?Math.round(ret/(ret+out)*100):0;document.getElementById('cTotal').textContent=total;document.getElementById('cAvail').textContent=avail;document.getElementById('cOut').textContent=out;document.getElementById('cRet').textContent=p+'%';let q=(document.getElementById('search').value||'').toLowerCase();document.getElementById('list').innerHTML=ltsm.map((it,idx)=>{let av=it.copies.filter(c=>c.status==='Available').length;return `<div class="border rounded-lg p-3 flex justify-between"><div><b>${it.title}</b> • ${it.subject} • ${it.dept} • ${it.grade||''} • R${it.price||0}<br><span class="text-xs text-gray-500">${it.copies[0].bookNo} to ${it.copies[it.copies.length-1].bookNo} • ${av}/${it.copies.length} available</span></div><div class="flex gap-2"><a href="teacher.html" class="bg-green-600 text-white px-3 py-1 rounded text-sm">Issue →</a><button onclick="delItem(${idx})" class="bg-red-100 text-red-600 px-3 py-1 rounded text-sm">Delete</button></div></div>`;}).filter((_,i)=>{let it=ltsm[i];return !q||it.title.toLowerCase().includes(q)||it.subject.toLowerCase().includes(q);}).join('')||'<div class="text-center text-gray-400 p-4">No stock yet. Add stock above.</div>';}
 render();
-</script>
-</body>
-</html>
+let _t;function resetT(){clearTimeout(_t);_t=setTimeout(()=>{sessionStorage.clear();alert('⏰ Auto-logged out.');location.href='dashboard.html';},15*60*1000);}['click','keydown','touchstart'].forEach(e=>document.addEventListener(e,resetT));resetT();
+</script></body></html>
