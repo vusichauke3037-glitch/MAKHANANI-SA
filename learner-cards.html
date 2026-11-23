@@ -1,98 +1,183 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Print Learner Cards - Wordsworth</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<style>@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%;margin:0!important}.no-print{display:none!important}.learner-card{break-inside:avoid;page-break-inside:avoid}}@page{size:A4;margin:8mm}.learner-card{border:2px solid #111}.photo-box{border:2px dashed #999}</style></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Learner Cards - A4 3x5 - Wordsworth</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<style>
+  .learner-card{border:2px solid #111; background:#fff}
+  .photo-box{border:2px dashed #999}
+  @page{size:A4 portrait; margin:10mm}
+  @media print{
+    body{background:#fff!important}
+    body *{visibility:hidden}
+    #printArea, #printArea *{visibility:visible}
+    #printArea{position:absolute; left:0; top:0; width:210mm; margin:0!important; padding:10mm 10mm 5mm 10mm!important; box-sizing:border-box}
+    .no-print{display:none!important}
+    .learner-card{break-inside:avoid; page-break-inside:avoid; border:2px solid #111!important}
+    .page-break{page-break-before:always; break-before:page}
+  }
+  /* A4 3x5 GRID - centered - SAME AS BARCODES */
+  #cards{display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; justify-content:center; justify-items:stretch}
+  .learner-card{width:100%; height:52mm; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; padding:0; box-sizing:border-box; overflow:hidden}
+</style></head>
 <body class="bg-gray-100 min-h-screen">
-<div class="no-print max-w-6xl mx-auto p-4">
-<div class="flex flex-wrap gap-2 justify-between items-center"><h1 class="font-black text-2xl">🪪 PRINT LEARNER CARDS — WORDSWORTH</h1><div class="flex gap-2"><a href="dashboard.html" class="bg-purple-700 text-white px-4 py-2 rounded-lg font-bold">📊 Dashboard</a><a href="barcodes.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold">🖨️ Barcodes</a><a href="librarian.html" class="bg-blue-950 text-white px-4 py-2 rounded-lg font-bold">📚 Librarian</a><button onclick="window.print()" class="bg-black text-white px-4 py-2 rounded-lg font-bold">🖨️ Print Cards</button></div></div>
-<p class="text-sm text-gray-500 mt-1">Add learners one by one, or paste a whole class list. Print → Cut → Laminate → Give to learner.</p>
 
-<div class="grid grid-cols-2 gap-4 mt-4">
+<!-- CONTROLS - NOT PRINTED -->
+<div class="no-print max-w-6xl mx-auto p-4">
+<div class="flex flex-wrap gap-2 justify-between items-center"><h1 class="font-black text-2xl">🪪 LEARNER CARDS — A4 3x5 • 15 PER PAGE</h1><div class="flex gap-2 flex-wrap"><a href="dashboard.html" class="bg-purple-700 text-white px-3 py-2 rounded-lg font-bold text-sm">📊 Dashboard</a><a href="barcodes.html" class="bg-black text-white px-3 py-2 rounded-lg font-bold text-sm">🖨️ Barcodes</a><a href="librarian.html" class="bg-blue-950 text-white px-3 py-2 rounded-lg font-bold text-sm">📚 Librarian</a><button onclick="testBeep()" class="bg-yellow-400 px-3 py-2 rounded-lg font-black text-sm">🔔 Test Beep</button><button onclick="window.print()" class="bg-black text-white px-3 py-2 rounded-lg font-bold text-sm">🖨️ Print A4</button></div></div>
+<p class="text-sm text-gray-500 mt-1">A4 • 3 across × 5 down = <b>15 cards per page</b> • Centered • Same Top / Bottom as Barcodes • Beep = added / scanned OK. Print → Cut → Laminate → Give to learner.</p>
+
+<div class="grid md:grid-cols-2 gap-4 mt-4">
 <!-- ADD ONE -->
-<div class="bg-white rounded-2xl p-4 border-2 border-blue-400"><h2 class="font-bold">➕ Add One Learner</h2>
+<div class="bg-white rounded-2xl p-4 border-2 border-blue-500"><h2 class="font-bold">➕ Add One Learner</h2>
 <div class="grid grid-cols-2 gap-2 mt-2"><input id="oneName" placeholder="Learner Name e.g. Thabo Mokoena" class="border rounded-lg px-3 py-2 col-span-2"><input id="oneId" placeholder="Learner ID e.g. 2026001" class="border rounded-lg px-3 py-2"><input id="oneClass" placeholder="Class e.g. Grade 10A" value="Grade 10A" class="border rounded-lg px-3 py-2"><input id="oneTeacher" placeholder="Teacher e.g. Ms. Dube" class="border rounded-lg px-3 py-2"><input id="oneYear" placeholder="Year e.g. 2026" value="2026" class="border rounded-lg px-3 py-2"></div>
-<button onclick="addOne()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold mt-2 w-full">➕ Add Learner Card →</button>
+<button onclick="addOne()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold mt-2 w-full">➕ Add Learner Card → + Beep</button>
 <p class="text-[11px] text-gray-400 mt-1">Learner ID is what teacher scans. Use school ID / admission number. Must be unique.</p></div>
 
-<!-- PASTE CLASS LIST -->
-<div class="bg-white rounded-2xl p-4 border-2 border-green-400"><h2 class="font-bold">📋 Paste Whole Class List — Fastest</h2><p class="text-xs text-gray-500">Paste one learner per line. Format: <b>Name, ID, Class</b> or <b>Name, ID</b> or just <b>Name</b></p>
-<textarea id="bulkText" rows="6" placeholder="Thabo Mokoena, 2026001, Grade 10A
+<!-- PASTE CLASS -->
+<div class="bg-white rounded-2xl p-4 border-2 border-green-500"><h2 class="font-bold">📋 Paste Whole Class List — Fastest</h2><p class="text-xs text-gray-500">Paste one per line: <b>Name, ID, Class</b> or <b>Name, ID</b> or just <b>Name</b></p>
+<textarea id="bulkText" rows="5" placeholder="Thabo Mokoena, 2026001, Grade 10A
 Lerato Dube, 2026002, Grade 10A
 Sipho Nkosi, 2026003, Grade 10A
 Anele Khumalo, 2026004, Grade 10A" class="w-full border rounded-lg px-3 py-2 mt-2 text-sm"></textarea>
-<div class="flex gap-2 mt-2"><input id="bulkClass" placeholder="Default Class if not in list e.g. Grade 10A" value="Grade 10A" class="border rounded-lg px-3 py-2 flex-1"><input id="bulkYear" placeholder="Year" value="2026" class="border rounded-lg px-3 py-2 w-24"></div>
-<div class="flex gap-2 mt-2"><button onclick="addBulk()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex-1">📋 Add All From List →</button><button onclick="loadExample()" class="bg-gray-100 px-4 py-2 rounded-lg font-bold">Load Example</button></div></div>
+<div class="flex gap-2 mt-2"><input id="bulkClass" placeholder="Default Class e.g. Grade 10A" value="Grade 10A" class="border rounded-lg px-3 py-2 flex-1"><input id="bulkYear" placeholder="Year" value="2026" class="border rounded-lg px-3 py-2 w-24"></div>
+<div class="flex gap-2 mt-2"><button onclick="addBulk()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex-1">📋 Add All From List → + Beep</button><button onclick="loadExample()" class="bg-gray-100 px-4 py-2 rounded-lg font-bold">Load Example</button></div></div>
 </div>
 
-<div class="bg-white rounded-2xl p-4 mt-4"><div class="flex flex-wrap gap-2 justify-between items-center"><h2 class="font-bold">Cards To Print — <span id="countLabel">0 learners</span></h2><div class="flex gap-2 items-center text-sm flex-wrap"><label>Cards per row: <select id="colsSel" onchange="reRender()" class="border rounded px-2 py-1"><option value="2">2 (Large — Easy to read)</option><option value="3">3</option><option value="4" selected>4 (Small — Save paper)</option></select></label><label class="flex items-center gap-1"><input type="checkbox" id="showPhoto" checked onchange="reRender()"> Photo Box</label><label class="flex items-center gap-1"><input type="checkbox" id="showBarcode" checked onchange="reRender()"> Barcode</label><label class="flex items-center gap-1"><input type="checkbox" id="showBack" checked onchange="reRender()"> Print Back (Rules)</label><label>School: <input id="schoolName" value="WORDSWORTH HIGH SCHOOL" class="border rounded px-2 py-1 w-48" onchange="reRender()"></label><button onclick="clearAll()" class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold">🗑️ Clear All</button><button onclick="downloadCSV()" class="bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold">⬇️ Download List (CSV)</button></div></div>
-<div class="mt-2"><div class="text-xs font-bold">Learners Added — Click × to remove, or Edit:</div><div id="learnerList" class="mt-1 space-y-1 text-sm"></div></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><div class="flex flex-wrap gap-2 justify-between items-center"><div><h2 class="font-bold">Cards To Print — <span id="countLabel">0 learners</span> • <span id="pageLabel">0 pages</span></h2><div class="text-xs text-gray-500">Each card: TOP = School + Brand + LEARNER CARD • MIDDLE = Photo + Name + Barcode • BOTTOM = Big Learner ID</div></div><div class="flex gap-2 items-center text-sm flex-wrap"><label class="flex items-center gap-1"><input type="checkbox" id="beepOn" checked> 🔊 Beep On</label><label class="flex items-center gap-1"><input type="checkbox" id="showPhoto" checked onchange="reRender()"> Photo Box</label><label class="flex items-center gap-1"><input type="checkbox" id="showRules" checked onchange="reRender()"> Rules Line</label><button onclick="clearAll()" class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold">🗑️ Clear All</button><button onclick="downloadCSV()" class="bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold">⬇️ CSV</button><button onclick="openScanTest()" class="bg-black text-white px-3 py-1 rounded font-bold">📷 Scan Test + Beep</button></div></div>
+<div class="mt-2"><div class="text-xs font-bold">Learners Added — Click × to remove:</div><div id="learnerList" class="mt-1 space-y-1 text-sm max-h-32 overflow-auto"></div></div></div>
 </div>
 
-<div id="printArea" class="max-w-6xl mx-auto p-4"><div class="text-center border-b-2 border-black pb-1 mb-2"><div class="font-black text-xl" id="printSchool">WORDSWORTH HIGH SCHOOL</div><div class="text-xs">LEARNER LIBRARY CARDS — Bring this card to borrow / return books • Generated: <span id="genAt"></span></div></div><div id="cards" class="grid grid-cols-4 gap-3"></div><div class="text-center text-[11px] text-gray-400 mt-3">Wordsworth • Makhanani LTSM • Cut → Laminate → Give to learner • Teacher scans barcode on card to issue / return</div></div>
+<!-- PRINT AREA - A4 3x5 -->
+<div id="printArea" class="max-w-6xl mx-auto p-4 bg-white">
+  <div class="text-center border-b-2 border-black pb-1 mb-3"><div class="font-black text-lg leading-tight">WORDSWORTH HIGH SCHOOL — LEARNER CARDS • A4 3x5</div><div class="text-[11px]">Generated: <span id="genAt"></span> • Cut → Laminate → Give to learner • Bring card to borrow / return books</div></div>
+  <div id="cards"></div>
+  <div class="text-center text-[10px] text-gray-400 mt-3">Wordsworth • Makhanani LTSM • Teacher scans barcode on card to Issue • Return: Scan Book ONLY • All books due 30 November</div>
 </div>
+
+<!-- SCAN TEST MODAL -->
+<div id="scanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100]"><div class="bg-white rounded-3xl w-full max-w-md p-4 text-center text-black"><h2 class="font-bold text-lg">📷 Scan Test — Point At Card Barcode</h2><p class="text-xs text-gray-500">If it beeps + shows ID, your card works.</p><video id="scanVideo" class="w-full rounded-lg bg-black mt-2" playsinline muted></video><input id="scanManual" placeholder="Or type Learner ID here to test beep" class="w-full border rounded-lg px-3 py-2 mt-2 font-bold text-center" onkeydown="if(event.key==='Enter') testManualBeep()"><div id="scanResult" class="font-black text-lg mt-2 text-green-600"></div><div class="flex gap-2 mt-2"><button onclick="closeScan()" class="flex-1 bg-gray-100 py-3 rounded-lg">Close</button><button onclick="testManualBeep()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold">🔔 Test Beep</button></div><div id="scanStatus" class="text-xs mt-1 text-gray-500"></div></div></div>
 
 <script>
 let learners=JSON.parse(localStorage.getItem('makhanani_learners')||'[]');
-function save(){localStorage.setItem('makhanani_learners',JSON.stringify(learners));}
+function save(){ localStorage.setItem('makhanani_learners', JSON.stringify(learners)); }
+
+// ---------- BEEP - SAME AS BARCODES ----------
+let audioCtx=null;
+function beep(){
+  if(!document.getElementById('beepOn').checked) return;
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    let play=(freq,dur,delay)=>{
+      let o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type='sine'; o.frequency.value=freq;
+      let t=audioCtx.currentTime+delay;
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.5,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+dur);
+    };
+    play(880,0.18,0); play(1320,0.15,0.09);
+  }catch(e){}
+}
+function testBeep(){ beep(); alert('🔔 Beep OK — If you heard 2 beeps, sound works. It will beep on Add + Scan Test.'); }
+function testManualBeep(){ let v=document.getElementById('scanManual').value.trim().toUpperCase(); if(!v) return; document.getElementById('scanResult').textContent='✅ BEEP — Scanned: '+v; beep(); }
+
+// ---------- ADD ----------
 function addOne(){
-  let name=document.getElementById('oneName').value.trim(),id=document.getElementById('oneId').value.trim().toUpperCase(),cls=document.getElementById('oneClass').value.trim(),teacher=document.getElementById('oneTeacher').value.trim(),year=document.getElementById('oneYear').value.trim()||'2026';
-  if(!name||!id){alert('Enter Name + Learner ID');return;}
-  if(learners.find(x=>x.id===id)){alert('Learner ID '+id+' already exists');return;}
-  learners.push({name,id,cls,teacher,year});save();reRender();
-  document.getElementById('oneName').value='';document.getElementById('oneId').value='';document.getElementById('oneName').focus();
+  let name=document.getElementById('oneName').value.trim(), id=document.getElementById('oneId').value.trim().toUpperCase(), cls=document.getElementById('oneClass').value.trim(), teacher=document.getElementById('oneTeacher').value.trim(), year=document.getElementById('oneYear').value.trim()||'2026';
+  if(!name||!id){ alert('Enter Name + Learner ID'); return; }
+  if(learners.find(x=>x.id===id)){ alert('Learner ID '+id+' already exists'); return; }
+  learners.push({name,id,cls,teacher,year}); save(); reRender(); beep();
+  document.getElementById('oneName').value=''; document.getElementById('oneId').value=''; document.getElementById('oneName').focus();
 }
-function loadExample(){
-  document.getElementById('bulkText').value=`Thabo Mokoena, 2026001, Grade 10A
-Lerato Dube, 2026002, Grade 10A
-Sipho Nkosi, 2026003, Grade 10A
-Anele Khumalo, 2026004, Grade 10A
-Naledi Peters, 2026005, Grade 10A
-Kabelo Smith, 2026006, Grade 10A`;
-}
+function loadExample(){ document.getElementById('bulkText').value=`Thabo Mokoena, 2026001, Grade 10A\nLerato Dube, 2026002, Grade 10A\nSipho Nkosi, 2026003, Grade 10A\nAnele Khumalo, 2026004, Grade 10A\nNaledi Peters, 2026005, Grade 10A\nKabelo Smith, 2026006, Grade 10A`; }
 function addBulk(){
-  let text=document.getElementById('bulkText').value.trim();if(!text){alert('Paste list first');return;}
-  let defCls=document.getElementById('bulkClass').value.trim()||'Grade 10A';let year=document.getElementById('bulkYear').value.trim()||'2026';
-  let lines=text.split('\n');let added=0,skipped=0;
+  let text=document.getElementById('bulkText').value.trim(); if(!text){ alert('Paste list first'); return; }
+  let defCls=document.getElementById('bulkClass').value.trim()||'Grade 10A'; let year=document.getElementById('bulkYear').value.trim()||'2026';
+  let lines=text.split('\n'); let added=0, skipped=0;
   lines.forEach(line=>{
-    line=line.trim();if(!line)return;
+    line=line.trim(); if(!line) return;
     let parts=line.split(',').map(p=>p.trim());
-    let name=parts[0]||'';let id=(parts[1]||'').toUpperCase();let cls=parts[2]||defCls;
-    if(!name)return;
-    if(!id){id='NOID-'+(learners.length+added+1);} // auto if no ID
-    if(learners.find(x=>x.id===id)){skipped++;return;}
-    learners.push({name,id,cls,teacher:'',year});added++;
+    let name=parts[0]||''; let id=(parts[1]||'').toUpperCase(); let cls=parts[2]||defCls;
+    if(!name) return;
+    if(!id) id='NOID-'+(learners.length+added+1);
+    if(learners.find(x=>x.id===id)){ skipped++; return; }
+    learners.push({name,id,cls,teacher:'',year}); added++;
   });
-  save();reRender();alert(`✅ Added ${added} learners${skipped?` • Skipped ${skipped} duplicates`:''}`);document.getElementById('bulkText').value='';
+  save(); reRender(); beep(); alert(`✅ Added ${added} learners${skipped?` • Skipped ${skipped} duplicates`:''}`); document.getElementById('bulkText').value='';
 }
-function removeLearner(i){learners.splice(i,1);save();reRender();}
-function clearAll(){if(!confirm('Clear all learner cards?'))return;learners=[];save();reRender();}
+function removeLearner(i){ learners.splice(i,1); save(); reRender(); }
+function clearAll(){ if(!confirm('Clear all learner cards?')) return; learners=[]; save(); reRender(); }
 function downloadCSV(){
-  if(!learners.length){alert('No learners yet');return;}
+  if(!learners.length){ alert('No learners yet'); return; }
   let csv='Name,Learner ID,Class,Teacher,Year\n'+learners.map(l=>`"${l.name}","${l.id}","${l.cls}","${l.teacher||''}","${l.year}"`).join('\n');
-  let b=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='wordsworth-learner-cards.csv';a.click();
+  let b=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wordsworth-learner-cards.csv'; a.click(); beep();
 }
+
+// ---------- RENDER - A4 3x5 SAME AS BARCODES ----------
 function reRender(){
   document.getElementById('genAt').textContent=new Date().toLocaleString();
-  document.getElementById('printSchool').textContent=document.getElementById('schoolName').value||'WORDSWORTH HIGH SCHOOL';
   document.getElementById('countLabel').textContent=learners.length+' learners';
+  document.getElementById('pageLabel').textContent=Math.ceil(learners.length/15)+' page(s) — 15 per page';
   document.getElementById('learnerList').innerHTML=learners.map((l,i)=>`<div class="border rounded p-2 flex justify-between gap-2"><span><b>${l.name}</b> — ID: ${l.id} • ${l.cls} • ${l.year}${l.teacher?' • '+l.teacher:''}</span><button onclick="removeLearner(${i})" class="text-red-600 font-bold">× Remove</button></div>`).join('')||'<div class="text-gray-400">No learners yet — Add one above or paste class list</div>';
-  let cols=document.getElementById('colsSel').value;
-  let showPhoto=document.getElementById('showPhoto').checked;let showBarcode=document.getElementById('showBarcode').checked;let showBack=document.getElementById('showBack').checked;
-  let grid=document.getElementById('cards');grid.className='grid gap-3 grid-cols-'+cols;
-  grid.innerHTML=learners.map((l,i)=>`
-    <div class="learner-card bg-white rounded-xl overflow-hidden">
-      <div class="bg-blue-950 text-white text-center py-1"><div class="font-black text-[11px] tracking-widest">${document.getElementById('schoolName').value||'WORDSWORTH HIGH SCHOOL'}</div><div class="text-[9px] opacity-70">LIBRARY CARD • ${l.year}</div></div>
-      <div class="p-2 flex gap-2">
-        ${showPhoto?`<div class="photo-box w-16 h-20 shrink-0 flex items-center justify-center text-center text-[8px] text-gray-400 leading-tight">PHOTO<br>Stick<br>Here</div>`:''}
-        <div class="flex-1 min-w-0"><div class="font-black text-sm leading-tight truncate">${l.name}</div><div class="text-[11px] font-bold text-blue-900">${l.cls}</div><div class="text-[11px] text-gray-500">ID: <b class="text-black text-sm">${l.id}</b></div>${l.teacher?`<div class="text-[10px] text-gray-500">Teacher: ${l.teacher}</div>`:''}<div class="text-[9px] text-gray-400 mt-1">Bring this card to borrow / return books</div></div>
-      </div>
-      ${showBarcode?`<div class="px-2 pb-1 text-center"><svg id="lc-${i}" class="w-full"></svg><div class="font-black text-xs tracking-widest">${l.id}</div><div class="text-[8px] text-gray-400">Scan this barcode in Teacher / Librarian page</div></div>`:''}
-      ${showBack?`<div class="bg-yellow-50 border-t p-2 text-[9px] leading-tight"><b>Rules:</b> 1. 1 Learner = 1 Title &nbsp; 2. Return by <b>30 Nov</b> &nbsp; 3. If lost, pay / report to Librarian &nbsp; 4. Do not lend your card</div>`:''}
-      <div class="bg-gray-100 text-center text-[8px] py-0.5 text-gray-400">Wordsworth • Makhanani LTSM • ${l.year}</div>
-    </div>`).join('')||'<div class="col-span-4 text-center text-gray-400 p-8">No cards yet — Add learners above.<br>Example: Thabo Mokoena, 2026001, Grade 10A</div>';
+  let showPhoto=document.getElementById('showPhoto').checked; let showRules=document.getElementById('showRules').checked;
+  let grid=document.getElementById('cards');
+  if(!learners.length){ grid.innerHTML='<div class="col-span-3 text-center text-gray-400 p-10">No cards yet — Add learners above.<br>Example: Thabo Mokoena, 2026001, Grade 10A</div>'; return; }
+  let html='';
   learners.forEach((l,i)=>{
-    if(!showBarcode) return;
-    try{JsBarcode('#lc-'+i, l.id, {format:'CODE128', width:1.6, height:38, displayValue:false, margin:2});}catch(e){}
+    if(i>0 && i%15===0) html+=`<div class="page-break" style="grid-column:1/-1; height:0"></div>`;
+    html+=`
+    <div class="learner-card">
+      <!-- TOP - SAME AS BARCODES -->
+      <div class="w-full pt-2 px-2">
+        <div class="font-black text-[9px] tracking-[0.15em] leading-none">WORDSWORTH HIGH SCHOOL</div>
+        <div class="font-bold text-[7px] tracking-[0.2em] text-gray-600 leading-none mt-0.5">MAKHANANI LTSM</div>
+        <div class="mt-1 inline-block bg-black text-white font-black text-[10px] px-2 py-0.5 rounded-full tracking-widest">🪪 LEARNER CARD • ${l.year}</div>
+      </div>
+      <!-- MIDDLE - PHOTO + NAME -->
+      <div class="w-full flex gap-1.5 px-2 items-center justify-center">
+        ${showPhoto?`<div class="photo-box w-11 h-14 shrink-0 flex items-center justify-center text-center text-[7px] text-gray-400 leading-tight">PHOTO<br>Stick<br>Here</div>`:''}
+        <div class="flex-1 min-w-0 text-left">
+          <div class="font-black text-[12px] leading-tight truncate">${l.name}</div>
+          <div class="text-[10px] font-bold text-blue-900 leading-tight">${l.cls}</div>
+          ${l.teacher?`<div class="text-[8px] text-gray-500 leading-tight">Teacher: ${l.teacher}</div>`:''}
+          <div class="text-[7px] text-gray-400 leading-tight">Bring card to borrow / return</div>
+        </div>
+      </div>
+      <!-- MIDDLE - BARCODE CENTERED -->
+      <div class="w-full flex justify-center items-center px-2">
+        <svg id="lc-${i}" style="width:92%; max-width:52mm; height:14mm; display:block; margin:0 auto;"></svg>
+      </div>
+      <!-- BOTTOM - SAME AS BARCODES -->
+      <div class="w-full pb-1.5 px-2">
+        <div class="text-[7px] tracking-[0.25em] text-gray-500 leading-none">LEARNER ID</div>
+        <div class="font-black text-[16px] tracking-[0.12em] leading-none mt-0.5">${l.id}</div>
+        ${showRules?`<div class="text-[7px] text-gray-400 leading-tight mt-0.5">1 Learner = 1 Title • Return by 30 Nov • Do not lend card</div>`:''}
+      </div>
+    </div>`;
+  });
+  grid.innerHTML=html;
+  learners.forEach((l,i)=>{
+    try{ JsBarcode('#lc-'+i, l.id, {format:'CODE128', width:2, height:52, displayValue:false, margin:0, background:'#ffffff', lineColor:'#000000'}); }catch(e){}
   });
 }
+
+// ---------- SCAN TEST + BEEP ----------
+let scanStream=null, scanRAF=null;
+async function openScanTest(){
+  document.getElementById('scanModal').classList.remove('hidden');
+  document.getElementById('scanResult').textContent=''; document.getElementById('scanManual').value='';
+  document.getElementById('scanStatus').textContent='Starting camera...';
+  let video=document.getElementById('scanVideo');
+  try{
+    scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    video.srcObject=scanStream; await video.play();
+    document.getElementById('scanStatus').textContent='📷 Point at card barcode — will BEEP when it reads';
+    if('BarcodeDetector' in window){
+      let det=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','qr_code','upc_a','upc_e']});
+      let loop=async()=>{ if(!scanStream) return; try{ let codes=await det.detect(video); if(codes.length){ let v=codes[0].rawValue; document.getElementById('scanResult').textContent='✅ BEEP — Scanned: '+v; beep(); setTimeout(()=>{closeScan();},1200); return; } }catch(e){} scanRAF=requestAnimationFrame(loop); };
+      loop();
+    } else { document.getElementById('scanStatus').textContent='Camera preview only — Type ID below + Test Beep'; }
+  }catch(e){ document.getElementById('scanStatus').textContent='⚠️ Camera not allowed — Type ID below + Test Beep'; }
+}
+function closeScan(){ document.getElementById('scanModal').classList.add('hidden'); if(scanRAF) cancelAnimationFrame(scanRAF); if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } }
+
 reRender();
 </script></body></html>
