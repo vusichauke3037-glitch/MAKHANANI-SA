@@ -1,240 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Wordsworth High School - Makhanani LTSM</title>
-<meta name="description" content="Wordsworth High School - Makhanani LTSM - A Product of Xintimani Group Holdings (PTY) LTD">
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Wordsworth High School — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script><style>html{scroll-behavior:smooth}@keyframes pulse-green{0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}70%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}.wa-float{animation:pulse-green 2s infinite}.scan-flash{animation:flash .3s}.scan-flash2{animation:flash2 .3s}@keyframes flash{0%{background:#dcfce7}100%{background:transparent}}@keyframes flash2{0%{background:#dbeafe}100%{background:transparent}}</style></head>
+<body class="bg-gray-100 min-h-screen">
+<script>
+// ===== ⚙️ CONFIG — ALL SET ✅ =====
+const WHATSAPP_NUMBER = "27780233263"; // 0780233263
+const CONTACT_EMAIL = "vusichauke3037@gmail.com";
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzCP4Y9_YVG5f62Fxw90maTEqploTW9udFdh1wgtDivDNij743_DyCcZWm7v6LEynlM/exec";
+const XINTIMANI_URL = "https://xintimani.co.za";
+function openWhatsApp(msg){ window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(msg||'Hi Xintimani! I need help with Makhanani LTSM.'),'_blank'); }
+</script>
 
-<!-- PWA - Makes Install Work -->
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0a0a5c">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Wordsworth LTSM">
-<link rel="apple-touch-icon" href="./icon-512.png">
-<link rel="icon" type="image/png" href="./icon-192.png">
+<!-- TOP BAR — YOUR CONTACTS -->
+<div class="bg-black text-white text-xs md:text-sm py-2 px-4 flex flex-wrap justify-between gap-2 sticky top-0 z-50"><span>📚 <b>MAKHANANI LTSM</b> • Wordsworth High School • Bushbuckridge • Powered by <b>Xintimani Group Holdings (Pty) Ltd</b></span><span class="flex gap-3 flex-wrap"><a href="#" onclick="openWhatsApp('Hi! I need help with Makhanani LTSM at Wordsworth.');return false;" class="hover:text-yellow-400 font-bold">💬 WhatsApp 078 023 3263 →</a><a href="mailto:vusichauke3037@gmail.com" class="hover:text-yellow-400">✉️ vusichauke3037@gmail.com</a><a href="xintimani.html" class="bg-yellow-500 text-black px-2 py-0.5 rounded font-bold">🌐 Xintimani Group →</a></span></div>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0a0a5c}
-  .glass{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px)}
-  .role-card:active{transform:scale(.98)}
-  .hide{display:none!important}
-  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
-  .live-dot{animation:pulseDot 1.2s infinite}
-</style>
-</head>
-<body class="min-h-screen text-white">
-
-<!-- TOP BAR -->
-<div class="max-w-5xl mx-auto px-4 pt-4 flex items-start justify-between gap-3">
-  <div class="flex items-center gap-3">
-    <div class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center overflow-hidden shrink-0">
-      <!-- Replace src with your logo file if you have it: logo.png -->
-      <img src="./icon-192.png" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="Wordsworth" class="w-full h-full object-cover">
-      <div class="hidden w-full h-full bg-yellow-100 items-center justify-center text-2xl">📚</div>
-    </div>
-    <div>
-      <div class="font-black leading-none text-[22px]">WORDSWORTH<br>HIGH SCHOOL</div>
-      <div class="text-[12px] tracking-widest opacity-70 font-bold">MAKHANANI-LTSM</div>
-    </div>
-  </div>
-  <div class="flex flex-col items-end gap-2">
-    <span id="firebaseBadge" class="bg-green-200 text-green-900 text-[11px] font-black px-2 py-1 rounded-full">🔥 LIVE • Firebase Connected</span>
-    <span id="pwaBadge" class="bg-white/15 text-[11px] font-bold px-2 py-1 rounded-full">📱 App Ready</span>
-  </div>
+<div class="max-w-7xl mx-auto p-4">
+<!-- HEADER -->
+<div class="flex flex-wrap gap-2 justify-between items-center bg-white rounded-2xl p-4 border shadow-sm">
+<div><h1 class="font-black text-2xl md:text-3xl leading-tight">📚 MAKHANANI LTSM <span class="text-green-600">— Lending Page</span></h1><div class="text-xs text-gray-500">Scan Book → Scan Learner → Issue • Return By Learner • Print Cards • HOD Approvals • Xintimani Group Holdings (Pty) Ltd</div><div class="mt-1 flex gap-2 flex-wrap text-xs"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">● System Live</span><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">School: <span id="headerSchool">Wordsworth High School (WHS)</span></span><span class="bg-yellow-100 px-2 py-0.5 rounded-full font-bold">Due Date: 30 Nov</span></div></div>
+<div class="flex gap-2 flex-wrap"><button onclick="openWhatsApp('Hi! I need help with Makhanani LTSM — Lending Page.')" class="bg-[#25D366] text-white px-4 py-2 rounded-lg font-bold text-sm">💬 WhatsApp Help</button><a href="mailto:vusichauke3037@gmail.com" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">✉️ Email Us</a><a href="teacher.html" class="bg-purple-700 text-white px-4 py-2 rounded-lg font-bold text-sm">👩‍🏫 Teacher</a><a href="hod.html" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm">🧑‍🏫 HOD</a><a href="librarian.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Librarian</a><a href="print.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">🖨️ Print</a><a href="superadmin.html" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold text-sm">👑 Super Admin</a></div>
 </div>
 
-<!-- HERO -->
-<div class="max-w-5xl mx-auto px-4 mt-6 text-center">
-  <div class="mx-auto w-[150px] h-[150px] rounded-[28px] bg-white/90 flex items-center justify-center overflow-hidden shadow-2xl">
-    <img src="./icon-512.png" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="Xintimani Group Holdings" class="w-full h-full object-cover">
-    <div class="hidden text-center px-2"><div class="text-4xl">🌳</div><div class="text-[9px] font-black text-black leading-tight">XINTIMANI GROUP<br>HOLDINGS (PTY) Ltd</div><div class="text-[8px] text-gray-500">Building Solutions. Empowering Communities.</div></div>
-  </div>
-  <div class="mt-4 inline-block bg-white/10 border border-white/20 rounded-full px-4 py-1 text-[12px] font-bold">A Product of Xintimani Group Holdings (PTY) LTD</div>
-  <h1 class="mt-4 font-black text-[36px] leading-[1.05] md:text-[48px]">Welcome to<br>Wordsworth High<br>School</h1>
-  <p class="mt-2 text-white/70 text-sm">Makhanani LTSM • Books • Issue • Return • 30 November Due Date<br>1 Learner = 1 Title • No Grade Mismatch • Scan or Type</p>
+<!-- SCHOOL LOGIN -->
+<div id="loginBox" class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500"><h2 class="font-bold text-lg">🏫 School Login — Enter School Code + Password</h2><p class="text-xs text-gray-500">Each school has its own code + password from Super Admin. Wordsworth Demo: Code <b>WHS</b> + Password <b>Wordsworth2026</b> • Other schools: Use your school's code.</p><div class="flex flex-wrap gap-2 mt-2"><input id="schoolCode" placeholder="School Code e.g. WHS" class="border-2 rounded-lg px-3 py-2 font-black uppercase flex-1 min-w-[140px]"><div class="relative flex-1 min-w-[180px]"><input id="schoolPw" type="password" placeholder="School Password" class="border-2 rounded-lg px-3 py-2 w-full font-bold"><button onclick="let i=document.getElementById('schoolPw');i.type=i.type==='password'?'text':'password'" class="absolute right-2 top-2 text-xs bg-gray-100 px-2 py-1 rounded">👁</button></div><button onclick="loginSchool()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">Login →</button><button onclick="useDemo()" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold">Use Wordsworth Demo</button></div><div id="loginMsg" class="text-sm mt-1"></div><div class="text-xs mt-2 bg-yellow-50 border rounded p-2">New School? Contact Xintimani to get your School Code + Login — <button onclick="openWhatsApp('Hi! I want Makhanani LTSM for my school. Please send my School Code + Login. My school name is: ')" class="text-green-700 underline font-bold">💬 WhatsApp 078 023 3263 to Register Your School →</button> or <a href="mailto:vusichauke3037@gmail.com" class="text-blue-600 underline font-bold">✉️ Email vusichauke3037@gmail.com</a></div></div>
+
+<!-- LOGGED IN VIEW -->
+<div id="mainView" class="hidden">
+<div class="flex flex-wrap justify-between items-center mt-4 gap-2"><h2 class="font-bold text-lg">Welcome, <span id="schoolNameLabel">Wordsworth High School</span> — <span id="schoolPrefixLabel" class="text-blue-600 font-black">WHS</span></h2><div class="flex gap-2"><button onclick="openWhatsApp('Hi! I need help with Makhanani LTSM at '+document.getElementById('schoolNameLabel').textContent)" class="bg-[#25D366] text-white px-3 py-1 rounded-lg font-bold text-xs">💬 WhatsApp Support</button><button onclick="logoutSchool()" class="bg-red-600 text-white px-3 py-1 rounded-lg font-bold text-xs">🔒 Logout School</button></div></div>
+
+<!-- STATS -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3 text-center">
+<div class="bg-white rounded-xl p-3 border"><div class="text-xs text-gray-500">LEARNERS</div><div class="font-black text-xl" id="statLearners">0</div><button onclick="document.getElementById('learnersSection').scrollIntoView({behavior:'smooth'})" class="text-xs text-blue-600 underline">View Learners ↓</button></div>
+<div class="bg-white rounded-xl p-3 border"><div class="text-xs text-gray-500">BOOK TITLES</div><div class="font-black text-xl" id="statTitles">0</div></div>
+<div class="bg-white rounded-xl p-3 border"><div class="text-xs text-gray-500">TOTAL BOOK COPIES</div><div class="font-black text-xl" id="statCopies">0</div></div>
+<div class="bg-white rounded-xl p-3 border"><div class="text-xs text-gray-500">OUT NOW</div><div class="font-black text-xl text-orange-600" id="statOut">0</div></div>
+<div class="bg-white rounded-xl p-3 border"><div class="text-xs text-gray-500">OVERDUE / DUE 30 NOV</div><div class="font-black text-xl text-red-600" id="statOverdue">0</div></div>
 </div>
 
-<!-- INSTALL BANNER -->
-<div id="installBanner" class="max-w-5xl mx-auto px-4 mt-5">
-  <div class="bg-white text-black rounded-3xl p-4 flex items-center gap-3 shadow-xl">
-    <div class="w-12 h-12 rounded-2xl bg-[#0a0a5c] text-white flex items-center justify-center text-2xl shrink-0">📲</div>
-    <div class="flex-1 min-w-0">
-      <div class="font-black">Install Wordsworth App</div>
-      <div id="installSub" class="text-[12px] text-gray-500">Install for full-screen, offline, home-screen icon.</div>
-    </div>
-    <button id="installBtn" onclick="doInstall()" class="bg-[#0a0a5c] text-white px-4 py-3 rounded-xl font-black shrink-0">Install →</button>
-  </div>
-  <div class="text-center mt-2"><button onclick="dismissInstall()" class="text-white/60 text-xs underline">Hide for now — Use Create Shortcut in Chrome ⋮ menu</button></div>
+<!-- TABS -->
+<div class="flex gap-2 mt-4 overflow-x-auto pb-1">
+<button id="tabBtn-issue" onclick="switchTab('issue')" class="whitespace-nowrap px-4 py-2 rounded-lg font-bold border-2 border-black bg-black text-white">📤 Issue Books</button>
+<button id="tabBtn-return" onclick="switchTab('return')" class="whitespace-nowrap px-4 py-2 rounded-lg font-bold border-2 border-black bg-white">📥 Return Books</button>
+<button id="tabBtn-learners" onclick="switchTab('learners')" class="whitespace-nowrap px-4 py-2 rounded-lg font-bold border-2 border-black bg-white">👩‍🎓 Learners</button>
+<button id="tabBtn-books" onclick="switchTab('books')" class="whitespace-nowrap px-4 py-2 rounded-lg font-bold border-2 border-black bg-white">📚 Books / LTSM</button>
+<button id="tabBtn-history" onclick="switchTab('history')" class="whitespace-nowrap px-4 py-2 rounded-lg font-bold border-2 border-black bg-white">📋 History / Overdue</button>
+<button id="tabBtn-help" onclick="switchTab('help')" class="whitespace-nowrap px-4 py-2 rounded-lg font-bold border-2 border-black bg-white">💬 Help / Contact</button>
 </div>
 
-<!-- LOGIN / ROLE GRID -->
-<div class="max-w-5xl mx-auto px-4 mt-5 pb-6">
-  <div class="bg-white text-black rounded-t-[28px] p-5">
-    <div class="flex items-center justify-between">
-      <h2 class="font-black text-xl">Choose Your Role → Login</h2>
-      <span class="text-[11px] bg-green-100 text-green-700 font-bold px-2 py-1 rounded-full">Tap a card, enter password</span>
-    </div>
-    <p class="text-[12px] text-gray-500 mt-1">Each role sees only what they are allowed to see. Do NOT share passwords with learners.</p>
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-      <button onclick="openLogin('librarian','librarian.html')" class="role-card text-left border-2 border-blue-950 rounded-2xl p-3"><div class="text-2xl">📚</div><div class="font-black">Librarian</div><div class="text-[11px] text-gray-500">Whole School<br>Add Stock • Issue • Return</div><div class="mt-2 text-[11px] font-bold text-blue-900">Login →</div></button>
-      <button onclick="openLogin('teacher','teacher.html')" class="role-card text-left border-2 border-green-600 rounded-2xl p-3"><div class="text-2xl">👩‍🏫</div><div class="font-black">Teacher</div><div class="text-[11px] text-gray-500">Own Class Only<br>Request → Approve → Scan</div><div class="mt-2 text-[11px] font-bold text-green-700">Login →</div></button>
-      <button onclick="openLogin('hod','hod.html')" class="role-card text-left border-2 border-orange-500 rounded-2xl p-3"><div class="text-2xl">🧑‍🏫</div><div class="font-black">HOD</div><div class="text-[11px] text-gray-500">Own Dept Only<br>Approve • Issue to Dept</div><div class="mt-2 text-[11px] font-bold text-orange-600">Login →</div></button>
-      <button onclick="openLogin('principal','principal.html')" class="role-card text-left border-2 border-purple-700 rounded-2xl p-3"><div class="text-2xl">👑</div><div class="font-black">Principal</div><div class="text-[11px] text-gray-500">Whole School<br>View Only • Print for SMT</div><div class="mt-2 text-[11px] font-bold text-purple-700">Login →</div></button>
-      <button onclick="openLogin('admin','school-admin.html')" class="role-card text-left border-2 border-slate-600 rounded-2xl p-3"><div class="text-2xl">🛠️</div><div class="font-black">School Admin</div><div class="text-[11px] text-gray-500">People • Classes • Backup</div><div class="mt-2 text-[11px] font-bold text-slate-700">Login →</div></button>
-      <button onclick="openLogin('finance','finance.html')" class="role-card text-left border-2 border-emerald-600 rounded-2xl p-3"><div class="text-2xl">💰</div><div class="font-black">Finance</div><div class="text-[11px] text-gray-500">Money • Value Out • Lost</div><div class="mt-2 text-[11px] font-bold text-emerald-700">Login →</div></button>
-      <button onclick="openLogin('superadmin','superadmin.html')" class="role-card text-left border-2 border-red-600 rounded-2xl p-3"><div class="text-2xl">🔐</div><div class="font-black">Super Admin</div><div class="text-[11px] text-gray-500">Passwords • System • Data</div><div class="mt-2 text-[11px] font-bold text-red-600">Login →</div></button>
-      <button onclick="openLogin('dashboard','dashboard.html')" class="role-card text-left border-2 border-gray-300 rounded-2xl p-3 bg-gray-50"><div class="text-2xl">📊</div><div class="font-black">Dashboard</div><div class="text-[11px] text-gray-500">View Reports<br>No password to view</div><div class="mt-2 text-[11px] font-bold">Open →</div></button>
-    </div>
-
-    <!-- QUICK TOOLS -->
-    <div class="mt-5">
-      <h3 class="font-black">Quick Tools — No Login Needed</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm">
-        <a href="dashboard.html" class="bg-purple-100 text-purple-900 px-3 py-3 rounded-xl font-bold text-center">📊 Dashboard</a>
-        <a href="record.html" class="bg-green-100 text-green-900 px-3 py-3 rounded-xl font-bold text-center">📄 Class Record</a>
-        <a href="barcodes.html" class="bg-black text-white px-3 py-3 rounded-xl font-bold text-center">🖨️ Print Barcodes</a>
-        <a href="learner-cards.html" class="bg-blue-100 text-blue-900 px-3 py-3 rounded-xl font-bold text-center">🪪 Learner Cards</a>
-        <a href="staff-guide.html" class="bg-yellow-100 text-yellow-900 px-3 py-3 rounded-xl font-bold text-center col-span-2 md:col-span-4">📖 Staff Guide — 1 Page — Print & Stick On Wall</a>
-      </div>
-    </div>
-
-    <!-- TODAY -->
-    <div class="mt-5 bg-yellow-50 border border-yellow-300 rounded-xl p-3 flex flex-wrap gap-3 justify-between items-center">
-      <div><div class="font-black text-sm">📚 ALL BOOKS DUE: <span class="text-red-600">30 NOVEMBER <span id="dueYear"></span></span></div><div class="text-[12px] text-gray-500"><span id="dueCountdown"></span> • 1 Learner = 1 Title • No Grade Mismatch • Scan Book + Learner ID to Issue • Scan Book ONLY to Return</div></div>
-      <div class="flex gap-2"><a href="dashboard.html" class="bg-[#0a0a5c] text-white px-4 py-2 rounded-lg font-bold text-sm">View Dashboard →</a><button onclick="logoutAll()" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-bold text-sm">🔒 Logout All</button></div>
-    </div>
-
-    <div class="mt-4 grid grid-cols-3 gap-2 text-center text-[12px]">
-      <div class="border rounded-xl p-2"><div class="text-gray-500">TOTAL STOCK</div><div id="cTotal" class="font-black text-lg">—</div></div>
-      <div class="border rounded-xl p-2"><div class="text-gray-500">ISSUED OUT</div><div id="cOut" class="font-black text-lg text-orange-600">—</div></div>
-      <div class="border rounded-xl p-2"><div class="text-gray-500">% RETURNED</div><div id="cRet" class="font-black text-lg text-green-600">—</div></div>
-    </div>
-
-    <div class="text-center text-[11px] text-gray-400 mt-4">Wordsworth High School • Makhanani LTSM • A Product of Xintimani Group Holdings (PTY) LTD • Building Solutions. Empowering Communities.<br>Files: index.html • dashboard.html • record.html • librarian.html • teacher.html • hod.html • principal.html • school-admin.html • superadmin.html • finance.html • barcodes.html • learner-cards.html • staff-guide.html • manifest.json • sw.js</div>
-  </div>
+<!-- ISSUE TAB -->
+<div id="tab-issue">
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+<div class="bg-white rounded-2xl p-4 border-2 border-blue-500"><h3 class="font-black text-lg">📷 STEP 1 — Scan / Select Book</h3><p class="text-xs text-gray-500">Scan book barcode with scanner / phone camera, or type barcode, or search title.</p><input id="bookScan" placeholder="Scan / Type Book Barcode e.g. BK-MAT10-001 — Then press Enter" class="w-full border-2 rounded-lg px-3 py-3 font-mono font-bold mt-2" onkeydown="if(event.key==='Enter') scanBook()"><button onclick="scanBook()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-bold mt-2">🔍 Find Book →</button><div id="bookResult" class="mt-2 text-sm"></div><div class="mt-2"><input id="bookSearch" oninput="renderBooks()" placeholder="Or search book title / subject / grade…" class="w-full border rounded-lg px-3 py-2"></div><div id="bookSearchList" class="mt-2 space-y-1 max-h-64 overflow-auto text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 border-2 border-green-500"><h3 class="font-black text-lg">👩‍🎓 STEP 2 — Scan / Select Learner</h3><p class="text-xs text-gray-500">Scan learner card, or type Learner ID, or search name — No card? Search name works.</p><input id="learnerScan" placeholder="Scan / Type Learner ID e.g. WHS-0001 — Then press Enter" class="w-full border-2 rounded-lg px-3 py-3 font-mono font-bold mt-2" onkeydown="if(event.key==='Enter') scanLearner()"><button onclick="scanLearner()" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold mt-2">🔍 Find Learner →</button><div id="learnerResult" class="mt-2 text-sm"></div><div class="mt-2"><input id="learnerSearch" oninput="renderLearners()" placeholder="Or search learner name / grade / class…" class="w-full border rounded-lg px-3 py-2"></div><div id="learnerSearchList" class="mt-2 space-y-1 max-h-64 overflow-auto text-sm"></div></div>
+</div>
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-black"><h3 class="font-black text-lg">✅ STEP 3 — Issue</h3><div id="issueSummary" class="text-sm bg-gray-50 border rounded p-3">Select a Book + Learner above to issue.</div><button onclick="issueBook()" class="w-full bg-black text-white py-3 rounded-lg font-black mt-2 text-lg">📤 ISSUE BOOK NOW →</button><div id="issueMsg" class="text-sm mt-1"></div><div class="text-xs text-gray-500 mt-1">HOD Approval: If Teacher has not been approved for this book / quantity, issue will be blocked — Ask HOD to approve in HOD page. <a href="hod.html" class="underline text-orange-600 font-bold">Open HOD Page →</a></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h3 class="font-bold">📤 Recently Issued — Today</h3><div id="recentIssued" class="mt-2 space-y-1 text-sm"></div></div>
 </div>
 
-<!-- LOGIN MODAL -->
-<div id="loginModal" class="hide fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[100]">
-  <div class="bg-white text-black rounded-3xl w-full max-w-sm p-6 text-center">
-    <div id="loginEmoji" class="text-4xl">🔐</div>
-    <h2 id="loginTitle" class="font-black text-xl mt-2">Login</h2>
-    <p id="loginHint" class="text-sm text-gray-500"></p>
-    <div class="relative mt-3">
-      <input id="pwInput" type="password" placeholder="Enter password" class="w-full border-2 rounded-xl px-3 py-3 text-center font-bold" onkeydown="if(event.key==='Enter') doLogin()">
-      <button onclick="let i=document.getElementById('pwInput');i.type=i.type==='password'?'text':'password'" class="absolute right-2 top-2.5 text-xs bg-gray-100 px-2 py-1 rounded">👁 Show</button>
-    </div>
-    <div id="pwError" class="hide text-red-600 text-sm font-bold mt-2">❌ Wrong password. Ask Super Admin.</div>
-    <button onclick="doLogin()" class="w-full bg-[#0a0a5c] text-white py-3 rounded-xl font-black mt-4">Login →</button>
-    <div class="flex gap-2 mt-2"><button onclick="closeLogin()" class="flex-1 bg-gray-100 py-2 rounded-lg font-bold">Cancel</button><button onclick="goWithoutLogin()" class="flex-1 bg-yellow-100 py-2 rounded-lg font-bold">Open Without Login</button></div>
-    <p class="text-[11px] text-gray-400 mt-2">Default passwords on first login — Change in Super Admin.<br>Librarian: Librarian2026 • Teacher: Teacher2026 • HOD: Hod2026<br>Principal: Principal2026 • Admin: Admin2026 • Finance: Finance2026 • Super: Super2026 • Master: Master2026</p>
-  </div>
+<!-- RETURN TAB -->
+<div id="tab-return" class="hidden">
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-purple-500"><h3 class="font-black text-lg">📥 Return — 2 Ways</h3><div class="grid md:grid-cols-2 gap-3 mt-2"><div class="border rounded-xl p-3"><div class="font-bold">Option A: Scan Book</div><input id="returnBookScan" placeholder="Scan Book Barcode → Enter" class="w-full border rounded-lg px-3 py-2 mt-1 font-mono" onkeydown="if(event.key==='Enter') returnByBook()"><button onclick="returnByBook()" class="w-full bg-purple-600 text-white py-2 rounded-lg font-bold mt-1 text-sm">📥 Return This Book →</button><div id="returnBookMsg" class="text-sm mt-1"></div></div><div class="border rounded-xl p-3"><div class="font-bold">Option B: Search Learner → Tap Book → Return</div><input id="returnLearnerSearch" oninput="renderReturnLearners()" placeholder="Search Learner Name / ID…" class="w-full border rounded-lg px-3 py-2 mt-1"><div id="returnLearnerList" class="mt-2 space-y-1 text-sm max-h-64 overflow-auto"></div></div></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h3 class="font-bold">📥 Recently Returned</h3><div id="recentReturned" class="mt-2 space-y-1 text-sm"></div></div>
 </div>
+
+<!-- LEARNERS TAB -->
+<div id="tab-learners" class="hidden"><div id="learnersSection" class="bg-white rounded-2xl p-4 mt-4"><div class="flex flex-wrap gap-2 justify-between"><h3 class="font-bold text-lg">👩‍🎓 Learners — <span id="learnersCount">0</span></h3><div class="flex gap-2"><input id="filterLearnerGrade" oninput="renderLearners()" placeholder="Filter Grade e.g. 10" class="border rounded-lg px-3 py-1 w-32"><button onclick="exportLearners()" class="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm">⬇️ Export Learners (CSV)</button><a href="print.html" class="bg-blue-600 text-white px-3 py-1 rounded-lg font-bold text-sm">🖨️ Print Learner Cards →</a></div></div><div id="learnersList" class="mt-2 space-y-1 text-sm max-h-[500px] overflow-auto"></div><div class="mt-3 border-t pt-2"><div class="font-bold text-sm">➕ Add Learner Manually</div><div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-1"><input id="newLearnerName" placeholder="Full Name *" class="border rounded px-2 py-1"><input id="newLearnerId" placeholder="Learner ID e.g. WHS-0101" class="border rounded px-2 py-1"><input id="newLearnerGrade" placeholder="Grade e.g. 10" class="border rounded px-2 py-1"><input id="newLearnerClass" placeholder="Class e.g. 10A" class="border rounded px-2 py-1"><button onclick="addLearner()" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-sm">➕ Add Learner</button></div></div></div></div>
+
+<!-- BOOKS TAB -->
+<div id="tab-books" class="hidden"><div class="bg-white rounded-2xl p-4 mt-4"><div class="flex flex-wrap gap-2 justify-between"><h3 class="font-bold text-lg">📚 Books / LTSM — <span id="booksCount">0</span> Titles</h3><div class="flex gap-2"><input id="filterBookGrade" oninput="renderBooks()" placeholder="Filter Grade" class="border rounded-lg px-3 py-1 w-32"><button onclick="exportBooks()" class="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm">⬇️ Export Books (CSV)</button><a href="print.html" class="bg-blue-600 text-white px-3 py-1 rounded-lg font-bold text-sm">🖨️ Print Book Barcodes →</a></div></div><div id="booksList" class="mt-2 space-y-1 text-sm max-h-[500px] overflow-auto"></div><div class="mt-3 border-t pt-2"><div class="font-bold text-sm">➕ Add Book Title Manually</div><div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-1"><input id="newBookTitle" placeholder="Title e.g. Maths Gr10" class="border rounded px-2 py-1"><input id="newBookSubject" placeholder="Subject e.g. Mathematics" class="border rounded px-2 py-1"><input id="newBookGrade" placeholder="Grade e.g. 10" class="border rounded px-2 py-1"><input id="newBookCopies" type="number" placeholder="Qty Copies e.g. 30" class="border rounded px-2 py-1"><button onclick="addBook()" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-sm">➕ Add Book</button></div></div></div></div>
+
+<!-- HISTORY TAB -->
+<div id="tab-history" class="hidden"><div class="bg-white rounded-2xl p-4 mt-4"><div class="flex flex-wrap gap-2 justify-between"><h3 class="font-bold text-lg">📋 History — All Issues / Returns</h3><input id="searchHistory" oninput="renderHistory()" placeholder="Search Learner / Book / ID" class="border rounded-lg px-3 py-1 flex-1"><select id="filterHistory" onchange="renderHistory()" class="border rounded-lg px-3 py-1"><option value="">All</option><option>Issued</option><option>Returned</option><option>Overdue</option></select><button onclick="exportHistory()" class="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm">⬇️ Export History (CSV)</button></div><div id="historyList" class="mt-2 space-y-1 text-sm max-h-[500px] overflow-auto"></div></div><div class="bg-red-50 border border-red-200 rounded-2xl p-4 mt-4"><h3 class="font-bold text-red-700">⚠️ Overdue — Due 30 Nov — Not Yet Returned</h3><div id="overdueList" class="mt-2 space-y-1 text-sm"></div></div></div>
+
+<!-- HELP TAB -->
+<div id="tab-help" class="hidden"><div class="bg-white rounded-2xl p-4 mt-4 border-2 border-[#25D366]"><h3 class="font-black text-lg">💬 Need Help With Makhanani LTSM?</h3><p class="text-sm text-gray-600 mt-1">Book won't scan? Learner not found? HOD approval blocked? Contact Xintimani Group — We reply within 1 working day.</p><div class="grid md:grid-cols-3 gap-3 mt-3"><div class="bg-[#25D366] text-white rounded-xl p-4 text-center"><div class="text-3xl">💬</div><div class="font-black mt-1">WhatsApp Us</div><div class="text-sm">078 023 3263</div><button onclick="openWhatsApp('Hi! I need help with Makhanani LTSM at Wordsworth High School. My problem is: ')" class="bg-white text-black px-4 py-2 rounded-lg font-bold mt-2 w-full">💬 Chat Now →</button></div><div class="bg-blue-600 text-white rounded-xl p-4 text-center"><div class="text-3xl">✉️</div><div class="font-black mt-1">Email Us</div><div class="text-sm break-all">vusichauke3037@gmail.com</div><a href="mailto:vusichauke3037@gmail.com?subject=Help%20-%20Makhanani%20LTSM%20-%20Wordsworth&body=Hi%20Xintimani%2C%20I%20need%20help%20with%3A%20" class="block bg-white text-black px-4 py-2 rounded-lg font-bold mt-2">✉️ Send Email →</a></div><div class="bg-black text-white rounded-xl p-4 text-center"><div class="text-3xl">🌐</div><div class="font-black mt-1">Xintimani Website</div><div class="text-sm">xintimani.co.za</div><a href="xintimani.html" class="block bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold mt-2">🌐 Visit Website →</a></div></div><div class="mt-3 bg-gray-50 border rounded-xl p-3 text-sm"><b>Quick Fixes:</b><br>• Book not found? → Check barcode, try Search Title in Books tab, or Add Book Manually.<br>• Learner not found? → Search by Name (not ID) in Learners tab, or Add Learner Manually.<br>• Issue blocked? → Ask HOD to approve in <a href="hod.html" class="text-orange-600 underline font-bold">HOD Page</a>.<br>• Printer not printing? → Open <a href="print.html" class="text-blue-600 underline font-bold">Print Centre</a> → Print Learner Cards / Book Barcodes A4 3×5.<br>• Still stuck? → <button onclick="openWhatsApp('Hi! I am stuck on Makhanani LTSM. Please help me.')" class="text-green-700 underline font-bold">WhatsApp 078 023 3263 Now →</button></div></div></div>
+</div>
+
+<!-- FOOTER — YOUR CONTACTS ON EVERY PAGE -->
+<footer class="bg-gray-900 text-gray-300 rounded-2xl p-6 mt-8 grid md:grid-cols-4 gap-6 text-sm">
+<div><div class="font-black text-white text-lg">XINTIMANI <span class="text-yellow-500">GROUP</span></div><div class="text-xs">HOLDINGS (PTY) LTD</div><p class="mt-2">Building South Africa, One Solution At A Time.<br>Makhanani LTSM — No Lost Books, No Lost Time.</p><p class="mt-2 text-xs">📍 Bushbuckridge, Mpumalanga<br>🕐 Mon–Fri 08:00–16:30 • Sat 09:00–12:00</p></div>
+<div><div class="font-bold text-white">📞 Contact Us</div><ul class="mt-2 space-y-1"><li>💬 WhatsApp: <button onclick="openWhatsApp('Hi Xintimani!')" class="text-yellow-400 underline font-bold">078 023 3263</button></li><li>✉️ Email: <a href="mailto:vusichauke3037@gmail.com" class="text-yellow-400 underline">vusichauke3037@gmail.com</a></li><li>🌐 Website: <a href="xintimani.html" class="text-yellow-400 underline">xintimani.co.za</a></li><li>📍 Bushbuckridge, Mpumalanga</li></ul><button onclick="openWhatsApp('Hi Xintimani! I need help with Makhanani LTSM.')" class="bg-[#25D366] text-white px-3 py-1 rounded-lg font-bold mt-2 text-xs">💬 WhatsApp Now →</button></div>
+<div><div class="font-bold text-white">Makhanani LTSM</div><ul class="mt-2 space-y-1"><li><a href="index.html" class="hover:text-yellow-400">📚 Lending Page (This Page)</a></li><li><a href="teacher.html" class="hover:text-yellow-400">👩‍🏫 Teacher</a></li><li><a href="hod.html" class="hover:text-yellow-400">🧑‍🏫 HOD</a></li><li><a href="librarian.html" class="hover:text-yellow-400">📚 Librarian</a></li><li><a href="print.html" class="hover:text-yellow-400">🖨️ Print Centre</a></li><li><a href="superadmin.html" class="hover:text-yellow-400">👑 Super Admin</a></li><li><a href="xintimani.html" class="hover:text-yellow-400">🌐 Xintimani Website</a></li></ul></div>
+<div><div class="font-bold text-white">Need A School Account?</div><p class="mt-2">Your school can join Makhanani LTSM — From R 499/mo • Trial 14 Days Free.</p><button onclick="openWhatsApp('Hi! I want Makhanani LTSM for my school. My school name is: ')" class="bg-yellow-500 text-black px-3 py-1 rounded-lg font-bold mt-2 text-xs">💬 Register My School →</button><a href="mailto:vusichauke3037@gmail.com?subject=New%20School%20-%20Makhanani%20LTSM&body=Hi%2C%20I%20want%20Makhanani%20LTSM%20for%20my%20school.%20School%20name%3A%20" class="block bg-white text-black px-3 py-1 rounded-lg font-bold mt-2 text-xs text-center">✉️ Email To Register →</a><div class="text-xs mt-2">POPIA Compliant • © <span id="year"></span> Xintimani Group Holdings (Pty) Ltd</div></div>
+</footer>
+<div class="text-center text-xs text-gray-500 mt-3">Made in Bushbuckridge, Mpumalanga, South Africa 🇿🇦 • WhatsApp 078 023 3263 • vusichauke3037@gmail.com • Powered by Xintimani Group Holdings (Pty) Ltd</div>
+</div>
+
+<!-- FLOATING WHATSAPP -->
+<a href="#" onclick="openWhatsApp('Hi Xintimani Group! I need help with Makhanani LTSM.');return false;" class="wa-float fixed bottom-5 right-5 z-[999] bg-[#25D366] text-white w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-2xl font-black" title="WhatsApp 078 023 3263"><span class="text-2xl">💬</span><span class="text-[9px]">WhatsApp</span></a>
 
 <script>
-// ---------- DEFAULT PASSWORDS (same as all pages) ----------
-function getPasswords(){
-  let d = {librarian:'Librarian2026',hod:'Hod2026',teacher:'Teacher2026',principal:'Principal2026',admin:'Admin2026',finance:'Finance2026',superadmin:'Super2026',master:'Master2026'};
-  let p = JSON.parse(localStorage.getItem('makhanani_passwords')||'{}');
-  let out = {...d, ...p};
-  localStorage.setItem('makhanani_passwords', JSON.stringify(out));
-  return out;
+document.getElementById('year').textContent=new Date().getFullYear();
+let schools=JSON.parse(localStorage.getItem('makhanani_schools')||'[]');
+if(!schools.length){schools=[{id:'WHS',name:'Wordsworth High School',prefix:'WHS',town:'Bushbuckridge',contact:'Mr. Nkosi',phone:'0780233263',email:'vusichauke3037@gmail.com',plan:'Standard',status:'Active',expiry:'2027-11-23',maxLearners:800,maxBooks:5000,password:'Wordsworth2026',depts:[{dept:'Mathematics',hod:'Mr. Khumalo',pw:'HodMath2026'},{dept:'Sciences',hod:'Ms. Dube',pw:'HodSci2026'},{dept:'Languages',hod:'Mr. Mokoena',pw:'HodLang2026'}],created:new Date().toLocaleDateString()}];localStorage.setItem('makhanani_schools',JSON.stringify(schools));}
+let currentSchool=null;
+function getPrefixKey(){return currentSchool?currentSchool.prefix:'WHS';}
+function key(n){return 'makhanani_'+getPrefixKey()+'_'+n;}
+function getLearners(){let v=JSON.parse(localStorage.getItem(key('learners'))||'[]');if(getPrefixKey()==='WHS'&&!v.length){v=JSON.parse(localStorage.getItem('makhanani_learners')||'[]');}return v;}
+function getBooks(){let v=JSON.parse(localStorage.getItem(key('ltsm'))||'[]');if(getPrefixKey()==='WHS'&&!v.length){v=JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');}return v;}
+function getHistory(){return JSON.parse(localStorage.getItem(key('history'))||localStorage.getItem('makhanani_history')||'[]');}
+function getApprovals(){return JSON.parse(localStorage.getItem(key('approvals'))||localStorage.getItem('makhanani_approvals')||'[]');}
+function saveLearners(v){localStorage.setItem(key('learners'),JSON.stringify(v));if(getPrefixKey()==='WHS')localStorage.setItem('makhanani_learners',JSON.stringify(v));}
+function saveBooks(v){localStorage.setItem(key('ltsm'),JSON.stringify(v));if(getPrefixKey()==='WHS')localStorage.setItem('makhanani_ltsm',JSON.stringify(v));}
+function saveHistory(v){localStorage.setItem(key('history'),JSON.stringify(v));if(getPrefixKey()==='WHS')localStorage.setItem('makhanani_history',JSON.stringify(v));}
+function useDemo(){document.getElementById('schoolCode').value='WHS';document.getElementById('schoolPw').value='Wordsworth2026';loginSchool();}
+function loginSchool(){
+  let code=document.getElementById('schoolCode').value.trim().toUpperCase();let pw=document.getElementById('schoolPw').value.trim();
+  if(!code||!pw){document.getElementById('loginMsg').innerHTML='<span class="text-red-600 font-bold">Enter School Code + Password.</span>';return;}
+  let s=schools.find(x=>x.prefix===code);
+  if(!s){document.getElementById('loginMsg').innerHTML='<span class="text-red-600 font-bold">❌ School Code '+code+' not found. Contact Xintimani on WhatsApp 078 023 3263 to register.</span>';return;}
+  if(s.password!==pw){document.getElementById('loginMsg').innerHTML='<span class="text-red-600 font-bold">❌ Wrong password for '+s.name+'. Contact Xintimani on WhatsApp 078 023 3263.</span>';return;}
+  if(s.status==='Suspended — Unpaid'||s.status==='Expired'){document.getElementById('loginMsg').innerHTML='<span class="text-red-600 font-bold">⚠️ This school is '+s.status+' (Expiry: '+s.expiry+'). Contact Xintimani on WhatsApp 078 023 3263 to renew.</span>';return;}
+  currentSchool=s;sessionStorage.setItem('makhanani_current_school',JSON.stringify(s));
+  document.getElementById('loginBox').classList.add('hidden');document.getElementById('mainView').classList.remove('hidden');
+  document.getElementById('schoolNameLabel').textContent=s.name;document.getElementById('schoolPrefixLabel').textContent=s.prefix;document.getElementById('headerSchool').textContent=s.name+' ('+s.prefix+')';
+  // Seed demo data for WHS if empty
+  if(getPrefixKey()==='WHS'&&!getLearners().length){let demo=[];for(let i=1;i<=20;i++){demo.push({id:'WHS-'+String(i).padStart(4,'0'),name:['Thabo Nkosi','Lerato Dube','Sipho Mokoena','Naledi Khumalo','Bongani Chauke','Zanele Nkuna','Tebogo Mabasa','Karabo Maluleke','Sibusiso Chauke','Ayanda Mokoena','Refiloe Dube','Tshepo Nkosi','Mpho Maluleke','Nokuthula Chauke','Kabelo Mokoena','Precious Nkuna','Lebogang Dube','Oratile Khumalo','Kgothatso Chauke','Boitumelo Mokoena'][i-1]||('Learner '+i),grade:String(8+Math.floor(i/7)),className:(8+Math.floor(i/7))+'A',phone:''});}saveLearners(demo);}
+  if(getPrefixKey()==='WHS'&&!getBooks().length){let demoBooks=[{title:'Mathematics Gr10',subject:'Mathematics',grade:'10',copies:Array.from({length:30},(_,i)=>({barcode:'BK-MAT10-'+String(i+1).padStart(3,'0'),status:'Available'}))},{title:'English HL Gr10',subject:'Languages',grade:'10',copies:Array.from({length:30},(_,i)=>({barcode:'BK-ENG10-'+String(i+1).padStart(3,'0'),status:'Available'}))},{title:'Natural Sciences Gr9',subject:'Sciences',grade:'9',copies:Array.from({length:25},(_,i)=>({barcode:'BK-SCI09-'+String(i+1).padStart(3,'0'),status:'Available'}))}];saveBooks(demoBooks);}
+  renderAll();document.getElementById('loginMsg').innerHTML='';
 }
-let PASSWORDS = getPasswords();
-let loginTarget = null, loginRole = null, loginEmojiMap = {librarian:'📚',teacher:'👩‍🏫',hod:'🧑‍🏫',principal:'👑',admin:'🛠️',finance:'💰',superadmin:'🔐',dashboard:'📊'};
-
-function openLogin(role, target){
-  if(role==='dashboard'){ location.href=target; return; }
-  loginRole = role; loginTarget = target;
-  document.getElementById('loginEmoji').textContent = loginEmojiMap[role]||'🔐';
-  document.getElementById('loginTitle').textContent = role.charAt(0).toUpperCase()+role.slice(1)+' Login';
-  document.getElementById('loginHint').textContent = 'Enter '+role+' password to continue to '+target;
-  document.getElementById('pwInput').value='';
-  document.getElementById('pwError').classList.add('hide');
-  document.getElementById('loginModal').classList.remove('hide');
-  setTimeout(()=>document.getElementById('pwInput').focus(),100);
+function logoutSchool(){currentSchool=null;sessionStorage.removeItem('makhanani_current_school');document.getElementById('mainView').classList.add('hidden');document.getElementById('loginBox').classList.remove('hidden');}
+function switchTab(t){['issue','return','learners','books','history','help'].forEach(x=>{let el=document.getElementById('tab-'+x);if(el)el.classList.toggle('hidden',x!==t);let b=document.getElementById('tabBtn-'+x);if(b){b.classList.toggle('bg-black',x===t);b.classList.toggle('text-white',x===t);b.classList.toggle('bg-white',x!==t);}});renderAll();}
+let selectedBook=null,selectedLearner=null;
+function scanBook(){
+  let v=document.getElementById('bookScan').value.trim().toUpperCase();if(!v){document.getElementById('bookResult').innerHTML='<span class="text-red-600">Enter / Scan barcode.</span>';return;}
+  let books=getBooks();let found=null;books.forEach(b=>{b.copies.forEach(c=>{if(c.barcode===v)found={book:b,copy:c};});});
+  if(!found){document.getElementById('bookResult').innerHTML='<span class="text-red-600 font-bold">❌ Book '+v+' not found. Try Search Title below, or Add Book in Books tab. Need help? <button onclick="openWhatsApp(\'Hi! Book barcode '+v+' not found at Wordsworth.\')" class="underline">WhatsApp 078 023 3263 →</button></span>';selectedBook=null;updateIssueSummary();return;}
+  selectedBook=found;document.getElementById('bookResult').innerHTML=`<span class="text-green-600 font-bold">✅ Found: ${found.book.title} • ${found.book.subject} • Gr ${found.book.grade} • Barcode: ${found.copy.barcode} • Status: ${found.copy.status}</span>`;document.getElementById('bookResult').classList.remove('scan-flash');void document.getElementById('bookResult').offsetWidth;document.getElementById('bookResult').classList.add('scan-flash');updateIssueSummary();
 }
-function closeLogin(){ document.getElementById('loginModal').classList.add('hide'); }
-function goWithoutLogin(){ if(loginTarget) location.href=loginTarget; }
-function doLogin(){
-  let v = document.getElementById('pwInput').value;
-  let ok = (v===PASSWORDS[loginRole] || v===PASSWORDS.superadmin || v===PASSWORDS.master);
-  // Super Admin page only allows super/master
-  if(loginRole==='superadmin' && !(v===PASSWORDS.superadmin || v===PASSWORDS.master)) ok=false;
-  if(ok){
-    sessionStorage.setItem('makhanani_unlocked_'+loginRole,'yes');
-    if(loginRole!=='superadmin' && (v===PASSWORDS.superadmin||v===PASSWORDS.master)) sessionStorage.setItem('makhanani_unlocked_superadmin','yes');
-    location.href = loginTarget;
-  } else {
-    document.getElementById('pwError').classList.remove('hide');
-    document.getElementById('pwInput').value='';
-  }
+function scanLearner(){
+  let v=document.getElementById('learnerScan').value.trim().toUpperCase();if(!v){document.getElementById('learnerResult').innerHTML='<span class="text-red-600">Enter / Scan Learner ID.</span>';return;}
+  let ls=getLearners();let f=ls.find(l=>l.id.toUpperCase()===v);
+  if(!f){document.getElementById('learnerResult').innerHTML='<span class="text-red-600 font-bold">❌ Learner '+v+' not found. Try Search Name below, or Add Learner in Learners tab.</span>';selectedLearner=null;updateIssueSummary();return;}
+  selectedLearner=f;document.getElementById('learnerResult').innerHTML=`<span class="text-green-600 font-bold">✅ Found: ${f.name} • ID: ${f.id} • Grade ${f.grade} • Class ${f.className}</span>`;updateIssueSummary();
 }
-function logoutAll(){ sessionStorage.clear(); alert('✅ Logged out from all roles on this device.'); location.reload(); }
-
-// ---------- COUNTS + DUE DATE ----------
-function getDue(){ let n=new Date(); let d=new Date(n.getFullYear(),10,30); if(n>d) d=new Date(n.getFullYear()+1,10,30); return d; }
-let due = getDue();
-document.getElementById('dueYear').textContent = due.getFullYear();
-let days = Math.ceil((due - new Date())/(1000*60*60*24));
-document.getElementById('dueCountdown').textContent = days>0 ? days+' days to 30 Nov' : 'OVERDUE — Collect now';
-try{
-  let ltsm = JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
-  let issues = JSON.parse(localStorage.getItem('makhanani_issues')||'[]');
-  let total=0; ltsm.forEach(it=>total+=it.copies.length);
-  let ret = issues.filter(x=>x.returned).length;
-  let out = issues.filter(x=>!x.returned).length;
-  document.getElementById('cTotal').textContent = total;
-  document.getElementById('cOut').textContent = out;
-  document.getElementById('cRet').textContent = (ret+out?Math.round(ret/(ret+out)*100):0)+'%';
-  // Firebase badge - if Firebase is connected, keep LIVE, else show Local
-  document.getElementById('firebaseBadge').textContent = '🔥 LIVE • Firebase Connected';
-} catch(e){}
-
-// ---------- PWA INSTALL ----------
-let deferredPrompt = null;
-let installBtn = document.getElementById('installBtn');
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('installSub').textContent = 'Chrome is ready — Tap Install below.';
-  installBtn.textContent = 'Install →';
-  document.getElementById('pwaBadge').textContent = '📲 Tap Install Below';
-});
-window.addEventListener('appinstalled', ()=>{
-  document.getElementById('installSub').textContent = '✅ Installed! Open from home screen.';
-  document.getElementById('installBanner').style.display='none';
-  deferredPrompt = null;
-});
-async function doInstall(){
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    let choice = await deferredPrompt.userChoice;
-    if(choice.outcome==='accepted'){ document.getElementById('installSub').textContent='✅ Installing... Check home screen.'; }
-    deferredPrompt = null;
-  } else {
-    // Fallback instructions - Chrome menu
-    alert('To Install:\n\nAndroid Chrome: Tap ⋮ (top right) → Install app / Add to Home screen → Add\n\niPhone Safari: Tap Share → Add to Home Screen\n\nIf you see "This app cannot be installed", make sure manifest.json + sw.js + icon-192.png + icon-512.png are uploaded to GitHub in same folder as index.html, then reload.');
-  }
+function updateIssueSummary(){document.getElementById('issueSummary').innerHTML=`<b>Book:</b> ${selectedBook?selectedBook.book.title+' ('+selectedBook.copy.barcode+') — '+selectedBook.copy.status:'— Not selected —'}<br><b>Learner:</b> ${selectedLearner?selectedLearner.name+' ('+selectedLearner.id+') — Gr '+selectedLearner.grade+selectedLearner.className:'— Not selected —'}<br><b>Due:</b> 30 Nov`;}
+function issueBook(){
+  if(!selectedBook||!selectedLearner){document.getElementById('issueMsg').innerHTML='<span class="text-red-600 font-bold">Select Book + Learner first.</span>';return;}
+  if(selectedBook.copy.status!=='Available'){document.getElementById('issueMsg').innerHTML='<span class="text-red-600 font-bold">❌ This copy is already OUT — Scan another copy.</span>';return;}
+  // HOD approval check: if approvals exist for this subject, require approved
+  let approvals=getApprovals();let hasApproval=approvals.length===0||approvals.some(a=>a.subject===selectedBook.book.subject||a.subject==='All'||!a.subject);
+  if(!hasApproval){document.getElementById('issueMsg').innerHTML='<span class="text-orange-600 font-bold">⚠️ No HOD Approval for '+selectedBook.book.subject+' — Ask HOD to approve in HOD Page, or WhatsApp 078 023 3263.</span>';return;}
+  let books=getBooks();books.forEach(b=>{b.copies.forEach(c=>{if(c.barcode===selectedBook.copy.barcode){c.status='Out — '+selectedLearner.id;}});});saveBooks(books);
+  let hist=getHistory();hist.unshift({learner:selectedLearner.name,learnerId:selectedLearner.id,book:selectedBook.book.title,barcode:selectedBook.copy.barcode,subject:selectedBook.book.subject,grade:selectedLearner.grade,action:'Issued',date:new Date().toLocaleString(),due:'30 Nov'});saveHistory(hist);
+  document.getElementById('issueMsg').innerHTML=`<span class="text-green-600 font-bold">✅ Issued: ${selectedBook.book.title} (${selectedBook.copy.barcode}) → ${selectedLearner.name} (${selectedLearner.id}) — Due 30 Nov</span>`;
+  selectedBook=null;selectedLearner=null;document.getElementById('bookScan').value='';document.getElementById('learnerScan').value='';document.getElementById('bookResult').innerHTML='';document.getElementById('learnerResult').innerHTML='';updateIssueSummary();renderAll();
 }
-function dismissInstall(){ document.getElementById('installBanner').style.display='none'; }
-// If already installed / standalone, hide banner
-if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
-  document.getElementById('installBanner').style.display='none';
-  document.getElementById('pwaBadge').textContent = '✅ Installed App';
+function returnByBook(){
+  let v=document.getElementById('returnBookScan').value.trim().toUpperCase();if(!v){document.getElementById('returnBookMsg').innerHTML='<span class="text-red-600">Enter barcode.</span>';return;}
+  let books=getBooks();let found=false;books.forEach(b=>{b.copies.forEach(c=>{if(c.barcode===v&&c.status!=='Available'){found=true;let learnerId=c.status.replace('Out — ','');c.status='Available';let ls=getLearners();let l=ls.find(x=>x.id===learnerId);let hist=getHistory();hist.unshift({learner:l?l.name:learnerId,learnerId,book:b.title,barcode:v,subject:b.subject,grade:l?l.grade:'',action:'Returned',date:new Date().toLocaleString(),due:'30 Nov'});saveHistory(hist);}});});
+  saveBooks(books);document.getElementById('returnBookMsg').innerHTML=found?`<span class="text-green-600 font-bold">✅ Returned: ${v}</span>`:`<span class="text-red-600 font-bold">❌ Book ${v} not found as OUT — Check barcode or use Learner Search.</span>`;document.getElementById('returnBookScan').value='';renderAll();
 }
-
-// ---------- SERVICE WORKER ----------
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW registered')).catch((e)=>console.log('SW failed',e));
-  });
+function returnByLearnerBook(barcode){
+  let books=getBooks();books.forEach(b=>{b.copies.forEach(c=>{if(c.barcode===barcode){let learnerId=c.status.replace('Out — ','');c.status='Available';let ls=getLearners();let l=ls.find(x=>x.id===learnerId);let hist=getHistory();hist.unshift({learner:l?l.name:learnerId,learnerId,book:b.title,barcode,subject:b.subject,grade:l?l.grade:'',action:'Returned',date:new Date().toLocaleString(),due:'30 Nov'});saveHistory(hist);}});});saveBooks(books);renderAll();
 }
+function addLearner(){let name=document.getElementById('newLearnerName').value.trim();let id=document.getElementById('newLearnerId').value.trim().toUpperCase()||(getPrefixKey()+'-'+Date.now().toString().slice(-4));let grade=document.getElementById('newLearnerGrade').value.trim();let cls=document.getElementById('newLearnerClass').value.trim()||grade+'A';if(!name){alert('Enter Learner Name');return;}let ls=getLearners();ls.push({id,name,grade,className:cls,phone:''});saveLearners(ls);renderAll();['newLearnerName','newLearnerId','newLearnerGrade','newLearnerClass'].forEach(i=>document.getElementById(i).value='');}
+function addBook(){let title=document.getElementById('newBookTitle').value.trim();let subject=document.getElementById('newBookSubject').value.trim()||title;let grade=document.getElementById('newBookGrade').value.trim();let qty=parseInt(document.getElementById('newBookCopies').value)||1;if(!title){alert('Enter Book Title');return;}let books=getBooks();let prefix='BK-'+(subject.slice(0,3).toUpperCase())+grade+'-';let existing=books.find(b=>b.title.toLowerCase()===title.toLowerCase());if(existing){let start=existing.copies.length+1;for(let i=0;i<qty;i++){existing.copies.push({barcode:prefix+String(start+i).padStart(3,'0'),status:'Available'});}}else{let copies=[];for(let i=0;i<qty;i++){copies.push({barcode:prefix+String(i+1).padStart(3,'0'),status:'Available'});}books.push({title,subject,grade,copies});}saveBooks(books);renderAll();['newBookTitle','newBookSubject','newBookGrade','newBookCopies'].forEach(i=>document.getElementById(i).value='');}
+function renderAll(){if(!currentSchool)return;let ls=getLearners();let books=getBooks();let hist=getHistory();let totalCopies=0;books.forEach(b=>totalCopies+=b.copies.length);let out=0;books.forEach(b=>b.copies.forEach(c=>{if(c.status!=='Available')out++;}));document.getElementById('statLearners').textContent=ls.length;document.getElementById('statTitles').textContent=books.length;document.getElementById('statCopies').textContent=totalCopies;document.getElementById('statOut').textContent=out;document.getElementById('statOverdue').textContent=hist.filter(h=>h.action==='Issued').length;renderLearners();renderBooks();renderHistory();renderReturnLearners();renderRecent();}
+function renderLearners(){if(!currentSchool)return;let ls=getLearners();let q=(document.getElementById('learnerSearch')?document.getElementById('learnerSearch').value||'':'').toLowerCase();let gradeFilter=(document.getElementById('filterLearnerGrade')?document.getElementById('filterLearnerGrade').value||'':'');let filtered=ls.filter(l=>{if(gradeFilter&&l.grade!==gradeFilter)return false;if(q&&!(l.name.toLowerCase().includes(q)||l.id.toLowerCase().includes(q)||String(l.grade).includes(q)))return false;return true;});document.getElementById('learnersCount').textContent=ls.length;document.getElementById('learnersList').innerHTML=filtered.map(l=>{let outCount=getBooks().reduce((a,b)=>a+b.copies.filter(c=>c.status==='Out — '+l.id).length,0);return `<div class="border rounded p-2 flex justify-between"><span><b>${l.name}</b> • ${l.id} • Gr ${l.grade} • ${l.className} • <span class="${outCount?'text-orange-600 font-bold':'text-green-600'}">${outCount} book(s) out</span></span><span><button onclick="selectLearnerForIssue('${l.id}')" class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold text-xs">📤 Issue To →</button> <button onclick="deleteLearner('${l.id}')" class="text-red-600 font-bold text-xs">×</button></span></div>`;}).join('')||'<div class="text-gray-400">No learners — Add one below or check Grade filter.</div>';document.getElementById('learnerSearchList').innerHTML=filtered.slice(0,10).map(l=>`<div class="border rounded p-2 flex justify-between"><span><b>${l.name}</b> • ${l.id} • Gr ${l.grade}${l.className}</span><button onclick="selectLearnerForIssue('${l.id}')" class="bg-green-600 text-white px-2 py-0.5 rounded font-bold text-xs">Select Learner →</button></div>`).join('');}
+function selectLearnerForIssue(id){let l=getLearners().find(x=>x.id===id);if(!l)return;selectedLearner=l;document.getElementById('learnerResult').innerHTML=`<span class="text-green-600 font-bold">✅ Selected: ${l.name} • ${l.id} • Gr ${l.grade}${l.className}</span>`;document.getElementById('learnerScan').value=l.id;switchTab('issue');updateIssueSummary();window.scrollTo({top:0,behavior:'smooth'});}
+function deleteLearner(id){if(!confirm('Delete learner '+id+'?'))return;let ls=getLearners().filter(l=>l.id!==id);saveLearners(ls);renderAll();}
+function renderBooks(){if(!currentSchool)return;let books=getBooks();let q=(document.getElementById('bookSearch')?document.getElementById('bookSearch').value||'':'').toLowerCase();let gradeFilter=(document.getElementById('filterBookGrade')?document.getElementById('filterBookGrade').value||'':'');let filtered=books.filter(b=>{if(gradeFilter&&b.grade!==gradeFilter)return false;if(q&&!(b.title.toLowerCase().includes(q)||b.subject.toLowerCase().includes(q)||String(b.grade).includes(q)))return false;return true;});document.getElementById('booksCount').textContent=books.length;document.getElementById('booksList').innerHTML=filtered.map(b=>{let avail=b.copies.filter(c=>c.status==='Available').length;return `<div class="border rounded p-2"><div class="flex justify-between"><span><b>${b.title}</b> • ${b.subject} • Gr ${b.grade} • Copies: ${b.copies.length} • Available: <b class="text-green-600">${avail}</b> • Out: <b class="text-orange-600">${b.copies.length-avail}</b></span><span><button onclick="deleteBook('${b.title.replace(/'/g,"")}')" class="text-red-600 font-bold text-xs">×</button></span></div><div class="flex flex-wrap gap-1 mt-1">${b.copies.slice(0,8).map(c=>`<button onclick="selectBookForIssue('${c.barcode}')" class="text-[11px] px-2 py-0.5 rounded-full ${c.status==='Available'?'bg-green-100 text-green-700':'bg-orange-100 text-orange-700'}" title="${c.status}">${c.barcode} • ${c.status==='Available'?'Available':'OUT'}</button>`).join('')}${b.copies.length>8?`<span class="text-xs text-gray-400">+${b.copies.length-8} more…</span>`:''}</div></div>`;}).join('')||'<div class="text-gray-400">No books — Add one below.</div>';document.getElementById('bookSearchList').innerHTML=filtered.slice(0,5).map(b=>{let avail=b.copies.find(c=>c.status==='Available');return `<div class="border rounded p-2 flex justify-between"><span><b>${b.title}</b> • ${b.subject} • Gr ${b.grade} • Available: ${b.copies.filter(c=>c.status==='Available').length}/${b.copies.length}</span>${avail?`<button onclick="selectBookForIssue('${avail.barcode}')" class="bg-blue-600 text-white px-2 py-0.5 rounded font-bold text-xs">Select Book →</button>`:`<span class="text-red-600 text-xs font-bold">All Out</span>`}</div>`;}).join('');}
+function selectBookForIssue(barcode){let books=getBooks();let found=null;books.forEach(b=>{b.copies.forEach(c=>{if(c.barcode===barcode)found={book:b,copy:c};});});if(!found)return;selectedBook=found;document.getElementById('bookResult').innerHTML=`<span class="text-green-600 font-bold">✅ Selected: ${found.book.title} • ${found.copy.barcode} • ${found.copy.status}</span>`;document.getElementById('bookScan').value=barcode;switchTab('issue');updateIssueSummary();window.scrollTo({top:0,behavior:'smooth'});}
+function deleteBook(title){if(!confirm('Delete book '+title+'?'))return;let books=getBooks().filter(b=>b.title!==title);saveBooks(books);renderAll();}
+function renderReturnLearners(){if(!currentSchool)return;let q=(document.getElementById('returnLearnerSearch')?document.getElementById('returnLearnerSearch').value||'':'').toLowerCase();let ls=getLearners().filter(l=>!q||l.name.toLowerCase().includes(q)||l.id.toLowerCase().includes(q));let books=getBooks();document.getElementById('returnLearnerList').innerHTML=ls.map(l=>{let outs=[];books.forEach(b=>{b.copies.forEach(c=>{if(c.status==='Out — '+l.id)outs.push({book:b,copy:c});});});if(!outs.length)return '';return `<div class="border rounded p-2"><b>${l.name}</b> • ${l.id} • Gr ${l.grade}${l.className} • ${outs.length} book(s) out:<div class="flex flex-wrap gap-1 mt-1">${outs.map(o=>`<button onclick="returnByLearnerBook('${o.copy.barcode}')" class="bg-purple-100 text-purple-700 px-2 py-1 rounded font-bold text-xs">📥 Return ${o.book.title} (${o.copy.barcode})</button>`).join('')}</div></div>`;}).join('')||'<div class="text-gray-400">No learners with books out — Search name above.</div>';}
+function renderHistory(){if(!currentSchool)return;let hist=getHistory();let q=(document.getElementById('searchHistory')?document.getElementById('searchHistory').value||'':'').toLowerCase();let f=document.getElementById('filterHistory')?document.getElementById('filterHistory').value:'';let filtered=hist.filter(h=>{if(f==='Issued'&&h.action!=='Issued')return false;if(f==='Returned'&&h.action!=='Returned')return false;if(f==='Overdue'&&h.action!=='Issued')return false;if(q&&!(h.learner.toLowerCase().includes(q)||h.book.toLowerCase().includes(q)||h.barcode.toLowerCase().includes(q)||h.learnerId.toLowerCase().includes(q)))return false;return true;});document.getElementById('historyList').innerHTML=filtered.slice(0,100).map(h=>`<div class="border rounded p-2 flex justify-between"><span><b>${h.learner}</b> (${h.learnerId}) — ${h.book} (${h.barcode}) • ${h.action} • ${h.date} • Due ${h.due}</span><span class="${h.action==='Issued'?'text-orange-600 font-bold':'text-green-600 font-bold'}">${h.action}</span></div>`).join('')||'<div class="text-gray-400">No history yet — Issue a book to start.</div>';document.getElementById('overdueList').innerHTML=hist.filter(h=>h.action==='Issued').map(h=>`<div class="border rounded p-2 flex justify-between"><span><b>${h.learner}</b> (${h.learnerId}) — ${h.book} (${h.barcode}) • Issued ${h.date}</span><button onclick="returnByLearnerBook('${h.barcode}')" class="bg-purple-600 text-white px-2 py-0.5 rounded font-bold text-xs">📥 Return Now</button></div>`).join('')||'<div class="text-green-600 font-bold">✅ No overdue books — All returned!</div>';}
+function renderRecent(){if(!currentSchool)return;let hist=getHistory();document.getElementById('recentIssued').innerHTML=hist.filter(h=>h.action==='Issued').slice(0,5).map(h=>`<div class="border rounded p-2">${h.learner} — ${h.book} (${h.barcode}) • ${h.date}</div>`).join('')||'<div class="text-gray-400">No issues today yet.</div>';document.getElementById('recentReturned').innerHTML=hist.filter(h=>h.action==='Returned').slice(0,5).map(h=>`<div class="border rounded p-2">${h.learner} — ${h.book} (${h.barcode}) • ${h.date}</div>`).join('')||'<div class="text-gray-400">No returns yet.</div>';}
+function exportLearners(){let ls=getLearners();let csv='Name,Learner ID,Grade,Class\n'+ls.map(l=>`"${l.name}","${l.id}","${l.grade}","${l.className}"`).join('\n');downloadCSV(csv,'learners-'+getPrefixKey()+'.csv');}
+function exportBooks(){let books=getBooks();let csv='Title,Subject,Grade,Barcode,Status\n'+books.flatMap(b=>b.copies.map(c=>`"${b.title}","${b.subject}","${b.grade}","${c.barcode}","${c.status}"`)).join('\n');downloadCSV(csv,'books-'+getPrefixKey()+'.csv');}
+function exportHistory(){let hist=getHistory();let csv='Learner,Learner ID,Book,Barcode,Action,Date,Due\n'+hist.map(h=>`"${h.learner}","${h.learnerId}","${h.book}","${h.barcode}","${h.action}","${h.date}","${h.due}"`).join('\n');downloadCSV(csv,'history-'+getPrefixKey()+'.csv');}
+function downloadCSV(csv,name){let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+let saved=sessionStorage.getItem('makhanani_current_school');if(saved){try{let s=JSON.parse(saved);document.getElementById('schoolCode').value=s.prefix;document.getElementById('schoolPw').value=s.password;loginSchool();}catch(e){}}
 </script>
-</body>
-</html>
+</body></html>
