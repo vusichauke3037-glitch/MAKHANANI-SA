@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Print Barcodes - A4 3x5 - Wordsworth</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<style>
+  /* SCREEN */
+  .barcode-card{border:1.5px dashed #999; background:#fff}
+  /* PRINT - A4 3x5 EXACT */
+  @page{size:A4 portrait; margin:10mm}
+  @media print{
+    body{background:#fff!important}
+    body *{visibility:hidden}
+    #printArea, #printArea *{visibility:visible}
+    #printArea{position:absolute; left:0; top:0; width:210mm; margin:0!important; padding:10mm 10mm 5mm 10mm!important; box-sizing:border-box}
+    .no-print{display:none!important}
+    .barcode-card{break-inside:avoid; page-break-inside:avoid; border:1.5px dashed #999!important}
+    .page-break{page-break-before:always; break-before:page}
+  }
+  /* A4 3x5 GRID - centered */
+  #cards{display:grid; grid-template-columns:repeat(3,1fr); gap:4mm; justify-content:center; justify-items:stretch}
+  .barcode-card{width:100%; height:52mm; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; padding:2.5mm 2mm 2mm 2mm; box-sizing:border-box; overflow:hidden}
+</style></head>
+<body class="bg-gray-100 min-h-screen">
 
+<!-- CONTROLS - NOT PRINTED -->
+<div class="no-print max-w-6xl mx-auto p-4">
+<div class="flex flex-wrap gap-2 justify-between items-center"><h1 class="font-black text-2xl">🖨️ PRINT BARCODES — A4 3x5 • 15 PER PAGE</h1><div class="flex gap-2 flex-wrap"><a href="dashboard.html" class="bg-purple-700 text-white px-3 py-2 rounded-lg font-bold text-sm">📊 Dashboard</a><a href="librarian.html" class="bg-blue-950 text-white px-3 py-2 rounded-lg font-bold text-sm">📚 Librarian</a><a href="learner-cards.html" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-bold text-sm">🪪 Learner Cards</a><button onclick="testBeep()" class="bg-yellow-400 px-3 py-2 rounded-lg font-black text-sm">🔔 Test Beep</button><button onclick="window.print()" class="bg-black text-white px-3 py-2 rounded-lg font-bold text-sm">🖨️ Print A4</button></div></div>
+<p class="text-sm text-gray-500 mt-1">A4 • 3 across × 5 down = <b>15 barcodes per page</b> • Centered • Real CODE128 • Beep = scanned OK. Print → Cut on dashed lines → Stick on book / learner card.</p>
+
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+<!-- BOOK -->
+<div class="bg-white rounded-2xl p-4 border-2 border-green-500"><h2 class="font-bold">📚 BOOK Barcodes — Textbook Number</h2>
+<div class="grid grid-cols-2 gap-2 mt-2"><input id="bFrom" value="WHS001" placeholder="From e.g. WHS001" class="border rounded-lg px-3 py-2 font-bold"><input id="bTo" value="WHS015" placeholder="To e.g. WHS015" class="border rounded-lg px-3 py-2 font-bold"><input id="bTitle" placeholder="Title e.g. Maths Gr10 (optional)" class="border rounded-lg px-3 py-2"><input id="bClass" placeholder="Class e.g. Grade 10A (optional)" class="border rounded-lg px-3 py-2"></div>
+<div class="flex gap-2 mt-2"><button onclick="genBooks()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex-1">Generate Book Barcodes → + Beep</button><button onclick="genFromStock()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex-1">📦 From Stock</button></div>
+<select id="stockPick" onchange="pickStock()" class="border rounded-lg px-3 py-2 w-full mt-2"><option value="">— Or pick a title from Stock —</option></select>
+<p class="text-[11px] text-gray-400 mt-1">Tip: 15 = 1 page. WHS001-WHS015 = Page 1. WHS016-WHS030 = Page 2. Auto page-breaks.</p></div>
+
+<!-- LEARNER -->
+<div class="bg-white rounded-2xl p-4 border-2 border-blue-500"><h2 class="font-bold">🧑‍🎓 LEARNER ID Barcodes</h2>
+<div class="grid grid-cols-2 gap-2 mt-2"><input id="lId" placeholder="One Learner ID e.g. 2026001" class="border rounded-lg px-3 py-2 font-bold"><input id="lName" placeholder="Learner Name e.g. Thabo" class="border rounded-lg px-3 py-2"><input id="lFrom" placeholder="Range From e.g. 2026001" class="border rounded-lg px-3 py-2"><input id="lTo" placeholder="Range To e.g. 2026015" class="border rounded-lg px-3 py-2"><input id="lClass" placeholder="Class e.g. Grade 10A (optional)" class="border rounded-lg px-3 py-2 col-span-2"></div>
+<div class="flex gap-2 mt-2"><button onclick="genOneLearner()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex-1">Generate 1 Learner →</button><button onclick="genLearnerRange()" class="bg-blue-950 text-white px-4 py-2 rounded-lg font-bold flex-1">Generate Range →</button></div>
+<p class="text-[11px] text-gray-400 mt-1">Single: ID + Name. Range: IDs only — write name by hand after printing.</p>
+<div class="flex gap-2 mt-2"><button onclick="clearAll()" class="bg-gray-100 px-4 py-2 rounded-lg font-bold flex-1">🗑️ Clear All</button><button onclick="openScanTest()" class="bg-black text-white px-4 py-2 rounded-lg font-bold flex-1">📷 Scan Test + Beep</button></div></div>
+</div>
+
+<div class="bg-white rounded-2xl p-4 mt-4 flex flex-wrap gap-3 items-center justify-between"><div><h2 class="font-bold">Preview — <span id="countLabel">0 barcodes</span> • <span id="pageLabel">0 pages</span> • A4 3x5 Centered</h2><div class="text-xs text-gray-500">Each card: TOP = School + Brand + BOOK / LEARNER ID • MIDDLE = Barcode • BOTTOM = Big Textbook No / Learner ID</div></div><div class="flex gap-2 items-center text-sm"><label class="flex items-center gap-1"><input type="checkbox" id="beepOn" checked> 🔊 Beep On</label><label class="flex items-center gap-1"><input type="checkbox" id="showExtra" checked onchange="reRender()"> Show Title / Name</label></div></div>
+</div>
+
+<!-- PRINT AREA - A4 -->
+<div id="printArea" class="max-w-6xl mx-auto p-4 bg-white">
+  <div class="text-center border-b-2 border-black pb-1 mb-3"><div class="font-black text-lg leading-tight">WORDSWORTH HIGH SCHOOL — BARCODES • A4 3x5</div><div class="text-[11px]">Generated: <span id="genAt"></span> • Cut on dashed lines • Stick on book cover / learner card</div></div>
+  <div id="cards"></div>
+  <div class="text-center text-[10px] text-gray-400 mt-3">Wordsworth • Makhanani LTSM • Scan in Teacher / HOD / Librarian page • Book: Scan Book ONLY to Return • Issue: Scan Book + Learner ID</div>
+</div>
+
+<!-- SCAN TEST MODAL -->
+<div id="scanModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100]"><div class="bg-white rounded-3xl w-full max-w-md p-4 text-center text-black"><h2 class="font-bold text-lg">📷 Scan Test — Point At Printed Barcode</h2><p class="text-xs text-gray-500">If it beeps + shows code, your barcode works.</p><video id="scanVideo" class="w-full rounded-lg bg-black mt-2" playsinline muted></video><input id="scanManual" placeholder="Or type code here to test beep" class="w-full border rounded-lg px-3 py-2 mt-2 font-bold text-center" onkeydown="if(event.key==='Enter') testManualBeep()"><div id="scanResult" class="font-black text-lg mt-2 text-green-600"></div><div class="flex gap-2 mt-2"><button onclick="closeScan()" class="flex-1 bg-gray-100 py-3 rounded-lg">Close</button><button onclick="testManualBeep()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold">🔔 Test Beep</button></div><div id="scanStatus" class="text-xs mt-1 text-gray-500"></div></div></div>
+
+<script>
+let items=[]; // {code, extra, cls, type}
+let ltsm=JSON.parse(localStorage.getItem('makhanani_ltsm')||'[]');
+
+// ---------- BEEP ----------
+let audioCtx=null;
+function beep(freq=880, dur=0.18){
+  if(!document.getElementById('beepOn').checked) return;
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    let o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.5, audioCtx.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+dur);
+    // double beep for success - like real scanner
+    setTimeout(()=>{ let o2=audioCtx.createOscillator(), g2=audioCtx.createGain(); o2.type='sine'; o2.frequency.value=1320; g2.gain.setValueAtTime(0.0001, audioCtx.currentTime); g2.gain.exponentialRampToValueAtTime(0.4, audioCtx.currentTime+0.01); g2.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.15); o2.connect(g2); g2.connect(audioCtx.destination); o2.start(); o2.stop(audioCtx.currentTime+0.15); }, 90);
+  }catch(e){}
+}
+function testBeep(){ beep(); alert('🔔 Beep OK — If you heard 2 beeps, sound works. It will beep on Generate + on Scan Test.'); }
+function testManualBeep(){ let v=document.getElementById('scanManual').value.trim().toUpperCase(); if(!v) return; document.getElementById('scanResult').textContent='✅ BEEP — Scanned: '+v; beep(); }
+
+// ---------- STOCK ----------
+function renderStockPick(){
+  let sel=document.getElementById('stockPick');
+  sel.innerHTML='<option value="">— Or pick a title from Stock —</option>'+ltsm.map((it,i)=>`<option value="${i}">${it.title} — ${it.copies[0].bookNo} to ${it.copies[it.copies.length-1].bookNo} (${it.copies.length})</option>`).join('');
+}
+function pickStock(){ let i=document.getElementById('stockPick').value; if(i==='')return; let it=ltsm[+i]; document.getElementById('bFrom').value=it.copies[0].bookNo; document.getElementById('bTo').value=it.copies[it.copies.length-1].bookNo; document.getElementById('bTitle').value=it.title; document.getElementById('bClass').value=it.grade||''; genBooks(); }
+function parseRange(from,to){
+  from=from.trim().toUpperCase(); to=to.trim().toUpperCase();
+  let pFrom=from.replace(/[0-9]+$/,''); let s=parseInt(from.replace(pFrom,''));
+  let pTo=to.replace(/[0-9]+$/,''); let e=parseInt(to.replace(pTo,''));
+  if(isNaN(s)||isNaN(e)||e<s) return null;
+  if(e-s>150){ alert('Max 150 at a time = 10 pages. Split into smaller ranges.'); return null; }
+  let arr=[]; for(let i=s;i<=e;i++){ arr.push(pFrom+String(i).padStart(3,'0')); } return arr;
+}
+function genBooks(){
+  let arr=parseRange(document.getElementById('bFrom').value, document.getElementById('bTo').value);
+  if(!arr){ alert('Check From / To e.g. WHS001 to WHS015'); return; }
+  let title=document.getElementById('bTitle').value.trim(); let cls=document.getElementById('bClass').value.trim();
+  items=arr.map(code=>({code, extra:title, cls, type:'book'})); reRender(); beep();
+}
+function genFromStock(){ if(!ltsm.length){ alert('No stock yet. Add stock in Librarian first, or type From/To manually.'); return; } alert('Pick a title from dropdown below — it will auto-fill From/To/Title.'); document.getElementById('stockPick').focus(); }
+function genOneLearner(){
+  let id=document.getElementById('lId').value.trim().toUpperCase(); let name=document.getElementById('lName').value.trim(); let cls=document.getElementById('lClass').value.trim();
+  if(!id){ alert('Enter Learner ID e.g. 2026001'); return; }
+  items=[{code:id, extra:name||'', cls, type:'learner'}]; reRender(); beep();
+}
+function genLearnerRange(){
+  let from=document.getElementById('lFrom').value.trim(); let to=document.getElementById('lTo').value.trim(); let cls=document.getElementById('lClass').value.trim();
+  if(!from||!to){ alert('Enter From ID and To ID e.g. 2026001 to 2026015'); return; }
+  let s=parseInt(from.replace(/\D/g,'')); let e=parseInt(to.replace(/\D/g,''));
+  if(isNaN(s)||isNaN(e)||e<s){ alert('Check IDs'); return; }
+  if(e-s>150){ alert('Max 150 at a time'); return; }
+  let prefix=from.replace(/[0-9]+$/,'');
+  items=[]; for(let i=s;i<=e;i++){ items.push({code:prefix+String(i), extra:'', cls, type:'learner'}); }
+  reRender(); beep();
+}
+function clearAll(){ items=[]; reRender(); }
+
+// ---------- RENDER - A4 3x5 ----------
+function reRender(){
+  document.getElementById('genAt').textContent=new Date().toLocaleString();
+  document.getElementById('countLabel').textContent=items.length+' barcodes';
+  document.getElementById('pageLabel').textContent=Math.ceil(items.length/15)+' page(s) — 15 per page';
+  let showExtra=document.getElementById('showExtra').checked;
+  let grid=document.getElementById('cards');
+  if(!items.length){
+    grid.innerHTML='<div class="col-span-3 text-center text-gray-400 p-10">No barcodes yet — Generate Book or Learner barcodes above.<br>Example: From WHS001 To WHS015 → Generate = 1 full A4 page</div>';
+    return;
+  }
+  let html='';
+  items.forEach((it,i)=>{
+    // Page break after every 15
+    if(i>0 && i%15===0) html+=`<div class="page-break" style="grid-column:1/-1; height:0"></div>`;
+    let topLabel = it.type==='book' ? '📚 BOOK' : '🧑‍🎓 LEARNER ID';
+    let bottomLabel = it.type==='book' ? 'TEXTBOOK NUMBER' : 'LEARNER ID';
+    html+=`
+    <div class="barcode-card">
+      <!-- TOP -->
+      <div class="w-full">
+        <div class="font-black text-[9px] tracking-[0.15em] leading-none">WORDSWORTH HIGH SCHOOL</div>
+        <div class="font-bold text-[7px] tracking-[0.2em] text-gray-600 leading-none mt-0.5">MAKHANANI LTSM</div>
+        <div class="mt-1 inline-block bg-black text-white font-black text-[10px] px-2 py-0.5 rounded-full tracking-widest">${topLabel}</div>
+        ${showExtra && it.extra ? `<div class="font-bold text-[10px] leading-tight truncate mt-1">${it.extra}</div>` : ''}
+        ${showExtra && it.cls ? `<div class="text-[9px] text-gray-500 leading-none">${it.cls}</div>` : ''}
+      </div>
+      <!-- MIDDLE - BARCODE CENTERED -->
+      <div class="w-full flex justify-center items-center my-1">
+        <svg id="bc-${i}" style="width:92%; max-width:52mm; height:18mm; display:block; margin:0 auto;"></svg>
+      </div>
+      <!-- BOTTOM -->
+      <div class="w-full">
+        <div class="text-[7px] tracking-[0.25em] text-gray-500 leading-none">${bottomLabel}</div>
+        <div class="font-black text-[16px] tracking-[0.12em] leading-none mt-0.5">${it.code}</div>
+        <div class="text-[7px] text-gray-400 leading-none mt-0.5">Scan to Issue / Return</div>
+      </div>
+    </div>`;
+  });
+  grid.innerHTML=html;
+  items.forEach((it,i)=>{
+    try{
+      JsBarcode('#bc-'+i, it.code, {format:'CODE128', width:2, height:68, displayValue:false, margin:0, background:'#ffffff', lineColor:'#000000', fontSize:0});
+    }catch(e){}
+  });
+}
+
+// ---------- SCAN TEST + BEEP ----------
+let scanStream=null, scanRAF=null;
+async function openScanTest(){
+  document.getElementById('scanModal').classList.remove('hidden');
+  document.getElementById('scanResult').textContent=''; document.getElementById('scanManual').value='';
+  document.getElementById('scanStatus').textContent='Starting camera...';
+  let video=document.getElementById('scanVideo');
+  try{
+    scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    video.srcObject=scanStream; await video.play();
+    document.getElementById('scanStatus').textContent='📷 Point at printed barcode — will BEEP when it reads';
+    if('BarcodeDetector' in window){
+      let det=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','qr_code','upc_a','upc_e']});
+      let loop=async()=>{ if(!scanStream) return; try{ let codes=await det.detect(video); if(codes.length){ let v=codes[0].rawValue; document.getElementById('scanResult').textContent='✅ BEEP — Scanned: '+v; beep(); setTimeout(()=>{closeScan();},1200); return; } }catch(e){} scanRAF=requestAnimationFrame(loop); };
+      loop();
+    } else { document.getElementById('scanStatus').textContent='Camera preview only — Type code below + Test Beep (this phone does not support auto-detect)'; }
+  }catch(e){ document.getElementById('scanStatus').textContent='⚠️ Camera not allowed — Type code below + Test Beep'; }
+}
+function closeScan(){ document.getElementById('scanModal').classList.add('hidden'); if(scanRAF) cancelAnimationFrame(scanRAF); if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } }
+
+renderStockPick(); reRender();
+</script></body></html>
