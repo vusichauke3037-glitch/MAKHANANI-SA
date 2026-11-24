@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Teacher Dashboard — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<!-- TOP BAR - ALWAYS VISIBLE, NOT WAITING FOR FIREBASE -->
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • TEACHER DASHBOARD</div><div class="text-[11px] text-gray-300" id="topStatus">Loading... If this stays, tap Login below.</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><a href="login.html" class="bg-white text-black px-3 py-1 rounded font-bold text-xs">🔐 Login</a></div></div>
 
+<div class="max-w-5xl mx-auto p-4">
+<!-- DEBUG BOX - TELLS YOU WHY IT WAS BLANK BEFORE -->
+<div id="debugBox" class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 text-sm font-bold">⏳ Checking login... If you see this for more than 3 seconds, you are NOT logged in. Tap <a href="login.html" class="underline text-blue-600">login.html</a> and login as Teacher.</div>
+
+<div class="bg-white rounded-2xl p-4 flex gap-3 items-center mt-4"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">👩‍🏫 My Teacher Dashboard</h1><p class="text-sm font-bold" id="tName">Loading... — If blank, you are not logged in yet.</p><p class="text-xs text-gray-500" id="tScope">Classes: - • Subjects: -</p></div></div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="tLearners">0</div><div class="text-xs font-bold text-gray-500">MY LEARNERS</div></div>
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="tWithBook">0</div><div class="text-xs font-bold text-gray-500">WITH BOOK</div></div>
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="tPacked">0</div><div class="text-xs font-bold text-gray-500">PACKED FOR ME</div></div>
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="tPending">0</div><div class="text-xs font-bold text-gray-500">MY PENDING REQUESTS</div></div>
+</div>
+
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 My Classes Breakdown</h2><div id="tClasses" class="mt-2 overflow-x-auto"><p class="text-gray-500 text-sm">No data yet — Add learners in Librarian, or login as Teacher.</p></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📝 My Requests</h2><div id="tReqs" class="mt-2 space-y-2 text-sm"><p class="text-gray-500">No requests yet. Request in Issue page.</p></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📤 Books I Issued</h2><div id="tIssued" class="mt-2 space-y-2 text-sm"><p class="text-gray-500">You have not issued any books yet.</p></div></div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+<a href="issue.html" class="bg-black text-white py-3 rounded-xl font-black text-center text-sm">📤 Issue / Request</a>
+<a href="issue-record.html" class="bg-blue-600 text-white py-3 rounded-xl font-black text-center text-sm">📋 Print Record</a>
+<a href="dashboard.html" class="bg-purple-600 text-white py-3 rounded-xl font-black text-center text-sm">📊 Full Dashboard</a>
+<a href="index.html" class="bg-yellow-500 text-black py-3 rounded-xl font-black text-center text-sm">🏠 Home</a>
+</div>
+
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🔧 If Page Is Still Blank / Not Loading</h2><ol class="list-decimal ml-5 text-sm mt-1"><li>Hard refresh: Hold <b>Ctrl + Shift + R</b> or open with <b>?v=21</b> at end of link</li><li>Check <b>firebase-config.js</b> exists in GitHub root — if missing, ALL pages go blank</li><li>Go to <a href="login.html" class="underline text-blue-600">login.html</a> first — you MUST login before dashboard shows</li><li>Login as Teacher: e.g. <b>dube@wordsworth.co.za</b> / <b>Dube2026</b></li></ol><button id="clearLoginBtn" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm mt-2">🔄 Clear Login & Go To Login Page</button></div>
+</div>
+
+<script>
+(function(){
+  // 1. SHOW DATA FROM LOCALSTORAGE IMMEDIATELY - DO NOT WAIT FOR FIREBASE
+  function renderFromLocal(){
+    let me=null; try{ me=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
+    if(!me || !me.name){
+      document.getElementById('debugBox').innerHTML='❌ NOT LOGGED IN — Go to <a href="login.html" class="underline text-blue-600 font-black">login.html</a> and login as Teacher. Dashboard cannot show without login.';
+      document.getElementById('topStatus').textContent='Not logged in — Tap Login';
+      document.getElementById('tName').textContent='Not logged in — Please login as Teacher';
+      document.getElementById('tScope').textContent='Go to login.html → Enter Email + Password';
+      return;
+    }
+    document.getElementById('debugBox').innerHTML='✅ Logged in as <b>'+me.name+'</b> • '+me.role+' • '+me.school;
+    document.getElementById('topStatus').textContent='Logged in: '+me.name+' • '+me.role;
+    if(me.role!=='TEACHER'){
+      document.getElementById('debugBox').innerHTML='⚠️ You are logged in as <b>'+me.role+'</b>, not Teacher. Redirecting to your dashboard in 2 seconds... <a href="dashboard.html" class="underline">Go to My Dashboard →</a>';
+      setTimeout(()=>{ window.location.href='dashboard.html'; }, 2000);
+      return;
+    }
+    let emis=me.emis||'700310854';
+    let learners=[]; try{ learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]'); }catch(e){}
+    let hist=[]; try{ hist=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_history')||'[]'); }catch(e){}
+    let reqs=[]; try{ reqs=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_requests')||'[]'); }catch(e){}
+    let books=[]; try{ books=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); }catch(e){}
+    let myClasses=(me.classes||[]).map(c=>String(c).toUpperCase());
+    let myLearners=learners.filter(l=> myClasses.includes((l.class||'').toUpperCase()));
+    let myHist=hist.filter(h=> myClasses.includes((h.learnerClass||'').toUpperCase()) || h.issuedBy===me.name);
+    let myReqs=reqs.filter(r=> r.teacher===me.name);
+    let withBook=new Set(myHist.filter(h=>h.status==='Issued'||!h.returned).map(h=>h.learnerId));
+    let withCount=myLearners.filter(l=> withBook.has(l.id)).length;
+    let packed=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ if(c.status==='Packed' && c.packedFor===me.name) packed++; }));
+    document.getElementById('tName').textContent='Welcome, '+me.name+' — '+me.school;
+    document.getElementById('tScope').textContent='Classes: '+me.classes.join(', ')+' • Subjects: '+(me.subjects||[]).join(', ');
+    document.getElementById('tLearners').textContent=myLearners.length;
+    document.getElementById('tWithBook').textContent=withCount;
+    document.getElementById('tPacked').textContent=packed;
+    document.getElementById('tPending').textContent=myReqs.filter(r=>r.status==='PENDING').length;
+    let byClass={}; myLearners.forEach(l=>{ let k=l.class||'Unknown'; if(!byClass[k]) byClass[k]={learners:0, issued:0}; byClass[k].learners++; }); myHist.filter(h=>h.status==='Issued'||!h.returned).forEach(h=>{ let k=h.learnerClass||'Unknown'; if(!byClass[k]) byClass[k]={learners:0, issued:0}; byClass[k].issued++; });
+    if(Object.keys(byClass).length){
+      document.getElementById('tClasses').innerHTML='<table class="w-full border-collapse border text-sm"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">Class</th><th class="border p-2 text-left">Learners</th><th class="border p-2 text-left">Books OUT</th><th class="border p-2 text-left">% With Book</th></tr></thead><tbody>'+Object.keys(byClass).sort().map(c=>{ let d=byClass[c]; let pct=d.learners?Math.round(d.issued/d.learners*100):0; return '<tr><td class="border p-2 font-bold">'+c+'</td><td class="border p-2">'+d.learners+'</td><td class="border p-2">'+d.issued+'</td><td class="border p-2">'+pct+'%</td></tr>'; }).join('')+'</tbody></table>';
+    }
+    if(myReqs.length) document.getElementById('tReqs').innerHTML=myReqs.slice().reverse().map(r=>'<div class="border rounded p-2"><b>'+r.title+'</b> • Class '+r.teacherClass+' • Subject '+r.subject+' • Qty '+r.qty+' • Status <b>'+r.status+'</b> • Approved '+r.approvedQty+'</div>').join('');
+    if(myHist.filter(h=>h.status==='Issued'||!h.returned).length) document.getElementById('tIssued').innerHTML=myHist.filter(h=>h.status==='Issued'||!h.returned).slice().reverse().slice(0,10).map(h=>'<div class="border rounded p-2"><b>'+h.title+'</b> • '+h.bookNo+' → '+h.learnerName+' ('+h.learnerId+') • '+h.learnerClass+'</div>').join('');
+  }
+  renderFromLocal();
+  document.getElementById('clearLoginBtn').addEventListener('click', function(){ localStorage.removeItem('makhanani_session'); window.location.href='login.html'; });
+  // 2. TRY FIREBASE IN BACKGROUND - DO NOT BLANK PAGE IF IT FAILS
+  window.addEventListener('error', function(e){ document.getElementById('debugBox').innerHTML='⚠️ Script error: '+(e.message||'Unknown')+' — Page still shows local data above. Check firebase-config.js exists.'; });
+})();
+</script>
+
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ document.getElementById('debugBox').innerHTML='❌ NOT LOGGED IN — Go to <a href="login.html" class="underline text-blue-600 font-black">login.html</a> and login as Teacher.'; return; }
+  try{
+    let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'TEACHER'};
+    // Save fresh session, then re-render without reload
+    let fresh={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'TEACHER',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'};
+    localStorage.setItem('makhanani_session',JSON.stringify(fresh));
+    document.getElementById('debugBox').innerHTML='✅ Firebase OK — Logged in as <b>'+fresh.name+'</b> • '+fresh.role;
+    window.location.reload();
+  }catch(e){ document.getElementById('debugBox').innerHTML='⚠️ Firebase error: '+e.message+' — Showing local data. Check Firestore Rules.'; }
+});
+</script>
+</body></html>
