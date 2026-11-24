@@ -1,194 +1,25 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fix Numbers — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • FIX NUMBERS V2</div><div class="text-[11px] text-gray-300">Fix Already Added Books + Learners — No Delete</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
-
-<div class="max-w-4xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-5">
-<h1 class="font-black text-2xl">🔧 Fix Numbers On Already Added Books</h1>
-<p class="text-sm text-gray-500 mt-1">Book: <b>WHS-000001 → WHS000001</b> • Learner: <b>WHS-10A-001 → 10A001</b> • Duplicates get next free • History updated too</p>
-
-<!-- ERROR BOX - IF JS FAILS YOU WILL SEE IT HERE, NOT BLANK -->
-<div id="errorBox" class="hidden bg-red-100 border-2 border-red-600 rounded-xl p-3 mt-3 text-sm font-bold text-red-800"></div>
-<div id="statusBox" class="bg-blue-50 border rounded-xl p-3 mt-3 text-sm font-bold">⏳ Loading... If this stays, press Ctrl + Shift + R to hard refresh.</div>
-
-<div class="flex gap-2 flex-wrap mt-4">
-<select id="schoolSel" class="border-2 rounded-lg px-3 py-3 font-bold">
-<option value="WHS|700310854|Wordsworth High School">Wordsworth High School — WHS</option>
-<option value="GSH|911360870|George Sonto High School">George Sonto High School — GSH</option>
-<option value="ALL|ALL|All Schools">ALL Schools — Fix Both</option>
-</select>
-<!-- BOTH onclick AND addEventListener - so button works even if one fails -->
-<button id="scanBtn" type="button" onclick="doScan()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">🔍 Scan — Show Problems</button>
-<button id="fixBtn" type="button" onclick="doFix()" class="bg-green-600 text-white px-8 py-3 rounded-lg font-black text-lg">✅ FIX NUMBERS NOW — Tap Here</button>
-</div>
-
-<div id="report" class="mt-4 space-y-3 text-sm"></div>
-
-<div class="bg-yellow-50 border rounded-xl p-3 mt-4 text-sm"><b>After Fix:</b> Go to Librarian → Check numbers are WHS000001 / 10A001 → Re-Print Barcodes. Old printed barcodes with hyphens will NOT scan.</div>
-<div class="flex gap-2 mt-4 flex-wrap"><a href="librarian.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Go to Librarian →</a><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Go to Issue →</a><a href="print-barcodes.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">🖨️ Re-Print Barcodes →</a></div>
-</div>
-</div>
-
+<body class="bg-gray-100 min-h-screen"><div class="max-w-3xl mx-auto p-4"><div class="bg-white rounded-2xl p-4 flex gap-3 items-center"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">🔧 Fix Numbers — WHS-000001 → WHS000001</h1><p class="text-sm text-gray-500">Removes hyphens from old book numbers + learner IDs. Run once.</p></div></div><div class="bg-white rounded-2xl p-4 mt-4"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><button id="fixBtn" type="button" class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold ml-2">🔧 Fix All Numbers Now</button><p id="msg" class="text-sm font-bold mt-2"></p></div><div class="flex gap-2 mt-4"><a href="index.html" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold text-sm">🏠 Home</a></div></div>
 <script>
-// SHOW ANY JS ERROR ON SCREEN - NOT BLANK
-window.onerror = function(msg, url, line){
-  var b = document.getElementById('errorBox');
-  if(b){ b.classList.remove('hidden'); b.innerHTML = '⚠️ JS Error: ' + msg + ' (line ' + line + ') — Tell me this exact message.'; }
-  var s = document.getElementById('statusBox');
-  if(s) s.innerHTML = '❌ Script stopped. See red box above.';
-};
-
-function showStatus(t){ var s=document.getElementById('statusBox'); if(s) s.innerHTML=t; }
-function initials(name){ try{ return name.trim().split(/\s+/).map(function(w){return w[0].toUpperCase();}).join(''); }catch(e){ return 'WHS'; } }
-function safeParse(key){ try{ var v=localStorage.getItem(key); if(!v) return []; var p=JSON.parse(v); return Array.isArray(p)?p:[]; }catch(e){ return []; } }
-function getSchools(){
-  var v=document.getElementById('schoolSel').value.split('|');
-  var all=[{prefix:'WHS',emis:'700310854',name:'Wordsworth High School'},{prefix:'GSH',emis:'911360870',name:'George Sonto High School'}];
-  if(v[0]==='ALL') return all;
-  for(var i=0;i<all.length;i++){ if(all[i].prefix===v[0]) return [all[i]]; }
-  return [all[0]];
-}
-function fixBookNum(raw, school){
-  if(raw===null||raw===undefined||raw==='') return null;
-  var s=String(raw).toUpperCase().replace(/[^A-Z0-9]/g,'');
-  var ini=initials(school.name);
-  if(s.indexOf(ini)===0) s=s.slice(ini.length);
-  s=s.replace(/[^0-9]/g,'');
-  if(!s) return null;
-  var n=parseInt(s,10); if(isNaN(n)) return null;
-  return ini+String(n).padStart(6,'0');
-}
-function fixLearnerId(raw){
-  if(raw===null||raw===undefined||raw==='') return null;
-  var s=String(raw).toUpperCase().replace(/[^A-Z0-9]/g,'');
-  s=s.replace(/^(WHS|GSH)/,'');
-  var m=s.match(/^(\d+)([A-Z]*)(\d+)$/);
-  if(!m) return null;
-  var grade=m[1]; var letter=m[2]||'A'; var num=parseInt(m[3],10);
-  if(isNaN(num)) return null;
-  return grade+letter+String(num).padStart(3,'0');
-}
-
-function doScan(){
-  try{
-    showStatus('🔍 Scanning...');
-    var schools=getSchools(); var html='';
-    for(var si=0; si<schools.length; si++){
-      var school=schools[si];
-      var books=safeParse('EMIS_'+school.emis+'_makhanani_ltsm');
-      var learners=safeParse('EMIS_'+school.emis+'_makhanani_learners');
-      var bookCount=0; books.forEach(function(b){ bookCount += (b.copies||[]).length; });
-      var problems=[];
-      var seenB={};
-      books.forEach(function(b){
-        (b.copies||[]).forEach(function(c){
-          var fixed=fixBookNum(c.barcode, school);
-          if(fixed!==c.barcode) problems.push('BOOK: '+(b.title||'')+' — <b>'+c.barcode+'</b> → <b>'+(fixed||'???')+'</b>');
-          if(fixed && seenB[fixed]) problems.push('DUPLICATE BOOK: '+(b.title||'')+' — <b>'+c.barcode+'</b> duplicate of '+fixed);
-          if(fixed) seenB[fixed]=1;
-        });
-      });
-      var seenL={};
-      learners.forEach(function(l){
-        var fixed=fixLearnerId(l.id);
-        if(fixed!==l.id) problems.push('LEARNER: '+(l.name||'')+' — <b>'+l.id+'</b> → <b>'+(fixed||'???')+'</b>');
-        if(fixed && seenL[fixed]) problems.push('DUPLICATE LEARNER: '+(l.name||'')+' — <b>'+l.id+'</b> duplicate of '+fixed);
-        if(fixed) seenL[fixed]=1;
-      });
-      html+='<div class="border rounded-xl p-3"><div class="font-black">'+school.name+' — Books: '+bookCount+' • Learners: '+learners.length+' • Problems: '+problems.length+'</div>';
-      if(problems.length===0) html+='<p class="text-green-600 font-bold mt-1">✅ All numbers already correct! No fix needed.</p>';
-      else html+='<div class="mt-2 space-y-1">'+problems.map(function(p){return '<div class="bg-red-50 border rounded p-2">'+p+'</div>';}).join('')+'</div>';
-      html+='</div>';
-    }
-    document.getElementById('report').innerHTML=html;
-    showStatus('✅ Scan DONE — See list below. Now tap ✅ FIX NUMBERS NOW.');
-  }catch(e){
-    document.getElementById('report').innerHTML='<div class="bg-red-100 border p-3 rounded">❌ Scan failed: '+e.message+'</div>';
-    showStatus('❌ Scan failed: '+e.message);
-  }
-}
-
-function doFix(){
-  try{
-    showStatus('⏳ Fixing... Please wait, do not close.');
-    // NO confirm() - that was blocking and looked like no response
-    var schools=getSchools(); var html='';
-    for(var si=0; si<schools.length; si++){
-      var school=schools[si];
-      var books=safeParse('EMIS_'+school.emis+'_makhanani_ltsm');
-      var learners=safeParse('EMIS_'+school.emis+'_makhanani_learners');
-      var hist=safeParse('EMIS_'+school.emis+'_makhanani_history');
-      var changes=[];
-      var ini=initials(school.name);
-      var usedB={};
-      // FIX BOOKS
-      books.forEach(function(b){
-        (b.copies||[]).forEach(function(c){
-          var old=String(c.barcode||'');
-          var fixed=fixBookNum(c.barcode, school);
-          if(!fixed){ var n=1; while(usedB[ini+String(n).padStart(6,'0')]) n++; fixed=ini+String(n).padStart(6,'0'); }
-          if(usedB[fixed]){
-            var n2=1; while(usedB[ini+String(n2).padStart(6,'0')]) n2++;
-            var nf=ini+String(n2).padStart(6,'0');
-            changes.push('BOOK DUPLICATE FIXED: '+(b.title||'')+' — '+old+' → <b>'+nf+'</b>');
-            fixed=nf;
-          } else if(fixed!==old){
-            changes.push('BOOK FIXED: '+(b.title||'')+' — '+old+' → <b>'+fixed+'</b>');
-          }
-          c.barcode=fixed; c.bookNo=fixed; usedB[fixed]=1;
-          if(c.learnerId){ var lf=fixLearnerId(c.learnerId); if(lf) c.learnerId=lf; }
-        });
-      });
-      // FIX LEARNERS
-      var usedL={};
-      learners.forEach(function(l){
-        var old=String(l.id||'');
-        var fixed=fixLearnerId(l.id);
-        if(!fixed){
-          var cls=(l.class||'10A').toUpperCase(); var key=cls.replace(/[^0-9A-Z]/g,'');
-          var n=1; while(usedL[key+String(n).padStart(3,'0')]) n++; fixed=key+String(n).padStart(3,'0');
-        }
-        if(usedL[fixed]){
-          var m=fixed.match(/^(\d+[A-Z]+)(\d+)$/); var key2=m?m[1]:'10A';
-          var n3=1; while(usedL[key2+String(n3).padStart(3,'0')]) n3++;
-          var nf2=key2+String(n3).padStart(3,'0');
-          changes.push('LEARNER DUPLICATE FIXED: '+(l.name||'')+' — '+old+' → <b>'+nf2+'</b>');
-          fixed=nf2;
-        } else if(fixed!==old){
-          changes.push('LEARNER FIXED: '+(l.name||'')+' — '+old+' → <b>'+fixed+'</b>');
-        }
-        var cm=fixed.match(/^(\d+[A-Z]+)\d+$/); if(cm) l.class=cm[1];
-        l.id=fixed; l.learnerId=fixed; usedL[fixed]=1;
-      });
-      // FIX HISTORY
-      hist.forEach(function(h){
-        if(h.bookNo){ var f=fixBookNum(h.bookNo, school); if(f){ h.bookNo=f; h.barcode=f; } }
-        if(h.learnerId){ var f2=fixLearnerId(h.learnerId); if(f2) h.learnerId=f2; }
-      });
-      // SAVE ALL KEYS - so Librarian / Issue / Print all see fixed numbers
-      localStorage.setItem('EMIS_'+school.emis+'_makhanani_ltsm', JSON.stringify(books));
-      localStorage.setItem('makhanani_'+school.prefix+'_makhanani_ltsm', JSON.stringify(books));
-      localStorage.setItem('EMIS_'+school.emis+'_makhanani_learners', JSON.stringify(learners));
-      localStorage.setItem('makhanani_'+school.prefix+'_makhanani_learners', JSON.stringify(learners));
-      localStorage.setItem('EMIS_'+school.emis+'_makhanani_history', JSON.stringify(hist));
-      localStorage.setItem('makhanani_'+school.prefix+'_makhanani_history', JSON.stringify(hist));
-      localStorage.removeItem('makhanani_last_print_'+school.prefix);
-      html+='<div class="border rounded-xl p-3"><div class="font-black">'+school.name+' — Fixed: '+changes.length+'</div>';
-      if(changes.length===0) html+='<p class="text-green-600 font-bold">✅ Nothing to fix — already correct.</p>';
-      else html+='<div class="mt-2 space-y-1">'+changes.map(function(c){return '<div class="bg-green-50 border rounded p-2">'+c+'</div>';}).join('')+'</div>';
-      html+='</div>';
-    }
-    html+='<div class="bg-green-100 border-2 border-green-600 rounded-xl p-3 font-black text-center mt-2">✅ DONE — Go to Librarian → Check numbers → Re-Print Barcodes</div>';
-    document.getElementById('report').innerHTML=html;
-    showStatus('✅ FIX DONE — '+new Date().toLocaleTimeString()+' — Check list below.');
-  }catch(e){
-    document.getElementById('report').innerHTML='<div class="bg-red-100 border p-3 rounded">❌ Fix failed: '+e.message+'</div>';
-    showStatus('❌ Fix failed: '+e.message);
-  }
-}
-
-// Auto-scan on load - so you see something even without tapping
-try{ doScan(); }catch(e){ showStatus('❌ Auto-scan failed: '+e.message); }
+(function(){
+let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
+document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; });
+document.getElementById('fixBtn').addEventListener('click',function(){
+  let fixed=0;
+  ['_makhanani_ltsm','_makhanani_learners','_makhanani_history'].forEach(suffix=>{
+    let key='EMIS_'+cur.emis+suffix; let arr=[]; try{ arr=JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){} 
+    arr.forEach(item=>{
+      if(item.copies) item.copies.forEach(c=>{ if(c.barcode && c.barcode.includes('-')){ c.barcode=c.barcode.replace(/-/g,''); fixed++; } });
+      if(item.barcode && item.barcode.includes('-')){ item.barcode=item.barcode.replace(/-/g,''); fixed++; }
+      if(item.bookNo && item.bookNo.includes('-')){ item.bookNo=item.bookNo.replace(/-/g,''); fixed++; }
+      if(item.id && item.id.includes('-')){ item.id=item.id.replace(/-/g,''); fixed++; }
+      if(item.learnerId && item.learnerId.includes('-')){ item.learnerId=item.learnerId.replace(/-/g,''); fixed++; }
+    });
+    localStorage.setItem(key, JSON.stringify(arr)); localStorage.setItem('makhanani_'+cur.prefix+suffix, JSON.stringify(arr));
+  });
+  document.getElementById('msg').innerHTML='✅ Fixed '+fixed+' numbers. Go to Home — barcodes now WHS000001 format.';
+});
+})();
 </script>
 </body></html>
