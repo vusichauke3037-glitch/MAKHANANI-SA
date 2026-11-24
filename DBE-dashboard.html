@@ -11,14 +11,9 @@
 <div class="bg-white rounded-xl shadow p-4 mt-3"><div class="font-bold">📥 Bulk Register DBE Schools</div><p class="text-sm text-gray-500">Upload a CSV with EMIS, School Name, District in upload.html → Type: DBE Schools List. Then they appear here.</p><div class="flex gap-2 mt-2 flex-wrap"><button onclick="downloadDistrictTemplate()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">⬇️ Download District Template</button><button onclick="fixRealEmis()" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">🔧 Fix To Real EMIS (One Click)</button></div><p id="fixMsg" class="font-bold text-sm mt-1 text-green-600"></p></div>
 </div></div>
 <script>
-// ✅ REAL EMIS - Auto-fix old placeholders if they exist
 let SCHOOLS=JSON.parse(localStorage.getItem('makhanani_schools_by_emis')||'{}');
 if(!SCHOOLS["700310854"] || SCHOOLS["700400123"]){
-  SCHOOLS={
-    "700310854":{name:"Wordsworth High School",short:"WHS",code:"WHS2026",district:"Gauteng East",province:"Gauteng"},
-    "911360870":{name:"George Sonto High School",short:"GSHS",code:"GSHS2026",district:"Vhembe East",province:"Limpopo"}
-  };
-  // Keep any other schools user added (not placeholders)
+  SCHOOLS={ "700310854":{name:"Wordsworth High School",short:"WHS",code:"WHS2026",district:"Gauteng East",province:"Gauteng"}, "911360870":{name:"George Sonto High School",short:"GSHS",code:"GSHS2026",district:"Vhembe East",province:"Limpopo"} };
   let old=JSON.parse(localStorage.getItem('makhanani_schools_by_emis')||'{}');
   Object.entries(old).forEach(([e,s])=>{ if(e!=="700400123" && e!=="700400456" && !SCHOOLS[e]) SCHOOLS[e]=s; });
   localStorage.setItem('makhanani_schools_by_emis',JSON.stringify(SCHOOLS));
@@ -30,10 +25,7 @@ function renderList(){ let q=(document.getElementById('search').value||'').toLow
 function viewDetail(emis){ selectedEmis=emis; let s=SCHOOLS[emis]; let c=getCounts(emis); document.getElementById('detailBox').classList.remove('hidden'); document.getElementById('detailTitle').textContent=s.name+' • EMIS: '+emis; document.getElementById('detailBody').innerHTML='<b>District:</b> '+(s.district||'-')+'<br><b>Province:</b> '+(s.province||'-')+'<br><b>School Code:</b> '+s.code+'<br><b>Learners:</b> '+c.learners+' (count only — names hidden in DBE view)<br><b>Books:</b> '+c.books+'<br><b>Staff:</b> '+c.staff+'<br><b>Issued Ever:</b> '+(c.returned+c.issued)+' • <b>Returned:</b> '+c.returned+' • <b>Still Out:</b> '+c.issued+' • <b>% Retrieval:</b> '+c.pct+'%<br><b>Storage Key:</b> EMIS_'+emis+'_makhanani_ltsm'; window.scrollTo(0,document.body.scrollHeight); }
 function enterAsSchool(){ if(!selectedEmis) return; if(!confirm('Enter '+SCHOOLS[selectedEmis].name+' (EMIS '+selectedEmis+') as Super Admin? You will see ONLY this EMIS.')) return; localStorage.setItem('makhanani_active_emis',selectedEmis); localStorage.setItem('makhanani_active_school',SCHOOLS[selectedEmis].name); localStorage.setItem('makhanani_active_school_short',SCHOOLS[selectedEmis].short); location.href='dashboard.html'; }
 function downloadDistrictTemplate(){ let csv='EMIS,School Name,District,Quintile,Province,Principal Name,Phone\n700310854,Wordsworth High School,Gauteng East,4,Gauteng,Mrs Sematle,0780233263\n911360870,George Sonto High School,Vhembe East,3,Limpopo,Mr Hlungwani,0780000000'; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='dbe_district_schools_template.csv'; a.click(); }
-function fixRealEmis(){
-  // Move old placeholder data to real EMIS
-  ['makhanani_ltsm','makhanani_issues','makhanani_staff','makhanani_teachers','makhanani_hods','makhanani_passwords','makhanani_learners'].forEach(k=>{
-    let v1=localStorage.getItem('EMIS_700400123_'+k); if(v1) localStorage.setItem('EMIS_700310854_'+k, v1);
+function fixRealEmis(){ ['makhanani_ltsm','makhanani_issues','makhanani_staff','makhanani_teachers','makhanani_hods','makhanani_passwords','makhanani_learners'].forEach(k=>{ let v1=localStorage.getItem('EMIS_700400123_'+k);if(v1) localStorage.setItem('EMIS_700310854_'+k, v1);
     let v2=localStorage.getItem('EMIS_700400456_'+k); if(v2) localStorage.setItem('EMIS_911360870_'+k, v2);
     let v0=localStorage.getItem(k); if(v0 && !localStorage.getItem('EMIS_700310854_'+k)) localStorage.setItem('EMIS_700310854_'+k, v0);
   });
