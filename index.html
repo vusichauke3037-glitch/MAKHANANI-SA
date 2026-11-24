@@ -1,70 +1,196 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
-<!-- TOP BAR - LIBRARIAN BUTTON IS A REAL LINK, NOT onclick -->
+<!-- TOP BAR -->
 <div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50">
 <img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" onerror="this.onerror=null;this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
-<div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • MAKHANANI LTSM</div><div class="text-[11px] text-gray-300">293 Smit Street, Hillbrow, Johannesburg, 2038 • WhatsApp 078 023 3263</div></div>
+<div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • MAKHANANI LTSM</div><div class="text-[11px] text-gray-300">293 Smit Street, Hillbrow, Johannesburg, 2038 • WhatsApp 078 023 3263 • vusichauke3037@gmail.com</div></div>
 <a href="librarian.html" class="ml-auto bg-yellow-500 text-black px-4 py-2 rounded-lg font-black text-sm">📚 Librarian</a>
 </div>
 
-<div class="max-w-4xl mx-auto p-4">
+<div class="max-w-5xl mx-auto p-4">
+<!-- HERO -->
 <div class="bg-white rounded-2xl p-5 text-center">
 <img src="logo.png" class="h-20 w-20 rounded-2xl mx-auto bg-white border-2 border-yellow-400 p-1" onerror="this.onerror=null;this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
 <h1 class="font-black text-3xl mt-2">Makhanani LTSM</h1>
-<p class="text-sm text-gray-500">Joy. Cherished. Mercy. • Book: WHS000001 • Learner: 10A001</p>
-
-<!-- ALL MAIN BUTTONS - REAL LINKS -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
-<a href="librarian.html" class="bg-green-600 text-white py-4 rounded-xl font-black">📚<br>Librarian<br><span class="text-xs font-normal">Add Books / Learners</span></a>
-<a href="issue.html" class="bg-black text-white py-4 rounded-xl font-black">📤<br>Issue Books<br><span class="text-xs font-normal">Scan Book + Learner</span></a>
-<a href="print-barcodes.html" class="bg-blue-600 text-white py-4 rounded-xl font-black">🖨️<br>Print Barcodes<br><span class="text-xs font-normal">A4 3x5 Scannable</span></a>
-<a href="donation-letter-whs.html" class="bg-yellow-500 text-black py-4 rounded-xl font-black">📄<br>Donation<br><span class="text-xs font-normal">Wordsworth / George</span></a>
+<p class="text-sm text-gray-500">Joy. Cherished. Mercy. • Book: <b class="text-black">WHS000001</b> • Learner: <b class="text-black">10A001</b> • No Duplicate • No Skipping</p>
+<p class="text-xs text-gray-400 mt-1">Directors: Vusi Chauke + Hloniphani Success Masia • Xintimani Group Holdings (Pty) Ltd</p>
 </div>
 
-<div class="bg-yellow-50 border rounded-xl p-3 mt-4 text-left text-sm">
-<b>Quick Test:</b> Tap <b>📚 Librarian</b> above — it must open <b>librarian.html</b> in same tab. If it shows 404, the file name in GitHub is wrong. It must be exactly <b>librarian.html</b> — all small letters.
+<!-- SCHOOL + LOGIN -->
+<div class="bg-white rounded-2xl p-4 mt-4">
+<div class="flex flex-wrap gap-2 items-center justify-between">
+<div class="font-black text-lg">🏫 Select School</div>
+<div class="text-xs bg-yellow-100 border border-yellow-300 rounded px-2 py-1 font-bold" id="activeSchoolLabel">Active: Wordsworth High School</div>
 </div>
-
-<!-- LOGIN / SCHOOL SELECT -->
-<div class="bg-gray-50 border rounded-xl p-4 mt-4 text-left">
-<div class="font-black">🏫 Select School</div>
-<div class="grid md:grid-cols-3 gap-2 mt-2">
+<div class="grid md:grid-cols-3 gap-2 mt-3">
 <select id="schoolSel" class="border-2 rounded-lg px-3 py-3 font-bold">
-<option value="WHS|700310854|Wordsworth High School">Wordsworth High School — WHS</option>
-<option value="GSH|911360870|George Sonto High School">George Sonto High School — GSH</option>
+<option value="WHS|700310854|Wordsworth High School">Wordsworth High School — WHS — 700310854</option>
+<option value="GSH|911360870|George Sonto High School">George Sonto High School — GSH — 911360870</option>
 </select>
 <input id="passInput" type="password" placeholder="Password e.g. Wordsworth2026" class="border-2 rounded-lg px-3 py-3">
-<button id="loginBtn" class="bg-black text-white px-4 py-3 rounded-lg font-black">Enter →</button>
+<button id="enterBtn" type="button" class="bg-black text-white px-4 py-3 rounded-lg font-black">Enter → Librarian</button>
 </div>
 <p id="loginMsg" class="text-sm font-bold mt-2"></p>
+<p class="text-xs text-gray-500">Passwords: Wordsworth = <b>Wordsworth2026</b> • George Sonto = <b>GeorgeSonto2026</b> • Leave blank to view dashboard only.</p>
 </div>
 
-<div class="bg-white border rounded-xl p-4 mt-4 text-left text-sm">
-<b>System Status:</b> <span id="statusText">Checking files...</span><br>
-<span class="text-xs text-gray-500">If Librarian button was not working, this page now uses links, not JavaScript functions.</span>
+<!-- DASHBOARD COUNTS -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+<div class="bg-white rounded-2xl p-4 text-center border-2 border-blue-200"><div class="text-3xl font-black text-blue-700" id="countBooks">0</div><div class="text-xs font-bold text-gray-500">📚 TOTAL BOOKS</div><div class="text-[11px] text-gray-400" id="nextBookLabel">Next: -</div></div>
+<div class="bg-white rounded-2xl p-4 text-center border-2 border-purple-200"><div class="text-3xl font-black text-purple-700" id="countLearners">0</div><div class="text-xs font-bold text-gray-500">👩‍🎓 TOTAL LEARNERS</div><div class="text-[11px] text-gray-400" id="nextLearnerLabel">Next: -</div></div>
+<div class="bg-white rounded-2xl p-4 text-center border-2 border-orange-200"><div class="text-3xl font-black text-orange-600" id="countIssued">0</div><div class="text-xs font-bold text-gray-500">📤 ISSUED OUT</div><div class="text-[11px] text-gray-400">1 Learner 1 Title</div></div>
+<div class="bg-white rounded-2xl p-4 text-center border-2 border-green-200"><div class="text-3xl font-black text-green-600" id="countAvailable">0</div><div class="text-xs font-bold text-gray-500">✅ AVAILABLE</div><div class="text-[11px] text-gray-400">Ready to issue</div></div>
 </div>
+
+<!-- MAIN BUTTONS - ALL REAL LINKS -->
+<div class="bg-white rounded-2xl p-4 mt-4">
+<h2 class="font-black text-lg">🚀 Main Menu — Tap To Open</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+<a href="librarian.html" class="bg-green-600 text-white py-4 px-2 rounded-xl font-black text-center">📚<br>Librarian<br><span class="text-xs font-normal">Add Books / Learners<br>Auto WHS000001 / 10A001</span></a>
+<a href="issue.html" class="bg-black text-white py-4 px-2 rounded-xl font-black text-center">📤<br>Issue Books<br><span class="text-xs font-normal">Scan Book + Learner<br>Block Grade Mismatch</span></a>
+<a href="print-barcodes.html" class="bg-blue-600 text-white py-4 px-2 rounded-xl font-black text-center">🖨️<br>Print Barcodes<br><span class="text-xs font-normal">A4 3x5 Scannable<br>Real CODE128</span></a>
+<a href="fix-numbers.html" class="bg-red-600 text-white py-4 px-2 rounded-xl font-black text-center">🔧<br>Fix Numbers<br><span class="text-xs font-normal">Fix Old Books<br>WHS-000001 → WHS000001</span></a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+<a href="donation-letter-whs.html" class="bg-yellow-500 text-black py-3 px-2 rounded-xl font-black text-center text-sm">📄 Donation — Wordsworth<br><span class="text-xs font-normal">Wordsworth High School</span></a>
+<a href="donation-letter-gsh.html" class="bg-yellow-400 text-black py-3 px-2 rounded-xl font-black text-center text-sm">📄 Donation — George Sonto<br><span class="text-xs font-normal">George Sonto High School</span></a>
+<a href="librarian.html" class="bg-gray-800 text-white py-3 px-2 rounded-xl font-black text-center text-sm">📋 View All Books<br><span class="text-xs font-normal">Search by WHS000001 / 10A001</span></a>
 </div>
 </div>
 
+<!-- QUICK ISSUE - SCAN FROM HOME -->
+<div class="bg-white rounded-2xl p-4 mt-4">
+<h2 class="font-black text-lg">⚡ Quick Issue — Scan From Home</h2>
+<p class="text-xs text-gray-500">Scan Book Barcode / Book No + Scan Learner Barcode / Learner ID — Same rules as Issue page: 1 Learner 1 Title, Grade Mismatch Blocked.</p>
+<div class="grid md:grid-cols-2 gap-3 mt-3">
+<div class="border-2 border-blue-500 rounded-xl p-3"><div class="font-black text-sm">📚 BOOK</div><input id="quickBook" placeholder="Scan / Type e.g. WHS000001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-1"><div id="quickBookFound" class="text-sm mt-1"></div></div>
+<div class="border-2 border-purple-500 rounded-xl p-3"><div class="font-black text-sm">👩‍🎓 LEARNER</div><input id="quickLearner" placeholder="Scan / Type e.g. 10A001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-1"><div id="quickLearnerFound" class="text-sm mt-1"></div></div>
+</div>
+<div id="quickChecks" class="mt-3"></div>
+<button id="quickIssueBtn" type="button" disabled class="bg-green-600 disabled:bg-gray-300 text-white w-full py-3 rounded-xl font-black mt-2">✅ ISSUE BOOK NOW</button>
+<p id="quickMsg" class="text-center font-bold mt-2 text-sm"></p>
+<a href="issue.html" class="block text-center text-blue-600 underline text-sm mt-1">Open full Issue page with return + history →</a>
+</div>
+
+<!-- RECENTLY ISSUED -->
+<div class="bg-white rounded-2xl p-4 mt-4">
+<div class="flex justify-between flex-wrap gap-2"><h2 class="font-black text-lg">📋 Recently Issued — <span id="recentSchool">Wordsworth High School</span></h2><a href="issue.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">View All →</a></div>
+<div id="recentList" class="mt-2 space-y-2 text-sm"></div>
+</div>
+
+<!-- RULES -->
+<div class="bg-yellow-50 border rounded-2xl p-4 mt-4 text-sm">
+<b>Rules Locked:</b>
+<ul class="list-disc ml-5 mt-1">
+<li><b>Book Number:</b> School Initials + 6 digits, NO hyphen — <b>WHS000001</b> / <b>GSH000001</b></li>
+<li><b>Learner ID:</b> Grade + Class + 3 digits, NO hyphen — <b>10A001</b> / <b>8B001</b></li>
+<li><b>No Duplicate:</b> Book numbers + Learner IDs never duplicate.</li>
+<li><b>No Skipping:</b> If 000001, 000003 exist → Next is 000002 (gap-filled).</li>
+<li><b>Names can duplicate:</b> Two Thabo Mokoena allowed — IDs are different.</li>
+<li><b>1 Learner 1 Title:</b> Learner cannot get same title twice while OUT.</li>
+<li><b>Grade Mismatch Blocked:</b> Grade 10 book → Grade 11 learner = BLOCKED.</li>
+<li><b>Barcode:</b> A4 3x5 — Top: School + Brand + BOOK/LEARNER — Bottom: WHS000001 / 10A001 — Real CODE128 scannable.</li>
+</ul>
+</div>
+
+<div class="text-center text-xs text-gray-400 mt-4 pb-4">Xintimani Group Holdings (Pty) Ltd • 293 Smit Street, Hillbrow, Johannesburg, 2038 • Directors: Vusi Chauke + Hloniphani Success Masia • WhatsApp 078 023 3263 • vusichauke3037@gmail.com • Makhanani LTSM — Joy. Cherished. Mercy.</div>
+</div>
 <script>
-// NO onclick functions - all buttons are <a href> links, so they work even if JS fails
-document.getElementById('loginBtn').addEventListener('click', function(){
-  var v=document.getElementById('schoolSel').value.split('|');
-  var pass=document.getElementById('passInput').value.trim();
-  // Demo passwords - change to your real ones
-  var ok = (v[0]==='WHS' && pass==='Wordsworth2026') || (v[0]==='GSH' && pass==='GeorgeSonto2026') || pass==='' ;
-  if(ok){
-    localStorage.setItem('makhanani_active_emis',v[1]);
-    localStorage.setItem('makhanani_active_school',v[2]);
-    document.getElementById('loginMsg').innerHTML='✅ Logged in as '+v[2]+' — Now tap 📚 Librarian above.';
-    // Go straight to librarian - this is the button that was not working before
-    window.location.href='librarian.html';
-  } else {
-    document.getElementById('loginMsg').innerHTML='❌ Wrong password for '+v[2];
-  }
+(function(){
+let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
+function getBooks(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]');}catch(e){return [];}}
+function getLearners(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]');}catch(e){return [];}}
+function getHistory(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_history')||'[]');}catch(e){return [];}}
+function saveBooks(b){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_ltsm',JSON.stringify(b));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_ltsm',JSON.stringify(b));}
+function saveHistory(h){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_history',JSON.stringify(h));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_history',JSON.stringify(h));}
+function getInitials(n){return n.trim().split(/\s+/).map(w=>w[0].toUpperCase()).join('');}
+function norm(s){return (s||'').trim().toUpperCase();}
+function switchSchool(){
+  let v=document.getElementById('schoolSel').value.split('|');
+  cur={prefix:v[0],emis:v[1],name:v[2]};
+  localStorage.setItem('makhanani_active_emis',cur.emis);
+  localStorage.setItem('makhanani_active_school',cur.name);
+  document.getElementById('activeSchoolLabel').textContent='Active: '+cur.name;
+  document.getElementById('recentSchool').textContent=cur.name;
+  renderDashboard();
+}
+function renderDashboard(){
+  let books=getBooks(); let learners=getLearners(); let hist=getHistory();
+  let total=0, issued=0, avail=0;
+  books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; else avail++; }));
+  document.getElementById('countBooks').textContent=total;
+  document.getElementById('countLearners').textContent=learners.length;
+  document.getElementById('countIssued').textContent=issued;
+  document.getElementById('countAvailable').textContent=avail;
+  // Next numbers - gap-filled
+  let ini=getInitials(cur.name); let usedBooks=new Set(); books.forEach(b=> (b.copies||[]).forEach(c=>usedBooks.add(norm(c.barcode))));
+  let nextBook='-'; for(let i=1;i<=999999;i++){let cand=ini+String(i).padStart(6,'0'); if(!usedBooks.has(cand)){nextBook=cand; break;}}
+  document.getElementById('nextBookLabel').textContent='Next: '+nextBook;
+  // Next learner for 10A as preview
+  let usedL=new Set(learners.map(l=>norm(l.id))); let nextL='-'; for(let i=1;i<=999;i++){let cand='10A'+String(i).padStart(3,'0'); if(!usedL.has(cand)){nextL=cand; break;}}
+  document.getElementById('nextLearnerLabel').textContent='Next 10A: '+nextL;
+  // Recent issued
+  let recent=hist.filter(h=>h.status==='Issued'||h.status==='OUT'||!h.returned).slice().reverse().slice(0,5);
+  document.getElementById('recentList').innerHTML=recent.map(h=>'<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+h.title+'</b> • Book: <b>'+h.bookNo+'</b><br>Learner: <b>'+h.learnerName+'</b> ('+h.learnerId+') • '+h.learnerGrade+' '+h.learnerClass+' • Due: '+h.dueDate+'</div><a href="issue.html" class="bg-orange-500 text-white px-3 py-1 rounded font-bold text-xs h-fit">↩️ Return in Issue →</a></div>').join('')||'<p class="text-gray-500">No books issued yet in '+cur.name+'. Go to Issue Books to issue first book.</p>';
+}
+// Quick Issue
+let qBook=null, qLearner=null;
+function findQuickBook(){
+  let code=norm(document.getElementById('quickBook').value); if(!code) return;
+  qBook=null; getBooks().forEach(b=> (b.copies||[]).forEach(c=>{ if(norm(c.barcode)===code) qBook={book:b,copy:c}; }));
+  document.getElementById('quickBookFound').innerHTML=qBook?'✅ <b>'+qBook.book.title+'</b><br>Book: <b>'+qBook.copy.barcode+'</b> • '+qBook.book.grade+' • '+qBook.copy.status : '<span class="text-red-600 font-bold">❌ Book '+code+' NOT FOUND in '+cur.name+'</span>';
+  validateQuick();
+}
+function findQuickLearner(){
+  let code=norm(document.getElementById('quickLearner').value); if(!code) return;
+  qLearner=getLearners().find(l=>norm(l.id)===code)||null;
+  document.getElementById('quickLearnerFound').innerHTML=qLearner?'✅ <b>'+qLearner.name+'</b><br>ID: <b>'+qLearner.id+'</b> • '+qLearner.grade+' '+qLearner.class : '<span class="text-red-600 font-bold">❌ Learner '+code+' NOT FOUND in '+cur.name+'</span>';
+  validateQuick();
+}
+function validateQuick(){
+  let checks=document.getElementById('quickChecks'); let btn=document.getElementById('quickIssueBtn');
+  if(!qBook||!qLearner){checks.innerHTML=''; btn.disabled=true; return;}
+  let errors=[];
+  if(qBook.copy.status!=='Available') errors.push('❌ BLOCKED: Book '+qBook.copy.barcode+' already OUT to '+(qBook.copy.learnerName||qBook.copy.learnerId||'someone')+'.');
+  let bg=(qBook.book.grade||'').replace(/[^0-9]/g,''); let lg=(qLearner.grade||'').replace(/[^0-9]/g,'');
+  if(bg&&lg&&bg!==lg) errors.push('❌ BLOCKED: GRADE MISMATCH — Book '+qBook.book.grade+' vs Learner '+qLearner.grade+'.');
+  let hist=getHistory(); if(hist.find(h=>norm(h.learnerId)===norm(qLearner.id)&&norm(h.title)===norm(qBook.book.title)&&(h.status==='Issued'||h.status==='OUT'||!h.returned))) errors.push('❌ BLOCKED: 1 LEARNER 1 TITLE — '+qLearner.name+' ('+qLearner.id+') already has '+qBook.book.title+' OUT.');
+  if(errors.length){checks.innerHTML='<div class="bg-red-50 border-2 border-red-500 rounded-xl p-3 text-sm">'+errors.join('<br>')+'</div>'; btn.disabled=true;}
+  else{checks.innerHTML='<div class="bg-green-50 border-2 border-green-500 rounded-xl p-3 text-sm">✅ ALL CHECKS PASSED — Book Available • Grade Matches • Learner does NOT already have this title.</div>'; btn.disabled=false;}
+}
+function doQuickIssue(){
+  if(!qBook||!qLearner) return; validateQuick(); if(document.getElementById('quickIssueBtn').disabled) return;
+  let books=getBooks(); let target=null; books.forEach(b=> (b.copies||[]).forEach(c=>{if(c.barcode===qBook.copy.barcode) target=c;}));
+  if(!target||target.status!=='Available'){alert('❌ Book no longer available.'); renderDashboard(); return;}
+  target.status='Issued'; target.learnerId=qLearner.id; target.learnerName=qLearner.name; target.issuedDate=new Date().toISOString().slice(0,10); target.dueDate='2026-11-30';
+  saveBooks(books);
+  let hist=getHistory(); hist.push({bookNo:qBook.copy.barcode,barcode:qBook.copy.barcode,title:qBook.book.title,grade:qBook.book.grade,learnerId:qLearner.id,learnerName:qLearner.name,learnerGrade:qLearner.grade,learnerClass:qLearner.class,issuedDate:target.issuedDate,dueDate:target.dueDate,status:'Issued',returned:false,school:cur.name,emis:cur.emis});
+  saveHistory(hist);
+  document.getElementById('quickMsg').innerHTML='✅ ISSUED: <b>'+qBook.book.title+'</b> ('+qBook.copy.barcode+') → '+qLearner.name+' ('+qLearner.id+')';
+  document.getElementById('quickBook').value=''; document.getElementById('quickLearner').value=''; qBook=null; qLearner=null;
+  document.getElementById('quickBookFound').innerHTML=''; document.getElementById('quickLearnerFound').innerHTML=''; document.getElementById('quickChecks').innerHTML=''; document.getElementById('quickIssueBtn').disabled=true;
+  document.getElementById('quickBook').focus(); renderDashboard();
+}
+// Bindings - NO onclick in HTML
+document.getElementById('schoolSel').addEventListener('change',switchSchool);
+document.getElementById('enterBtn').addEventListener('click',function(){
+  let v=document.getElementById('schoolSel').value.split('|'); let pass=document.getElementById('passInput').value.trim();
+  // Accept correct password OR blank for dashboard, but go to librarian
+  let ok = (v[0]==='WHS' && pass==='Wordsworth2026') || (v[0]==='GSH' && pass==='GeorgeSonto2026') || pass==='';
+  if(ok){ switchSchool(); document.getElementById('loginMsg').innerHTML='✅ Logged in as '+cur.name+' — Opening Librarian...'; setTimeout(function(){window.location.href='librarian.html';},400); }
+  else { document.getElementById('loginMsg').innerHTML='❌ Wrong password for '+v[2]; }
 });
-document.getElementById('statusText').textContent='✅ index.html loaded OK — Librarian link is: '+window.location.origin+window.location.pathname.replace('index.html','')+'librarian.html';
+document.getElementById('quickBook').addEventListener('change',findQuickBook);
+document.getElementById('quickBook').addEventListener('keydown',function(e){if(e.key==='Enter') findQuickBook();});
+document.getElementById('quickLearner').addEventListener('change',findQuickLearner);
+document.getElementById('quickLearner').addEventListener('keydown',function(e){if(e.key==='Enter') findQuickLearner();});
+document.getElementById('quickIssueBtn').addEventListener('click',doQuickIssue);
+// Restore active school if saved
+let savedEmis=localStorage.getItem('makhanani_active_emis');
+if(savedEmis){ let sel=document.getElementById('schoolSel'); for(let i=0;i<sel.options.length;i++){ if(sel.options[i].value.includes(savedEmis)){ sel.selectedIndex=i; break; } } }
+switchSchool();
 console.log('MAKHANANI index loaded');
+})();
 </script>
 </body></html>
