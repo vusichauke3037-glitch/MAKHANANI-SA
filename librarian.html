@@ -1,11 +1,21 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
 <div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LIBRARIAN</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
-
 <div class="max-w-5xl mx-auto p-4">
 <div class="bg-white rounded-2xl p-4 flex flex-wrap gap-2 justify-between"><div><h1 class="font-black text-2xl">📚 Librarian Dashboard</h1><p class="text-xs text-gray-500" id="libInfo">Loading...</p></div><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select></div>
-
 <div class="grid md:grid-cols-3 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="cBooks">0</div><div class="text-xs font-bold text-gray-500">TOTAL BOOKS (copies)</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="cLearners">0</div><div class="text-xs font-bold text-gray-500">TOTAL LEARNERS</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="cIssued">0</div><div class="text-xs font-bold text-gray-500">ISSUED OUT</div></div></div>
+
+<!-- MANAGE DEPARTMENTS + SUBJECTS - NEW -->
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-purple-500">
+<h2 class="font-black">🗂️ Manage Departments + Subjects — Create New Department Here</h2>
+<p class="text-xs text-gray-500 mt-1">Create a Department once, add its Subjects, then it appears in Add Book + Edit Book + Stock dropdowns. Example: Department <b>Technical</b> → Subjects <b>Technical Maths, Technical Science</b></p>
+<div class="grid md:grid-cols-2 gap-3 mt-3">
+<div class="border rounded-xl p-3"><h3 class="font-black text-sm">➕ Create New Department</h3><input id="newDeptName" placeholder="e.g. Technical, Sport, Agriculture" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-2"><button id="addDeptBtn" type="button" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm mt-2 w-full">➕ Create Department</button><p class="text-[11px] text-gray-400 mt-1">Name must be new — e.g. Technical, not Mathematics again.</p></div>
+<div class="border rounded-xl p-3"><h3 class="font-black text-sm">➕ Add Subject To Department</h3><select id="addSubDept" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-2"></select><input id="newSubjectName" placeholder="e.g. Technical Maths" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-2"><button id="addSubjectBtn" type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black text-sm mt-2 w-full">➕ Add Subject</button></div>
+</div>
+<div id="deptList" class="mt-3 space-y-2 text-sm"></div>
+<p id="deptMsg" class="text-sm font-bold mt-2"></p>
+</div>
 
 <div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500">
 <h2 class="font-black">📚 Add Book — Pick Department → Grade → Subject</h2>
@@ -21,18 +31,13 @@
 <div class="flex gap-2 mt-3 flex-wrap"><button id="addBookBtn" type="button" class="bg-green-600 text-white px-6 py-2 rounded-lg font-black">➕ Add Book(s)</button><button id="quickMathsBtn" type="button" class="bg-blue-100 px-3 py-2 rounded-lg font-bold text-sm">Quick: Mathematics Grade 10</button><button id="quickEnglishBtn" type="button" class="bg-yellow-100 px-3 py-2 rounded-lg font-bold text-sm">Quick: English Grade 10</button></div>
 <p id="bookMsg" class="text-sm font-bold mt-2"></p>
 </div>
-
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Add Learner — Auto ID</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="lName" placeholder="Full Name e.g. Thabo Mokoena" class="border-2 rounded-lg px-3 py-2"><select id="lGrade" class="border-2 rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><input id="lClass" placeholder="Class e.g. 10A" class="border-2 rounded-lg px-3 py-2"><button id="addLearnerBtn" type="button" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black">➕ Add Learner</button></div><p id="learnerMsg" class="text-sm font-bold mt-1"></p></div>
-
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Saved Books — ✏️ Edit / ➕ Top Up / ➖ Reduce / 🗑️ Delete Title</h2>
 <div class="grid md:grid-cols-4 gap-2 mt-2"><select id="filterDept" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Departments</option></select><select id="filterGrade" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="filterSubject" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Subjects</option></select><input id="searchBook" placeholder="🔍 Search title / barcode..." class="border-2 rounded-lg px-3 py-2"></div>
 <div id="bookList" class="mt-2 space-y-2 text-sm"></div></div>
-
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Learners — ✏️ Edit / Delete</h2><input id="searchLearner" placeholder="🔍 Search name / ID / class..." class="border rounded-lg px-3 py-2 w-full mt-2"><div id="learnerList" class="mt-2 space-y-2 text-sm"></div></div>
 <div class="flex gap-2 mt-4 flex-wrap"><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Issue →</a><a href="stock.html" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📦 Stock →</a><a href="issue-record.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📋 Print Record →</a><a href="print-barcodes.html" class="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm">🖨️ Print Barcodes →</a></div>
 </div>
-
-<!-- EDIT BOOK MODAL -->
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-2xl p-5 max-w-lg w-full">
 <h2 class="font-black text-xl">✏️ Edit Saved Book</h2><p class="text-xs text-gray-500 mt-1">Editing: <b id="editOldTitle">-</b> • This updates ALL copies of this title + Stock + Issue history title. Barcodes stay the same.</p>
 <div class="grid gap-2 mt-3">
@@ -44,19 +49,16 @@
 <div class="flex gap-2 mt-4"><button id="saveEditBtn" type="button" class="bg-green-600 text-white px-6 py-2 rounded-lg font-black flex-1">💾 Save Changes</button><button id="cancelEditBtn" type="button" class="bg-gray-300 px-6 py-2 rounded-lg font-bold">Cancel</button></div>
 <p id="editMsg" class="text-sm font-bold mt-2"></p>
 </div></div>
-
-<!-- EDIT LEARNER MODAL -->
 <div id="editLearnerModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-2xl p-5 max-w-lg w-full">
 <h2 class="font-black text-xl">✏️ Edit Learner</h2><p class="text-xs text-gray-500 mt-1">Learner ID stays the same — only Name / Grade / Class change. History will show new name.</p>
 <div class="grid gap-2 mt-3"><div><label class="font-bold text-sm">👩‍🎓 Full Name *</label><input id="elName" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"></div><div><label class="font-bold text-sm">🎓 Grade *</label><select id="elGrade" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div><div><label class="font-bold text-sm">🏫 Class *</label><input id="elClass" placeholder="e.g. 10A" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"></div></div>
 <div class="flex gap-2 mt-4"><button id="saveLearnerEditBtn" type="button" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-black flex-1">💾 Save Learner</button><button id="cancelLearnerEditBtn" type="button" class="bg-gray-300 px-6 py-2 rounded-lg font-bold">Cancel</button></div>
 <p id="editLearnerMsg" class="text-sm font-bold mt-2"></p>
 </div></div>
-
 <script>
 (function(){
 let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'}; let me=null; let editingBookIdx=-1; let editingLearnerIdx=-1;
-const DEPTS={
+const DEFAULT_DEPTS={
   'Mathematics': ['Mathematics','Maths Literacy','Mathematical Literacy'],
   'Sciences': ['Physical Science','Life Sciences','Natural Sciences','Agricultural Science'],
   'Languages': ['English','English FAL','English HL','Afrikaans','Afrikaans FAL','isiZulu','isiXhosa','Sepedi','Setswana','Sesotho'],
@@ -67,6 +69,14 @@ const DEPTS={
   'Arts': ['Visual Arts','Music','Drama','Creative Arts'],
   'General': ['General','Other']
 };
+// *** CUSTOM DEPARTMENTS - saved in localStorage, shared with Stock via Export ***
+function loadDepts(){
+  let custom={}; try{ custom=JSON.parse(localStorage.getItem('makhanani_departments')||'{}'); }catch(e){ custom={}; }
+  let merged={}; Object.keys(DEFAULT_DEPTS).forEach(k=> merged[k]=[...DEFAULT_DEPTS[k]]); Object.keys(custom).forEach(k=>{ if(merged[k]){ custom[k].forEach(s=>{ if(!merged[k].includes(s)) merged[k].push(s); }); } else { merged[k]=[...custom[k]]; } }); return merged;
+}
+function saveDepts(custom){ localStorage.setItem('makhanani_departments', JSON.stringify(custom)); localStorage.setItem('makhanani_custom_departments', JSON.stringify(custom)); }
+function getCustomDepts(){ try{ return JSON.parse(localStorage.getItem('makhanani_departments')||'{}'); }catch(e){ return {}; } }
+let DEPTS=loadDepts();
 function norm(s){return (s||'').trim().toUpperCase();}
 function getBooks(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]');}catch(e){return [];}}
 function saveBooks(b){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_ltsm',JSON.stringify(b));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_ltsm',JSON.stringify(b));}
@@ -79,48 +89,61 @@ function saveReqs(r){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_requests'
 function getInitials(n){return n.trim().split(/\s+/).map(w=>w[0].toUpperCase()).join('');}
 function bookDept(b){ if(b.department) return b.department; if(b.group) return b.group; let t=((b.subject||'')+' '+b.title).toUpperCase(); for(let d in DEPTS){ for(let s of DEPTS[d]){ if(t.includes(s.toUpperCase())) return d; } } return 'General'; }
 function bookSubject(b){ if(b.subject) return b.subject; let t=(b.title||'').toUpperCase(); for(let d in DEPTS){ for(let s of DEPTS[d]){ if(t.includes(s.toUpperCase())) return s; } } return 'General'; }
+function refreshDepts(){ DEPTS=loadDepts(); buildDeptDropdowns(); renderDeptList(); render(); }
 function buildDeptDropdowns(){
   document.getElementById('bDept').innerHTML='<option value="">-- Select Department --</option>'+Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
   document.getElementById('filterDept').innerHTML='<option value="ALL">All Departments</option>'+Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
   let allSubs=[]; Object.values(DEPTS).forEach(arr=> allSubs.push(...arr));
   document.getElementById('filterSubject').innerHTML='<option value="ALL">All Subjects</option>'+[...new Set(allSubs)].sort().map(s=>'<option value="'+s+'">'+s+'</option>').join('');
   document.getElementById('eDept').innerHTML=Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
+  document.getElementById('addSubDept').innerHTML=Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
+}
+function renderDeptList(){
+  let custom=getCustomDepts();
+  let html=Object.keys(DEPTS).sort().map(d=>{
+    let isCustom = !!custom[d] || !DEFAULT_DEPTS[d];
+    let subjects=DEPTS[d].map(s=>{
+      let canDelete = true; // Allow delete any subject, but warn if books use it
+      return '<span class="inline-flex items-center gap-1 bg-blue-50 border rounded px-2 py-0.5 text-xs font-bold m-0.5">'+s+' <button data-del-subject="'+d+'|'+s+'" class="del-subject-btn text-red-600 font-black" title="Remove subject '+s+'">×</button></span>';
+    }).join('');
+    let booksUsing=getBooks().filter(b=> bookDept(b)===d).length;
+    return '<div class="border rounded-lg p-2"><div class="flex justify-between gap-2 flex-wrap"><div><b>📁 '+d+'</b> '+(isCustom?'<span class="text-xs bg-purple-100 px-1 rounded font-bold">YOURS</span>':'<span class="text-xs bg-gray-100 px-1 rounded">Built-in</span>')+' • '+DEPTS[d].length+' subjects • '+booksUsing+' books use it</div>'+(isCustom && booksUsing===0 ? '<button data-del-dept="'+d+'" class="del-dept-btn bg-red-600 text-white px-2 py-0.5 rounded font-bold text-xs">🗑️ Delete Department</button>' : '')+'</div><div class="mt-1">'+subjects+'</div></div>';
+  }).join('');
+  document.getElementById('deptList').innerHTML=html||'<p class="text-gray-500">No departments.</p>';
+  document.querySelectorAll('.del-subject-btn').forEach(b=>b.addEventListener('click',function(){
+    let parts=this.getAttribute('data-del-subject').split('|'); let dept=parts[0]; let subj=parts.slice(1).join('|');
+    let booksUsing=getBooks().filter(b=> bookDept(b)===dept && bookSubject(b)===subj).length;
+    if(booksUsing>0){ if(!confirm('⚠️ '+booksUsing+' books use Subject "'+subj+'" in "'+dept+'". If you delete it, those books will still keep the subject name, but new books cannot pick it. Delete anyway?')) return; }
+    if(!confirm('Remove Subject "'+subj+'" from "'+dept+'"?')) return;
+    let custom=getCustomDepts(); // Rebuild custom: keep all merged minus this subject, but need to track deletions for built-in too
+    // Simplest: store deletions in custom as negative - we store full custom dept list for custom depts, and for built-in we store override list
+    // For built-in dept, save override = current list without subject
+    if(DEFAULT_DEPTS[dept]){ custom[dept]=DEPTS[dept].filter(s=>s!==subj); }
+    else { custom[dept]=(custom[dept]||DEPTS[dept]).filter(s=>s!==subj); if(!custom[dept].length) delete custom[dept]; }
+    saveDepts(custom); document.getElementById('deptMsg').innerHTML='✅ Removed Subject <b>'+subj+'</b> from <b>'+dept+'</b>'; refreshDepts();
+  }));
+  document.querySelectorAll('.del-dept-btn').forEach(b=>b.addEventListener('click',function(){
+    let dept=this.getAttribute('data-del-dept'); if(!confirm('Delete Department "'+dept+'" and all its subjects? Only possible when no books use it.')) return;
+    let custom=getCustomDepts(); delete custom[dept]; saveDepts(custom); document.getElementById('deptMsg').innerHTML='✅ Deleted Department <b>'+dept+'</b>'; refreshDepts();
+  }));
 }
 function onDeptChange(){ let dept=document.getElementById('bDept').value; let subSel=document.getElementById('bSubject'); if(!dept){ subSel.innerHTML='<option value="">-- Select Department First --</option>'; return; } subSel.innerHTML='<option value="">-- Select Subject --</option>'+DEPTS[dept].map(s=>'<option value="'+s+'">'+s+'</option>').join(''); document.getElementById('subjectHint').textContent=DEPTS[dept].length+' subjects in '+dept; updatePreview(); }
 function onEditDeptChange(){ let dept=document.getElementById('eDept').value; let subSel=document.getElementById('eSubject'); subSel.innerHTML=DEPTS[dept].map(s=>'<option value="'+s+'">'+s+'</option>').join(''); }
 function updatePreview(){ let dept=document.getElementById('bDept').value; let grade=document.getElementById('bGrade').value; let subj=document.getElementById('bSubject').value; let title=document.getElementById('bTitle').value.trim(); document.getElementById('titlePreview').textContent=(dept?dept+' → ':'')+(grade?grade+' → ':'')+(subj?subj+' → ':'')+(title||'[Type Title]'); }
-function setMe(){ let s=null; try{ s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){} if(s&&s.name){ me=s; if(s.school && s.school!=='ALL' && s.school!=='All Schools'){ cur={prefix:s.prefix||'WHS',emis:s.emis||'700310854',name:s.school}; } document.getElementById('libInfo').textContent='Logged in: '+me.name+' • '+me.role+' • Viewing: '+cur.name; document.getElementById('topStatus').textContent='Logged in: '+me.name+' • '+me.role; try{ document.getElementById('schoolSel').value=cur.prefix+'|'+cur.emis+'|'+cur.name; }catch(e){} } render(); }
+function setMe(){ let s=null; try{ s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){} if(s&&s.name){ me=s; if(s.school && s.school!=='ALL' && s.school!=='All Schools'){ cur={prefix:s.prefix||'WHS',emis:s.emis||'700310854',name:s.school}; } document.getElementById('libInfo').textContent='Logged in: '+me.name+' • '+me.role+' • Viewing: '+cur.name; document.getElementById('topStatus').textContent='Logged in: '+me.name+' • '+me.role; try{ document.getElementById('schoolSel').value=cur.prefix+'|'+cur.emis+'|'+cur.name; }catch(e){} } render(); renderDeptList(); }
 function nextBookBarcode(used){ let ini=getInitials(cur.name); for(let i=1;i<=999999;i++){ let c=ini+String(i).padStart(6,'0'); if(!used.has(c)) return c; } return ini+'000001'; }
-function openEditBook(idx){
-  let books=getBooks(); let b=books[idx]; if(!b) return; editingBookIdx=idx;
-  document.getElementById('editOldTitle').textContent=b.title+' • '+bookDept(b)+' • '+b.grade+' • '+bookSubject(b);
-  document.getElementById('eDept').value=bookDept(b); onEditDeptChange();
-  // Subject may not be in list if old - add it temporarily
-  let subj=bookSubject(b); let subSel=document.getElementById('eSubject'); if(![...subSel.options].some(o=>o.value===subj)){ let o=document.createElement('option'); o.value=subj; o.textContent=subj+' (old)'; subSel.appendChild(o); }
-  subSel.value=subj; document.getElementById('eGrade').value=b.grade; document.getElementById('eTitle').value=b.title;
-  document.getElementById('editMsg').textContent=''; let m=document.getElementById('editModal'); m.classList.remove('hidden'); m.classList.add('flex');
-}
+function openEditBook(idx){ let books=getBooks(); let b=books[idx]; if(!b) return; editingBookIdx=idx; document.getElementById('editOldTitle').textContent=b.title+' • '+bookDept(b)+' • '+b.grade+' • '+bookSubject(b); document.getElementById('eDept').value=bookDept(b); onEditDeptChange(); let subj=bookSubject(b); let subSel=document.getElementById('eSubject'); if(![...subSel.options].some(o=>o.value===subj)){ let o=document.createElement('option'); o.value=subj; o.textContent=subj+' (old)'; subSel.appendChild(o); } subSel.value=subj; document.getElementById('eGrade').value=b.grade; document.getElementById('eTitle').value=b.title; document.getElementById('editMsg').textContent=''; let m=document.getElementById('editModal'); m.classList.remove('hidden'); m.classList.add('flex'); }
 function closeEditBook(){ let m=document.getElementById('editModal'); m.classList.add('hidden'); m.classList.remove('flex'); editingBookIdx=-1; }
-function openEditLearner(idx){
-  let ls=getLearners(); let l=ls[idx]; if(!l) return; editingLearnerIdx=idx;
-  document.getElementById('elName').value=l.name; document.getElementById('elGrade').value=l.grade; document.getElementById('elClass').value=l.class;
-  document.getElementById('editLearnerMsg').textContent=''; let m=document.getElementById('editLearnerModal'); m.classList.remove('hidden'); m.classList.add('flex');
-}
+function openEditLearner(idx){ let ls=getLearners(); let l=ls[idx]; if(!l) return; editingLearnerIdx=idx; document.getElementById('elName').value=l.name; document.getElementById('elGrade').value=l.grade; document.getElementById('elClass').value=l.class; document.getElementById('editLearnerMsg').textContent=''; let m=document.getElementById('editLearnerModal'); m.classList.remove('hidden'); m.classList.add('flex'); }
 function closeEditLearner(){ let m=document.getElementById('editLearnerModal'); m.classList.add('hidden'); m.classList.remove('flex'); editingLearnerIdx=-1; }
 function render(){
   let books=getBooks(); let learners=getLearners(); let total=0, issued=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; }));
   document.getElementById('cBooks').textContent=total; document.getElementById('cLearners').textContent=learners.length; document.getElementById('cIssued').textContent=issued;
   let fDept=document.getElementById('filterDept').value; let fGrade=document.getElementById('filterGrade').value; let fSub=document.getElementById('filterSubject').value; let qb=(document.getElementById('searchBook').value||'').toLowerCase();
   let filtered=books.filter(b=>{ let d=bookDept(b); let s=bookSubject(b); if(fDept!=='ALL' && d!==fDept) return false; if(fGrade!=='ALL' && b.grade!==fGrade) return false; if(fSub!=='ALL' && s!==fSub) return false; if(qb && !(b.title+' '+(b.copies||[]).map(c=>c.barcode||c.bookNo||c.code||'').join(' ')+' '+d+' '+s).toLowerCase().includes(qb)) return false; return true; });
-  document.getElementById('bookList').innerHTML=filtered.map((b)=>{
-    let idx=books.indexOf(b); let avail=b.copies.filter(c=>c.status==='Available').length; let iss=b.copies.filter(c=>c.status==='Issued').length; let pack=b.copies.filter(c=>c.status==='Packed').length;
-    return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><span class="text-xs bg-black text-white px-2 py-0.5 rounded font-bold">📁 '+bookDept(b)+'</span> <span class="text-xs bg-blue-100 px-2 py-0.5 rounded font-bold">🎓 '+b.grade+'</span> <span class="text-xs bg-yellow-100 px-2 py-0.5 rounded font-bold">📖 '+bookSubject(b)+'</span><br><b class="text-base">'+b.title+'</b><br>Total: <b>'+b.copies.length+'</b> • Available: <b>'+avail+'</b> • Issued: <b>'+iss+'</b> • Packed: <b>'+pack+'</b><br><span class="text-xs text-gray-500">Barcodes: '+b.copies.slice(0,5).map(c=>c.barcode||c.bookNo||c.code||'').join(', ')+(b.copies.length>5?' ... +'+(b.copies.length-5)+' more':'')+'</span></div><div class="flex gap-1 h-fit flex-wrap"><button data-edit="'+idx+'" class="edit-btn bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ Edit</button><button data-topup="'+idx+'" class="topup-btn bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">➕ Top Up</button><button data-reduce="'+idx+'" class="reduce-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">➖ Reduce</button><button data-del="'+idx+'" class="del-btn bg-gray-700 text-white px-3 py-1 rounded font-bold text-xs">🗑️ Delete Title</button></div></div>';
-  }).join('')||'<p class="text-gray-500">No books for this filter.</p>';
+  document.getElementById('bookList').innerHTML=filtered.map((b)=>{ let idx=books.indexOf(b); let avail=b.copies.filter(c=>c.status==='Available').length; let iss=b.copies.filter(c=>c.status==='Issued').length; let pack=b.copies.filter(c=>c.status==='Packed').length; return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><span class="text-xs bg-black text-white px-2 py-0.5 rounded font-bold">📁 '+bookDept(b)+'</span> <span class="text-xs bg-blue-100 px-2 py-0.5 rounded font-bold">🎓 '+b.grade+'</span> <span class="text-xs bg-yellow-100 px-2 py-0.5 rounded font-bold">📖 '+bookSubject(b)+'</span><br><b class="text-base">'+b.title+'</b><br>Total: <b>'+b.copies.length+'</b> • Available: <b>'+avail+'</b> • Issued: <b>'+iss+'</b> • Packed: <b>'+pack+'</b><br><span class="text-xs text-gray-500">Barcodes: '+b.copies.slice(0,5).map(c=>c.barcode||c.bookNo||c.code||'').join(', ')+(b.copies.length>5?' ... +'+(b.copies.length-5)+' more':'')+'</span></div><div class="flex gap-1 h-fit flex-wrap"><button data-edit="'+idx+'" class="edit-btn bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ Edit</button><button data-topup="'+idx+'" class="topup-btn bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">➕ Top Up</button><button data-reduce="'+idx+'" class="reduce-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">➖ Reduce</button><button data-del="'+idx+'" class="del-btn bg-gray-700 text-white px-3 py-1 rounded font-bold text-xs">🗑️ Delete Title</button></div></div>'; }).join('')||'<p class="text-gray-500">No books for this filter.</p>';
   let ql=(document.getElementById('searchLearner').value||'').toLowerCase();
-  document.getElementById('learnerList').innerHTML=learners.filter(l=>(l.name+' '+l.id+' '+l.class+' '+l.grade).toLowerCase().includes(ql)).map((l)=>{
-    let idx=learners.indexOf(l);
-    return '<div class="border rounded-lg p-2 flex justify-between gap-2"><div><b>'+l.name+'</b> • ID: <b>'+l.id+'</b> • '+l.grade+' '+l.class+'</div><div class="flex gap-1"><button data-edit-learner="'+idx+'" class="edit-learner-btn bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ Edit</button><button data-del-learner="'+idx+'" class="del-learner-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Delete</button></div></div>';
-  }).join('')||'<p class="text-gray-500">No learners yet.</p>';
+  document.getElementById('learnerList').innerHTML=learners.filter(l=>(l.name+' '+l.id+' '+l.class+' '+l.grade).toLowerCase().includes(ql)).map((l)=>{ let idx=learners.indexOf(l); return '<div class="border rounded-lg p-2 flex justify-between gap-2"><div><b>'+l.name+'</b> • ID: <b>'+l.id+'</b> • '+l.grade+' '+l.class+'</div><div class="flex gap-1"><button data-edit-learner="'+idx+'" class="edit-learner-btn bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ Edit</button><button data-del-learner="'+idx+'" class="del-learner-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Delete</button></div></div>'; }).join('')||'<p class="text-gray-500">No learners yet.</p>';
   document.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click',function(){ openEditBook(parseInt(this.getAttribute('data-edit'))); }));
   document.querySelectorAll('.edit-learner-btn').forEach(b=>b.addEventListener('click',function(){ openEditLearner(parseInt(this.getAttribute('data-edit-learner'))); }));
   document.querySelectorAll('.topup-btn').forEach(b=>b.addEventListener('click',function(){ let idx=parseInt(this.getAttribute('data-topup')); let books=getBooks(); let bks=books[idx]; let qty=parseInt(prompt('Top Up how many for '+bks.title+'?', '10'),10); if(!qty||qty<1) return; let used=new Set(); books.forEach(bb=> (bb.copies||[]).forEach(c=>used.add(norm(c.barcode||c.bookNo||c.code||'')))); let added=[]; for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); bks.copies.push({barcode:code, bookNo:code, status:'Available'}); added.push(code); } saveBooks(books); alert('✅ Top Up: '+qty+' added\n'+added.join(', ')); render(); }));
@@ -128,6 +151,20 @@ function render(){
   document.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',function(){ let idx=parseInt(this.getAttribute('data-del')); let books=getBooks(); let bks=books[idx]; let issued=bks.copies.filter(c=>c.status==='Issued').length; if(issued>0){ alert('❌ Cannot delete title — '+issued+' copies are still ISSUED OUT. Retrieve them first in Issue page.'); return; } if(!confirm('Delete ALL copies of "'+bks.title+'" ('+bks.copies.length+' copies)? This cannot be undone.')) return; books.splice(idx,1); saveBooks(books); render(); }));
   document.querySelectorAll('.del-learner-btn').forEach(b=>b.addEventListener('click',function(){ if(!confirm('Delete this learner?')) return; let idx=parseInt(this.getAttribute('data-del-learner')); let ls=getLearners(); ls.splice(idx,1); saveLearners(ls); render(); }));
 }
+// *** CREATE DEPARTMENT + ADD SUBJECT ***
+document.getElementById('addDeptBtn').addEventListener('click',function(){
+  let name=document.getElementById('newDeptName').value.trim(); if(!name){ alert('Type Department name — e.g. Technical'); return; }
+  name=name.replace(/\s+/g,' ').trim(); let key=Object.keys(DEPTS).find(k=>k.toLowerCase()===name.toLowerCase()); if(key){ document.getElementById('deptMsg').innerHTML='❌ Department <b>'+key+'</b> already exists. Pick a different name or add Subject to it.'; return; }
+  let custom=getCustomDepts(); custom[name]=[]; saveDepts(custom); document.getElementById('newDeptName').value=''; document.getElementById('deptMsg').innerHTML='✅ Created Department <b>'+name+'</b> — Now add Subjects to it below (right side).'; refreshDepts(); document.getElementById('addSubDept').value=name;
+});
+document.getElementById('addSubjectBtn').addEventListener('click',function(){
+  let dept=document.getElementById('addSubDept').value; let subj=document.getElementById('newSubjectName').value.trim(); if(!dept){ alert('Select Department first'); return; } if(!subj){ alert('Type Subject name — e.g. Technical Maths'); return; }
+  subj=subj.replace(/\s+/g,' ').trim(); if(DEPTS[dept].some(s=>s.toLowerCase()===subj.toLowerCase())){ document.getElementById('deptMsg').innerHTML='❌ Subject <b>'+subj+'</b> already exists in <b>'+dept+'</b>.'; return; }
+  let custom=getCustomDepts();
+  if(DEFAULT_DEPTS[dept]){ custom[dept]=[...DEPTS[dept], subj]; }
+  else { custom[dept]=[...(custom[dept]||DEPTS[dept]||[]), subj]; }
+  saveDepts(custom); document.getElementById('newSubjectName').value=''; document.getElementById('deptMsg').innerHTML='✅ Added Subject <b>'+subj+'</b> to Department <b>'+dept+'</b> — Now it shows in Add Book dropdown.'; refreshDepts();
+});
 document.getElementById('bDept').addEventListener('change',onDeptChange);
 document.getElementById('bSubject').addEventListener('change',updatePreview); document.getElementById('bGrade').addEventListener('change',updatePreview); document.getElementById('bTitle').addEventListener('input',updatePreview);
 document.getElementById('eDept').addEventListener('change',onEditDeptChange);
@@ -135,36 +172,10 @@ document.getElementById('quickMathsBtn').addEventListener('click',function(){ do
 document.getElementById('quickEnglishBtn').addEventListener('click',function(){ document.getElementById('bDept').value='Languages'; onDeptChange(); document.getElementById('bSubject').value='English'; document.getElementById('bGrade').value='Grade 10'; document.getElementById('bTitle').value='English Grade 10'; updatePreview(); });
 document.getElementById('addBookBtn').addEventListener('click',function(){ let dept=document.getElementById('bDept').value; let grade=document.getElementById('bGrade').value; let subject=document.getElementById('bSubject').value; let title=document.getElementById('bTitle').value.trim(); let qty=parseInt(document.getElementById('bQty').value)||1; if(!dept){ alert('❌ Select Department first'); return; } if(!subject){ alert('❌ Select Subject'); return; } if(!title){ alert('❌ Type Title'); return; } let books=getBooks(); let existing=books.find(b=> b.title===title && b.grade===grade && (b.subject||'General')===subject && (b.department||'General')===dept); let used=new Set(); books.forEach(b=> (b.copies||[]).forEach(c=>used.add(norm(c.barcode||c.bookNo||c.code||'')))); let added=[]; if(existing){ for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); existing.copies.push({barcode:code, bookNo:code, status:'Available'}); added.push(code); } } else { let copies=[]; for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); copies.push({barcode:code, bookNo:code, status:'Available'}); added.push(code); } books.push({title:title, grade:grade, department:dept, group:dept, subject:subject, copies:copies}); } saveBooks(books); document.getElementById('bookMsg').innerHTML='✅ Added: <b>'+qty+' x '+title+'</b> — 📁 '+dept+' • 🎓 '+grade+' • 📖 '+subject; document.getElementById('bTitle').value=''; render(); });
 document.getElementById('addLearnerBtn').addEventListener('click',function(){ let name=document.getElementById('lName').value.trim(); let grade=document.getElementById('lGrade').value; let cls=document.getElementById('lClass').value.trim().toUpperCase(); if(!name||!cls){ alert('Enter Name + Class e.g. 10A'); return; } let learners=getLearners(); let used=new Set(learners.map(l=>norm(l.id))); let gradeNum=grade.replace(/[^0-9]/g,''); let base=gradeNum+cls.replace(/[^A-Z0-9]/g,''); let id=''; for(let i=1;i<=999;i++){ let cand=base+String(i).padStart(3,'0'); if(!used.has(cand)){ id=cand; break; } } learners.push({id:id,name:name,grade:grade,class:cls}); saveLearners(learners); document.getElementById('learnerMsg').innerHTML='✅ Added Learner: <b>'+name+'</b> — ID: <b>'+id+'</b> • '+grade+' '+cls; document.getElementById('lName').value=''; render(); });
-// SAVE EDIT BOOK - updates book + history + requests titles so nothing stays old
-document.getElementById('saveEditBtn').addEventListener('click',function(){
-  if(editingBookIdx<0) return;
-  let dept=document.getElementById('eDept').value; let subject=document.getElementById('eSubject').value; let grade=document.getElementById('eGrade').value; let title=document.getElementById('eTitle').value.trim();
-  if(!dept||!subject||!title){ document.getElementById('editMsg').innerHTML='❌ Fill Department + Subject + Title'; return; }
-  let books=getBooks(); let old=books[editingBookIdx]; let oldTitle=old.title;
-  // Prevent duplicate - if another title already has same dept+grade+subject+title, block
-  let dup=books.find((b,i)=> i!==editingBookIdx && b.title===title && b.grade===grade && (b.subject||'General')===subject && (b.department||'General')===dept);
-  if(dup){ document.getElementById('editMsg').innerHTML='❌ Another book already has same Title + Department + Grade + Subject. Change Title.'; return; }
-  old.title=title; old.grade=grade; old.department=dept; old.group=dept; old.subject=subject;
-  saveBooks(books);
-  // Update history + requests so Issue Record / Loan Form show new title too
-  let hist=getHist(); let hChanged=0; hist.forEach(h=>{ if(h.title===oldTitle){ h.title=title; h.grade=grade; hChanged++; } }); if(hChanged) saveHist(hist);
-  let reqs=getReqs(); let rChanged=0; reqs.forEach(r=>{ if(r.title===oldTitle){ r.title=title; r.grade=grade; r.subject=subject; rChanged++; } }); if(rChanged) saveReqs(reqs);
-  document.getElementById('editMsg').innerHTML='✅ Saved: <b>'+title+'</b> — 📁 '+dept+' • 🎓 '+grade+' • 📖 '+subject+' — Updated '+hChanged+' history + '+rChanged+' requests.';
-  setTimeout(()=>{ closeEditBook(); render(); }, 800);
-});
+document.getElementById('saveEditBtn').addEventListener('click',function(){ if(editingBookIdx<0) return; let dept=document.getElementById('eDept').value; let subject=document.getElementById('eSubject').value; let grade=document.getElementById('eGrade').value; let title=document.getElementById('eTitle').value.trim(); if(!dept||!subject||!title){ document.getElementById('editMsg').innerHTML='❌ Fill Department + Subject + Title'; return; } let books=getBooks(); let old=books[editingBookIdx]; let oldTitle=old.title; let dup=books.find((b,i)=> i!==editingBookIdx && b.title===title && b.grade===grade && (b.subject||'General')===subject && (b.department||'General')===dept); if(dup){ document.getElementById('editMsg').innerHTML='❌ Another book already has same Title + Department + Grade + Subject. Change Title.'; return; } old.title=title; old.grade=grade; old.department=dept; old.group=dept; old.subject=subject; saveBooks(books); let hist=getHist(); let hChanged=0; hist.forEach(h=>{ if(h.title===oldTitle){ h.title=title; h.grade=grade; hChanged++; } }); if(hChanged) saveHist(hist); let reqs=getReqs(); let rChanged=0; reqs.forEach(r=>{ if(r.title===oldTitle){ r.title=title; r.grade=grade; r.subject=subject; rChanged++; } }); if(rChanged) saveReqs(reqs); document.getElementById('editMsg').innerHTML='✅ Saved: <b>'+title+'</b> — 📁 '+dept+' • 🎓 '+grade+' • 📖 '+subject+' — Updated '+hChanged+' history + '+rChanged+' requests.'; setTimeout(()=>{ closeEditBook(); render(); }, 800); });
 document.getElementById('cancelEditBtn').addEventListener('click',closeEditBook);
 document.getElementById('editModal').addEventListener('click',function(e){ if(e.target===this) closeEditBook(); });
-// SAVE EDIT LEARNER
-document.getElementById('saveLearnerEditBtn').addEventListener('click',function(){
-  if(editingLearnerIdx<0) return;
-  let name=document.getElementById('elName').value.trim(); let grade=document.getElementById('elGrade').value; let cls=document.getElementById('elClass').value.trim().toUpperCase();
-  if(!name||!cls){ document.getElementById('editLearnerMsg').innerHTML='❌ Fill Name + Class'; return; }
-  let ls=getLearners(); let old=ls[editingLearnerIdx]; let oldId=old.id;
-  old.name=name; old.grade=grade; old.class=cls; saveLearners(ls);
-  let hist=getHist(); let changed=0; hist.forEach(h=>{ if(h.learnerId===oldId){ h.learnerName=name; h.learnerGrade=grade; h.learnerClass=cls; changed++; } }); if(changed) saveHist(hist);
-  document.getElementById('editLearnerMsg').innerHTML='✅ Saved Learner: <b>'+name+'</b> • '+grade+' '+cls+' — Updated '+changed+' history records.';
-  setTimeout(()=>{ closeEditLearner(); render(); }, 800);
-});
+document.getElementById('saveLearnerEditBtn').addEventListener('click',function(){ if(editingLearnerIdx<0) return; let name=document.getElementById('elName').value.trim(); let grade=document.getElementById('elGrade').value; let cls=document.getElementById('elClass').value.trim().toUpperCase(); if(!name||!cls){ document.getElementById('editLearnerMsg').innerHTML='❌ Fill Name + Class'; return; } let ls=getLearners(); let old=ls[editingLearnerIdx]; let oldId=old.id; old.name=name; old.grade=grade; old.class=cls; saveLearners(ls); let hist=getHist(); let changed=0; hist.forEach(h=>{ if(h.learnerId===oldId){ h.learnerName=name; h.learnerGrade=grade; h.learnerClass=cls; changed++; } }); if(changed) saveHist(hist); document.getElementById('editLearnerMsg').innerHTML='✅ Saved Learner: <b>'+name+'</b> • '+grade+' '+cls+' — Updated '+changed+' history records.'; setTimeout(()=>{ closeEditLearner(); render(); }, 800); });
 document.getElementById('cancelLearnerEditBtn').addEventListener('click',closeEditLearner);
 document.getElementById('editLearnerModal').addEventListener('click',function(e){ if(e.target===this) closeEditLearner(); });
 document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; render(); });
