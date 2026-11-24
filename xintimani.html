@@ -1,124 +1,129 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Xintimani Group Holdings (Pty) Ltd — Building South Africa, One Solution At A Time</title><script src="https://cdn.tailwindcss.com"></script><style>html{scroll-behavior:smooth}@keyframes pulse-green{0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}70%{box-shadow:0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}.wa-float{animation:pulse-green 2s infinite}.logo-img{object-fit:contain}</style></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Xintimani Group Holdings (Pty) Ltd — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
-<script>const WHATSAPP_NUMBER="27780233263"; function openWhatsApp(msg){ window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(msg||'Hi Xintimani Group!'),' _blank'); }</script>
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'TEACHER'};
+  window.MAKHANANI_SESSION={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'TEACHER',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'};
+  localStorage.setItem('makhanani_session',JSON.stringify(window.MAKHANANI_SESSION));
+  let b=document.createElement('div'); b.style.cssText='background:#000;color:#fff;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:bold;';
+  b.innerHTML='<span><img src="logo.png" style="height:24px;width:24px;border-radius:50%;background:#fff;display:inline;vertical-align:middle;"> '+prof.name+' • '+prof.role+' • '+(prof.school||'')+' • 🔥 makhanani-ltsm</span><button id="fbLogoutBtn" style="background:#dc2626;color:#fff;padding:4px 10px;border-radius:6px;font-weight:bold;">Logout</button>';
+  document.body.insertBefore(b,document.body.firstChild);
+  document.getElementById('fbLogoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); window.location.href='login.html'; });
+});
+</script>
 
-<!-- ✅ TOP BAR WITH LOGO -->
-<div class="bg-black text-white py-2 px-4 flex flex-wrap justify-between gap-2 sticky top-0 z-50 items-center">
-  <span class="flex items-center gap-2">
-    <img src="logo.png" alt="Xintimani Group Logo" class="logo-img h-10 w-10 md:h-12 md:w-12 rounded-full bg-white p-1 border-2 border-yellow-400 shadow" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
-    <span><b>XINTIMANI GROUP</b> • Holdings (Pty) Ltd • 293 Smit Street, Hillbrow, Johannesburg, 2038</span>
-  </span>
-  <span class="flex gap-3 flex-wrap">
-    <a href="#" onclick="openWhatsApp('Hi! I need help with Xintimani Group.');return false;" class="hover:text-yellow-400 font-bold">💬 WhatsApp 078 023 3263 →</a>
-    <a href="mailto:vusichauke3037@gmail.com" class="hover:text-yellow-400">✉️ vusichauke3037@gmail.com</a>
-    <a href="index.html" class="bg-yellow-500 text-black px-2 py-0.5 rounded font-bold">📚 Makhanani LTSM →</a>
-  </span>
+<!-- TOP BAR -->
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Xintimani Group Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • HOLDINGS (PTY) LTD</div><div class="text-[11px] text-gray-300">293 Smit Street, Hillbrow, Johannesburg, 2038 • WhatsApp 078 023 3263 • vusichauke3037@gmail.com</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-4 py-2 rounded-lg font-black text-sm">📚 Makhanani LTSM →</a></div>
+
+<div class="max-w-5xl mx-auto p-4">
+
+<!-- HERO -->
+<div class="bg-black text-white rounded-2xl p-6 md:p-8 text-center relative overflow-hidden">
+<img src="logo.png" class="h-24 w-24 mx-auto rounded-2xl bg-white border-2 border-yellow-400 p-2" alt="Xintimani Group Logo">
+<h1 class="font-black text-3xl md:text-4xl mt-3">XINTIMANI <span class="text-yellow-500">GROUP</span></h1>
+<p class="text-yellow-400 font-bold tracking-widest text-sm">HOLDINGS (PTY) LTD</p>
+<p class="text-sm text-gray-300 mt-2 max-w-2xl mx-auto">Building communities through education, support and opportunity. Joy. Cherished. Mercy.</p>
+<p class="text-xs text-gray-400 mt-2">Directors: Vusi Chauke + Hloniphani Success Masia</p>
+<div class="flex gap-2 justify-center mt-4 flex-wrap">
+<a href="index.html" class="bg-yellow-500 text-black px-6 py-3 rounded-xl font-black">📚 Open Makhanani LTSM →</a>
+<a href="login.html" class="bg-white text-black px-6 py-3 rounded-xl font-black">🔐 Staff Login</a>
+<a href="#contact" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-black border border-gray-600">📞 Contact Us</a>
+</div>
 </div>
 
-<!-- ✅ HERO WITH BIG LOGO -->
-<div class="max-w-7xl mx-auto p-4">
-<div class="bg-white rounded-3xl p-6 md:p-8 border shadow-sm text-center">
-  <img src="logo.png" alt="Xintimani Group Logo" class="logo-img h-32 w-32 md:h-40 md:w-40 mx-auto rounded-3xl bg-white border-4 border-yellow-400 p-3 shadow-2xl" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
-  <h1 class="font-black text-3xl md:text-5xl mt-4 leading-tight">XINTIMANI <span class="text-yellow-500">GROUP</span></h1>
-  <div class="text-sm tracking-widest font-bold text-gray-500">HOLDINGS (PTY) LTD • Reg 2026/934898/07</div>
-  <p class="text-lg md:text-xl font-bold mt-2">Building South Africa, One Solution At A Time.</p>
-  <p class="text-sm text-gray-600 mt-1">Directors: <b>Vusi Chauke + Hloniphani Success Masia</b> • 📍 293 Smit Street, Hillbrow, Johannesburg, 2038 • 🕐 Mon–Fri 08:00–16:30 • Sat 09:00–12:00</p>
-  <div class="flex gap-2 justify-center mt-4 flex-wrap">
-    <a href="index.html" class="bg-black text-white px-6 py-3 rounded-xl font-bold">📚 Go To Makhanani LTSM — Lending Page →</a>
-    <a href="school.html" class="bg-green-600 text-white px-6 py-3 rounded-xl font-bold">🏫 School Login By EMIS →</a>
-    <button onclick="openWhatsApp('Hi Xintimani Group! I want to know more about your services.')" class="bg-[#25D366] text-white px-6 py-3 rounded-xl font-bold">💬 WhatsApp Us →</button>
-  </div>
-  <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mt-5 text-xs font-bold">
-    <div class="bg-blue-50 border rounded-xl p-2">📚<br>Makhanani LTSM</div>
-    <div class="bg-green-50 border rounded-xl p-2">🎓<br>Makhanani Academy</div>
-    <div class="bg-orange-50 border rounded-xl p-2">🏗️<br>Construction</div>
-    <div class="bg-emerald-50 border rounded-xl p-2">🌿<br>Environmental</div>
-    <div class="bg-purple-50 border rounded-xl p-2">🖨️<br>Xintimani Press</div>
-    <div class="bg-gray-50 border rounded-xl p-2">💻<br>Xintimani Tech</div>
-  </div>
+<!-- STATS -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statBooks">0</div><div class="text-xs font-bold text-gray-500">📚 BOOKS TRACKED</div></div>
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statLearners">0</div><div class="text-xs font-bold text-gray-500">👩‍🎓 LEARNERS REACHED</div></div>
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statSchools">2</div><div class="text-xs font-bold text-gray-500">🏫 SCHOOLS</div></div>
+<div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statIssued">0</div><div class="text-xs font-bold text-gray-500">📤 BOOKS ISSUED</div></div>
 </div>
 
-<!-- ✅ MAKHANANI LTSM CARD WITH LOGO -->
-<div class="bg-blue-950 text-white rounded-3xl p-6 mt-4">
-  <div class="flex flex-wrap gap-4 items-center">
-    <img src="logo.png" alt="Xintimani Logo" class="logo-img h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-white border-2 border-yellow-400 p-2" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
-    <div class="flex-1 min-w-[200px]">
-      <h2 class="font-black text-2xl">📚 Makhanani LTSM</h2>
-      <p class="text-sm text-blue-100 mt-1">Scan Book → Scan Learner → Issue • Return By Learner • Print Cards • HOD Approvals • Principal Dashboard • DBE Reports • Due 30 Nov Every Year</p>
-      <p class="text-xs text-yellow-300 mt-1 font-bold">💛 Donated To: Wordsworth High School (EMIS 700310854) + George Sonto High School (EMIS 911360870) — Full Setup + Training + 12 Months Free</p>
-    </div>
-    <div class="flex flex-col gap-2">
-      <a href="index.html" class="bg-yellow-500 text-black px-5 py-2 rounded-lg font-bold text-center">📚 Open Lending Page →</a>
-      <a href="school.html" class="bg-white text-black px-5 py-2 rounded-lg font-bold text-center">🏫 School Login →</a>
-      <a href="dashboard.html" class="bg-green-600 text-white px-5 py-2 rounded-lg font-bold text-center">📊 Dashboard →</a>
-    </div>
-  </div>
+<!-- ABOUT -->
+<div class="bg-white rounded-2xl p-5 mt-4">
+<h2 class="font-black text-2xl">🤝 About Xintimani Group</h2>
+<p class="text-sm mt-2">Xintimani Group Holdings (Pty) Ltd is a South African company based in Hillbrow, Johannesburg. We believe every learner deserves a book in their hands — tracked, accounted for, and cherished.</p>
+<p class="text-sm mt-2">Our flagship project is <b>Makhanani LTSM</b> — a Learner Teacher Support Material system that helps schools manage textbooks from request to issue to return, with no duplicate, no skipping, and 1 Learner 1 Title.</p>
+<div class="grid md:grid-cols-3 gap-3 mt-4">
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3"><div class="font-black">✨ Joy</div><p class="text-xs mt-1">Learning should bring joy. A learner with a book is a learner with a chance.</p></div>
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3"><div class="font-black">💛 Cherished</div><p class="text-xs mt-1">Every book is cherished. Every learner is valued. Every record matters.</p></div>
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3"><div class="font-black">🙏 Mercy</div><p class="text-xs mt-1">We serve with mercy — supporting schools and families who need it most.</p></div>
+</div>
 </div>
 
-<!-- ✅ DONATION BANNER WITH LOGO -->
-<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-4 mt-4">
-  <div class="flex gap-3 items-start">
-    <img src="logo.png" alt="Xintimani Logo" class="logo-img h-14 w-14 rounded-xl bg-white border-2 border-yellow-400 p-1 shrink-0" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
-    <div class="flex-1">
-      <h2 class="font-black text-lg">💛 Donation — Makhanani LTSM Donated To 2 Schools</h2>
-      <p class="text-xs text-gray-600 mt-1">Xintimani Group Holdings (Pty) Ltd — 293 Smit Street, Hillbrow, Johannesburg, 2038 — Directors: <b>Vusi Chauke + Hloniphani Success Masia</b> — Donated Makhanani LTSM — Full Setup + Training + 12 Months Free — To:</p>
-      <ul class="text-sm mt-2 space-y-1"><li>🏫 <b>Wordsworth High School</b> — 3 Wordsworth Road, Farrarmere, Benoni, 1501 — EMIS: <b>700310854</b> — <a href="donation-letter-wordsworth.html" class="text-blue-600 underline font-bold">📄 Donation Letter →</a></li><li>🏫 <b>George Sonto High School</b> — P.O Box 1317, Malamulele, 0982 — EMIS: <b>911360870</b> — <a href="donation-letter-george-sonto.html" class="text-blue-600 underline font-bold">📄 Donation Letter →</a></li></ul>
-    </div>
-  </div>
+<!-- WHAT WE DO -->
+<div class="bg-white rounded-2xl p-5 mt-4">
+<h2 class="font-black text-2xl">🚀 What We Do</h2>
+<div class="grid md:grid-cols-2 gap-3 mt-3">
+<div class="border rounded-xl p-3"><div class="font-black">📚 Makhanani LTSM — Book Management System</div><p class="text-xs text-gray-600 mt-1">Request → HOD Approve → Librarian Package → Teacher Issue Packed → Anyone Retrieve. Barcodes WHS000001 / GSH000001, Learner IDs 10A001, Issue Record per Class, Loan Form for Parents.</p><a href="index.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">Open Makhanani LTSM →</a></div>
+<div class="border rounded-xl p-3"><div class="font-black">📦 Stock Management — By Group / Grade / Subject</div><p class="text-xs text-gray-600 mt-1">Stock arranged by Department (Mathematics, Sciences, Languages, Commerce) → Grade → Subject → Title. See Available / Issued / Packed / Low Stock at a glance.</p><a href="stock.html" class="bg-teal-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">View Stock →</a></div>
+<div class="border rounded-xl p-3"><div class="font-black">🏫 School Support & Donations</div><p class="text-xs text-gray-600 mt-1">We help schools get donations of textbooks, stationery and library books. Every donation is tracked and acknowledged.</p><a href="donation-letter-whs.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs mt-2 inline-block">Donation Letter — Wordsworth →</a> <a href="donation-letter-gsh.html" class="bg-yellow-300 text-black px-3 py-1 rounded font-bold text-xs mt-2 inline-block">George Sonto →</a></div>
+<div class="border rounded-xl p-3"><div class="font-black">📊 Dashboards — For Every Role</div><p class="text-xs text-gray-600 mt-1">Super Admin sees everything. Admin sees all schools. Librarian sees whole school. HOD sees own departments. Teacher sees own classes only.</p><a href="dashboard.html" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">My Dashboard →</a></div>
+</div>
 </div>
 
-<!-- ✅ PRICING -->
-<div id="pricing" class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500">
-  <div class="flex flex-wrap justify-between items-center gap-2"><div><h2 class="font-black text-lg">💳 Makhanani LTSM — Pricing — Packages Locked</h2><p class="text-xs text-gray-500">Demo Free 7 Days • Starter R 3,500 + R 500/mo or R 5,000/yr • Standard R 4,500 + R 700/mo or R 7,000/yr • Premium R 5,500 + R 900/mo or R 9,000/yr</p></div><a href="index.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Start Free Demo →</a></div>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-xs text-center">
-    <div class="border rounded-xl p-3 bg-yellow-50"><div class="font-black text-base">Demo — Free 7 Days</div><div class="mt-1">R 0 • 100 Learners • 500 Books • 1 Dept</div><button onclick="openWhatsApp('Hi! I want the FREE 7-DAY DEMO for Makhanani LTSM. My school is: ')" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold mt-2 w-full">Start Free Demo →</button></div>
-    <div class="border rounded-xl p-3"><div class="font-black text-base">Starter</div><div class="mt-1">R 3,500 once-off + R 500/mo or R 5,000/yr<br>300 Learners • 2,000 Books • 2 Depts</div><button onclick="openWhatsApp('Hi! I want Starter for Makhanani LTSM. My school is: ')" class="bg-black text-white px-3 py-1 rounded font-bold mt-2 w-full">Choose Starter →</button></div>
-    <div class="border-2 border-blue-500 rounded-xl p-3 bg-blue-50"><div class="font-black text-base">Standard ⭐ Most Popular</div><div class="mt-1">R 4,500 once-off + R 700/mo or R 7,000/yr<br>800 Learners • 5,000 Books • 5 Depts</div><button onclick="openWhatsApp('Hi! I want Standard for Makhanani LTSM. My school is: ')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold mt-2 w-full">Choose Standard →</button></div>
-    <div class="border rounded-xl p-3"><div class="font-black text-base">Premium</div><div class="mt-1">R 5,500 once-off + R 900/mo or R 9,000/yr<br>Unlimited • Unlimited • Unlimited ✅</div><button onclick="openWhatsApp('Hi! I want Premium for Makhanani LTSM. My school is: ')" class="bg-green-600 text-white px-3 py-1 rounded font-bold mt-2 w-full">Choose Premium →</button></div>
-  </div>
+<!-- SCHOOLS WE SERVE -->
+<div class="bg-white rounded-2xl p-5 mt-4">
+<h2 class="font-black text-2xl">🏫 Schools We Serve</h2>
+<div class="grid md:grid-cols-2 gap-3 mt-3">
+<div class="border-2 border-black rounded-xl p-4"><div class="flex gap-3 items-center"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">Wordsworth High School</div><div class="text-xs text-gray-500">EMIS 700310854 • WHS • Book: WHS000001</div></div></div><div class="grid grid-cols-3 gap-2 mt-3 text-center text-sm"><div class="bg-gray-50 rounded p-2"><div class="font-black" id="wBooks">0</div><div class="text-xs">Books</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="wLearners">0</div><div class="text-xs">Learners</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="wIssued">0</div><div class="text-xs">Issued</div></div></div><a href="index.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs mt-3 inline-block">Open Wordsworth →</a></div>
+<div class="border-2 border-black rounded-xl p-4"><div class="flex gap-3 items-center"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">George Sonto High School</div><div class="text-xs text-gray-500">EMIS 911360870 • GSH • Book: GSH000001</div></div></div><div class="grid grid-cols-3 gap-2 mt-3 text-center text-sm"><div class="bg-gray-50 rounded p-2"><div class="font-black" id="gBooks">0</div><div class="text-xs">Books</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="gLearners">0</div><div class="text-xs">Learners</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="gIssued">0</div><div class="text-xs">Issued</div></div></div><a href="index.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs mt-3 inline-block">Open George Sonto →</a></div>
+</div>
 </div>
 
-<!-- ✅ 6 DIVISIONS -->
-<div class="bg-white rounded-2xl p-4 mt-4">
-  <h2 class="font-black text-lg">🏢 Our 6 Divisions</h2>
-  <div class="grid md:grid-cols-3 gap-3 mt-3 text-sm">
-    <div class="border rounded-xl p-3"><div class="text-2xl">📚</div><div class="font-black mt-1">Makhanani LTSM</div><p class="text-xs text-gray-600">Book lending, tracking, HOD approvals, DBE reports. Due 30 Nov.</p><a href="index.html" class="text-blue-600 underline font-bold text-xs">Open LTSM →</a></div>
-    <div class="border rounded-xl p-3"><div class="text-2xl">🎓</div><div class="font-black mt-1">Makhanani Academy</div><p class="text-xs text-gray-600">Tutoring, matric support, study guides, exam prep.</p><button onclick="openWhatsApp('Hi! Tell me about Makhanani Academy.')" class="text-blue-600 underline font-bold text-xs">Ask on WhatsApp →</button></div>
-    <div class="border rounded-xl p-3"><div class="text-2xl">🏗️</div><div class="font-black mt-1">Makhanani Construction</div><p class="text-xs text-gray-600">Building, renovations, maintenance, school infrastructure.</p><button onclick="openWhatsApp('Hi! I need Construction.')" class="text-blue-600 underline font-bold text-xs">Ask on WhatsApp →</button></div>
-    <div class="border rounded-xl p-3"><div class="text-2xl">🌿</div><div class="font-black mt-1">Environmental Services</div><p class="text-xs text-gray-600">Cleaning, gardening, waste, green projects.</p><button onclick="openWhatsApp('Hi! I need Environmental Services.')" class="text-blue-600 underline font-bold text-xs">Ask on WhatsApp →</button></div>
-    <div class="border rounded-xl p-3"><div class="text-2xl">🖨️</div><div class="font-black mt-1">Xintimani Press</div><p class="text-xs text-gray-600">Printing, branding, school uniforms, banners, yearbooks.</p><button onclick="openWhatsApp('Hi! I need Printing.')" class="text-blue-600 underline font-bold text-xs">Ask on WhatsApp →</button></div>
-    <div class="border rounded-xl p-3"><div class="text-2xl">💻</div><div class="font-black mt-1">Xintimani Technology</div><p class="text-xs text-gray-600">Websites, apps, systems, IT support, Makhanani LTSM.</p><button onclick="openWhatsApp('Hi! I need Technology / Website.')" class="text-blue-600 underline font-bold text-xs">Ask on WhatsApp →</button></div>
-  </div>
+<!-- LEADERSHIP -->
+<div class="bg-white rounded-2xl p-5 mt-4">
+<h2 class="font-black text-2xl">👥 Leadership</h2>
+<div class="grid md:grid-cols-2 gap-3 mt-3">
+<div class="border rounded-xl p-4 flex gap-3"><img src="logo.png" class="h-14 w-14 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Vusi Chauke"><div><div class="font-black text-lg">Vusi Chauke</div><div class="text-xs font-bold text-yellow-600">Director — Founder</div><p class="text-xs text-gray-600 mt-1">Founder of Makhanani LTSM. Leads Xintimani Group, school partnerships and LTSM tracking.</p><p class="text-xs mt-1">📱 WhatsApp: <b>078 023 3263</b><br>📧 <b>vusichauke3037@gmail.com</b></p></div></div>
+<div class="border rounded-xl p-4 flex gap-3"><img src="logo.png" class="h-14 w-14 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Hloniphani Success Masia"><div><div class="font-black text-lg">Hloniphani Success Masia</div><div class="text-xs font-bold text-yellow-600">Director</div><p class="text-xs text-gray-600 mt-1">Co-Director of Xintimani Group. Leads operations, donations and community support.</p><p class="text-xs mt-1">📱 WhatsApp: <b>078 023 3263</b><br>📧 <b>vusichauke3037@gmail.com</b></p></div></div>
+</div>
 </div>
 
-<!-- ✅ CONTACT WITH LOGO -->
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-[#25D366]">
-  <div class="flex items-center gap-3"><img src="logo.png" alt="Xintimani Logo" class="logo-img h-14 w-14 rounded-xl bg-white border-2 border-yellow-400 p-1" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';"><h2 class="font-black text-lg">💬 Contact Xintimani Group</h2></div>
-  <div class="grid md:grid-cols-3 gap-3 mt-3">
-    <div class="bg-[#25D366] text-white rounded-xl p-4 text-center"><div class="text-3xl">💬</div><div class="font-black mt-1">WhatsApp Us</div><div class="text-sm">078 023 3263</div><button onclick="openWhatsApp('Hi Xintimani Group!')" class="bg-white text-black px-4 py-2 rounded-lg font-bold mt-2 w-full">💬 Chat Now →</button></div>
-    <div class="bg-blue-600 text-white rounded-xl p-4 text-center"><div class="text-3xl">✉️</div><div class="font-black mt-1">Email Us</div><div class="text-sm break-all">vusichauke3037@gmail.com</div><a href="mailto:vusichauke3037@gmail.com" class="block bg-white text-black px-4 py-2 rounded-lg font-bold mt-2">✉️ Send Email →</a></div>
-    <div class="bg-black text-white rounded-xl p-4 text-center"><div class="text-3xl">📍</div><div class="font-black mt-1">Our Address</div><div class="text-sm">293 Smit Street, Hillbrow, Johannesburg, 2038</div><a href="index.html" class="block bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold mt-2">📚 Go To LTSM →</a></div>
-  </div>
+<!-- HOW IT WORKS -->
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-5 mt-4">
+<h2 class="font-black text-2xl">🔄 How Makhanani LTSM Works</h2>
+<div class="grid md:grid-cols-5 gap-2 mt-3 text-center text-sm">
+<div class="bg-white border rounded-xl p-3"><div class="text-2xl">📝</div><div class="font-black">1. Teacher Requests</div><p class="text-xs">Teacher picks own class + subject, requests books from HOD.</p></div>
+<div class="bg-white border rounded-xl p-3"><div class="text-2xl">✅</div><div class="font-black">2. HOD Approves</div><p class="text-xs">HOD of that department approves / rejects quantity.</p></div>
+<div class="bg-white border rounded-xl p-3"><div class="text-2xl">📦</div><div class="font-black">3. Librarian Packages</div><p class="text-xs">Librarian packs approved quantity for that teacher + class.</p></div>
+<div class="bg-white border rounded-xl p-3"><div class="text-2xl">📤</div><div class="font-black">4. Teacher Issues</div><p class="text-xs">Teacher scans Packed book + Learner in own class, issues.</p></div>
+<div class="bg-white border rounded-xl p-3"><div class="text-2xl">↩️</div><div class="font-black">5. Anyone Retrieves</div><p class="text-xs">Any staff can retrieve / return book. Becomes Available again.</p></div>
+</div>
+<p class="text-xs mt-3 text-center"><b>Rules:</b> Book WHS000001 • Learner 10A001 • No Duplicate • No Skipping • 1 Learner 1 Title • Grade Mismatch Blocked</p>
 </div>
 
-<!-- ✅ LOGIN QUICK BOX WITH LOGO -->
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500 text-center">
-  <img src="logo.png" alt="Xintimani Logo" class="logo-img h-20 w-20 mx-auto rounded-2xl bg-white border-2 border-yellow-400 p-2 shadow" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';">
-  <h2 class="font-black text-lg mt-2">🏫 School Login — Quick Access</h2>
-  <p class="text-xs text-gray-500">Wordsworth: 700310854 / WHS + Wordsworth2026 • George Sonto: 911360870 / GSHS + GeorgeSonto2026</p>
-  <div class="flex gap-2 justify-center mt-2 flex-wrap"><a href="school.html" class="bg-green-600 text-white px-5 py-2 rounded-lg font-bold">🏫 Login By EMIS →</a><a href="index.html" class="bg-black text-white px-5 py-2 rounded-lg font-bold">📚 Lending Page →</a><a href="dashboard.html" class="bg-blue-950 text-white px-5 py-2 rounded-lg font-bold">📊 Dashboard →</a></div>
+<!-- CONTACT -->
+<div id="contact" class="bg-black text-white rounded-2xl p-5 mt-4">
+<h2 class="font-black text-2xl">📞 Contact Xintimani Group</h2>
+<div class="grid md:grid-cols-3 gap-3 mt-3 text-sm">
+<div class="bg-gray-900 rounded-xl p-3"><div class="font-black text-yellow-400">📍 Address</div><p class="mt-1">293 Smit Street,<br>Hillbrow, Johannesburg,<br>2038, South Africa</p></div>
+<div class="bg-gray-900 rounded-xl p-3"><div class="font-black text-yellow-400">📱 Phone / WhatsApp</div><p class="mt-1">078 023 3263<br><a href="https://wa.me/27780233263" target="_blank" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">💬 WhatsApp Us →</a></p></div>
+<div class="bg-gray-900 rounded-xl p-3"><div class="font-black text-yellow-400">📧 Email</div><p class="mt-1">vusichauke3037@gmail.com<br><a href="mailto:vusichauke3037@gmail.com" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs mt-2 inline-block">✉️ Email Us →</a></p></div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+<a href="index.html" class="bg-yellow-500 text-black py-3 rounded-xl font-black text-center text-sm">📚 Makhanani LTSM</a>
+<a href="login.html" class="bg-white text-black py-3 rounded-xl font-black text-center text-sm">🔐 Staff Login</a>
+<a href="donation-letter-whs.html" class="bg-gray-800 text-white py-3 rounded-xl font-black text-center text-sm border border-gray-600">📄 Donate — WHS</a>
+<a href="donation-letter-gsh.html" class="bg-gray-800 text-white py-3 rounded-xl font-black text-center text-sm border border-gray-600">📄 Donate — GSH</a>
+</div>
 </div>
 
-<!-- ✅ FOOTER WITH LOGO -->
-<footer class="bg-gray-900 text-gray-300 rounded-2xl p-6 mt-4 grid md:grid-cols-4 gap-6 text-sm">
-  <div><div class="flex items-center gap-2"><img src="logo.png" alt="Xintimani Logo" class="logo-img h-12 w-12 rounded-lg bg-white border-2 border-yellow-400 p-1" onerror="this.onerror=null; this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';"><div><div class="font-black text-white text-lg leading-none">XINTIMANI <span class="text-yellow-500">GROUP</span></div><div class="text-xs">HOLDINGS (PTY) LTD</div></div></div><p class="mt-2">Directors: <b class="text-white">Vusi Chauke + Hloniphani Success Masia</b><br>Building South Africa, One Solution At A Time.</p><p class="mt-2 text-xs">📍 293 Smit Street, Hillbrow, Johannesburg, 2038<br>🕐 Mon–Fri 08:00–16:30 • Sat 09:00–12:00</p></div>
-  <div><div class="font-bold text-white">📞 Contact Us</div><ul class="mt-2 space-y-1"><li>💬 WhatsApp: <button onclick="openWhatsApp('Hi Xintimani!')" class="text-yellow-400 underline font-bold">078 023 3263</button></li><li>✉️ Email: <a href="mailto:vusichauke3037@gmail.com" class="text-yellow-400 underline">vusichauke3037@gmail.com</a></li><li>🌐 Website: <a href="xintimani.html" class="text-yellow-400 underline">xintimani.co.za</a></li></ul></div>
-  <div><div class="font-bold text-white">💛 Donation Letters</div><ul class="mt-2 space-y-1"><li><a href="donation-letter-wordsworth.html" class="hover:text-yellow-400">📄 Wordsworth — EMIS 700310854</a></li><li><a href="donation-letter-george-sonto.html" class="hover:text-yellow-400">📄 George Sonto — EMIS 911360870</a></li></ul><div class="font-bold text-white mt-3">🏢 6 Divisions</div><ul class="mt-1 space-y-1"><li>📚 Makhanani LTSM</li><li>🎓 Makhanani Academy</li><li>🏗️ Makhanani Construction</li><li>🌿 Environmental Services</li><li>🖨️ Xintimani Press</li><li>💻 Xintimani Technology</li></ul></div>
-  <div><div class="font-bold text-white">💳 Pricing — Locked</div><ul class="mt-2 space-y-1"><li>Demo — Free 7 Days — R 0</li><li>Starter — R 3,500 + R 500/mo</li><li>Standard — R 4,500 + R 700/mo</li><li>Premium — R 5,500 + R 900/mo</li></ul><div class="font-bold text-white mt-3">Makhanani LTSM</div><ul class="mt-1 space-y-1"><li><a href="index.html" class="hover:text-yellow-400">📚 Lending Page</a></li><li><a href="teacher.html" class="hover:text-yellow-400">👩‍🏫 Teacher</a></li><li><a href="hod.html" class="hover:text-yellow-400">🧑‍🏫 HOD</a></li><li><a href="librarian.html" class="hover:text-yellow-400">📚 Librarian</a></li><li><a href="school.html" class="hover:text-yellow-400">🏫 School Login</a></li></ul><div class="text-xs mt-2">POPIA Compliant • © <span id="year"></span> Xintimani Group Holdings (Pty) Ltd</div></div>
-</footer>
-<div class="text-center text-xs text-gray-500 mt-3">Based in Johannesburg, South Africa 🇿🇦 • 293 Smit Street, Hillbrow, Johannesburg, 2038 • Directors: Vusi Chauke + Hloniphani Success Masia • WhatsApp 078 023 3263 • vusichauke3037@gmail.com • Powered by Xintimani Group Holdings (Pty) Ltd</div>
+<div class="text-center text-xs text-gray-400 mt-4 pb-4">Xintimani Group Holdings (Pty) Ltd • 293 Smit Street, Hillbrow, Johannesburg, 2038 • Directors: Vusi Chauke + Hloniphani Success Masia • WhatsApp 078 023 3263 • vusichauke3037@gmail.com<br>Makhanani LTSM — Joy. Cherished. Mercy.</div>
+
 </div>
-<a href="#" onclick="openWhatsApp('Hi Xintimani Group!');return false;" class="wa-float fixed bottom-5 right-5 z-[999] bg-[#25D366] text-white w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-2xl font-black"><span class="text-2xl">💬</span><span class="text-[9px]">WhatsApp</span></a>
-<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script>
+(function(){
+function stats(emis){ let books=[]; try{ books=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); }catch(e){} let learners=[]; try{ learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]'); }catch(e){} let total=0, issued=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; })); return {books:total, learners:learners.length, issued}; }
+let w=stats('700310854'); let g=stats('911360870');
+document.getElementById('wBooks').textContent=w.books; document.getElementById('wLearners').textContent=w.learners; document.getElementById('wIssued').textContent=w.issued;
+document.getElementById('gBooks').textContent=g.books; document.getElementById('gLearners').textContent=g.learners; document.getElementById('gIssued').textContent=g.issued;
+document.getElementById('statBooks').textContent=w.books+g.books; document.getElementById('statLearners').textContent=w.learners+g.learners; document.getElementById('statIssued').textContent=w.issued+g.issued;
+})();
+</script>
 </body></html>
