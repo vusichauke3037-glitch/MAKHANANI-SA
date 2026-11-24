@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Loan Form — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><style>@media print{ .no-print{display:none!important;} }</style></head>
+<body class="bg-gray-100 min-h-screen"><div class="max-w-2xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 no-print flex gap-3 items-center"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">📄 Loan Form — For Parent</h1><p class="text-xs text-gray-500">Enter Learner ID → Shows all books OUT to that learner → Print for parent to sign.</p></div></div>
+<div class="bg-white rounded-2xl p-4 no-print mt-4"><input id="learnerId" placeholder="Learner ID e.g. 10A001" class="border-2 rounded-lg px-3 py-2 w-full font-mono font-bold text-center"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 w-full mt-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><button id="loadBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-black w-full mt-2">Load Loan Form</button></div>
+<div class="bg-white rounded-2xl p-6 mt-4" id="formArea"><div class="text-center"><img src="logo.png" class="h-12 w-12 mx-auto rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><h2 class="font-black text-xl">XINTIMANI GROUP • MAKHANANI LTSM</h2><p class="text-xs">293 Smit Street, Hillbrow, Johannesburg, 2038 • WhatsApp 078 023 3263</p><h3 class="font-black text-lg mt-2">📄 BOOK LOAN FORM</h3></div><p class="text-sm mt-3">School: <b id="fSchool">-</b> • Date: <b id="fDate"></b></p><p class="text-sm">Learner: <b id="fLearner">-</b> • ID: <b id="fId">-</b> • Grade / Class: <b id="fGrade">-</b></p><table class="w-full border-collapse border text-sm mt-3"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">#</th><th class="border p-2 text-left">Book Title</th><th class="border p-2 text-left">Book No</th><th class="border p-2 text-left">Date Issued</th><th class="border p-2 text-left">Due Date</th><th class="border p-2 text-left">Condition</th></tr></thead><tbody id="loanBody"><tr><td colspan="6" class="border p-2 text-center text-gray-500">Enter Learner ID above and tap Load.</td></tr></tbody></table><p class="text-xs mt-3">I, the parent / guardian, confirm my child received the books above in good condition. I agree my child will return them on due date or pay for loss / damage.</p><div class="grid grid-cols-2 gap-4 mt-8 text-sm"><div>Parent / Guardian Name: ___________________________<br><br>Signature: ___________________________<br><br>Date: ___________________________</div><div>Learner Signature: ___________________________<br><br>Teacher / Librarian: ___________________________</div></div></div>
+<div class="flex gap-2 mt-4 no-print"><button id="printBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-black">🖨️ Print</button><a href="index.html" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold text-sm">🏠 Home</a></div>
+</div>
+<script>
+(function(){
+let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
+document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; });
+document.getElementById('loadBtn').addEventListener('click',function(){
+  let id=document.getElementById('learnerId').value.trim().toUpperCase(); if(!id){ alert('Enter Learner ID'); return; }
+  let learners=[]; try{ learners=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]'); }catch(e){}
+  let hist=[]; try{ hist=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_history')||'[]'); }catch(e){}
+  let learner=learners.find(l=>l.id===id); let books=hist.filter(h=>h.learnerId===id && (h.status==='Issued'||!h.returned));
+  document.getElementById('fSchool').textContent=cur.name; document.getElementById('fDate').textContent=new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('fLearner').textContent=learner?learner.name:'NOT FOUND'; document.getElementById('fId').textContent=id; document.getElementById('fGrade').textContent=learner?(learner.grade+' '+learner.class):'-';
+  document.getElementById('loanBody').innerHTML=books.map((b,i)=>'<tr><td class="border p-2">'+(i+1)+'</td><td class="border p-2">'+b.title+'</td><td class="border p-2 font-mono">'+b.bookNo+'</td><td class="border p-2">'+b.issuedDate+'</td><td class="border p-2">'+b.dueDate+'</td><td class="border p-2">Good</td></tr>').join('')||'<tr><td colspan="6" class="border p-2 text-center">No books OUT for this learner.</td></tr>';
+});
+document.getElementById('printBtn').addEventListener('click',function(){ window.print(); });
+})();
+</script>
+</body></html>
