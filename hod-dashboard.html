@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HOD Dashboard — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{ if(!user){ window.location.href='login.html'; return; } let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'HOD'}; if(prof.role!=='HOD'){ window.location.href='dashboard.html'; return; } window.MAKHANANI_SESSION={uid:user.uid,name:prof.name||user.email,email:user.email,role:'HOD',subjects:prof.subjects||[prof.subject||'General'],grades:prof.grades||'',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'}; localStorage.setItem('makhanani_session',JSON.stringify(window.MAKHANANI_SESSION)); let b=document.createElement('div'); b.style.cssText='background:#000;color:#fff;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:bold;'; b.innerHTML='<span><img src="logo.png" style="height:24px;width:24px;border-radius:50%;background:#fff;display:inline;vertical-align:middle;"> 👔 HOD • '+prof.name+' • Depts '+(prof.subjects||[prof.subject]).join(', ')+' • Grades '+prof.grades+' • 🔥 makhanani-ltsm</span><button id="fbLogoutBtn" style="background:#dc2626;color:#fff;padding:4px 10px;border-radius:6px;font-weight:bold;">Logout</button>'; document.body.insertBefore(b,document.body.firstChild); document.getElementById('fbLogoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); window.location.href='login.html'; }); window.dispatchEvent(new Event('makhanani-hod-ready')); });
+</script>
+<div class="max-w-5xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 flex gap-3 items-center"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">👔 My HOD Dashboard</h1><p class="text-sm font-bold" id="hName">Loading...</p><p class="text-xs text-gray-500" id="hScope"></p></div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black text-yellow-600" id="hPending">0</div><div class="text-xs font-bold text-gray-500">PENDING APPROVALS</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="hLearners">0</div><div class="text-xs font-bold text-gray-500">DEPT LEARNERS</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="hIssued">0</div><div class="text-xs font-bold text-gray-500">BOOKS OUT IN DEPT</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="hApproved">0</div><div class="text-xs font-bold text-gray-500">APPROVED</div></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">⏳ Pending Requests — My Departments — Approve Now</h2><div id="hReqs" class="mt-2 space-y-2 text-sm"></div><a href="issue.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm mt-2 inline-block">✅ Go To Issue To Approve →</a></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Per Grade Breakdown — My Grades</h2><div id="hGrades" class="mt-2 overflow-x-auto"></div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4"><a href="issue.html" class="bg-black text-white py-3 rounded-xl font-black text-center text-sm">📤 Issue / Approve</a><a href="issue-record.html" class="bg-blue-600 text-white py-3 rounded-xl font-black text-center text-sm">📋 Print Record</a><a href="dashboard.html" class="bg-purple-600 text-white py-3 rounded-xl font-black text-center text-sm">📊 Full Dashboard</a><a href="index.html" class="bg-yellow-500 text-black py-3 rounded-xl font-black text-center text-sm">🏠 Home</a></div>
+</div>
+<script>
+(function(){
+let me=null;
+function setMe(){ let s=null; try{ s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){} if(s&&s.name){ me=s; } render(); }
+function render(){
+  if(!me) return; let emis=me.emis||'700310854';
+  let learners=[]; try{ learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]'); }catch(e){}
+  let hist=[]; try{ hist=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_history')||'[]'); }catch(e){}
+  let reqs=[]; try{ reqs=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_requests')||'[]'); }catch(e){}
+  let grades=(me.grades||'').split(',').map(g=>g.trim());
+  let myLearners=learners.filter(l=> grades.includes((l.grade||'').replace(/[^0-9]/g,'')));
+  let myHist=hist.filter(h=> grades.includes((h.learnerGrade||'').replace(/[^0-9]/g,'')));
+  let mySubjects=(me.subjects||[]).map(s=>s.toUpperCase());
+  let myReqs=reqs.filter(r=> mySubjects.includes((r.subject||'').toUpperCase()));
+  document.getElementById('hName').textContent='Welcome, '+me.name+' — '+me.school; document.getElementById('hScope').textContent='Departments: '+me.subjects.join(', ')+' • Grades: '+me.grades;
+  document.getElementById('hPending').textContent=myReqs.filter(r=>r.status==='PENDING').length; document.getElementById('hLearners').textContent=myLearners.length; document.getElementById('hIssued').textContent=myHist.filter(h=>h.status==='Issued'||!h.returned).length; document.getElementById('hApproved').textContent=myReqs.filter(r=>r.status==='APPROVED').length;
+  document.getElementById('hReqs').innerHTML=myReqs.filter(r=>r.status==='PENDING').map(r=>'<div class="border rounded p-2 flex justify-between gap-2"><div><b>'+r.title+'</b> • Qty '+r.qty+' • Teacher <b>'+r.teacher+'</b> • Class '+r.teacherClass+' • Subject '+r.subject+' • Date '+r.date+'</div><a href="issue.html" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs h-fit">Approve →</a></div>').join('')||'<p class="text-gray-500">No pending requests in your departments. ✅ All caught up.</p>';
+  let byGrade={}; myLearners.forEach(l=>{ let k=l.grade||'Unknown'; if(!byGrade[k]) byGrade[k]={learners:0, issued:0}; byGrade[k].learners++; }); myHist.filter(h=>h.status==='Issued'||!h.returned).forEach(h=>{ let k=h.learnerGrade||'Unknown'; if(!byGrade[k]) byGrade[k]={learners:0, issued:0}; byGrade[k].issued++; });
+  document.getElementById('hGrades').innerHTML='<table class="w-full border-collapse border text-sm"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">Grade</th><th class="border p-2 text-left">Learners</th><th class="border p-2 text-left">Books OUT</th><th class="border p-2 text-left">% With Book</th></tr></thead><tbody>'+Object.keys(byGrade).sort().map(g=>{ let d=byGrade[g]; let pct=d.learners?Math.round(d.issued/d.learners*100):0; return '<tr><td class="border p-2 font-bold">'+g+'</td><td class="border p-2">'+d.learners+'</td><td class="border p-2">'+d.issued+'</td><td class="border p-2">'+pct+'%</td></tr>'; }).join('')+'</tbody></table>';
+}
+window.addEventListener('makhanani-hod-ready', setMe); setTimeout(setMe, 800);
+})();
+</script>
+</body></html>
