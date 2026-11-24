@@ -1,75 +1,85 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Issue Books — Role Based — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Issue Books — Firebase Role Based — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • ISSUE — ROLE BASED</div><div class="text-[11px] text-gray-300">Teacher → Own Class • HOD → Own Dept + Approves • Librarian → Whole School + Packages</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+
+<!-- FIREBASE GUARD -->
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  let snap=await getDoc(doc(db, 'users', user.uid));
+  let prof=snap.exists()? snap.data() : {name:user.email, role:'TEACHER'};
+  window.MAKHANANI_SESSION={uid:user.uid, name:prof.name||user.email, email:user.email, role:prof.role||'TEACHER', subject:prof.subject||'General', class:prof.class||'', grades:prof.grades||'', school:prof.school||'', emis:prof.emis||'700310854', prefix:prof.prefix||'WHS'};
+  localStorage.setItem('makhanani_session', JSON.stringify(window.MAKHANANI_SESSION));
+  localStorage.setItem('makhanani_active_emis', window.MAKHANANI_SESSION.emis);
+  localStorage.setItem('makhanani_active_school', window.MAKHANANI_SESSION.school);
+  let b=document.createElement('div');
+  b.style.cssText='background:#000;color:#fff;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:bold;';
+  b.innerHTML='<span>👤 '+prof.name+' • '+prof.role+' • '+(prof.school||'')+' • '+(prof.role==='TEACHER'?'Class '+prof.class:prof.role==='HOD'?'Dept '+prof.subject+' Grades '+prof.grades:prof.role==='ADMIN'?'All Schools':'Whole School')+' • 🔥 makhanani-ltsm</span><button id="fbLogoutBtn" style="background:#dc2626;color:#fff;padding:4px 10px;border-radius:6px;font-weight:bold;">Logout</button>';
+  document.body.insertBefore(b, document.body.firstChild);
+  document.getElementById('fbLogoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); window.location.href='login.html'; });
+  // Tell main script session is ready
+  window.dispatchEvent(new Event('makhanani-session-ready'));
+});
+</script>
+
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • ISSUE — FIREBASE ROLE BASED</div><div class="text-[11px] text-gray-300">Teacher → Own Class • HOD → Own Dept + Approves • Librarian → Whole School + Packages • Retrieval: Anyone</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+
 <div class="max-w-5xl mx-auto p-4">
-
 <!-- WHO ARE YOU -->
-<div class="bg-white rounded-2xl p-4"><h2 class="font-black text-lg">👤 Who Are You? — Login As Staff</h2><div class="grid md:grid-cols-4 gap-2 mt-2">
-<select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select>
-<select id="staffSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="">-- Select Staff --</option></select>
-<input id="staffPin" type="password" placeholder="Staff PIN" class="border-2 rounded-lg px-3 py-2">
-<button id="loginStaffBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-bold">Login →</button>
-</div><p id="loginMsg" class="text-sm font-bold mt-2"></p><div id="scopeBox" class="bg-yellow-50 border rounded-xl p-3 mt-2 text-sm hidden"></div></div>
+<div class="bg-white rounded-2xl p-4"><h2 class="font-black text-lg">👤 Logged In As — Firebase</h2><p id="sessionInfo" class="text-sm font-bold mt-1">⏳ Checking Firebase login...</p><p class="text-xs text-gray-500">Login is by Email + Password on login.html. If this is wrong person, Logout at top and login again.</p>
+<div class="flex gap-2 mt-2 flex-wrap"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><span class="text-xs bg-yellow-100 border rounded px-2 py-2 font-bold" id="scopeHint">Scope: -</span></div></div>
 
-<!-- STEP 1: TEACHER REQUEST -->
+<!-- STEP 1 -->
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">📝 STEP 1 — Teacher Requests Books From HOD</h2><p class="text-xs text-gray-500">Teacher: Select title + qty needed for your class. HOD will approve.</p><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="reqTitle" placeholder="Title e.g. Mathematics Grade 10" class="border-2 rounded-lg px-3 py-2"><select id="reqGrade" class="border-2 rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><input id="reqQty" type="number" value="30" min="1" class="border-2 rounded-lg px-3 py-2"><button id="reqBtn" type="button" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-black">📝 Send Request to HOD</button></div><p id="reqMsg" class="text-sm font-bold mt-2"></p></div>
 
-<!-- STEP 2: HOD APPROVE -->
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">✅ STEP 2 — HOD Approves / Rejects</h2><p class="text-xs text-gray-500">HOD: Only requests for YOUR department / grades show here. Approve = goes to Librarian to package.</p><div id="requestList" class="mt-2 space-y-2 text-sm"></div></div>
+<!-- STEP 2 -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">✅ STEP 2 — HOD Approves / Rejects</h2><p class="text-xs text-gray-500">HOD: Only requests for YOUR department / grades show Approve buttons. Approve = goes to Librarian to package.</p><div id="requestList" class="mt-2 space-y-2 text-sm"></div></div>
 
-<!-- STEP 3: LIBRARIAN PACKAGE -->
+<!-- STEP 3 -->
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">📦 STEP 3 — Librarian Packages Approved Quantity</h2><p class="text-xs text-gray-500">Librarian: Pack exact approved qty. System picks Available copies, reserves them for that teacher/class. Teacher can then issue packed books only.</p><div id="packageList" class="mt-2 space-y-2 text-sm"></div></div>
 
-<!-- STEP 4: ISSUE PACKED -->
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">📤 STEP 4 — Issue Packed Books To Learners</h2><p class="text-xs text-gray-500">Scan Book (WHS000001) + Scan Learner (10A001). Teacher: Learner MUST be in your class. HOD: Learner MUST be in your department/grades. Librarian: Any learner.</p><div class="grid md:grid-cols-2 gap-3 mt-2">
-<div class="border-2 border-blue-500 rounded-xl p-3"><div class="font-black text-sm">📚 BOOK — Must be in your PACK</div><input id="bookInput" placeholder="Scan / Type e.g. WHS000001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-1"><div id="bookFound" class="text-sm mt-1"></div></div>
+<!-- STEP 4 -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">📤 STEP 4 — Issue Packed Books To Learners</h2><p class="text-xs text-gray-500">Scan Book (WHS000001) + Scan Learner (10A001). Teacher: Learner MUST be in your class. HOD: Learner MUST be in your department/grades. Librarian/Admin: Any learner.</p><div class="grid md:grid-cols-2 gap-3 mt-2">
+<div class="border-2 border-blue-500 rounded-xl p-3"><div class="font-black text-sm">📚 BOOK — Must be in your PACK (Teacher)</div><input id="bookInput" placeholder="Scan / Type e.g. WHS000001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-1"><div id="bookFound" class="text-sm mt-1"></div></div>
 <div class="border-2 border-purple-500 rounded-xl p-3"><div class="font-black text-sm">👩‍🎓 LEARNER — Must be in your SCOPE</div><input id="learnerInput" placeholder="Scan / Type e.g. 10A001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-1"><div id="learnerFound" class="text-sm mt-1"></div></div>
 </div><div id="checks" class="mt-3"></div><button id="issueBtn" type="button" disabled class="bg-green-600 disabled:bg-gray-300 text-white w-full py-3 rounded-xl font-black mt-2">✅ ISSUE PACKED BOOK NOW</button><p id="issueMsg" class="text-center font-bold mt-2"></p></div>
 
-<!-- RETRIEVAL - ANYONE -->
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">↩️ Retrieval — Anyone Can Retrieve (Teacher / HOD / Librarian)</h2><input id="searchIssued" placeholder="🔍 Search learner / book / title..." class="border rounded-lg px-3 py-2 w-full mt-2"><div id="issuedList" class="mt-2 space-y-2 text-sm"></div></div>
+<!-- RETRIEVAL -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-lg">↩️ Retrieval — Anyone Can Retrieve (Teacher / HOD / Librarian / Admin)</h2><input id="searchIssued" placeholder="🔍 Search learner / book / title..." class="border rounded-lg px-3 py-2 w-full mt-2"><div id="issuedList" class="mt-2 space-y-2 text-sm"></div></div>
 
-<div class="flex gap-2 mt-4 flex-wrap"><a href="staff.html" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold text-sm">👥 Manage Staff →</a><a href="issue-record.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📋 Print Record Per Class →</a><a href="loan-form.html" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold text-sm">📄 Loan Form For Parent →</a></div>
+<div class="flex gap-2 mt-4 flex-wrap"><a href="staff.html" class="bg-gray-800 text-white px-4 py-2 rounded-lg font-bold text-sm">👥 Manage Staff →</a><a href="issue-record.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📋 Print Record Per Class →</a><a href="loan-form.html" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold text-sm">📄 Loan Form For Parent →</a><a href="librarian.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Librarian →</a></div>
 </div>
 <script>
 (function(){
 let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
-let me=null; // logged in staff
+let me=null;
 let foundBook=null, foundLearner=null;
 function norm(s){return (s||'').trim().toUpperCase();}
 function getBooks(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]');}catch(e){return [];}}
 function saveBooks(b){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_ltsm',JSON.stringify(b));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_ltsm',JSON.stringify(b));}
 function getLearners(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]');}catch(e){return [];}}
-function getStaff(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_staff')||'[]');}catch(e){return [];}}
 function getReqs(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_requests')||'[]');}catch(e){return [];}}
 function saveReqs(r){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_requests',JSON.stringify(r));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_requests',JSON.stringify(r));}
 function getHist(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_history')||'[]');}catch(e){return [];}}
 function saveHist(h){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_history',JSON.stringify(h));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_history',JSON.stringify(h));}
-function renderStaffSel(){
-  let staff=getStaff();
-  let opts='<option value="">-- Select Staff --</option>';
-  if(!staff.length) opts+='<option value="LIBRARIAN_DEFAULT">📚 Librarian (Default) — Whole School — PIN 0000</option>';
-  staff.forEach((s,i)=>{ opts+='<option value="'+i+'">'+s.name+' — '+s.role+' — '+(s.role==='TEACHER'?'Class '+s.class:s.role==='HOD'?s.subject+' Grades '+s.grades:'Whole School')+'</option>'; });
-  opts+='<option value="LIBRARIAN_DEFAULT">📚 Librarian (Default) — Whole School — PIN 0000</option>';
-  document.getElementById('staffSel').innerHTML=opts;
-}
-function loginStaff(){
-  let sel=document.getElementById('staffSel').value; let pin=document.getElementById('staffPin').value.trim();
-  if(sel==='LIBRARIAN_DEFAULT'){ if(pin!=='' && pin!=='0000'){document.getElementById('loginMsg').innerHTML='❌ Wrong PIN for Librarian (0000)';return;} me={name:'Librarian (Default)',role:'LIBRARIAN',subject:'All',class:'',grades:'',pin:'0000'}; }
-  else{
-    let staff=getStaff(); let s=staff[parseInt(sel)]; if(!s){alert('Select Staff');return;}
-    if(pin!==s.pin){document.getElementById('loginMsg').innerHTML='❌ Wrong PIN for '+s.name;return;}
-    me=s;
+function setMe(){
+  let sess=null; try{ sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
+  if(sess && sess.name){ me=sess; cur={prefix:sess.prefix||'WHS', emis:sess.emis||'700310854', name:sess.school||'Wordsworth High School'}; }
+  if(me){
+    document.getElementById('sessionInfo').innerHTML='✅ <b>'+me.name+'</b> — '+me.role+' — '+me.school+' • '+(me.role==='TEACHER'?'Class '+me.class+' • Subject: '+me.subject:me.role==='HOD'?'Dept '+me.subject+' • Grades '+me.grades:me.role==='ADMIN'?'All Schools':'Whole School')+' • 🔥 Firebase';
+    document.getElementById('scopeHint').textContent='Scope: '+(me.role==='TEACHER'?'Class '+me.class:me.role==='HOD'?'Dept '+me.subject+' Grades '+me.grades:me.role==='ADMIN'?'All Schools':'Whole School');
+    try{ document.getElementById('schoolSel').value=me.prefix+'|'+me.emis+'|'+me.school; }catch(e){}
+  } else {
+    document.getElementById('sessionInfo').innerHTML='⏳ Waiting for Firebase login... If this stays, go to <a href="login.html" class="underline text-blue-600">login.html</a>';
   }
-  let scope = me.role==='TEACHER' ? 'You are <b>'+me.name+'</b> — 👩‍🏫 TEACHER — You can ONLY issue to <b>Class '+me.class+'</b> • Subject: '+me.subject+' • Requests go to HOD of '+me.subject : me.role==='HOD' ? 'You are <b>'+me.name+'</b> — 👔 HOD — You can issue to <b>Dept '+me.subject+' • Grades '+me.grades+'</b> • You APPROVE teacher requests for '+me.subject : 'You are <b>'+me.name+'</b> — 📚 LIBRARIAN — You can issue to <b>Whole School</b> • You PACKAGE approved requests';
-  document.getElementById('loginMsg').innerHTML='✅ Logged in as <b>'+me.name+'</b> — '+me.role;
-  let box=document.getElementById('scopeBox'); box.classList.remove('hidden'); box.innerHTML=scope;
   renderAll();
 }
 function inScopeLearner(learner){
-  if(!me) return {ok:false,msg:'❌ Login as Staff first.'};
-  if(me.role==='LIBRARIAN') return {ok:true};
+  if(!me) return {ok:false,msg:'❌ Login first on login.html'};
+  if(me.role==='LIBRARIAN' || me.role==='ADMIN') return {ok:true};
   if(me.role==='TEACHER'){
     if(norm(learner.class)!==norm(me.class)) return {ok:false,msg:'❌ BLOCKED: Teacher '+me.name+' can ONLY issue to Class '+me.class+'. This learner is '+learner.class+'.'};
     return {ok:true};
@@ -83,28 +93,27 @@ function inScopeLearner(learner){
   return {ok:true};
 }
 function requestBooks(){
-  if(!me){alert('Login as Teacher first.');return;}
-  if(me.role!=='TEACHER'){alert('Only Teachers send requests. HOD approves, Librarian packages.');return;}
+  if(!me){alert('Login first on login.html');return;}
+  if(me.role!=='TEACHER'){alert('Only Teachers send requests. HOD approves, Librarian packages. You are '+me.role);return;}
   let title=document.getElementById('reqTitle').value.trim(); let grade=document.getElementById('reqGrade').value; let qty=parseInt(document.getElementById('reqQty').value)||1;
   if(!title){alert('Enter Title');return;}
-  // Grade must match teacher class grade? Warn if mismatch
   let classGrade=(me.class||'').replace(/[^0-9]/g,''); let reqGrade=grade.replace(/[^0-9]/g,'');
   if(classGrade && reqGrade!==classGrade){ if(!confirm('Your class is '+me.class+' but you requested '+grade+' books. Continue?')) return; }
-  let reqs=getReqs(); reqs.push({id:'REQ'+Date.now(),teacher:me.name,teacherClass:me.class,subject:me.subject,title:title,grade:grade,qty:qty,approvedQty:0,status:'PENDING',date:new Date().toISOString().slice(0,10),school:cur.name});
+  let reqs=getReqs(); reqs.push({id:'REQ'+Date.now(),teacher:me.name,teacherEmail:me.email,teacherClass:me.class,subject:me.subject,title:title,grade:grade,qty:qty,approvedQty:0,status:'PENDING',date:new Date().toISOString().slice(0,10),school:cur.name});
   saveReqs(reqs); document.getElementById('reqMsg').innerHTML='✅ Request sent to HOD of '+me.subject+': <b>'+qty+' x '+title+'</b> for Class '+me.class+' — Waiting for HOD approval.';
   renderAll();
 }
 function renderReqs(){
   let reqs=getReqs();
   let html=reqs.slice().reverse().map((r,i)=>{
-    let idx=reqs.length-1-i;
     let canApprove = me && me.role==='HOD' && norm(me.subject)===norm(r.subject);
+    let canApproveAdmin = me && me.role==='ADMIN';
     let btns='';
-    if(r.status==='PENDING' && canApprove) btns='<button data-approve="'+r.id+'" class="approve-btn bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">✅ Approve</button><button data-reject="'+r.id+'" class="reject-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">❌ Reject</button>';
-    if(r.status==='PENDING' && me && me.role!=='HOD') btns='<span class="text-xs text-gray-500">⏳ Waiting for HOD of '+r.subject+'</span>';
-    if(r.status==='APPROVED') btns='<span class="text-green-700 font-bold">✅ Approved by '+r.approvedBy+' — Waiting for Librarian to Package</span>';
-    if(r.status==='PACKAGED') btns='<span class="text-blue-700 font-bold">📦 Packaged by '+r.packagedBy+' — '+r.approvedQty+' copies reserved for '+r.teacher+'</span>';
-    if(r.status==='REJECTED') btns='<span class="text-red-600 font-bold">❌ Rejected by '+r.approvedBy+' — '+(r.rejectReason||'')+'</span>';
+    if(r.status==='PENDING' && (canApprove || canApproveAdmin)) btns='<button data-approve="'+r.id+'" class="approve-btn bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">✅ Approve</button><button data-reject="'+r.id+'" class="reject-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">❌ Reject</button>';
+    else if(r.status==='PENDING') btns='<span class="text-xs text-gray-500">⏳ Waiting for HOD of '+r.subject+'</span>';
+    else if(r.status==='APPROVED') btns='<span class="text-green-700 font-bold">✅ Approved by '+r.approvedBy+' — Waiting for Librarian to Package</span>';
+    else if(r.status==='PACKAGED') btns='<span class="text-blue-700 font-bold">📦 Packaged by '+r.packagedBy+' — '+r.approvedQty+' copies reserved for '+r.teacher+'</span>';
+    else if(r.status==='REJECTED') btns='<span class="text-red-600 font-bold">❌ Rejected by '+r.approvedBy+' — '+(r.rejectReason||'')+'</span>';
     return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+r.title+'</b> • '+r.grade+' • Qty Requested: <b>'+r.qty+'</b> • Approved: <b>'+r.approvedQty+'</b><br>Teacher: <b>'+r.teacher+'</b> • Class: '+r.teacherClass+' • Subject: '+r.subject+' • Date: '+r.date+' • Status: <b>'+r.status+'</b></div><div class="flex gap-1">'+btns+'</div></div>';
   }).join('')||'<p class="text-gray-500">No requests yet. Teacher sends request above.</p>';
   document.getElementById('requestList').innerHTML=html;
@@ -117,17 +126,16 @@ function renderReqs(){
     let id=this.getAttribute('data-reject'); let reqs=getReqs(); let r=reqs.find(x=>x.id===id); if(!r) return;
     let reason=prompt('Reject reason for '+r.teacher+'?', 'Not enough stock / Wrong grade'); r.status='REJECTED'; r.rejectReason=reason; r.approvedBy=me.name; saveReqs(reqs); renderAll();
   }));
-  // Package list - approved only
   let approved=reqs.filter(r=>r.status==='APPROVED');
   document.getElementById('packageList').innerHTML=approved.map(r=>{
     let books=getBooks(); let b=books.find(x=>x.title===r.title && x.grade===r.grade); let avail=b?b.copies.filter(c=>c.status==='Available').length:0;
     return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+r.title+'</b> • '+r.grade+' • Approved Qty: <b>'+r.approvedQty+'</b> • Available in Library: <b>'+avail+'</b><br>For Teacher: <b>'+r.teacher+'</b> • Class: '+r.teacherClass+'</div><button data-package="'+r.id+'" class="package-btn bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">📦 Package '+r.approvedQty+' Copies</button></div>';
   }).join('')||'<p class="text-gray-500">No approved requests waiting for packaging.</p>';
   document.querySelectorAll('.package-btn').forEach(b=>b.addEventListener('click',function(){
-    if(!me||me.role!=='LIBRARIAN'){alert('Only Librarian can package. Login as Librarian.');return;}
+    if(!me||(me.role!=='LIBRARIAN' && me.role!=='ADMIN')){alert('Only Librarian / Admin can package. You are '+(me?me.role:'not logged in'));return;}
     let id=this.getAttribute('data-package'); let reqs=getReqs(); let r=reqs.find(x=>x.id===id); if(!r) return;
     let books=getBooks(); let b=books.find(x=>x.title===r.title && x.grade===r.grade);
-    if(!b){alert('Title not found in library. Add books first.');return;}
+    if(!b){alert('Title not found in library. Add books first in Librarian.');return;}
     let avail=b.copies.filter(c=>c.status==='Available');
     if(avail.length<r.approvedQty){alert('❌ Not enough Available. Need '+r.approvedQty+', have '+avail.length+'. Top Up in Librarian first.');return;}
     let packed=avail.slice(0,r.approvedQty);
@@ -142,9 +150,9 @@ function findBook(){
   let code=norm(document.getElementById('bookInput').value); if(!code){alert('Scan / Type Book Number');return;}
   let books=getBooks(); foundBook=null;
   books.forEach(b=> (b.copies||[]).forEach(c=>{ if(norm(c.barcode)===code) foundBook={book:b,copy:c}; }));
-  if(!foundBook) document.getElementById('bookFound').innerHTML='<span class="text-red-600 font-bold">❌ Book '+code+' NOT FOUND.</span>';
+  if(!foundBook) document.getElementById('bookFound').innerHTML='<span class="text-red-600 font-bold">❌ Book '+code+' NOT FOUND in '+cur.name+'.</span>';
   else{
-    let packInfo = foundBook.copy.status==='Packed' ? '<br>📦 PACKED for: <b>'+foundBook.copy.packedFor+'</b> • Class '+foundBook.copy.packedClass : foundBook.copy.status==='Available' && me && me.role==='LIBRARIAN' ? '<br>📦 Available — Librarian can issue directly (no pack needed)' : '';
+    let packInfo = foundBook.copy.status==='Packed' ? '<br>📦 PACKED for: <b>'+foundBook.copy.packedFor+'</b> • Class '+foundBook.copy.packedClass : foundBook.copy.status==='Available' && me && (me.role==='LIBRARIAN'||me.role==='ADMIN') ? '<br>📦 Available — Librarian / Admin can issue directly (no pack needed)' : '';
     document.getElementById('bookFound').innerHTML='✅ <b>'+foundBook.book.title+'</b><br>Book: <b>'+foundBook.copy.barcode+'</b> • Grade: '+foundBook.book.grade+' • Status: <b>'+foundBook.copy.status+'</b>'+packInfo;
   }
   validate();
@@ -152,7 +160,7 @@ function findBook(){
 function findLearner(){
   let code=norm(document.getElementById('learnerInput').value); if(!code){alert('Scan / Type Learner ID');return;}
   let ls=getLearners(); foundLearner=ls.find(l=>norm(l.id)===code)||null;
-  if(!foundLearner) document.getElementById('learnerFound').innerHTML='<span class="text-red-600 font-bold">❌ Learner '+code+' NOT FOUND.</span>';
+  if(!foundLearner) document.getElementById('learnerFound').innerHTML='<span class="text-red-600 font-bold">❌ Learner '+code+' NOT FOUND in '+cur.name+'.</span>';
   else document.getElementById('learnerFound').innerHTML='✅ <b>'+foundLearner.name+'</b><br>ID: <b>'+foundLearner.id+'</b> • Grade: '+foundLearner.grade+' • Class: '+foundLearner.class;
   validate();
 }
@@ -160,11 +168,9 @@ function validate(){
   let checks=document.getElementById('checks'); let btn=document.getElementById('issueBtn');
   if(!foundBook||!foundLearner){checks.innerHTML='';btn.disabled=true;return;}
   let errors=[];
-  if(!me) errors.push('❌ Login as Staff first.');
+  if(!me) errors.push('❌ Login first on login.html (Firebase).');
   else{
-    // Scope check
     let sc=inScopeLearner(foundLearner); if(!sc.ok) errors.push(sc.msg);
-    // Pack check: Teacher must issue packed books only. Librarian can issue Available or Packed. HOD can issue Packed for their dept or Available in dept.
     if(me.role==='TEACHER'){
       if(foundBook.copy.status!=='Packed') errors.push('❌ BLOCKED: Teacher must issue PACKED books only. This book is '+foundBook.copy.status+'. Ask Librarian to package first.');
       else if(norm(foundBook.copy.packedFor)!==norm(me.name)) errors.push('❌ BLOCKED: This pack is for '+foundBook.copy.packedFor+', not for you ('+me.name+').');
@@ -185,7 +191,6 @@ function issueBook(){
   let books=getBooks(); let target=null; books.forEach(b=> (b.copies||[]).forEach(c=>{if(c.barcode===foundBook.copy.barcode) target=c;}));
   if(!target||(target.status!=='Packed'&&target.status!=='Available')){alert('Book not available for issue.');return;}
   target.status='Issued'; target.learnerId=foundLearner.id; target.learnerName=foundLearner.name; target.issuedDate=new Date().toISOString().slice(0,10); target.dueDate='2026-11-30'; target.issuedBy=me.name; target.issuedByRole=me.role; target.teacherName=me.name;
-  // Clear pack info after issue, keep for record
   let packedFor=target.packedFor||''; target.packedFor=''; target.packedClass='';
   saveBooks(books);
   let hist=getHist(); hist.push({bookNo:foundBook.copy.barcode,barcode:foundBook.copy.barcode,title:foundBook.book.title,grade:foundBook.book.grade,learnerId:foundLearner.id,learnerName:foundLearner.name,learnerGrade:foundLearner.grade,learnerClass:foundLearner.class,issuedDate:target.issuedDate,dueDate:target.dueDate,status:'Issued',returned:false,school:cur.name,emis:cur.emis,issuedBy:me.name,issuedByRole:me.role,teacherName:me.name,packedFor:packedFor});
@@ -195,7 +200,7 @@ function issueBook(){
 }
 function renderIssued(){
   let q=(document.getElementById('searchIssued').value||'').toLowerCase(); let hist=getHist().filter(h=>h.status==='Issued'||!h.returned);
-  document.getElementById('issuedList').innerHTML=hist.slice().reverse().filter(h=>(h.title+' '+h.learnerName+' '+h.learnerId+' '+h.bookNo+' '+(h.issuedBy||'')).toLowerCase().includes(q)).map(h=>'<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+h.title+'</b> • Book: <b>'+h.bookNo+'</b><br>Learner: <b>'+h.learnerName+'</b> ('+h.learnerId+') • '+h.learnerGrade+' '+h.learnerClass+'<br>Issued By: <b>'+(h.issuedBy||h.teacherName||'')+'</b> ('+(h.issuedByRole||'')+') • Date: '+h.issuedDate+' • Due: '+h.dueDate+'</div><button data-return="'+h.bookNo+'" class="return-btn bg-orange-500 text-white px-3 py-1 rounded font-bold text-xs h-fit">↩️ Retrieve (Anyone) →</button></div>').join('')||'<p class="text-gray-500">No books currently issued.</p>';
+  document.getElementById('issuedList').innerHTML=hist.slice().reverse().filter(h=>(h.title+' '+h.learnerName+' '+h.learnerId+' '+h.bookNo+' '+(h.issuedBy||'')).toLowerCase().includes(q)).map(h=>'<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+h.title+'</b> • Book: <b>'+h.bookNo+'</b><br>Learner: <b>'+h.learnerName+'</b> ('+h.learnerId+') • '+h.learnerGrade+' '+h.learnerClass+'<br>Issued By: <b>'+(h.issuedBy||h.teacherName||'')+'</b> ('+(h.issuedByRole||'')+') • Date: '+h.issuedDate+' • Due: '+h.dueDate+'</div><button data-return="'+h.bookNo+'" class="return-btn bg-orange-500 text-white px-3 py-1 rounded font-bold text-xs h-fit">↩️ Retrieve (Anyone) →</button></div>').join('')||'<p class="text-gray-500">No books currently issued in '+cur.name+'.</p>';
   document.querySelectorAll('.return-btn').forEach(b=>b.addEventListener('click',function(){
     let bookNo=this.getAttribute('data-return');
     let by = me ? me.name+' ('+me.role+')' : 'Staff';
@@ -204,8 +209,7 @@ function renderIssued(){
   }));
 }
 function renderAll(){ renderReqs(); renderIssued(); }
-document.getElementById('schoolSel').addEventListener('change',function(){let v=this.value.split('|');cur={prefix:v[0],emis:v[1],name:v[2]};me=null;document.getElementById('loginMsg').innerHTML='';document.getElementById('scopeBox').classList.add('hidden');renderStaffSel();renderAll();});
-document.getElementById('loginStaffBtn').addEventListener('click',loginStaff);
+document.getElementById('schoolSel').addEventListener('change',function(){let v=this.value.split('|');cur={prefix:v[0],emis:v[1],name:v[2]};renderAll();});
 document.getElementById('reqBtn').addEventListener('click',requestBooks);
 document.getElementById('bookInput').addEventListener('change',findBook);
 document.getElementById('bookInput').addEventListener('keydown',function(e){if(e.key==='Enter')findBook();});
@@ -213,7 +217,9 @@ document.getElementById('learnerInput').addEventListener('change',findLearner);
 document.getElementById('learnerInput').addEventListener('keydown',function(e){if(e.key==='Enter')findLearner();});
 document.getElementById('issueBtn').addEventListener('click',issueBook);
 document.getElementById('searchIssued').addEventListener('input',renderIssued);
-renderStaffSel(); renderAll();
+window.addEventListener('makhanani-session-ready', setMe);
+setTimeout(setMe, 800);
+renderAll();
 })();
 </script>
 </body></html>
