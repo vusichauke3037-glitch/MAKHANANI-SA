@@ -15,8 +15,16 @@
 <button onclick="askPassword('superadmin')" id="btnSuperadmin" class="px-3 py-2 rounded-lg font-bold bg-red-700 text-white text-sm ring-2 ring-black">🔐 Super Admin</button>
 </div>
 
-<!-- LEADER DASHBOARDS ROW -->
+<!-- ✅ NEW: STAFF QUICK BAR - ADDED -->
 <div class="no-print max-w-6xl mx-auto px-3 flex flex-wrap gap-2">
+<a href="staff.html" class="bg-violet-700 text-white px-4 py-2 rounded-lg font-bold text-sm">👥 Add Staff (All) →</a>
+<a href="teachers.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">👩‍🏫 Add Teachers →</a>
+<a href="hod.html" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm">👑 Add HODs →</a>
+<span id="staffCountBadge" class="bg-black text-white px-3 py-2 rounded-lg font-bold text-sm">👥 Staff: 0</span>
+</div>
+
+<!-- LEADER DASHBOARDS ROW -->
+<div class="no-print max-w-6xl mx-auto px-3 flex flex-wrap gap-2 mt-2">
 <a href="principal.html" class="bg-purple-700 text-white px-4 py-2 rounded-lg font-bold text-sm">👑 Principal Dashboard →</a>
 <a href="school-admin.html" class="bg-slate-700 text-white px-4 py-2 rounded-lg font-bold text-sm">🛠️ School Admin Dashboard →</a>
 <a href="superadmin.html" class="bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm">🔐 Super Admin Dashboard →</a>
@@ -37,6 +45,22 @@
 <button onclick="logoutAll()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm">🔒 Logout</button>
 <button onclick="changePasswordMenu()" class="text-xs underline">Change My Password</button>
 <span id="roleBadge" class="text-xs font-bold bg-black text-white px-2 py-1 rounded"></span>
+</div>
+
+<!-- ✅ NEW: ADD TEACHER QUICK FORM - WORKS WITH YOUR SYSTEM -->
+<div class="no-print max-w-6xl mx-auto px-3">
+<div class="bg-white rounded-xl shadow p-4">
+<div class="font-bold">➕ Quick Add Teacher / HOD — No Need To Leave Dashboard</div>
+<div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-2">
+<input id="quickName" placeholder="Full Name e.g. Mrs Sematle" class="border rounded-lg px-3 py-2">
+<select id="quickRole" class="border rounded-lg px-3 py-2"><option>Teacher</option><option>HOD</option><option>Librarian</option><option>School Admin</option></select>
+<select id="quickDept" class="border rounded-lg px-3 py-2"><option>Commerce</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Humanities</option><option>Technology</option><option>Whole School</option></select>
+<input id="quickSubject" placeholder="Subject e.g. Accounting" class="border rounded-lg px-3 py-2">
+<button onclick="quickAddStaff()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold">✅ Save</button>
+</div>
+<p id="quickMsg" class="text-green-600 font-bold text-sm mt-1"></p>
+<div id="quickStaffList" class="text-sm mt-2 flex flex-wrap gap-1"></div>
+</div>
 </div>
 
 <!-- SUMMARY PAGE - 1 PAGE -->
@@ -92,6 +116,39 @@ function changePasswordMenu(){let role=prompt('Which password? Type: librarian /
 function forgotPassword(){let m=prompt('Enter Master OR Super Admin Password:');if(m===passwords.master||m===passwords.superadmin){passwords={librarian:'Librarian2026',hod:'Hod2026',teacher:'Teacher2026',principal:'Principal2026',admin:'Admin2026',finance:'Finance2026',superadmin:'Super2026',master:'Master2026'};localStorage.setItem('makhanani_passwords',JSON.stringify(passwords));alert('✅ All reset to defaults');}else alert('❌ Wrong Master / Super Admin');}
 function logoutAll(){if(!confirm('Logout? You will need password again.'))return;sessionStorage.clear();localStorage.setItem('makhanani_dashboard_role','librarian');location.href='dashboard.html';}
 function pct(r,t){return t?Math.round(r/t*100):0;}function bar(p){let c=p>=80?'bg-green-500':p>=50?'bg-yellow-500':'bg-red-500';return `<div class="flex items-center gap-1"><div class="flex-1 bg-gray-100 h-2.5 rounded"><div class="${c} h-2.5 rounded" style="width:${p}%"></div></div><b>${p}%</b></div>`;}function status(p){return p>=80?'✅ Excellent':p>=50?'⚠️ Follow Up':'❌ Urgent';}function getBook(no){for(let it of ltsm){if(it.copies.some(c=>c.bookNo===no))return it;}return null;}
+
+// ✅ NEW: STAFF SYSTEM - SYNCED WITH staff.html / teachers.html / hod.html
+function getStaff(){ let s=JSON.parse(localStorage.getItem('makhanani_staff')||'[]'); let t=JSON.parse(localStorage.getItem('makhanani_teachers')||'[]'); let h=JSON.parse(localStorage.getItem('makhanani_hods')||'[]'); return {staff:s, teachers:t, hods:h}; }
+function quickAddStaff(){
+  let name=document.getElementById('quickName').value.trim();
+  let role=document.getElementById('quickRole').value;
+  let dept=document.getElementById('quickDept').value;
+  let subj=document.getElementById('quickSubject').value.trim();
+  if(!name){ alert('Enter name'); return; }
+  let staff=JSON.parse(localStorage.getItem('makhanani_staff')||'[]');
+  let user=name.toLowerCase().replace(/[^a-z]/g,'') + (role=='HOD'?'_hod':role=='Librarian'?'_lib':'');
+  staff.push({name,role,dept,subj,phone:'',user,pass:'1234'});
+  localStorage.setItem('makhanani_staff',JSON.stringify(staff));
+  // also sync to old lists so teacher.html / hod.html see them
+  if(role=='Teacher'){ let t=JSON.parse(localStorage.getItem('makhanani_teachers')||'[]'); t.push({name,dept,subj,phone:'',user,pass:'1234'}); localStorage.setItem('makhanani_teachers',JSON.stringify(t)); }
+  if(role=='HOD'){ let h=JSON.parse(localStorage.getItem('makhanani_hods')||'[]'); h.push({name,dept,phone:'',user,pass:'1234'}); localStorage.setItem('makhanani_hods',JSON.stringify(h)); }
+  document.getElementById('quickMsg').textContent='✅ '+name+' added as '+role+' — Login: '+user+' / 1234';
+  document.getElementById('quickName').value=''; document.getElementById('quickSubject').value='';
+  renderStaffBadge(); render();
+}
+function renderStaffBadge(){
+  let staff=JSON.parse(localStorage.getItem('makhanani_staff')||'[]');
+  let t=JSON.parse(localStorage.getItem('makhanani_teachers')||'[]');
+  let h=JSON.parse(localStorage.getItem('makhanani_hods')||'[]');
+  let total = staff.length>0 ? staff.length : (t.length+h.length);
+  let badge=document.getElementById('staffCountBadge'); if(badge) badge.textContent='👥 Staff: '+total+' (Teachers: '+(staff.filter(s=>s.role=='Teacher').length||t.length)+' • HODs: '+(staff.filter(s=>s.role=='HOD').length||h.length)+')';
+  let list=document.getElementById('quickStaffList'); if(list){
+    if(staff.length>0) list.innerHTML=staff.slice(-8).map(s=>'<span class="bg-gray-100 px-2 py-1 rounded font-bold">'+s.role+': '+s.name+' ('+s.dept+')</span>').join('');
+    else if(t.length>0||h.length>0) list.innerHTML='Teachers: '+t.length+' • HODs: '+h.length+' — <a href="staff.html" class="underline font-bold">Open Staff Page</a>';
+    else list.innerHTML='No staff yet — add above.';
+  }
+}
+
 function render(){['librarian','hod','teacher','principal','admin','finance','superadmin'].forEach(r=>{let id='btn'+r.charAt(0).toUpperCase()+r.slice(1);let b=document.getElementById(id);if(b)b.style.outline=(r===currentRole)?'3px solid black':'none';});let isPrincipal=currentRole==='principal';let isFinance=currentRole==='finance';let isSuper=currentRole==='superadmin';let sel=document.getElementById('selDept');if(isPrincipal||isFinance||isSuper){sel.value='';sel.classList.add('locked');sel.disabled=true;document.getElementById('lockMsg').classList.remove('hidden');}else{sel.classList.remove('locked');sel.disabled=false;document.getElementById('lockMsg').classList.add('hidden');}if(isFinance){document.getElementById('financeMsg').classList.remove('hidden');}else{document.getElementById('financeMsg').classList.add('hidden');}document.getElementById('roleBadge').textContent='Current: '+currentRole.toUpperCase();document.getElementById('genAt').textContent=new Date().toLocaleString();document.getElementById('roleLabel').textContent=isPrincipal?'👑 PRINCIPAL VIEW — WHOLE SCHOOL (LOCKED, VIEW ONLY)':isFinance?'💰 FINANCE VIEW — MONEY ONLY — WHOLE SCHOOL':currentRole==='admin'?'🛠️ SCHOOL ADMIN VIEW — WHOLE SCHOOL — MANAGE PEOPLE':isSuper?'🔐 SUPER ADMIN VIEW — EVERYTHING — FULL CONTROL':currentRole==='teacher'?'Teacher View — Own Classes':currentRole==='hod'?'HOD View — Own Department':'Librarian View — Whole School';document.getElementById('lockLabel').textContent=(isPrincipal||isFinance||isSuper)?'🔒 Cannot Filter — Whole School':'';
 document.getElementById('dueYearDash').textContent=getDueDate().getFullYear();let d=daysToDue();document.getElementById('dueCountdown').textContent=d>0?d+' days left — Collect now':'OVERDUE — Collect immediately';
 let fDept=(isPrincipal||isFinance||isSuper)?'':sel.value;let sL=ltsm,sI=issues;if(currentRole==='hod'){let dd=fDept||JSON.parse(localStorage.getItem('makhanani_hod')||'{"dept":"Mathematics"}').dept;sL=ltsm.filter(x=>x.dept===dd);sI=issues.filter(x=>x.dept===dd);}if(currentRole==='teacher'){let t=JSON.parse(localStorage.getItem('makhanani_teacher')||'{"name":"Ms. Dube","class":"Grade 10A"}');sI=issues.filter(x=>x.teacher===t.name||x.class===t.class);}if(fDept&&currentRole!=='hod'){sI=sI.filter(x=>x.dept===fDept);}if(isPrincipal||isFinance||isSuper||currentRole==='admin'){sL=ltsm;sI=issues;}
@@ -99,12 +156,12 @@ let total=0,avail=0;sL.forEach(it=>it.copies.forEach(c=>{total++;if(c.status==='
 let depts=[...new Set(ltsm.map(x=>x.dept))];document.getElementById('byDept').innerHTML=depts.map(d=>{let items=ltsm.filter(x=>x.dept===d);let t=0,a=0;items.forEach(it=>it.copies.forEach(c=>{t++;if(c.status==='Available')a++;}));let iss=issues.filter(x=>x.dept===d);let r=iss.filter(x=>x.returned).length;let o=iss.filter(x=>!x.returned).length;let pp=pct(r,r+o);return `<tr><td class="border p-1.5 font-bold">${d}</td><td class="border p-1.5 text-center">${t}</td><td class="border p-1.5 text-center">${a}</td><td class="border p-1.5 text-center">${r+o}</td><td class="border p-1.5 text-center">${r}</td><td class="border p-1.5 text-center">${o}</td><td class="border p-1.5 text-center font-bold">${pp}%</td><td class="border p-1.5">${bar(pp)}</td></tr>`;}).join('')||'<tr><td colspan="8" class="border p-2 text-center">No data</td></tr>';
 let subjects=[...new Set(ltsm.map(x=>x.subject))];document.getElementById('bySubject').innerHTML=subjects.map(s=>{let items=ltsm.filter(x=>x.subject===s);let t=0;items.forEach(it=>it.copies.forEach(c=>t++));let iss=issues.filter(x=>{let it=getBook(x.bookNo);return it&&it.subject===s;});let r=iss.filter(x=>x.returned).length;let o=iss.filter(x=>!x.returned).length;let pp=pct(r,r+o);return `<tr><td class="border p-1.5 font-bold">${s}</td><td class="border p-1.5 text-center">${t}</td><td class="border p-1.5 text-center">${r+o}</td><td class="border p-1.5 text-center">${r}</td><td class="border p-1.5 text-center">${o}</td><td class="border p-1.5 text-center font-bold">${pp}%</td><td class="border p-1.5">${bar(pp)}</td></tr>`;}).join('')||'<tr><td colspan="7" class="border p-2 text-center">No data</td></tr>';
 if(isFinance){document.getElementById('byTeacher').innerHTML='<tr><td colspan="8" class="border p-2 text-center text-emerald-700 font-bold">💰 Finance View — Learner names hidden. See Finance Page for money breakdown.</td></tr>';}else{let byT={};issues.forEach(x=>{if(!byT[x.teacher])byT[x.teacher]={r:0,o:0,ov:0,dept:x.dept};if(x.returned)byT[x.teacher].r++;else{byT[x.teacher].o++;if(isOverdue(x))byT[x.teacher].ov++;}});document.getElementById('byTeacher').innerHTML=Object.entries(byT).map(([n,v])=>{let pp=pct(v.r,v.r+v.o);return `<tr><td class="border p-1.5 font-bold">${n}</td><td class="border p-1.5">${v.dept}</td><td class="border p-1.5 text-center">${v.r+v.o}</td><td class="border p-1.5 text-center">${v.r}</td><td class="border p-1.5 text-center">${v.o}</td><td class="border p-1.5 text-center text-red-600 font-bold">${v.ov}</td><td class="border p-1.5 text-center font-bold">${pp}%</td><td class="border p-1.5">${status(pp)}</td></tr>`;}).join('')||'<tr><td colspan="8" class="border p-2 text-center">No teacher issues yet</td></tr>';}
-let classes=[...new Set(issues.map(x=>x.class||x.grade||'-'))].sort();document.getElementById('byGrade').innerHTML=classes.map(cl=>{let iss=issues.filter(x=>(x.class||x.grade)===cl);let r=iss.filter(x=>x.returned).length;let o=iss.filter(x=>!x.returned).length;let pp=pct(r,r+o);return `<tr><td class="border p-1.5 font-bold">${cl}</td><td class="border p-1.5 text-center">${r+o}</td><td class="border p-1.5 text-center">${r}</td><td class="border p-1.5 text-center">${o}</td><td class="border p-1.5 text-center font-bold">${pp}%</td><td class="border p-1.5">${bar(pp)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="border p-2 text-center">No class data</td></tr>';}
+let classes=[...new Set(issues.map(x=>x.class||x.grade||'-'))].sort();document.getElementById('byGrade').innerHTML=classes.map(cl=>{let iss=issues.filter(x=>(x.class||x.grade)===cl);let r=iss.filter(x=>x.returned).length;let o=iss.filter(x=>!x.returned).length;let pp=pct(r,r+o);return `<tr><td class="border p-1.5 font-bold">${cl}</td><td class="border p-1.5 text-center">${r+o}</td><td class="border p-1.5 text-center">${r}</td><td class="border p-1.5 text-center">${o}</td><td class="border p-1.5 text-center font-bold">${pp}%</td><td class="border p-1.5">${bar(pp)}</td></tr>`;}).join('')||'<tr><td colspan="6" class="border p-2 text-center">No class data</td></tr>'; renderStaffBadge();}
 function getOverdueList(){return issues.filter(x=>!x.returned);}
 function showOverdue(){document.getElementById('summaryPage').classList.add('hidden');document.getElementById('overduePage').classList.remove('hidden');let teachers=[...new Set(issues.map(x=>x.teacher||'-'))].sort();document.getElementById('overdueFilterTeacher').innerHTML='<option value="">All Teachers</option>'+teachers.map(t=>`<option>${t}</option>`).join('');let classes=[...new Set(issues.map(x=>x.class||x.grade||'-'))].sort();document.getElementById('overdueFilterClass').innerHTML='<option value="">All Classes</option>'+classes.map(c=>`<option>${c}</option>`).join('');renderOverdue();window.scrollTo(0,0);}
 function hideOverdue(){document.getElementById('overduePage').classList.add('hidden');document.getElementById('summaryPage').classList.remove('hidden');window.scrollTo(0,0);}
 function printOverdueOnly(){document.getElementById('summaryPage').classList.add('hidden');document.getElementById('overduePage').classList.remove('hidden');setTimeout(()=>window.print(),100);}
 function renderOverdue(){let list=getOverdueList();let fD=document.getElementById('overdueFilterDept').value;let fT=document.getElementById('overdueFilterTeacher').value;let fC=document.getElementById('overdueFilterClass').value;if(fD)list=list.filter(x=>x.dept===fD);if(fT)list=list.filter(x=>x.teacher===fT);if(fC)list=list.filter(x=>(x.class||x.grade)===fC);list=[...list].sort((a,b)=>((a.class||'').localeCompare(b.class||''))||(a.learner||'').localeCompare(b.learner||''));let now=new Date();document.querySelectorAll('.dueYear').forEach(el=>el.textContent=now.getFullYear());document.getElementById('overdueGenAt').textContent=new Date().toLocaleString();let learners=new Set(list.map(x=>x.learner+'|'+(x.class||''))).size;let teachers=new Set(list.map(x=>x.teacher)).size;let value=0;list.forEach(x=>{let b=getBook(x.bookNo);if(b)value+=(b.price||0);});document.getElementById('oTotal').textContent=list.length;document.getElementById('oLearners').textContent=learners;document.getElementById('oTeachers').textContent=teachers;document.getElementById('oValue').textContent='R'+value.toLocaleString();document.getElementById('overdueList').innerHTML=list.map((x,i)=>`<tr><td class="border p-1.5">${i+1}</td><td class="border p-1.5 font-bold">${x.bookNo}</td><td class="border p-1.5">${x.title}</td><td class="border p-1.5 font-bold">${x.learner}</td><td class="border p-1.5">${x.learnerId||'-'}</td><td class="border p-1.5">${x.class||x.grade||'-'}</td><td class="border p-1.5">${x.teacher||'-'}</td><td class="border p-1.5">${x.dept||'-'}</td><td class="border p-1.5">${x.date||'-'}</td><td class="border p-1.5 text-[11px]">☐ Collected &nbsp; ☐ Lost — Pay<br>Sign: ______</td></tr>`).join('')||`<tr><td colspan="10" class="border p-4 text-center text-green-600 font-bold">✅ No overdue books! All returned by 30 November!</td></tr>`;let byT={};list.forEach(x=>{if(!byT[x.teacher])byT[x.teacher]={n:0,learners:new Set(),dept:x.dept};byT[x.teacher].n++;byT[x.teacher].learners.add(x.learner);});document.getElementById('overdueByTeacher').innerHTML=Object.entries(byT).sort((a,b)=>b[1].n-a[1].n).map(([n,v])=>{let pri=v.n>=10?'🔴 URGENT':v.n>=5?'🟠 This Week':'🟡 Monitor';return `<tr><td class="border p-1.5 font-bold">${n}</td><td class="border p-1.5">${v.dept}</td><td class="border p-1.5 text-center font-bold text-red-600">${v.n}</td><td class="border p-1.5 text-center">${v.learners.size}</td><td class="border p-1.5">${pri}</td></tr>`;}).join('')||'<tr><td colspan="5" class="border p-2 text-center">No overdue</td></tr>';let byC={};list.forEach(x=>{let cl=x.class||x.grade||'-';if(!byC[cl])byC[cl]={n:0,learners:[]};byC[cl].n++;if(!byC[cl].learners.includes(x.learner))byC[cl].learners.push(x.learner);});document.getElementById('overdueByClass').innerHTML=Object.entries(byC).sort((a,b)=>b[1].n-a[1].n).map(([cl,v])=>`<tr><td class="border p-1.5 font-bold">${cl}</td><td class="border p-1.5 text-center font-bold text-red-600">${v.n}</td><td class="border p-1.5">${v.learners.join(', ')}</td></tr>`).join('')||'<tr><td colspan="3" class="border p-2 text-center">No overdue</td></tr>';}
-render();
+render(); renderStaffBadge();
 let _t;function resetT(){clearTimeout(_t);_t=setTimeout(()=>{sessionStorage.clear();alert('⏰ Auto-logged out after 15 mins.');location.href='dashboard.html';},15*60*1000);}['click','keydown','touchstart','scroll'].forEach(e=>document.addEventListener(e,resetT));resetT();
 </script></body></html>
