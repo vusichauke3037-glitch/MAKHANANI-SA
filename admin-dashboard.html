@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin Dashboard — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'ADMIN'};
+  if(prof.role!=='ADMIN' && prof.role!=='SUPER_ADMIN'){ window.location.href='dashboard.html'; return; }
+  window.MAKHANANI_SESSION={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role,school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'};
+  localStorage.setItem('makhanani_session',JSON.stringify(window.MAKHANANI_SESSION));
+  let b=document.createElement('div'); b.style.cssText='background:#000;color:#fff;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:bold;';
+  b.innerHTML='<span><img src="logo.png" style="height:24px;width:24px;border-radius:50%;background:#fff;display:inline;vertical-align:middle;"> 🛡️ ADMIN • '+prof.name+' • All Schools • 🔥 makhanani-ltsm</span><button id="fbLogoutBtn" style="background:#dc2626;color:#fff;padding:4px 10px;border-radius:6px;font-weight:bold;">Logout</button>';
+  document.body.insertBefore(b,document.body.firstChild);
+  document.getElementById('fbLogoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); window.location.href='login.html'; });
+  window.dispatchEvent(new Event('makhanani-admin-ready'));
+  try{ let s=await getDocs(collection(db,'users')); let list=[]; s.forEach(d=> list.push(d.data())); document.getElementById('staffCount').textContent=list.length; document.getElementById('staffBreakdown').textContent='Super Admin: '+list.filter(x=>x.role==='SUPER_ADMIN').length+' • Teachers: '+list.filter(x=>x.role==='TEACHER').length+' • HODs: '+list.filter(x=>x.role==='HOD').length+' • Librarians: '+list.filter(x=>x.role==='LIBRARIAN').length+' • Admins: '+list.filter(x=>x.role==='ADMIN').length; document.getElementById('staffList').innerHTML=list.map(u=>'<div class="border rounded p-2"><b>'+u.name+'</b> • '+u.role+' • '+u.email+'<br>School: '+(u.school||'')+' • '+(u.role==='TEACHER'?'Classes: '+(u.classes||[u.class]).join(', '):u.role==='HOD'?'Depts: '+(u.subjects||[u.subject]).join(', ')+' Grades: '+u.grades:'')+'</div>').join(''); }catch(e){ document.getElementById('staffList').innerHTML='❌ '+e.message; }
+});
+</script>
+<div class="max-w-6xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 flex gap-3 items-center"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">🛡️ Admin Dashboard — All Schools</h1><p class="text-xs text-gray-500">Admin + Super Admin can see this page.</p></div></div>
+<div class="grid md:grid-cols-2 gap-3 mt-4">
+<div class="bg-white rounded-2xl p-4"><h2 class="font-black">🏫 Wordsworth High School — WHS — 700310854</h2><div class="grid grid-cols-3 gap-2 mt-2 text-center"><div><div class="text-2xl font-black" id="wBooks">0</div><div class="text-xs">Books</div></div><div><div class="text-2xl font-black" id="wLearners">0</div><div class="text-xs">Learners</div></div><div><div class="text-2xl font-black" id="wIssued">0</div><div class="text-xs">Issued</div></div></div><p class="text-xs mt-2" id="wDetail"></p><a href="dashboard.html" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">View Wordsworth Dashboard →</a></div>
+<div class="bg-white rounded-2xl p-4"><h2 class="font-black">🏫 George Sonto High School — GSH — 911360870</h2><div class="grid grid-cols-3 gap-2 mt-2 text-center"><div><div class="text-2xl font-black" id="gBooks">0</div><div class="text-xs">Books</div></div><div><div class="text-2xl font-black" id="gLearners">0</div><div class="text-xs">Learners</div></div><div><div class="text-2xl font-black" id="gIssued">0</div><div class="text-xs">Issued</div></div></div><p class="text-xs mt-2" id="gDetail"></p><a href="dashboard.html" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">View George Sonto Dashboard →</a></div>
+</div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 Staff — Total: <span id="staffCount">-</span></h2><p class="text-xs text-gray-500" id="staffBreakdown">Loading from Firestore...</p><div id="staffList" class="mt-2 space-y-2 text-sm"></div><a href="staff.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-sm mt-2 inline-block">👥 Manage Staff →</a></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">⚡ Admin Quick Actions</h2><div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-2"><a href="staff.html" class="bg-purple-600 text-white py-3 rounded-xl font-black text-center text-sm">👥 Create Staff</a><a href="librarian.html" class="bg-green-600 text-white py-3 rounded-xl font-black text-center text-sm">📚 Librarian</a><a href="issue.html" class="bg-black text-white py-3 rounded-xl font-black text-center text-sm">📤 Issue</a><a href="stock.html" class="bg-teal-600 text-white py-3 rounded-xl font-black text-center text-sm">📦 Stock</a><a href="dashboard.html" class="bg-blue-600 text-white py-3 rounded-xl font-black text-center text-sm">📊 Dashboard</a></div></div>
+</div>
+<script>
+(function(){
+function stats(emis){ let books=[]; try{ books=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); }catch(e){} let learners=[]; try{ learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]'); }catch(e){} let total=0, issued=0, avail=0, packed=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; else if(c.status==='Packed') packed++; else avail++; })); return {books:total, learners:learners.length, issued, avail, packed, titles:books.length}; }
+let w=stats('700310854'); let g=stats('911360870');
+document.getElementById('wBooks').textContent=w.books; document.getElementById('wLearners').textContent=w.learners; document.getElementById('wIssued').textContent=w.issued; document.getElementById('wDetail').textContent='Titles: '+w.titles+' • Available: '+w.avail+' • Packed: '+w.packed+' • '+(w.books?Math.round(w.issued/w.books*100):0)+'% out';
+document.getElementById('gBooks').textContent=g.books; document.getElementById('gLearners').textContent=g.learners; document.getElementById('gIssued').textContent=g.issued; document.getElementById('gDetail').textContent='Titles: '+g.titles+' • Available: '+g.avail+' • Packed: '+g.packed+' • '+(g.books?Math.round(g.issued/g.books*100):0)+'% out';
+})();
+</script>
+</body></html>
