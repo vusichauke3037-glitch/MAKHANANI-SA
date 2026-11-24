@@ -5,83 +5,27 @@
 <div class="font-black text-2xl">MAKHANANI <span class="text-yellow-500">LTSM</span></div>
 <p class="text-sm text-gray-500">Xintimani Group Holdings (PTY) LTD • Reg 2026/934898/07</p>
 <h2 class="font-bold text-xl mt-4">🏫 Select Your School By EMIS</h2>
-<p class="text-sm text-gray-500 mt-1">EMIS = Official Dept. of Education Number.<br>Each EMIS sees ONLY its own data.</p>
-
-<div class="mt-4 text-left">
-<label class="text-xs font-bold">SCHOOL — EMIS NUMBER</label>
-<select id="schoolSelect" onchange="showEmis()" class="w-full border-2 rounded-lg px-3 py-3 mt-1 font-bold"></select>
-<div id="emisPreview" class="text-center font-black text-lg mt-2 text-blue-950"></div>
-
-<label class="text-xs font-bold mt-3 block">SCHOOL CODE (Given by Makhanani)</label>
-<input id="schoolCode" type="password" placeholder="Enter school code" class="w-full border-2 rounded-lg px-3 py-3 mt-1 text-center font-bold">
-<p class="text-xs text-gray-500 mt-1">Example: Wordsworth Code: <b>WHS2026</b></p>
-</div>
-
+<p class="text-sm text-gray-500 mt-1">EMIS = Official Dept. of Education Number. Each EMIS sees ONLY its own data.</p>
+<div class="mt-4 text-left"><label class="text-xs font-bold">SCHOOL — EMIS NUMBER</label><select id="schoolSelect" onchange="showEmis()" class="w-full border-2 rounded-lg px-3 py-3 mt-1 font-bold"></select><div id="emisPreview" class="text-center font-black text-lg mt-2 text-blue-950"></div><label class="text-xs font-bold mt-3 block">SCHOOL CODE (Given by Makhanani)</label><input id="schoolCode" type="password" placeholder="Enter school code" class="w-full border-2 rounded-lg px-3 py-3 mt-1 text-center font-bold"><p class="text-xs text-gray-500 mt-1">Wordsworth: WHS2026 • George Sonto: GSHS2026</p></div>
 <button onclick="enterSchool()" class="w-full bg-blue-950 text-white py-3 rounded-lg font-bold mt-4">Enter School Dashboard →</button>
 <p id="err" class="text-red-600 font-bold text-sm mt-2 hidden">❌ Wrong school code for this EMIS.</p>
-
-<div class="mt-4 border-t pt-3 text-left">
-<p class="text-xs font-bold">➕ New School? Super Admin Only:</p>
-<div class="grid grid-cols-2 gap-2 mt-2">
-<input id="newEmis" placeholder="EMIS e.g. 700400999" class="border rounded-lg px-2 py-2 text-sm">
-<input id="newName" placeholder="School Name" class="border rounded-lg px-2 py-2 text-sm">
-<input id="newCode" placeholder="School Code e.g. ABC2026" class="border rounded-lg px-2 py-2 text-sm">
-<input id="masterPw" type="password" placeholder="Master Password" class="border rounded-lg px-2 py-2 text-sm">
-</div>
-<button onclick="addSchool()" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold mt-2 text-sm">➕ Register New School By EMIS</button>
-<p id="addMsg" class="text-green-600 font-bold text-xs mt-1"></p>
-</div>
-
-<div class="text-xs text-gray-400 mt-4">🔒 Isolated by EMIS. School A can NEVER see School B.</div>
-</div>
-
+<a href="upload.html" class="block text-xs underline mt-2">📤 DBE School? Upload your data here →</a>
+<div class="mt-4 border-t pt-3 text-left"><p class="text-xs font-bold">➕ New School? Super Admin Only:</p><div class="grid grid-cols-2 gap-2 mt-2"><input id="newEmis" placeholder="EMIS e.g. 700400999" class="border rounded-lg px-2 py-2 text-sm"><input id="newName" placeholder="School Name" class="border rounded-lg px-2 py-2 text-sm"><input id="newCode" placeholder="School Code e.g. ABC2026" class="border rounded-lg px-2 py-2 text-sm"><input id="newDistrict" placeholder="District e.g. Gauteng East" class="border rounded-lg px-2 py-2 text-sm"><input id="masterPw" type="password" placeholder="Master Password" class="border rounded-lg px-2 py-2 text-sm col-span-2"></div><button onclick="addSchool()" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold mt-2 text-sm">➕ Register New School By EMIS</button><p id="addMsg" class="text-green-600 font-bold text-xs mt-1"></p></div>
+<div class="text-xs text-gray-400 mt-4">🔒 Isolated by EMIS. School A can NEVER see School B.</div></div>
 <script>
-// ✅ SCHOOL REGISTRY — KEYED BY EMIS (Official Number)
-// ⚠️ REPLACE THESE EMIS NUMBERS WITH THE REAL ONES
-let SCHOOLS = JSON.parse(localStorage.getItem('makhanani_schools_by_emis')||'{}');
-if(Object.keys(SCHOOLS).length==0){
-  SCHOOLS = {
-    "700400123": {name:"Wordsworth High School", short:"WHS", code:"WHS2026"},
-    "700400456": {name:"George Sonto High School", short:"GSHS", code:"GSHS2026"}
+// ✅ REAL EMIS NUMBERS - CONFIRMED FROM GOOGLE / SCHOOLSEEK / EDUPSTAIRS
+let SCHOOLS=JSON.parse(localStorage.getItem('makhanani_schools_by_emis')||'{}');
+if(Object.keys(SCHOOLS).length==0 || SCHOOLS["700400123"]){
+  // First time OR old placeholder exists -> replace with real EMIS
+  SCHOOLS={
+    "700310854":{name:"Wordsworth High School",short:"WHS",code:"WHS2026",district:"Gauteng East",province:"Gauteng"},
+    "911360870":{name:"George Sonto High School",short:"GSHS",code:"GSHS2026",district:"Vhembe East",province:"Limpopo"}
   };
-  localStorage.setItem('makhanani_schools_by_emis', JSON.stringify(SCHOOLS));
+  localStorage.setItem('makhanani_schools_by_emis',JSON.stringify(SCHOOLS));
 }
-function fillSchools(){
-  let sel=document.getElementById('schoolSelect');
-  sel.innerHTML=Object.entries(SCHOOLS).map(([emis,s])=>'<option value="'+emis+'">'+s.name+' — EMIS: '+emis+'</option>').join('');
-  showEmis();
-}
-function showEmis(){
-  let emis=document.getElementById('schoolSelect').value;
-  document.getElementById('emisPreview').textContent='EMIS: '+emis+' • '+SCHOOLS[emis].name;
-}
-function enterSchool(){
-  let emis=document.getElementById('schoolSelect').value;
-  let code=document.getElementById('schoolCode').value.trim();
-  if(code !== SCHOOLS[emis].code){
-    document.getElementById('err').classList.remove('hidden');
-    return;
-  }
-  // ✅ SET ACTIVE SCHOOL BY EMIS — This isolates ALL data
-  localStorage.setItem('makhanani_active_emis', emis);
-  localStorage.setItem('makhanani_active_school', SCHOOLS[emis].name);
-  localStorage.setItem('makhanani_active_school_short', SCHOOLS[emis].short);
-  sessionStorage.clear();
-  location.href='dashboard.html';
-}
-function addSchool(){
-  let master=document.getElementById('masterPw').value;
-  if(master!=='Master2026'){ alert('❌ Only Super Admin (Master) can add schools'); return; }
-  let emis=document.getElementById('newEmis').value.trim();
-  let name=document.getElementById('newName').value.trim();
-  let code=document.getElementById('newCode').value.trim();
-  if(!emis||!name||!code){ alert('Fill EMIS + Name + Code'); return; }
-  if(SCHOOLS[emis]){ alert('❌ EMIS already exists: '+SCHOOLS[emis].name); return; }
-  SCHOOLS[emis]={name:name, short:name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,4), code:code};
-  localStorage.setItem('makhanani_schools_by_emis', JSON.stringify(SCHOOLS));
-  document.getElementById('addMsg').textContent='✅ '+name+' added! EMIS: '+emis;
-  fillSchools();
-  document.getElementById('newEmis').value=''; document.getElementById('newName').value=''; document.getElementById('newCode').value='';
-}
+function fillSchools(){ let sel=document.getElementById('schoolSelect'); sel.innerHTML=Object.entries(SCHOOLS).map(([e,s])=>'<option value="'+e+'">'+s.name+' — EMIS: '+e+'</option>').join(''); showEmis(); }
+function showEmis(){ let e=document.getElementById('schoolSelect').value; document.getElementById('emisPreview').textContent='EMIS: '+e+' • '+SCHOOLS[e].name; }
+function enterSchool(){ let emis=document.getElementById('schoolSelect').value; let code=document.getElementById('schoolCode').value.trim(); if(code!==SCHOOLS[emis].code){ document.getElementById('err').classList.remove('hidden'); return; } localStorage.setItem('makhanani_active_emis',emis); localStorage.setItem('makhanani_active_school',SCHOOLS[emis].name); localStorage.setItem('makhanani_active_school_short',SCHOOLS[emis].short); sessionStorage.clear(); location.href='dashboard.html'; }
+function addSchool(){ let m=document.getElementById('masterPw').value; if(m!=='Master2026'){ alert('❌ Only Super Admin (Master) can add schools'); return; } let emis=document.getElementById('newEmis').value.trim(); let name=document.getElementById('newName').value.trim(); let code=document.getElementById('newCode').value.trim(); let dist=document.getElementById('newDistrict').value.trim()||'Gauteng'; if(!emis||!name||!code){ alert('Fill EMIS + Name + Code'); return; } if(SCHOOLS[emis]){ alert('❌ EMIS already exists: '+SCHOOLS[emis].name); return; } SCHOOLS[emis]={name:name,short:name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,4),code:code,district:dist}; localStorage.setItem('makhanani_schools_by_emis',JSON.stringify(SCHOOLS)); document.getElementById('addMsg').textContent='✅ '+name+' added! EMIS: '+emis; fillSchools(); }
 fillSchools();
 </script></body></html>
