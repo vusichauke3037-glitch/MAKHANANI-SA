@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff — Makhanani LTSM | Wordsworth High</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#f7f8fa;color:#1a2340;padding:14px}
+.top{background:#0a1f44;color:#fff;padding:14px 18px;border-radius:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center}
+.top b{font-size:19px}.top b span{color:#f2b705}
+.btn{background:#25D366;color:#fff;padding:10px 18px;border-radius:30px;font-weight:900;text-decoration:none;display:inline-block;border:0;cursor:pointer;font-size:14px}
+.btn-dark{background:#0a1f44;color:#fff;padding:10px 16px;border-radius:30px;font-weight:900;text-decoration:none;display:inline-block;border:0;cursor:pointer;font-size:14px}
+.btn-gold{background:#f2b705;color:#0a1f44;padding:10px 16px;border-radius:30px;font-weight:900;text-decoration:none;display:inline-block;border:0;cursor:pointer;font-size:14px}
+.btn-red{background:#dc2626;color:#fff;padding:7px 12px;border-radius:20px;font-weight:700;border:0;cursor:pointer;font-size:13px}
+.btn-small{background:#eef2ff;color:#0a1f44;padding:8px 14px;border-radius:20px;font-weight:900;border:0;cursor:pointer;font-size:13px}
+.btn-small.active{background:#0a1f44;color:#fff}
+.wrap{max-width:960px;margin:16px auto}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,.06);margin-bottom:16px}
+.card h2{margin-bottom:6px}
+label{font-size:13px;font-weight:700;display:block;margin-top:12px}
+input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;margin-top:4px;font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+th,td{border:1px solid #e2e8f0;padding:10px;text-align:left}th{background:#0a1f44;color:#fff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900;display:inline-block}
+.badge-teacher{background:#dcfce7;color:#166534}
+.badge-hod{background:#fef3c7;color:#92400e}
+.badge-lib{background:#dbeafe;color:#1e40af}
+.badge-admin{background:#fce7f3;color:#9d174d}
+.stat{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.stat div{background:#f8fafc;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700}
+.stat b{font-size:18px;display:block}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+@media print{.top,.no-print{display:none}body{background:#fff}.card{box-shadow:none;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<div class="top"><div><b>MAKHANANI <span>LTSM</span></b><div style="font-size:12px;color:#cbd5e1">WORDSWORTH HIGH — ALL STAFF</div></div><div><a class="btn-dark" href="dashboard.html">← Dashboard</a> <a class="btn-gold" href="teachers.html">Teachers</a> <a class="btn-gold" href="hod.html">HODs</a></div></div>
+
+<div class="wrap">
+
+<div class="card">
+<h2>👥 Add Staff Member</h2>
+<p style="font-size:14px;color:#475569">Add Teacher, HOD, Librarian or Admin — all in one place.</p>
+
+<label>Role *</label>
+<div class="tabs" id="roleTabs">
+<button class="btn-small active" onclick="setRole('Teacher',this)">👩🏽‍🏫 Teacher</button>
+<button class="btn-small" onclick="setRole('HOD',this)">👑 HOD</button>
+<button class="btn-small" onclick="setRole('Librarian',this)">📚 Librarian</button>
+<button class="btn-small" onclick="setRole('School Admin',this)">🛠️ School Admin</button>
+</div>
+
+<div class="grid">
+<div><label>Full Name *</label><input id="sName" placeholder="e.g. Mrs Sematle"></div>
+<div><label>Department *</label>
+<select id="sDept">
+<option>Commerce</option><option>Languages</option><option>Mathematics</option><option>Science</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option><option>Whole School</option>
+</select></div>
+</div>
+<div class="grid">
+<div><label>Subject (for Teachers)</label><input id="sSubject" placeholder="e.g. Accounting"></div>
+<div><label>Phone / WhatsApp</label><input id="sPhone" placeholder="078 000 0000"></div>
+</div>
+<div class="grid">
+<div><label>Username / Login</label><input id="sUser" placeholder="e.g. sematle"></div>
+<div><label>Password</label><input id="sPass" placeholder="e.g. 1234"></div>
+</div>
+<br><button class="btn" onclick="addStaff()">✅ Save Staff Member</button>
+<button class="btn-dark no-print" onclick="window.print()">🖨️ Print Staff List</button>
+<p id="msg" style="margin-top:10px;font-weight:700;color:#059669"></p>
+<div class="stat">
+<div>👩🏽‍🏫 Teachers<br><b id="cTeacher">0</b></div>
+<div>👑 HODs<br><b id="cHod">0</b></div>
+<div>📚 Librarians<br><b id="cLib">0</b></div>
+<div>🛠️ Admins<br><b id="cAdmin">0</b></div>
+<div>👥 Total Staff<br><b id="cTotal">0</b></div>
+</div>
+</div>
+
+<div class="card">
+<h2>📋 Staff List</h2>
+<div class="tabs no-print">
+<button class="btn-small active" onclick="setFilter('All',this)">All</button>
+<button class="btn-small" onclick="setFilter('Teacher',this)">Teachers</button>
+<button class="btn-small" onclick="setFilter('HOD',this)">HODs</button>
+<button class="btn-small" onclick="setFilter('Librarian',this)">Librarians</button>
+<button class="btn-small" onclick="setFilter('School Admin',this)">Admins</button>
+</div>
+<input id="search" oninput="render()" placeholder="🔍 Search name / dept / subject..." style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px">
+<div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Role</th><th>Dept</th><th>Subject</th><th>Phone</th><th>Login</th><th class="no-print"></th></tr></thead><tbody id="list"></tbody></table></div>
+</div>
+
+<div class="card no-print" style="background:#fffbe6">
+<h2>What Each Role Can Do</h2>
+<ul style="padding-left:20px;margin-top:8px;font-size:14px;line-height:1.9">
+<li><b>👩🏽‍🏫 Teacher:</b> Request books, Issue to learners, Return books</li>
+<li><b>👑 HOD:</b> Approve / Decline teacher requests, See dept stock, Print Overdue for dept</li>
+<li><b>📚 Librarian:</b> Add stock, Organise shelf, Issue / Receive books, Print summaries</li>
+<li><b>🛠️ School Admin:</b> Add staff, Manage departments, See whole school</li>
+</ul>
+</div>
+
+</div>
+
+<script>
+let currentRole='Teacher';
+let currentFilter='All';
+let staff = JSON.parse(localStorage.getItem('makhanani_staff')||'[]');
+// Migrate old data if exists
+if(staff.length==0){
+  let oldT=JSON.parse(localStorage.getItem('makhanani_teachers')||'[]');
+  let oldH=JSON.parse(localStorage.getItem('makhanani_hods')||'[]');
+  oldT.forEach(t=>staff.push({name:t.name,role:'Teacher',dept:t.dept,subj:t.subj||t.subject||'',phone:t.phone||'',user:t.user,pass:t.pass}));
+  oldH.forEach(t=>staff.push({name:t.name,role:'HOD',dept:t.dept,subj:'',phone:t.phone||'',user:t.user,pass:t.pass}));
+  if(staff.length>0) save();
+}
+function save(){ localStorage.setItem('makhanani_staff', JSON.stringify(staff)); }
+function setRole(r,btn){ currentRole=r; document.querySelectorAll('#roleTabs .btn-small').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+function setFilter(f,btn){ currentFilter=f; document.querySelectorAll('.card .tabs .btn-small').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); }
+function addStaff(){
+  let name=document.getElementById('sName').value.trim();
+  let dept=document.getElementById('sDept').value;
+  let subj=document.getElementById('sSubject').value.trim();
+  let phone=document.getElementById('sPhone').value.trim();
+  let user=document.getElementById('sUser').value.trim();
+  let pass=document.getElementById('sPass').value.trim();
+  if(!name){ alert('Please enter full name'); return; }
+  if(!user) user = name.toLowerCase().replace(/[^a-z]/g,'') + (currentRole=='HOD' ? '_hod' : currentRole=='Librarian' ? '_lib' : '');
+  if(!pass) pass='1234';
+  staff.push({name,role:currentRole,dept,subj,phone,user,pass});
+  save(); render();
+  document.getElementById('msg').textContent='✅ '+name+' added as '+currentRole+' for '+dept+'! Login: '+user+' / '+pass;
+  document.getElementById('sName').value=''; document.getElementById('sSubject').value=''; document.getElementById('sPhone').value=''; document.getElementById('sUser').value=''; document.getElementById('sPass').value='';
+}
+function del(i){ if(confirm('Delete this staff member?')){ staff.splice(i,1); save(); render(); } }
+function badge(role){
+  if(role=='Teacher') return '<span class="badge badge-teacher">👩🏽‍🏫 Teacher</span>';
+  if(role=='HOD') return '<span class="badge badge-hod">👑 HOD</span>';
+  if(role=='Librarian') return '<span class="badge badge-lib">📚 Librarian</span>';
+  return '<span class="badge badge-admin">🛠️ Admin</span>';
+}
+function render(){
+  let q=(document.getElementById('search').value||'').toLowerCase();
+  let filtered=staff.filter(s=>{
+    let matchRole = currentFilter=='All' || s.role==currentFilter;
+    let matchQ = (s.name+' '+s.dept+' '+(s.subj||'')).toLowerCase().includes(q);
+    return matchRole && matchQ;
+  });
+  document.getElementById('cTeacher').textContent=staff.filter(s=>s.role=='Teacher').length;
+  document.getElementById('cHod').textContent=staff.filter(s=>s.role=='HOD').length;
+  document.getElementById('cLib').textContent=staff.filter(s=>s.role=='Librarian').length;
+  document.getElementById('cAdmin').textContent=staff.filter(s=>s.role=='School Admin').length;
+  document.getElementById('cTotal').textContent=staff.length;
+  let list=document.getElementById('list'); list.innerHTML='';
+  if(filtered.length==0){ list.innerHTML='<tr><td colspan="7" style="text-align:center;color:#64748b">No staff yet. Add one above. Example: Mrs Sematle — Commerce — HOD</td></tr>'; return; }
+  filtered.forEach((s)=>{
+    let realIndex=staff.indexOf(s);
+    list.innerHTML+='<tr><td><b>'+s.name+'</b></td><td>'+badge(s.role)+'</td><td>'+s.dept+'</td><td>'+(s.subj||'-')+'</td><td>'+(s.phone||'-')+'</td><td>'+s.user+' / '+s.pass+'</td><td class="no-print"><button class="btn-red" onclick="del('+realIndex+')">Delete</button></td></tr>';
+  });
+}
+render();
+</script>
+</body>
+</html>
