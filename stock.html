@@ -6,13 +6,11 @@
 
 <div id="debugBox" class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-4 text-sm font-bold">⏳ Checking login...</div>
 
-<!-- BOTH SCHOOLS TOTALS - FOR SUPER_ADMIN / ADMIN -->
 <div class="grid md:grid-cols-2 gap-3 mt-4"><div class="bg-white rounded-2xl p-3"><div class="font-black text-sm">🏫 Wordsworth High School — WHS</div><div class="text-xs mt-1">Titles: <b id="wTitles">0</b> • Total: <b id="wTotal">0</b> • Issued: <b id="wIssued">0</b> • Available: <b id="wAvail">0</b> • Packed: <b id="wPacked">0</b></div></div><div class="bg-white rounded-2xl p-3"><div class="font-black text-sm">🏫 George Sonto High School — GSH</div><div class="text-xs mt-1">Titles: <b id="gTitles">0</b> • Total: <b id="gTotal">0</b> • Issued: <b id="gIssued">0</b> • Available: <b id="gAvail">0</b> • Packed: <b id="gPacked">0</b></div></div></div>
 
-<!-- IMPORT BOX - SHOWS ONLY IF 0 -->
 <div id="importBoxWrap" class="bg-red-50 border-2 border-red-500 rounded-2xl p-4 mt-4 hidden"><h2 class="font-black">❌ Stock Shows 0 On THIS Device — Import From Phone</h2><p class="text-xs mt-1">Books are on the phone where you added them. This laptop has no data yet. Export on phone → Paste here → Import.</p><textarea id="importCode" class="border w-full rounded-lg p-2 mt-2 text-xs font-mono h-20" placeholder="Paste export code from phone here..."></textarea><button id="importBtn" type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold mt-2">📥 Import Data Now</button><p id="importMsg" class="text-xs font-bold mt-1"></p></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🔍 Filter Stock — <span id="filterSchoolName">Wordsworth High School</span></h2><div class="grid md:grid-cols-4 gap-2 mt-2"><select id="fGroup" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Groups / Departments</option></select><select id="fGrade" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="fSubject" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Subjects</option></select><input id="fSearch" placeholder="🔍 Search title / barcode..." class="border-2 rounded-lg px-3 py-2"></div><div class="flex gap-2 mt-2 flex-wrap"><button id="resetFilterBtn" type="button" class="bg-gray-200 px-3 py-1 rounded font-bold text-sm">Reset Filters</button><span class="text-xs bg-yellow-100 border rounded px-2 py-1 font-bold" id="filterCount">-</span></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🔍 Filter Stock — <span id="filterSchoolName">Wordsworth High School</span></h2><div class="grid md:grid-cols-4 gap-2 mt-2"><select id="fGroup" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Departments</option></select><select id="fGrade" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="fSubject" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Subjects</option></select><input id="fSearch" placeholder="🔍 Search title / barcode..." class="border-2 rounded-lg px-3 py-2"></div><div class="flex gap-2 mt-2 flex-wrap"><button id="resetFilterBtn" type="button" class="bg-gray-200 px-3 py-1 rounded font-bold text-sm">Reset Filters</button><span class="text-xs bg-yellow-100 border rounded px-2 py-1 font-bold" id="filterCount">-</span></div></div>
 
 <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center border-2 border-blue-200"><div class="text-3xl font-black text-blue-700" id="tTitles">0</div><div class="text-xs font-bold text-gray-500">📖 TITLES</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-green-200"><div class="text-3xl font-black text-green-600" id="tTotal">0</div><div class="text-xs font-bold text-gray-500">📚 TOTAL COPIES</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-orange-200"><div class="text-3xl font-black text-orange-600" id="tIssued">0</div><div class="text-xs font-bold text-gray-500">📤 ISSUED</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-indigo-200"><div class="text-3xl font-black text-indigo-600" id="tPacked">0</div><div class="text-xs font-bold text-gray-500">📦 PACKED</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-yellow-300"><div class="text-3xl font-black" id="tAvail">0</div><div class="text-xs font-bold text-gray-500">✅ AVAILABLE</div></div></div>
 
@@ -23,11 +21,25 @@
 <script>
 (function(){
 let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'}; let me=null;
+// --- DEPARTMENT -> SUBJECTS - SAME LIST AS LIBRARIAN - KEEP IN SYNC ---
+const DEPTS={
+  'Mathematics': ['Mathematics','Maths Literacy','Mathematical Literacy'],
+  'Sciences': ['Physical Science','Life Sciences','Natural Sciences','Agricultural Science'],
+  'Languages': ['English','English FAL','English HL','Afrikaans','Afrikaans FAL','isiZulu','isiXhosa','Sepedi','Setswana','Sesotho'],
+  'Humanities': ['Geography','History','Social Sciences'],
+  'Commerce': ['Accounting','Business Studies','Economics','Tourism','EMS'],
+  'Technology': ['CAT','Computer Applications Technology','Information Technology','Technology','Technical Sciences','Engineering Graphics & Design'],
+  'Life Orientation': ['Life Orientation'],
+  'Arts': ['Visual Arts','Music','Drama','Creative Arts'],
+  'General': ['General','Other']
+};
+// Fallback for OLD books saved before dropdowns - guess from title
 const SUBJECT_MAP=[
   {keywords:['MATH','MATHEMATICS','MATHS LIT','MATH LIT'], subject:'Mathematics', group:'Mathematics'},
   {keywords:['PHYSICAL','PHYSICS','PHYSICAL SCIENCE'], subject:'Physical Science', group:'Sciences'},
   {keywords:['LIFE SCIENCE','BIOLOGY','LIFE SCI'], subject:'Life Sciences', group:'Sciences'},
   {keywords:['NATURAL SCIENCE','NATURAL SCI'], subject:'Natural Sciences', group:'Sciences'},
+  {keywords:['AGRICULTURE','AGRI'], subject:'Agricultural Science', group:'Sciences'},
   {keywords:['ENGLISH','ENG FAL','ENG HL'], subject:'English', group:'Languages'},
   {keywords:['AFRIKAANS','AFR'], subject:'Afrikaans', group:'Languages'},
   {keywords:['ZULU','ISIZULU','XHOSA','SOTHO','SEPEDI','TSWANA'], subject:'African Languages', group:'Languages'},
@@ -38,13 +50,29 @@ const SUBJECT_MAP=[
   {keywords:['ECONOMICS','ECO'], subject:'Economics', group:'Commerce'},
   {keywords:['TOURISM'], subject:'Tourism', group:'Commerce'},
   {keywords:['CAT','COMPUTER','IT','TECHNOLOGY','TECH'], subject:'CAT / Technology', group:'Technology'},
-  {keywords:['LO','LIFE ORIENTATION'], subject:'Life Orientation', group:'Life Orientation'},
+  {keywords:['LIFE ORIENTATION'], subject:'Life Orientation', group:'Life Orientation'},
   {keywords:['EMS'], subject:'EMS', group:'Commerce'},
   {keywords:['ART','VISUAL'], subject:'Visual Arts', group:'Arts'},
   {keywords:['MUSIC'], subject:'Music', group:'Arts'},
   {keywords:['DRAMA'], subject:'Drama', group:'Arts'},
 ];
-function getSubjectGroup(title){ let t=(title||'').toUpperCase(); for(let m of SUBJECT_MAP){ if(m.keywords.some(k=> t.includes(k))) return m; } return {subject:'General', group:'General'}; }
+// *** KEY FIX: Use book.department + book.subject FIRST, only guess if missing ***
+function getSubjectGroup(title, book){
+  if(book && book.department && book.subject){
+    return {subject: book.subject, group: book.department};
+  }
+  if(book && book.group && book.subject){
+    return {subject: book.subject, group: book.group};
+  }
+  if(book && book.subject && book.subject!=='General'){
+    // Find which dept this subject belongs to
+    for(let d in DEPTS){ if(DEPTS[d].includes(book.subject)) return {subject: book.subject, group: d}; }
+    return {subject: book.subject, group: 'General'};
+  }
+  let t=(title||'').toUpperCase();
+  for(let m of SUBJECT_MAP){ if(m.keywords.some(k=> t.includes(k))) return m; }
+  return {subject:'General', group:'General'};
+}
 function getBooksFor(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); }catch(e){ return []; } }
 function getBooks(){ return getBooksFor(cur.emis); }
 function statsFor(emis){ let books=getBooksFor(emis); let total=0, issued=0, avail=0, packed=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; else if(c.status==='Packed') packed++; else avail++; })); return {titles:books.length, total, issued, avail, packed}; }
@@ -54,7 +82,6 @@ function setMe(){
     if(!Array.isArray(s.classes)) s.classes=s.class?[s.class]:[];
     if(!Array.isArray(s.subjects)) s.subjects=s.subject?[s.subject]:['General'];
     me=s;
-    // FIX: If school is "ALL" or empty (SUPER_ADMIN), default to Wordsworth, do NOT leave blank
     if(!s.school || s.school==='ALL' || s.school==='All Schools'){ cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'}; }
     else { cur={prefix:s.prefix||'WHS',emis:s.emis||'700310854',name:s.school}; }
     try{ document.getElementById('schoolSel').value=cur.prefix+'|'+cur.emis+'|'+cur.name; }catch(e){}
@@ -64,10 +91,14 @@ function setMe(){
 }
 function buildFilters(){
   let books=getBooks();
-  let groups=[...new Set(books.map(b=> getSubjectGroup(b.title).group))].sort();
-  let subjects=[...new Set(books.map(b=> getSubjectGroup(b.title).subject))].sort();
-  document.getElementById('fGroup').innerHTML='<option value="ALL">All Groups / Departments</option>'+groups.map(g=>'<option value="'+g+'">'+g+'</option>').join('');
+  let groups=[...new Set(books.map(b=> getSubjectGroup(b.title, b).group))].sort();
+  let subjects=[...new Set(books.map(b=> getSubjectGroup(b.title, b).subject))].sort();
+  // Keep selected values if user already filtered
+  let oldG=document.getElementById('fGroup').value, oldS=document.getElementById('fSubject').value;
+  document.getElementById('fGroup').innerHTML='<option value="ALL">All Departments</option>'+groups.map(g=>'<option value="'+g+'">'+g+'</option>').join('');
   document.getElementById('fSubject').innerHTML='<option value="ALL">All Subjects</option>'+subjects.map(s=>'<option value="'+s+'">'+s+'</option>').join('');
+  if(groups.includes(oldG)) document.getElementById('fGroup').value=oldG;
+  if(subjects.includes(oldS)) document.getElementById('fSubject').value=oldS;
   if(me && me.role==='HOD'){ document.getElementById('stockScope').textContent='Logged in: '+me.name+' • HOD • Depts: '+me.subjects.join(', ')+' • Grades: '+me.grades+' • Showing YOUR departments only.'; document.getElementById('debugBox').textContent='✅ Logged in as HOD '+me.name+' — Showing your departments only.'; }
   else if(me && me.role==='TEACHER'){ document.getElementById('stockScope').textContent='Logged in: '+me.name+' • TEACHER • Classes: '+me.classes.join(', ')+' • Subjects: '+me.subjects.join(', '); document.getElementById('debugBox').textContent='✅ Logged in as Teacher '+me.name+' — Stock is whole library. Issue only from YOUR packs.'; }
   else if(me){ document.getElementById('stockScope').textContent='Logged in: '+me.name+' • '+me.role+' • Viewing: '+cur.name+' — Use dropdown to switch school.'; document.getElementById('debugBox').textContent='✅ Logged in as '+me.name+' • '+me.role+' • Viewing '+cur.name+' — If this shows 0, Import from phone below.'; }
@@ -76,11 +107,20 @@ function buildFilters(){
 function inScope(book){
   if(!me) return true;
   if(me.role==='ADMIN' || me.role==='SUPER_ADMIN' || me.role==='LIBRARIAN') return true;
-  if(me.role==='HOD'){ let sg=getSubjectGroup(book.title); let mySubs=(me.subjects||[]).map(s=>s.toUpperCase()); let grades=(me.grades||'').split(',').map(g=>g.trim()); let bookGrade=(book.grade||'').replace(/[^0-9]/g,''); let subjectMatch=mySubs.some(ms=> sg.subject.toUpperCase().includes(ms) || ms.includes(sg.subject.toUpperCase()) || book.title.toUpperCase().includes(ms)); if(!subjectMatch) return false; if(grades.length && grades[0] && !grades.includes(bookGrade)) return false; return true; }
+  if(me.role==='HOD'){
+    let sg=getSubjectGroup(book.title, book);
+    let mySubs=(me.subjects||[]).map(s=>s.toUpperCase());
+    let grades=(me.grades||'').split(',').map(g=>g.trim());
+    let bookGrade=(book.grade||'').replace(/[^0-9]/g,'');
+    // Match if subject matches OR dept matches OR title contains my subject
+    let subjectMatch=mySubs.some(ms=> sg.subject.toUpperCase().includes(ms) || ms.includes(sg.subject.toUpperCase()) || sg.group.toUpperCase().includes(ms) || ms.includes(sg.group.toUpperCase()) || book.title.toUpperCase().includes(ms));
+    if(!subjectMatch) return false;
+    if(grades.length && grades[0] && !grades.includes(bookGrade)) return false;
+    return true;
+  }
   return true;
 }
 function render(){
-  // Both schools totals
   let w=statsFor('700310854'); let g=statsFor('911360870');
   document.getElementById('wTitles').textContent=w.titles; document.getElementById('wTotal').textContent=w.total; document.getElementById('wIssued').textContent=w.issued; document.getElementById('wAvail').textContent=w.avail; document.getElementById('wPacked').textContent=w.packed;
   document.getElementById('gTitles').textContent=g.titles; document.getElementById('gTotal').textContent=g.total; document.getElementById('gIssued').textContent=g.issued; document.getElementById('gAvail').textContent=g.avail; document.getElementById('gPacked').textContent=g.packed;
@@ -88,13 +128,33 @@ function render(){
   if(w.total===0 && g.total===0){ document.getElementById('importBoxWrap').classList.remove('hidden'); } else { document.getElementById('importBoxWrap').classList.add('hidden'); }
   let books=getBooks().filter(inScope);
   let fGroup=document.getElementById('fGroup').value; let fGrade=document.getElementById('fGrade').value; let fSubject=document.getElementById('fSubject').value; let q=(document.getElementById('fSearch').value||'').toLowerCase();
-  let filtered=books.filter(b=>{ let sg=getSubjectGroup(b.title); if(fGroup!=='ALL' && sg.group!==fGroup) return false; if(fSubject!=='ALL' && sg.subject!==fSubject) return false; if(fGrade!=='ALL' && b.grade!==fGrade) return false; if(q && !(b.title+' '+(b.copies||[]).map(c=>c.barcode).join(' ')).toLowerCase().includes(q)) return false; return true; });
+  let filtered=books.filter(b=>{ let sg=getSubjectGroup(b.title, b); if(fGroup!=='ALL' && sg.group!==fGroup) return false; if(fSubject!=='ALL' && sg.subject!==fSubject) return false; if(fGrade!=='ALL' && b.grade!==fGrade) return false; if(q && !(b.title+' '+(b.copies||[]).map(c=>c.barcode||c.bookNo||c.code||'').join(' ')+' '+sg.group+' '+sg.subject).toLowerCase().includes(q)) return false; return true; });
   let total=0, issued=0, avail=0, packed=0; filtered.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; else if(c.status==='Packed') packed++; else avail++; }));
   document.getElementById('tTitles').textContent=filtered.length; document.getElementById('tTotal').textContent=total; document.getElementById('tIssued').textContent=issued; document.getElementById('tPacked').textContent=packed; document.getElementById('tAvail').textContent=avail;
-  document.getElementById('filterCount').textContent='Showing: '+filtered.length+' titles • '+total+' copies • School: '+cur.name+' • Filter: Group='+fGroup+' | Grade='+fGrade+' | Subject='+fSubject;
-  let byGroup={}; filtered.forEach(b=>{ let sg=getSubjectGroup(b.title); if(!byGroup[sg.group]) byGroup[sg.group]={}; if(!byGroup[sg.group][b.grade]) byGroup[sg.group][b.grade]={}; if(!byGroup[sg.group][b.grade][sg.subject]) byGroup[sg.group][b.grade][sg.subject]=[]; byGroup[sg.group][b.grade][sg.subject].push(b); });
-  let html=''; Object.keys(byGroup).sort().forEach(group=>{ let gTotal=0, gIssued=0, gAvail=0, gPacked=0, gTitles=0; Object.values(byGroup[group]).forEach(grades=> Object.values(grades).forEach(subs=> subs.forEach(b=>{ gTitles++; (b.copies||[]).forEach(c=>{ gTotal++; if(c.status==='Issued') gIssued++; else if(c.status==='Packed') gPacked++; else gAvail++; }); }))); html+='<div class="bg-white rounded-2xl overflow-hidden"><div class="bg-black text-white px-4 py-3 flex justify-between flex-wrap gap-2"><div class="font-black text-lg">📁 '+group+' — Department</div><div class="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold">Titles: '+gTitles+' • Total: '+gTotal+' • Issued: '+gIssued+' • Available: '+gAvail+' • Packed: '+gPacked+'</div></div>'; Object.keys(byGroup[group]).sort().forEach(grade=>{ let grTotal=0, grIssued=0, grAvail=0, grPacked=0, grTitles=0; Object.values(byGroup[group][grade]).forEach(subs=> subs.forEach(b=>{ grTitles++; (b.copies||[]).forEach(c=>{ grTotal++; if(c.status==='Issued') grIssued++; else if(c.status==='Packed') grPacked++; else grAvail++; }); })); html+='<div class="border-t"><div class="bg-gray-100 px-4 py-2 flex justify-between flex-wrap"><div class="font-black">🎓 '+grade+'</div><div class="text-xs font-bold">Titles: '+grTitles+' • Total: '+grTotal+' • Issued: '+grIssued+' • Available: '+grAvail+' • Packed: '+grPacked+'</div></div>'; Object.keys(byGroup[group][grade]).sort().forEach(subject=>{ let booksInSubject=byGroup[group][grade][subject]; let sTotal=0, sIssued=0, sAvail=0, sPacked=0; booksInSubject.forEach(b=> (b.copies||[]).forEach(c=>{ sTotal++; if(c.status==='Issued') sIssued++; else if(c.status==='Packed') sPacked++; else sAvail++; })); html+='<div class="px-4 py-2 border-t"><div class="flex justify-between flex-wrap gap-2"><div class="font-black">📖 '+subject+'</div><div class="text-xs font-bold">Total: '+sTotal+' • Available: '+sAvail+' • Issued: '+sIssued+' • Packed: '+sPacked+'</div></div>'; html+='<table class="w-full border-collapse border text-sm mt-2"><thead><tr class="bg-gray-50"><th class="border p-2 text-left">Title</th><th class="border p-2 text-left">Total</th><th class="border p-2 text-left">Available</th><th class="border p-2 text-left">Issued</th><th class="border p-2 text-left">Packed</th><th class="border p-2 text-left">Status</th><th class="border p-2 text-left">Barcodes</th></tr></thead><tbody>'; booksInSubject.forEach(b=>{ let copies=b.copies||[]; let av=copies.filter(c=>c.status==='Available').length; let is=copies.filter(c=>c.status==='Issued').length; let pk=copies.filter(c=>c.status==='Packed').length; let status= av===0 ? '<span class="text-red-600 font-bold">❌ OUT OF STOCK</span>' : av<10 ? '<span class="text-yellow-600 font-bold">⚠️ LOW — Top Up</span>' : '<span class="text-green-600 font-bold">✅ OK</span>'; html+='<tr><td class="border p-2 font-bold">'+b.title+'</td><td class="border p-2">'+copies.length+'</td><td class="border p-2">'+av+'</td><td class="border p-2">'+is+'</td><td class="border p-2">'+pk+'</td><td class="border p-2">'+status+'</td><td class="border p-2 text-xs text-gray-500">'+copies.slice(0,3).map(c=>c.barcode).join(', ')+(copies.length>3?' ... +'+(copies.length-3)+' more':'')+'</td></tr>'; }); html+='</tbody></table></div>'; }); html+='</div>'; }); html+='</div>'; });
-  document.getElementById('stockGroups').innerHTML=html||'<div class="bg-white rounded-2xl p-4 text-center text-gray-500">No stock for this filter on '+cur.name+'. Switch school above, change filter, or Import from phone / Add books in Librarian.</div>';
+  document.getElementById('filterCount').textContent='Showing: '+filtered.length+' titles • '+total+' copies • School: '+cur.name+' • Filter: Department='+fGroup+' | Grade='+fGrade+' | Subject='+fSubject;
+  let byGroup={}; filtered.forEach(b=>{ let sg=getSubjectGroup(b.title, b); if(!byGroup[sg.group]) byGroup[sg.group]={}; if(!byGroup[sg.group][b.grade]) byGroup[sg.group][b.grade]={}; if(!byGroup[sg.group][b.grade][sg.subject]) byGroup[sg.group][b.grade][sg.subject]=[]; byGroup[sg.group][b.grade][sg.subject].push(b); });
+  let html=''; Object.keys(byGroup).sort().forEach(group=>{
+    let gTotal=0, gIssued=0, gAvail=0, gPacked=0, gTitles=0;
+    Object.values(byGroup[group]).forEach(grades=> Object.values(grades).forEach(subs=> subs.forEach(b=>{ gTitles++; (b.copies||[]).forEach(c=>{ gTotal++; if(c.status==='Issued') gIssued++; else if(c.status==='Packed') gPacked++; else gAvail++; }); })));
+    html+='<div class="bg-white rounded-2xl overflow-hidden"><div class="bg-black text-white px-4 py-3 flex justify-between flex-wrap gap-2"><div class="font-black text-lg">📁 '+group+' — Department</div><div class="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-bold">Titles: '+gTitles+' • Total: '+gTotal+' • Issued: '+gIssued+' • Available: '+gAvail+' • Packed: '+gPacked+'</div></div>';
+    Object.keys(byGroup[group]).sort().forEach(grade=>{
+      let grTotal=0, grIssued=0, grAvail=0, grPacked=0, grTitles=0;
+      Object.values(byGroup[group][grade]).forEach(subs=> subs.forEach(b=>{ grTitles++; (b.copies||[]).forEach(c=>{ grTotal++; if(c.status==='Issued') grIssued++; else if(c.status==='Packed') grPacked++; else grAvail++; }); }));
+      html+='<div class="border-t"><div class="bg-gray-100 px-4 py-2 flex justify-between flex-wrap"><div class="font-black">🎓 '+grade+'</div><div class="text-xs font-bold">Titles: '+grTitles+' • Total: '+grTotal+' • Issued: '+grIssued+' • Available: '+grAvail+' • Packed: '+grPacked+'</div></div>';
+      Object.keys(byGroup[group][grade]).sort().forEach(subject=>{
+        let booksInSubject=byGroup[group][grade][subject];
+        let sTotal=0, sIssued=0, sAvail=0, sPacked=0;
+        booksInSubject.forEach(b=> (b.copies||[]).forEach(c=>{ sTotal++; if(c.status==='Issued') sIssued++; else if(c.status==='Packed') sPacked++; else sAvail++; }));
+        html+='<div class="px-4 py-2 border-t"><div class="flex justify-between flex-wrap gap-2"><div class="font-black">📖 '+subject+'</div><div class="text-xs font-bold">Total: '+sTotal+' • Available: '+sAvail+' • Issued: '+sIssued+' • Packed: '+sPacked+'</div></div>';
+        html+='<table class="w-full border-collapse border text-sm mt-2"><thead><tr class="bg-gray-50"><th class="border p-2 text-left">Title</th><th class="border p-2 text-left">Total</th><th class="border p-2 text-left">Available</th><th class="border p-2 text-left">Issued</th><th class="border p-2 text-left">Packed</th><th class="border p-2 text-left">Status</th><th class="border p-2 text-left">Barcodes</th></tr></thead><tbody>';
+        booksInSubject.forEach(b=>{ let copies=b.copies||[]; let av=copies.filter(c=>c.status==='Available').length; let is=copies.filter(c=>c.status==='Issued').length; let pk=copies.filter(c=>c.status==='Packed').length; let status= av===0 ? '<span class="text-red-600 font-bold">❌ OUT OF STOCK</span>' : av<10 ? '<span class="text-yellow-600 font-bold">⚠️ LOW — Top Up</span>' : '<span class="text-green-600 font-bold">✅ OK</span>'; html+='<tr><td class="border p-2 font-bold">'+b.title+'<br><span class="text-[11px] text-gray-400">📁 '+getSubjectGroup(b.title,b).group+' • 📖 '+getSubjectGroup(b.title,b).subject+'</span></td><td class="border p-2">'+copies.length+'</td><td class="border p-2">'+av+'</td><td class="border p-2">'+is+'</td><td class="border p-2">'+pk+'</td><td class="border p-2">'+status+'</td><td class="border p-2 text-xs text-gray-500">'+copies.slice(0,3).map(c=>c.barcode||c.bookNo||c.code||'').join(', ')+(copies.length>3?' ... +'+(copies.length-3)+' more':'')+'</td></tr>'; });
+        html+='</tbody></table></div>';
+      });
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('stockGroups').innerHTML=html||'<div class="bg-white rounded-2xl p-4 text-center text-gray-500">No stock for this filter on '+cur.name+'. Switch school above, change filter, or Import from phone / Add books in Librarian with Department + Subject dropdowns.</div>';
 }
 document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; buildFilters(); render(); });
 document.getElementById('fGroup').addEventListener('change',render); document.getElementById('fGrade').addEventListener('change',render); document.getElementById('fSubject').addEventListener('change',render); document.getElementById('fSearch').addEventListener('input',render);
@@ -110,7 +170,6 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase
 onAuthStateChanged(auth, async (user)=>{
   if(!user) return;
   try{ let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'SUPER_ADMIN'};
-  // Keep existing local session if it already has ALL, don't overwrite with blank school
   let old=null; try{ old=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
   let fresh={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'SUPER_ADMIN',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),grades:prof.grades||'',school:prof.school||'All Schools',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'};
   if(JSON.stringify(old)!==JSON.stringify(fresh)){ localStorage.setItem('makhanani_session',JSON.stringify(fresh)); location.reload(); } }catch(e){}
