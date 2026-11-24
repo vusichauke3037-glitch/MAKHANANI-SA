@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Issue Books — Scan Book + Scan Learner — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" onerror="this.onerror=null;this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • ISSUE BOOKS</div><div class="text-[11px] text-gray-300">Scan Book Barcode / Book No + Scan Learner Barcode / Learner ID</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+<div class="max-w-4xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 flex flex-wrap gap-3 items-center justify-between"><div><h1 class="font-black text-2xl">📤 Issue Books — Scan / Type</h1><p class="text-xs text-gray-500">Book: WHS000001 • Learner: 10A001 • 1 Learner 1 Title • Grade Mismatch Blocked</p></div><select id="schoolSel" onchange="switchSchool()" class="border-2 rounded-lg px-3 py-2 font-bold text-sm"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School — WHS</option><option value="GSH|911360870|George Sonto High School">George Sonto High School — GSH</option></select></div>
+<div class="bg-white rounded-2xl p-5 mt-4">
+<div class="grid md:grid-cols-2 gap-4">
+<div class="border-2 border-blue-500 rounded-xl p-4"><div class="font-black">STEP 1 — 📚 BOOK</div><p class="text-xs text-gray-500">Scan barcode OR type Book Number e.g. WHS000001</p><input id="bookInput" placeholder="Scan / Type e.g. WHS000001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-2" onkeydown="if(event.key==='Enter')findBook()"><button onclick="findBook()" class="bg-blue-600 text-white w-full py-2 rounded-lg font-bold mt-2">🔍 Find Book →</button><div id="bookFound" class="mt-2 text-sm"></div></div>
+<div class="border-2 border-purple-500 rounded-xl p-4"><div class="font-black">STEP 2 — 👩‍🎓 LEARNER</div><p class="text-xs text-gray-500">Scan barcode OR type Learner ID e.g. 10A001</p><input id="learnerInput" placeholder="Scan / Type e.g. 10A001" class="border-2 rounded-lg px-3 py-3 w-full font-mono font-bold text-center mt-2" onkeydown="if(event.key==='Enter')findLearner()"><button onclick="findLearner()" class="bg-purple-600 text-white w-full py-2 rounded-lg font-bold mt-2">🔍 Find Learner →</button><div id="learnerFound" class="mt-2 text-sm"></div></div>
+</div>
+<div id="checks" class="mt-3"></div>
+<button id="issueBtn" onclick="issueBook()" disabled class="bg-green-600 disabled:bg-gray-300 text-white w-full py-3 rounded-xl font-black text-lg mt-2">✅ ISSUE BOOK NOW</button>
+<p id="issueMsg" class="text-center font-bold mt-2"></p>
+<p class="text-xs text-center text-gray-500 mt-2">Scanner: Click in box → Scan → Auto finds. Typing: Type number → Enter / Find. Barcode scans as WHS000001 / 10A001 exactly.</p>
+</div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📋 Currently Issued — This School</h2><input id="searchIssued" oninput="renderIssued()" placeholder="🔍 Search learner / book / title..." class="border rounded-lg px-3 py-2 w-full mt-2"><div id="issuedList" class="mt-2 space-y-2 text-sm"></div></div>
+<div class="bg-yellow-50 border rounded-2xl p-4 mt-4 text-sm"><b>Rules Enforced:</b><ul class="list-disc ml-5 mt-1"><li><b>1 Learner 1 Title:</b> If learner already has this title OUT, ISSUE blocked.</li><li><b>Grade Mismatch:</b> Book Grade 10 → Learner Grade 11 = BLOCKED.</li><li><b>Already Issued Book:</b> Book already OUT = BLOCKED.</li><li><b>Names can duplicate:</b> System checks by ID (10A001), not by name.</li></ul></div>
+</div>
+<script>
+let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
+let foundBook=null, foundLearner=null;
+function getBooks(){return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]');}
+function saveBooks(b){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_ltsm',JSON.stringify(b));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_ltsm',JSON.stringify(b));}
+function getLearners(){return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]');}
+function getHistory(){return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_history')||'[]');}
+function saveHistory(h){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_history',JSON.stringify(h));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_history',JSON.stringify(h));}
+function switchSchool(){let v=document.getElementById('schoolSel').value.split('|');cur={prefix:v[0],emis:v[1],name:v[2]};foundBook=null;foundLearner=null;document.getElementById('bookFound').innerHTML='';document.getElementById('learnerFound').innerHTML='';document.getElementById('checks').innerHTML='';document.getElementById('issueMsg').innerHTML='';renderIssued();validate();}
+function norm(s){return (s||'').trim().toUpperCase();}
+function findBook(){
+  let code=norm(document.getElementById('bookInput').value);if(!code){alert('Scan / Type Book Number');return;}
+  let books=getBooks();foundBook=null;
+  books.forEach(b=>{ (b.copies||[]).forEach(c=>{ if(norm(c.barcode)===code || norm(c.bookNo)===code){foundBook={book:b,copy:c};} }); });
+  if(!foundBook){document.getElementById('bookFound').innerHTML='<span class="text-red-600 font-bold">❌ Book '+code+' NOT FOUND in '+cur.name+'.</span>';}
+  else{document.getElementById('bookFound').innerHTML='✅ <b>'+foundBook.book.title+'</b><br>Book No: <b>'+foundBook.copy.barcode+'</b> • Grade: <b>'+foundBook.book.grade+'</b> • Status: <b>'+foundBook.copy.status+'</b>';}
+  validate();
+}
+function findLearner(){
+  let code=norm(document.getElementById('learnerInput').value);if(!code){alert('Scan / Type Learner ID');return;}
+  let ls=getLearners();foundLearner=ls.find(l=>norm(l.id)===code || norm(l.learnerId)===code)||null;
+  if(!foundLearner){document.getElementById('learnerFound').innerHTML='<span class="text-red-600 font-bold">❌ Learner '+code+' NOT FOUND in '+cur.name+'.</span>';}
+  else{document.getElementById('learnerFound').innerHTML='✅ <b>'+foundLearner.name+'</b><br>Learner ID: <b>'+foundLearner.id+'</b> • Grade: <b>'+foundLearner.grade+'</b> • Class: <b>'+foundLearner.class+'</b><br><span class="text-xs text-gray-500">Name can duplicate — ID is unique, we use ID.</span>';}
+  validate();
+}
+function validate(){
+  let checks=document.getElementById('checks');let btn=document.getElementById('issueBtn');
+  if(!foundBook || !foundLearner){checks.innerHTML='';btn.disabled=true;return;}
+  let errors=[];
+  if(foundBook.copy.status!=='Available'){errors.push('❌ BLOCKED: This book ('+foundBook.copy.barcode+') is already OUT to '+(foundBook.copy.learnerName||foundBook.copy.learnerId||'someone')+'. Return it first.');}
+  let bookGrade=(foundBook.book.grade||'').replace(/[^0-9]/g,'');let learnerGrade=(foundLearner.grade||'').replace(/[^0-9]/g,'');
+  if(bookGrade && learnerGrade && bookGrade!==learnerGrade){errors.push('❌ BLOCKED: GRADE MISMATCH — Book is '+foundBook.book.grade+' but Learner is '+foundLearner.grade+'. Cannot issue.');}
+  let hist=getHistory();let already=hist.find(h=>norm(h.learnerId)===norm(foundLearner.id) && norm(h.title)===norm(foundBook.book.title) && (h.status==='Issued' || h.status==='OUT' || !h.returned));
+  let books=getBooks();let holdsSame=false;books.forEach(b=>{if(norm(b.title)===norm(foundBook.book.title)){(b.copies||[]).forEach(c=>{if(norm(c.learnerId)===norm(foundLearner.id) && c.status!=='Available')holdsSame=true;});}});
+  if(already || holdsSame){errors.push('❌ BLOCKED: 1 LEARNER 1 TITLE — '+foundLearner.name+' ('+foundLearner.id+') already has <b>'+foundBook.book.title+'</b> OUT. Return it first.');}
+  if(errors.length){checks.innerHTML='<div class="bg-red-50 border-2 border-red-500 rounded-xl p-3 text-sm">'+errors.join('<br>')+'</div>';btn.disabled=true;}
+  else{checks.innerHTML='<div class="bg-green-50 border-2 border-green-500 rounded-xl p-3 text-sm">✅ ALL CHECKS PASSED — Book Available • Grade Matches ('+foundBook.book.grade+') • Learner does NOT already have this title.</div>';btn.disabled=false;}
+}
+function issueBook(){
+  if(!foundBook || !foundLearner)return;validate();if(document.getElementById('issueBtn').disabled){alert('Blocked — See checks above.');return;}
+  let books=getBooks();let target=null;
+  books.forEach(b=>{ (b.copies||[]).forEach(c=>{ if(c.barcode===foundBook.copy.barcode) target=c; }); });
+  if(!target || target.status!=='Available'){alert('❌ Book no longer available.');renderIssued();return;}
+  let hist=getHistory();if(hist.find(h=>norm(h.learnerId)===norm(foundLearner.id) && norm(h.title)===norm(foundBook.book.title) && (h.status==='Issued'||h.status==='OUT'||!h.returned))){alert('❌ Blocked: Learner already has this title.');return;}
+  target.status='Issued';target.learnerId=foundLearner.id;target.learnerName=foundLearner.name;target.issuedDate=new Date().toISOString().slice(0,10);target.dueDate='2026-11-30';
+  saveBooks(books);
+  hist.push({bookNo:foundBook.copy.barcode,barcode:foundBook.copy.barcode,title:foundBook.book.title,grade:foundBook.book.grade,learnerId:foundLearner.id,learnerName:foundLearner.name,learnerGrade:foundLearner.grade,learnerClass:foundLearner.class,issuedDate:target.issuedDate,dueDate:target.dueDate,status:'Issued',returned:false,school:cur.name,emis:cur.emis});
+  saveHistory(hist);
+  document.getElementById('issueMsg').innerHTML='✅ ISSUED: <b>'+foundBook.book.title+'</b> ('+foundBook.copy.barcode+') → '+foundLearner.name+' ('+foundLearner.id+') • Due 30 Nov';
+  document.getElementById('bookInput').value='';document.getElementById('learnerInput').value='';foundBook=null;foundLearner=null;document.getElementById('bookFound').innerHTML='';document.getElementById('learnerFound').innerHTML='';document.getElementById('checks').innerHTML='';document.getElementById('issueBtn').disabled=true;
+  document.getElementById('bookInput').focus();renderIssued();
+}
+function renderIssued(){
+  let q=(document.getElementById('searchIssued').value||'').toLowerCase();let hist=getHistory().filter(h=>h.status==='Issued'||h.status==='OUT'||!h.returned);
+  document.getElementById('issuedList').innerHTML=hist.slice().reverse().filter(h=>(h.title+' '+h.learnerName+' '+h.learnerId+' '+h.bookNo).toLowerCase().includes(q)).map(h=>'<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+h.title+'</b> • Book: <b>'+h.bookNo+'</b><br>Learner: <b>'+h.learnerName+'</b> ('+h.learnerId+') • '+h.learnerGrade+' '+h.learnerClass+' • Due: '+h.dueDate+'</div><button onclick="returnBook(\''+h.bookNo+'\')" class="bg-orange-500 text-white px-3 py-1 rounded font-bold text-xs">↩️ Return</button></div>').join('')||'<p class="text-gray-500">No books currently issued.</p>';
+}
+function returnBook(bookNo){
+  let books=getBooks();books.forEach(b=> (b.copies||[]).forEach(c=>{ if(c.barcode===bookNo){c.status='Available';c.learnerId='';c.learnerName='';} }));
+  saveBooks(books);let hist=getHistory();hist.forEach(h=>{ if(h.bookNo===bookNo && (h.status==='Issued'||!h.returned)){h.status='Returned';h.returned=true;h.returnDate=new Date().toISOString().slice(0,10);} });saveHistory(hist);renderIssued();alert('✅ Returned: '+bookNo);
+}
+renderIssued();
+</script>
+</body></html>
