@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Data Recovery — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • DATA RECOVERY</div><div class="text-[11px] text-gray-300">Find books if counts show 0 — Scan ALL storage keys</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+<div class="max-w-4xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-5">
+<h1 class="font-black text-2xl">🔍 Data Recovery — Why Counts Show 0?</h1>
+<p class="text-sm text-gray-500 mt-1">This page does NOT delete anything. It scans every storage key in THIS browser and shows where books / learners / history are hiding.</p>
+<div id="status" class="bg-blue-50 border rounded-xl p-3 mt-3 text-sm font-bold">⏳ Scanning...</div>
+<div id="report" class="mt-4 space-y-3 text-sm"></div>
+<div class="bg-yellow-50 border rounded-xl p-3 mt-4 text-sm"><b>How data works:</b><ul class="list-disc ml-5"><li>Books are saved on <b>THIS phone / THIS browser only</b>. They do NOT sync to another phone automatically.</li><li>If you added books on Phone A, you must open the site on <b>Phone A</b> to see them.</li><li>If you want same data on 2 phones, use <b>Export / Import</b> below — or always use ONE phone as the main library phone.</li></ul></div>
+<div class="grid md:grid-cols-2 gap-3 mt-4">
+<div class="border-2 border-green-500 rounded-xl p-3"><div class="font-black">📤 EXPORT — From phone WITH data</div><p class="text-xs text-gray-500">Tap on the phone that HAS your books. Copy the code. Send it to the other phone via WhatsApp.</p><button onclick="doExport()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold mt-2 w-full">📤 Export All Data → Copy Code</button><textarea id="exportBox" class="border w-full rounded-lg p-2 mt-2 text-xs font-mono h-24" placeholder="Export code will appear here..."></textarea><p id="exportMsg" class="text-sm font-bold mt-1"></p></div>
+<div class="border-2 border-blue-500 rounded-xl p-3"><div class="font-black">📥 IMPORT — To phone showing 0</div><p class="text-xs text-gray-500">Paste code from WhatsApp here. Tap Import. Then go Home — counts must show.</p><textarea id="importBox" class="border w-full rounded-lg p-2 mt-2 text-xs font-mono h-24" placeholder="Paste export code here..."></textarea><button onclick="doImport()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold mt-2 w-full">📥 Import Data Now</button><p id="importMsg" class="text-sm font-bold mt-1"></p></div>
+</div>
+<div class="flex gap-2 mt-4 flex-wrap"><a href="librarian.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Go to Librarian →</a><a href="index.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">🏠 Go Home →</a></div>
+</div>
+</div>
+<script>
+function scan(){
+  try{
+    var keys=[];
+    for(var i=0;i<localStorage.length;i++){ keys.push(localStorage.key(i)); }
+    keys.sort();
+    var html='';
+    var totalBooks=0, totalLearners=0, totalHist=0;
+    var foundAny=false;
+    keys.forEach(function(k){
+      var v=localStorage.getItem(k)||'';
+      var count='?';
+      try{ var p=JSON.parse(v); if(Array.isArray(p)) count=p.length+' items'; else count='object'; }catch(e){ count=v.length+' chars'; }
+      var isBook = k.indexOf('ltsm')>=0 && k.indexOf('learners')<0 && k.indexOf('history')<0 && k.indexOf('staff')<0 && k.indexOf('requests')<0;
+      var isLearner = k.indexOf('learners')>=0;
+      var isHist = k.indexOf('history')>=0;
+      var isStaff = k.indexOf('staff')>=0;
+      var isReq = k.indexOf('requests')>=0;
+      if(isBook||isLearner||isHist||isStaff||isReq) foundAny=true;
+      // Count books copies
+      if(isBook){ try{ var arr=JSON.parse(v); var copies=0; arr.forEach(function(b){ copies+=(b.copies||[]).length; }); totalBooks+=copies; count=copies+' copies in '+arr.length+' titles'; }catch(e){} }
+      if(isLearner){ try{ totalLearners+=JSON.parse(v).length; }catch(e){} }
+      if(isHist){ try{ totalHist+=JSON.parse(v).length; }catch(e){} }
+      html+='<div class="border rounded-lg p-2 flex justify-between gap-2"><div class="font-mono text-xs break-all"><b>'+k+'</b><br><span class="text-gray-500">'+count+'</span></div><button onclick="restoreKey(\''+k+'\')" class="bg-blue-600 text-white px-2 py-1 rounded font-bold text-xs h-fit">Use This</button></div>';
+    });
+    var summary = '<div class="border-2 border-black rounded-xl p-3"><div class="font-black text-lg">📊 Total Found In THIS Browser:</div><div>📚 Books (copies): <b>'+totalBooks+'</b> • 👩‍🎓 Learners: <b>'+totalLearners+'</b> • 📋 History: <b>'+totalHist+'</b></div>';
+    if(totalBooks===0 && totalLearners===0){
+      summary+='<div class="bg-red-50 border-2 border-red-500 rounded-xl p-3 mt-2"><b>❌ THIS browser has 0 books / 0 learners.</b><br>Your books are on the OTHER phone / browser where you added them.<br>1. Open this same page on that OTHER phone.<br>2. Tap <b>📤 Export</b> there, copy code.<br>3. Send code via WhatsApp to THIS phone.<br>4. Paste here → <b>📥 Import</b> → Go Home → Counts must show.<br><br>If you added books on THIS phone and now 0: you opened a different link, or Chrome cleared data, or you used Incognito. Check the key list below — if you see old keys like <i>makhanani_WHS_...</i> tap <b>Use This</b> to restore them.</div>';
+    } else {
+      summary+='<div class="bg-green-50 border-2 border-green-500 rounded-xl p-3 mt-2"><b>✅ Data FOUND in this browser!</b><br>If Home still shows 0, your keys are old format. Tap <b>🔧 Fix / Migrate All Keys Below</b> to copy them to the new keys Home reads.</div><button onclick="migrateAll()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold mt-2">🔧 Fix / Migrate All Keys To New Format</button>';
+    }
+    summary+='</div>';
+    document.getElementById('status').innerHTML='✅ Scan DONE — Found '+keys.length+' storage keys.';
+    document.getElementById('report').innerHTML=summary+'<h2 class="font-black mt-4">All Storage Keys In This Browser:</h2>'+(html||'<p class="text-gray-500">No keys at all — localStorage is completely empty.</p>');
+    if(!foundAny){
+      document.getElementById('report').innerHTML+= '<div class="bg-yellow-50 border rounded p-3 mt-3">No book / learner keys found. Use Export from the phone that HAS data.</div>';
+    }
+  }catch(e){
+    document.getElementById('status').innerHTML='❌ Scan failed: '+e.message;
+  }
+}
+function restoreKey(k){
+  try{
+    var v=localStorage.getItem(k);
+    // Try to guess target: if key contains 700310854 -> WHS, 911360870 -> GSH, WHS -> WHS, GSH -> GSH
+    var emis='700310854'; var prefix='WHS';
+    if(k.indexOf('911360870')>=0 || k.indexOf('GSH')>=0){ emis='911360870'; prefix='GSH'; }
+    var isLearner=k.indexOf('learners')>=0; var isHist=k.indexOf('history')>=0; var isStaff=k.indexOf('staff')>=0; var isReq=k.indexOf('requests')>=0;
+    var suffix = isLearner ? '_makhanani_learners' : isHist ? '_makhanani_history' : isStaff ? '_makhanani_staff' : isReq ? '_makhanani_requests' : '_makhanani_ltsm';
+    localStorage.setItem('EMIS_'+emis+suffix, v);
+    localStorage.setItem('makhanani_'+prefix+suffix, v);
+    alert('✅ Restored: '+k+' → EMIS_'+emis+suffix+'\nNow go Home and check counts.');
+    scan();
+  }catch(e){ alert('Restore failed: '+e.message); }
+}
+function migrateAll(){
+  try{
+    var keys=[]; for(var i=0;i<localStorage.length;i++){ keys.push(localStorage.key(i)); }
+    var moved=0;
+    keys.forEach(function(k){
+      var v=localStorage.getItem(k); if(!v) return;
+      var emis='700310854'; var prefix='WHS';
+      if(k.indexOf('911360870')>=0 || k.indexOf('GSH')>=0){ emis='911360870'; prefix='GSH'; }
+      if(k.indexOf('700310854')>=0 || k.indexOf('WHS')>=0){ emis='700310854'; prefix='WHS'; }
+      // Only migrate data keys
+      if(k.indexOf('makhanani')<0) return;
+      var suffix=null;
+      if(k.indexOf('learners')>=0) suffix='_makhanani_learners';
+      else if(k.indexOf('history')>=0) suffix='_makhanani_history';
+      else if(k.indexOf('staff')>=0) suffix='_makhanani_staff';
+      else if(k.indexOf('requests')>=0) suffix='_makhanani_requests';
+      else if(k.indexOf('ltsm')>=0) suffix='_makhanani_ltsm';
+      else return;
+      // If this key is already the new EMIS_ key, skip
+      if(k==='EMIS_'+emis+suffix) return;
+      // Copy to new EMIS_ key if new key is empty or smaller
+      var existing=localStorage.getItem('EMIS_'+emis+suffix);
+      var existingLen=0; try{ existingLen=existing?JSON.parse(existing).length:0; }catch(e){}
+      var newLen=0; try{ newLen=JSON.parse(v).length; }catch(e){}
+      if(!existing || newLen>existingLen){ localStorage.setItem('EMIS_'+emis+suffix, v); localStorage.setItem('makhanani_'+prefix+suffix, v); moved++; }
+    });
+    alert('✅ Migrated '+moved+' key(s) to new format.\nGo Home → Counts should now show.');
+    scan();
+  }catch(e){ alert('Migrate failed: '+e.message); }
+}
+function doExport(){
+  try{
+    var data={};
+    for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf('makhanani')>=0) data[k]=localStorage.getItem(k); }
+    var code=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    document.getElementById('exportBox').value=code;
+    document.getElementById('exportMsg').innerHTML='✅ Export ready — '+Object.keys(data).length+' keys — Tap in box → Select All → Copy → Send via WhatsApp.';
+    document.getElementById('exportBox').select();
+    try{ document.execCommand('copy'); }catch(e){}
+  }catch(e){ document.getElementById('exportMsg').innerHTML='❌ Export failed: '+e.message; }
+}
+function doImport(){
+  try{
+    var code=document.getElementById('importBox').value.trim();
+    if(!code){ alert('Paste export code first.'); return; }
+    var data=JSON.parse(decodeURIComponent(escape(atob(code))));
+    var count=0;
+    Object.keys(data).forEach(function(k){ localStorage.setItem(k, data[k]); count++; });
+    document.getElementById('importMsg').innerHTML='✅ Imported '+count+' keys. Go Home — counts must now show.';
+    alert('✅ Import DONE: '+count+' keys restored.\nGo Home → Check counts.');
+    scan();
+  }catch(e){ document.getElementById('importMsg').innerHTML='❌ Import failed: '+e.message+' — Make sure you pasted the FULL code.';
+  }
+}
+scan();
+</script>
+</body></html>
