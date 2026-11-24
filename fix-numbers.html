@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fix Numbers — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" onerror="this.onerror=null;this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • FIX NUMBERS</div><div class="text-[11px] text-gray-300">Fix Already Added Books + Learners — No Delete</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+<div class="max-w-4xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-5">
+<h1 class="font-black text-2xl">🔧 Fix Numbers On Already Added Books</h1>
+<p class="text-sm text-gray-500 mt-1">Book: <b>WHS-000001 → WHS000001</b> • Learner: <b>WHS-10A-001 → 10A001</b> • Duplicates get next free number • History updated too</p>
+<div class="flex gap-2 flex-wrap mt-4">
+<select id="schoolSel" class="border-2 rounded-lg px-3 py-3 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School — WHS</option><option value="GSH|911360870|George Sonto High School">George Sonto High School — GSH</option><option value="ALL|ALL|All Schools">ALL Schools — Fix Both</option></select>
+<button id="scanBtn" type="button" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">🔍 Scan — Show Problems</button>
+<button id="fixBtn" type="button" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">✅ Fix Numbers Now</button>
+</div>
+<div id="report" class="mt-4 space-y-3 text-sm"></div>
+<div class="bg-yellow-50 border rounded-xl p-3 mt-4 text-sm"><b>Before you fix:</b><ul class="list-disc ml-5"><li>This does NOT delete books or learners.</li><li>It only changes the NUMBER to correct format.</li><li>After fix, re-print barcodes — old printed barcodes with hyphens will NOT scan to new numbers.</li><li>Run Scan first to see what will change.</li></ul></div>
+<div class="flex gap-2 mt-4"><a href="librarian.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Go to Librarian →</a><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Go to Issue →</a><a href="print-barcodes.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">🖨️ Re-Print Barcodes →</a></div>
+</div>
+</div>
+<script>
+(function(){
+const SCHOOLS=[{prefix:'WHS',emis:'700310854',name:'Wordsworth High School'},{prefix:'GSH',emis:'911360870',name:'George Sonto High School'}];
+function getSchools(){let v=document.getElementById('schoolSel').value.split('|');if(v[0]==='ALL') return SCHOOLS; return [SCHOOLS.find(s=>s.prefix===v[0])];}
+function initials(name){return name.trim().split(/\s+/).map(w=>w[0].toUpperCase()).join('');}
+// BOOK: WHS-000001 / whs 000001 / WHS00001 -> WHS000001 (keep numeric part, pad to 6)
+function fixBookNum(raw, school){
+  if(!raw) return null;
+  let s=String(raw).toUpperCase().replace(/[^A-Z0-9]/g,''); // remove - space etc
+  // Remove school prefix if present: WHS000001 -> 000001, GSH000001 -> 000001, WHS00001 -> 00001
+  let ini=initials(school.name);
+  if(s.startsWith(ini)) s=s.slice(ini.length);
+  // If still has letters (e.g. BK000001) strip letters
+  s=s.replace(/[^0-9]/g,'');
+  if(!s) return null;
+  let num=parseInt(s,10);
+  if(isNaN(num)) return null;
+  return ini+String(num).padStart(6,'0');
+}
+// LEARNER: WHS-10A-001 / WHS10A001 / 10A-001 / 10A001 / 10a1 -> 10A001 (Grade+Class+001)
+function fixLearnerId(raw){
+  if(!raw) return null;
+  let s=String(raw).toUpperCase().replace(/[^A-Z0-9]/g,''); // WHS10A001
+  s=s.replace(/^(WHS|GSH)/,''); // strip school prefix -> 10A001
+  // Now s should be like 10A001 or 8B001 or 10001 (no letter?) or 10A1
+  let m=s.match(/^(\d+)([A-Z]*)(\d+)$/);
+  if(!m) return null;
+  let grade=m[1]; let letter=m[2]; let num=parseInt(m[3],10);
+  if(isNaN(num)) return null;
+  // If no letter, default A: 10001 -> grade 10, num 001? Actually 10001 = 10 + 001, letter missing
+  if(!letter) letter='A';
+  let cls=grade+letter; // 10A
+  return cls+String(num).padStart(3,'0');
+}
+function scanSchool(school){
+  let books=JSON.parse(localStorage.getItem('EMIS_'+school.emis+'_makhanani_ltsm')||'[]');
+  let learners=JSON.parse(localStorage.getItem('EMIS_'+school.emis+'_makhanani_learners')||'[]');
+  let hist=JSON.parse(localStorage.getItem('EMIS_'+school.emis+'_makhanani_history')||'[]');
+  let problems=[];
+  let seenBooks=new Set();
+  books.forEach(b=> (b.copies||[]).forEach(c=>{
+    let fixed=fixBookNum(c.barcode, school);
+    if(fixed!==c.barcode) problems.push({type:'BOOK',title:b.title,old:c.barcode,new:fixed||'(cannot fix - will assign new)'});
+    if(fixed && seenBooks.has(fixed)) problems.push({type:'DUPLICATE BOOK',title:b.title,old:c.barcode,new:'DUPLICATE of '+fixed+' → will get next free'});
+    if(fixed) seenBooks.add(fixed);
+  }));
+  let seenLearners=new Set();
+  learners.forEach(l=>{
+    let fixed=fixLearnerId(l.id);
+    if(fixed!==l.id) problems.push({type:'LEARNER',title:l.name+' ('+l.grade+' '+l.class+')',old:l.id,new:fixed||'(cannot fix)'});
+    if(fixed && seenLearners.has(fixed)) problems.push({type:'DUPLICATE LEARNER',title:l.name,old:l.id,new:'DUPLICATE of '+fixed+' → will get next free'});
+    if(fixed) seenLearners.add(fixed);
+  }));
+  return {school,books,learners,hist,problems,bookCount:books.reduce((a,b)=>a+(b.copies||[]).length,0),learnerCount:learners.length};
+}
+function renderScan(){
+  let schools=getSchools(); let html='';
+  schools.forEach(s=>{
+    let r=scanSchool(s);
+    html+='<div class="border rounded-xl p-3"><div class="font-black">'+r.school.name+' — Books: '+r.bookCount+' • Learners: '+r.learnerCount+' • Problems: '+r.problems.length+'</div>';
+    if(!r.problems.length) html+='<p class="text-green-600 font-bold mt-1">✅ All numbers already correct!</p>';
+    else html+='<div class="mt-2 space-y-1">'+r.problems.map(p=>'<div class="bg-red-50 border rounded p-2"><b>'+p.type+':</b> '+p.title+'<br><span class="font-mono">'+p.old+'</span> → <span class="font-mono font-bold text-green-700">'+p.new+'</span></div>').join('')+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('report').innerHTML=html;
+}
+function fixSchool(school){
+  let books=JSON.parse(localStorage.getItem('EMIS_'+school.emis+'_makhanani_ltsm')||'[]');
+  let learners=JSON.parse(localStorage.getItem('EMIS_'+school.emis+'_makhanani_learners')||'[]');
+  let hist=JSON.parse(localStorage.getItem('EMIS_'+school.emis+'_makhanani_history')||'[]');
+  let changes=[];
+  let ini=initials(school.name);
+  // --- FIX BOOKS ---
+  let usedBooks=new Set();
+  let bookMap={}; // old (upper) -> new
+  books.forEach(b=> (b.copies||[]).forEach(c=>{
+    let old=String(c.barcode||'').toUpperCase();
+    let fixed=fixBookNum(c.barcode, school);
+    if(!fixed){
+      // Cannot parse - assign next free by scanning used
+      let n=1; while(usedBooks.has(ini+String(n).padStart(6,'0'))) n++;
+      fixed=ini+String(n).padStart(6,'0');
+    }
+    // Duplicate check - if already used, get next free (gap-filled)
+    if(usedBooks.has(fixed)){
+      let n=1; while(usedBooks.has(ini+String(n).padStart(6,'0'))) n++;
+      let newFixed=ini+String(n).padStart(6,'0');
+      changes.push({type:'BOOK DUP',title:b.title,old:c.barcode,new:newFixed});
+      fixed=newFixed;
+    } else if(fixed!==c.barcode){
+      changes.push({type:'BOOK',title:b.title,old:c.barcode,new:fixed});
+    }
+    if(!bookMap[old]) bookMap[old]=fixed; // first mapping wins, duplicates map to their own new
+    // For duplicate old keys, we need list - store also in array
+    c.barcode=fixed; c.bookNo=fixed;
+    usedBooks.add(fixed);
+  }));
+  // --- FIX LEARNERS ---
+  let usedLearners=new Set();
+  let learnerMap={};
+  learners.forEach(l=>{
+    let old=String(l.id||'').toUpperCase();
+    let fixed=fixLearnerId(l.id);
+    if(!fixed){
+      // Fallback: use grade+class
+      let cls=(l.class||'').toUpperCase()||'10A'; let key=cls;
+      let n=1; while(usedLearners.has(key+String(n).padStart(3,'0'))) n++;
+      fixed=key+String(n).padStart(3,'0');
+    }
+    if(usedLearners.has(fixed)){
+      // Duplicate - get next free in SAME class
+      let m=fixed.match(/^(\d+[A-Z]+)(\d+)$/); let key=m?m[1]:'10A';
+      let n=1; while(usedLearners.has(key+String(n).padStart(3,'0'))) n++;
+      let newFixed=key+String(n).padStart(3,'0');
+      changes.push({type:'LEARNER DUP',title:l.name,old:l.id,new:newFixed});
+      fixed=newFixed;
+    } else if(fixed!==l.id){
+      changes.push({type:'LEARNER',title:l.name,old:l.id,new:fixed});
+    }
+    if(!learnerMap[old]) learnerMap[old]=fixed;
+    // Normalise class to match ID: 10A001 -> class 10A
+    let cm=fixed.match(/^(\d+[A-Z]+)\d+$/); if(cm) l.class=cm[1];
+    l.id=fixed; l.learnerId=fixed;
+    usedLearners.add(fixed);
+  }));
+  // --- FIX HISTORY + COPIES LEARNER REFERENCES ---
+  // Rebuild maps properly for duplicates: we handled copies learnerId by looking up old learnerId -> new via name? Simpler: update history by old bookNo / learnerId using maps, and for copies, if learnerId was old format, fix it same way
+  books.forEach(b=> (b.copies||[]).forEach(c=>{
+    if(c.learnerId){ let f=fixLearnerId(c.learnerId); if(f) c.learnerId=f; }
+  }));
+  hist.forEach(h=>{
+    if(h.bookNo){ let f=fixBookNum(h.bookNo, school); if(f) {h.bookNo=f; h.barcode=f;} }
+    if(h.learnerId){ let f=fixLearnerId(h.learnerId); if(f) h.learnerId=f; }
+  }));
+  // Save
+  localStorage.setItem('EMIS_'+school.emis+'_makhanani_ltsm',JSON.stringify(books));
+  localStorage.setItem('makhanani_'+school.prefix+'_makhanani_ltsm',JSON.stringify(books));
+  localStorage.setItem('EMIS_'+school.emis+'_makhanani_learners',JSON.stringify(learners));
+  localStorage.setItem('makhanani_'+school.prefix+'_makhanani_learners',JSON.stringify(learners));
+  localStorage.setItem('EMIS_'+school.emis+'_makhanani_history',JSON.stringify(hist));
+  localStorage.setItem('makhanani_'+school.prefix+'_makhanani_history',JSON.stringify(hist));
+  // Clear last print cache so print page re-reads fixed numbers
+  localStorage.removeItem('makhanani_last_print_'+school.prefix);
+  return {school,changes};
+}
+document.getElementById('scanBtn').addEventListener('click',renderScan);
+document.getElementById('fixBtn').addEventListener('click',function(){
+  if(!confirm('Fix numbers for selected school(s)? This will change WHS-000001 to WHS000001 etc. Old printed barcodes will need re-printing. Continue?')) return;
+  let schools=getSchools(); let html='';
+  schools.forEach(s=>{
+    let r=fixSchool(s);
+    html+='<div class="border rounded-xl p-3"><div class="font-black">'+r.school.name+' — Fixed: '+r.changes.length+'</div>';
+    if(!r.changes.length) html+='<p class="text-green-600 font-bold">✅ Nothing to fix — already correct.</p>';
+    else html+='<div class="mt-2 space-y-1">'+r.changes.map(c=>'<div class="bg-green-50 border rounded p-2"><b>'+c.type+':</b> '+c.title+'<br><span class="font-mono">'+c.old+'</span> → <span class="font-mono font-bold">'+c.new+'</span></div>').join('')+'</div>';
+    html+='</div>';
+  });
+  html+='<div class="bg-green-100 border-2 border-green-600 rounded-xl p-3 font-black text-center mt-2">✅ DONE — Go to Librarian → Check numbers → Re-Print Barcodes</div>';
+  document.getElementById('report').innerHTML=html;
+});
+renderScan();
+})();
+</script>
+</body></html>
