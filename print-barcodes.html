@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Print Barcodes — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><style>@media print{ .no-print{display:none!important;} @page{size:A4;margin:10mm;} }</style></head>
+<body class="bg-gray-100 min-h-screen"><div class="max-w-5xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 no-print flex gap-3 items-center"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">🖨️ Print Barcodes — A4 3x5 — Real CODE128</h1><p class="text-xs text-gray-500">Prints 15 barcodes per A4 page (3 columns x 5 rows). Scan with phone / scanner.</p></div></div>
+<div class="bg-white rounded-2xl p-4 no-print mt-4"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><select id="bookSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="">-- Select Book Title --</option></select><button id="printBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-black">🖨️ Print A4</button></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><div id="barcodeGrid" class="grid grid-cols-3 gap-4"></div></div>
+</div>
+<script>
+(function(){
+let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
+function getBooks(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]');}catch(e){return [];} }
+function renderSel(){ let books=getBooks(); document.getElementById('bookSel').innerHTML='<option value="">-- Select Book Title --</option>'+books.map((b,i)=>'<option value="'+i+'">'+b.title+' ('+b.grade+') — '+b.copies.length+' copies</option>').join(''); }
+function renderGrid(){ let idx=document.getElementById('bookSel').value; if(idx==='') { document.getElementById('barcodeGrid').innerHTML='<p class="text-gray-500 col-span-3">Select a book title above.</p>'; return; } let b=getBooks()[parseInt(idx)]; document.getElementById('barcodeGrid').innerHTML=b.copies.map(c=>'<div class="border rounded p-2 text-center"><div class="text-xs font-bold">'+b.title+'</div><svg class="barcode mx-auto" data-code="'+c.barcode+'"></svg><div class="font-mono font-black text-sm">'+c.barcode+'</div><div class="text-xs">'+cur.name+' • '+b.grade+'</div></div>').join(''); document.querySelectorAll('.barcode').forEach(s=>{ try{ JsBarcode(s, s.getAttribute('data-code'), {format:'CODE128', width:1.5, height:40, displayValue:false}); }catch(e){} }); }
+document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; renderSel(); document.getElementById('barcodeGrid').innerHTML=''; });
+document.getElementById('bookSel').addEventListener('change',renderGrid); document.getElementById('printBtn').addEventListener('click',function(){ window.print(); }); renderSel();
+})();
+</script>
+</body></html>
