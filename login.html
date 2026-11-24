@@ -1,35 +1,58 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Wordsworth High School • MAKHANANI-LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script></head>
-<body class="min-h-screen bg-gradient-to-br from-blue-900 to-amber-500 flex items-center justify-center p-4">
-<div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
-  <div class="text-center"><img src="logo.png" alt="Wordsworth High School Logo" class="w-20 h-20 mx-auto rounded-2xl bg-white p-1 object-contain shadow border" onerror="this.style.display='none'"><h1 class="text-2xl font-black mt-3">WORDSWORTH HIGH SCHOOL</h1><p class="text-xs font-bold text-blue-900">MAKHANANI-LTSM • Login</p><p class="text-xs text-gray-500 mt-1">📞 078 023 3263 • <span class="firebase-badge"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">● Offline</span></span></p></div>
-  <div class="space-y-3 mt-6">
-    <div><label class="text-xs font-bold">Email</label><input id="email" value="super@wordsworth.co.za" class="w-full border rounded-xl px-4 py-3 mt-1"></div>
-    <div><label class="text-xs font-bold">Password</label><input id="pass" type="password" value="admin123" class="w-full border rounded-xl px-4 py-3 mt-1"></div>
-    <div><label class="text-xs font-bold">Login As Role</label><select id="role" class="w-full border rounded-xl px-4 py-3 mt-1"><option value="super">Super Admin</option><option value="school_admin">School Admin</option><option value="principal">Principal</option><option value="librarian">Librarian</option><option value="hod">HOD</option><option value="teacher">Teacher</option><option value="finance">Finance</option><option value="parent">Parent</option></select></div>
-    <button onclick="doLogin()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Login →</button>
-    <button onclick="quickFill()" class="w-full bg-gray-100 py-2 rounded-xl text-sm">⚡ Auto-fill for selected role</button>
-    <button onclick="openCheck()" class="w-full bg-white border-2 border-blue-900 text-blue-900 py-3 rounded-xl font-bold">🎓 Learner Self-Check — Type 10A001</button>
-    <a href="index.html" class="block text-center text-sm text-gray-500">← Back to Landing Page</a>
-  </div>
-  <div id="checkBox" class="hidden mt-4 bg-blue-50 p-4 rounded-xl"><input id="checkInput" placeholder="Enter 10A001" class="w-full border rounded-lg px-3 py-2 text-center font-bold"><button onclick="doCheck()" class="w-full bg-blue-900 text-white py-2 rounded-lg mt-2 text-sm font-bold">Check My Books →</button><div id="checkRes" class="text-sm mt-3"></div></div>
-  <div class="mt-6 bg-gray-50 p-4 rounded-xl text-xs space-y-1"><p class="font-bold">Demo Logins (Password: admin123)</p><p>🔑 Super: super@wordsworth.co.za</p><p>🏫 School Admin: admin@wordsworth.co.za</p><p>👔 Principal: principal@wordsworth.co.za</p><p>📚 Librarian: librarian@wordsworth.co.za</p><p>📖 HOD: hod@wordsworth.co.za</p><p>👩‍🏫 Teacher: teacher@wordsworth.co.za</p><p>💰 Finance: finance@wordsworth.co.za</p><p>❤️ Parent: parent@wordsworth.co.za</p></div>
-  <div class="text-center mt-4 text-[11px] text-gray-400 space-y-1"><p>Powered by <b>MAKHANANI-LTSM</b></p><p>A Product of <b>Xintimani Group Holdings (PTY) LTD</b></p><p>Reg: 2026 / 934898 / 07 • © 2026 Wordsworth High School</p></div>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Firebase — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<div class="max-w-md w-full bg-white rounded-2xl p-6 shadow">
+<div class="text-center"><img src="logo.png" class="h-16 w-16 mx-auto rounded-xl border-2 border-yellow-400 p-1" onerror="this.onerror=null;this.src='https://vusichauke3037-glitch.github.io/MAKHANANI-SA/logo.png';"><h1 class="font-black text-2xl mt-2">Makhanani LTSM</h1><p class="text-xs text-gray-500">Xintimani Group • Firebase Login • makhanani-ltsm</p></div>
+<div class="mt-4"><label class="font-bold text-sm">🏫 School</label><select id="schoolSel" class="border-2 rounded-lg px-3 py-3 w-full font-bold mt-1"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select></div>
+<div class="mt-3"><label class="font-bold text-sm">📧 Email</label><input id="email" type="email" placeholder="e.g. dube@wordsworth.co.za" class="border-2 rounded-lg px-3 py-3 w-full mt-1"></div>
+<div class="mt-3"><label class="font-bold text-sm">🔒 Password</label><input id="password" type="password" placeholder="Your password" class="border-2 rounded-lg px-3 py-3 w-full mt-1"></div>
+<button id="loginBtn" type="button" class="bg-black text-white w-full py-3 rounded-xl font-black mt-4">Login with Firebase →</button>
+<button id="forgotBtn" type="button" class="bg-gray-200 text-black w-full py-2 rounded-xl font-bold mt-2 text-sm">Forgot Password? Send Reset Email</button>
+<p id="loginMsg" class="text-sm font-bold mt-2 text-center"></p>
+<div class="bg-green-50 border-2 border-green-500 rounded-xl p-3 mt-4 text-xs"><b>✅ Firebase Connected: makhanani-ltsm</b><br>Project ID: <b>makhanani-ltsm</b><br><br><b>First Admin — Do Once In Firebase Console:</b><br>1. Firebase Console → Authentication → Add User → <b>admin@makhanani.co.za</b> / <b>Admin2026</b> → Copy UID<br>2. Firestore → Create collection <b>users</b> → Document ID = UID → Add fields:<br>• name: System Admin<br>• email: admin@makhanani.co.za<br>• role: ADMIN<br>• school: Wordsworth High School<br>3. Login here with that email / password.</div>
+<div class="text-center mt-3"><a href="index.html" class="text-blue-600 underline text-sm">← Back to Home</a></div>
 </div>
-<script src="shared.js"></script><script src="firebase.js"></script>
-<script>
-  startFirebaseSync();
-  function quickFill(){ let role=document.getElementById('role').value; let u=DEMO_USERS.find(x=>x.role===role); if(u){ document.getElementById('email').value=u.email; document.getElementById('pass').value=u.pass; } }
-  document.getElementById('role').addEventListener('change', quickFill);
-  function doLogin(){
-    let email=document.getElementById('email').value.trim().toLowerCase(), pass=document.getElementById('pass').value, role=document.getElementById('role').value;
-    let found=DEMO_USERS.find(x=>x.email===email && x.pass===pass);
-    if(!found) return alert('❌ Wrong email / password.\nTry: super@wordsworth.co.za / admin123');
-    if(found.role!==role) return alert('⚠️ That email is for '+ROLES[found.role].label+'\nPlease select role: '+ROLES[found.role].label);
-    localStorage.setItem('makhanani_session', JSON.stringify({email:found.email, name:found.name, role:found.role, loginAt:new Date().toISOString()}));
-    window.location.href='home.html';
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+async function doLogin(){
+  let v=document.getElementById('schoolSel').value.split('|');
+  let prefix=v[0], emis=v[1], name=v[2];
+  let email=document.getElementById('email').value.trim().toLowerCase();
+  let pass=document.getElementById('password').value.trim();
+  if(!email||!pass){ document.getElementById('loginMsg').innerHTML='❌ Enter Email + Password'; return; }
+  document.getElementById('loginMsg').innerHTML='⏳ Logging in to makhanani-ltsm...';
+  try{
+    let cred=await signInWithEmailAndPassword(auth, email, pass);
+    let uid=cred.user.uid;
+    let snap=await getDoc(doc(db, 'users', uid));
+    let profile = snap.exists() ? snap.data() : {name: email, email: email, role: 'TEACHER', subject:'General', class:'', grades:'', school: name};
+    let session={uid:uid, name:profile.name||email, email:email, role:profile.role||'TEACHER', subject:profile.subject||'General', class:profile.class||'', grades:profile.grades||'', school:profile.school||name, emis:profile.emis||emis, prefix:profile.prefix||prefix, loginAt:new Date().toISOString()};
+    localStorage.setItem('makhanani_session', JSON.stringify(session));
+    localStorage.setItem('makhanani_active_emis', session.emis);
+    localStorage.setItem('makhanani_active_school', session.school);
+    document.getElementById('loginMsg').innerHTML='✅ Welcome, <b>'+session.name+'</b> — '+session.role+' — Redirecting...';
+    setTimeout(()=>{
+      if(session.role==='TEACHER'||session.role==='HOD') window.location.href='issue.html';
+      else if(session.role==='LIBRARIAN') window.location.href='librarian.html';
+      else window.location.href='index.html';
+    }, 600);
+  }catch(e){
+    let msg=e.code||e.message;
+    if(msg.includes('user-not-found')||msg.includes('invalid-credential')) msg='❌ Wrong Email or Password.<br><span class="font-normal">1. Check email spelling.<br>2. If Admin not created yet, create Admin in Firebase Console → Authentication.<br>3. Tap Forgot Password to reset.</span>';
+    else if(msg.includes('too-many-requests')) msg='❌ Too many tries. Wait 1 minute, then try again.';
+    else msg='❌ '+msg;
+    document.getElementById('loginMsg').innerHTML=msg;
   }
-  function openCheck(){ document.getElementById('checkBox').classList.remove('hidden'); }
-  function doCheck(){ let input=document.getElementById('checkInput').value.trim().toUpperCase(); let learner=users.find(u=>u.sid===input); if(!learner) return document.getElementById('checkRes').innerHTML='<div class="bg-red-50 p-3 rounded-lg">❌ Not found: '+input+'</div>'; let my=issues.filter(i=>i.toId===learner.id&&(i.status==='Issued'||i.status==='Overdue')); document.getElementById('checkRes').innerHTML=`<div class="bg-white p-3 rounded-lg"><b>${learner.name} — ${learner.sid}</b><p class="text-xs">${learner.grade} ${learner.classLetter} • ${learner.phone||'Not provided'}</p><p class="font-bold mt-2">📚 ${my.length} book(s)</p>${my.map(i=>`<div class="flex justify-between text-xs mt-1"><span><b>${i.bookNo}</b> — ${i.itemTitle}</span><span>${i.status} • Due ${i.due}</span></div>`).join('')||'<p class="text-green-600 text-xs">✅ No books</p>'}</div>`; }
-  let p=new URLSearchParams(location.search); if(p.get('check')==='1') openCheck();
-  window.onFirebaseUpdate = function(){ /* data refreshed from Firebase */ };
-</script></body></html>
+}
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('forgotBtn').addEventListener('click', async ()=>{
+  let email=document.getElementById('email').value.trim().toLowerCase();
+  if(!email){ alert('Enter your Email first, then tap Forgot Password.'); return; }
+  try{ await sendPasswordResetEmail(auth, email); document.getElementById('loginMsg').innerHTML='✅ Reset email sent to <b>'+email+'</b> — Check inbox + spam.'; }
+  catch(e){ document.getElementById('loginMsg').innerHTML='❌ '+e.message; }
+});
+</script>
+</body></html>
