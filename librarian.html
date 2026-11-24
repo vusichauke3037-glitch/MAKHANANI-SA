@@ -1,49 +1,141 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
-<script type="module">
-import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-onAuthStateChanged(auth, async (user)=>{ if(!user){ window.location.href='login.html'; return; } let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'LIBRARIAN'}; window.MAKHANANI_SESSION={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'LIBRARIAN',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),grades:prof.grades||'',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'}; localStorage.setItem('makhanani_session',JSON.stringify(window.MAKHANANI_SESSION)); let b=document.createElement('div'); b.style.cssText='background:#000;color:#fff;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:bold;'; b.innerHTML='<span><img src="logo.png" style="height:24px;width:24px;border-radius:50%;background:#fff;display:inline;vertical-align:middle;"> '+prof.name+' • '+prof.role+' • '+(prof.school||'')+' • 🔥 makhanani-ltsm</span><button id="fbLogoutBtn" style="background:#dc2626;color:#fff;padding:4px 10px;border-radius:6px;font-weight:bold;">Logout</button>'; document.body.insertBefore(b,document.body.firstChild); document.getElementById('fbLogoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); window.location.href='login.html'; }); window.dispatchEvent(new Event('makhanani-session-ready')); });
-</script>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LIBRARIAN</div><div class="text-[11px] text-gray-300">Add Books / Learners • Auto WHS000001 / 10A001 • No Duplicate • No Skipping</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LIBRARIAN</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+
 <div class="max-w-5xl mx-auto p-4">
 <div class="bg-white rounded-2xl p-4 flex flex-wrap gap-2 justify-between"><div><h1 class="font-black text-2xl">📚 Librarian Dashboard</h1><p class="text-xs text-gray-500" id="libInfo">Loading...</p></div><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select></div>
+
 <div class="grid md:grid-cols-3 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="cBooks">0</div><div class="text-xs font-bold text-gray-500">TOTAL BOOKS (copies)</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="cLearners">0</div><div class="text-xs font-bold text-gray-500">TOTAL LEARNERS</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="cIssued">0</div><div class="text-xs font-bold text-gray-500">ISSUED OUT</div></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Add Book — Auto Number</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="bTitle" placeholder="Title e.g. Mathematics Grade 10" class="border-2 rounded-lg px-3 py-2"><select id="bGrade" class="border-2 rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><input id="bQty" type="number" value="30" min="1" class="border-2 rounded-lg px-3 py-2"><button id="addBookBtn" type="button" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black">➕ Add Book(s)</button></div><p class="text-xs text-gray-500 mt-1">Auto: Next gap-filled number — if WHS000001, WHS000003 exist → next is WHS000002. No hyphen.</p><p id="bookMsg" class="text-sm font-bold mt-1"></p></div>
+
+<!-- ADD BOOK - WITH DEPARTMENT / GRADE / SUBJECT DROPDOWNS -->
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500">
+<h2 class="font-black">📚 Add Book — Pick Department → Grade → Subject</h2>
+<p class="text-xs text-gray-500 mt-1">Pick from dropdowns — do NOT type Department / Subject. This keeps Stock grouped correctly. Example: Department <b>Mathematics</b> → Subject <b>Mathematics</b> → Grade <b>Grade 10</b> → Title <b>Study And Master Grade 10</b></p>
+
+<div class="grid md:grid-cols-2 gap-2 mt-3">
+<div><label class="font-bold text-sm">📁 Department / Group *</label><select id="bDept" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"><option value="">-- Select Department --</option></select><p class="text-[11px] text-gray-400">e.g. Mathematics, Sciences, Languages, Humanities, Commerce</p></div>
+<div><label class="font-bold text-sm">🎓 Grade *</label><select id="bGrade" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-2 mt-2">
+<div><label class="font-bold text-sm">📖 Subject *</label><select id="bSubject" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"><option value="">-- Select Department First --</option></select><p class="text-[11px] text-gray-400" id="subjectHint">Subjects change when you pick Department.</p></div>
+<div><label class="font-bold text-sm">🔢 Quantity *</label><input id="bQty" type="number" value="30" min="1" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"></div>
+</div>
+
+<div class="mt-2"><label class="font-bold text-sm">📘 Title * — Type book name</label><input id="bTitle" placeholder="e.g. Study And Master Grade 10" class="border-2 rounded-lg px-3 py-2 w-full font-bold mt-1"><p class="text-[11px] text-gray-400">Tip: Include publisher + Grade in title. Full title will show in Stock as: <b id="titlePreview">-</b></p></div>
+
+<div class="flex gap-2 mt-3 flex-wrap"><button id="addBookBtn" type="button" class="bg-green-600 text-white px-6 py-2 rounded-lg font-black">➕ Add Book(s)</button><button id="quickMathsBtn" type="button" class="bg-blue-100 px-3 py-2 rounded-lg font-bold text-sm">Quick: Mathematics Grade 10</button><button id="quickEnglishBtn" type="button" class="bg-yellow-100 px-3 py-2 rounded-lg font-bold text-sm">Quick: English Grade 10</button></div>
+<p id="bookMsg" class="text-sm font-bold mt-2"></p>
+<p class="text-xs text-gray-500 mt-1">Auto: Next gap-filled number — if WHS000001, WHS000003 exist → next is WHS000002. No hyphen. Saved as <b>barcode</b> field — never <b>undefined</b>.</p>
+</div>
+
+<!-- ADD LEARNER -->
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Add Learner — Auto ID</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="lName" placeholder="Full Name e.g. Thabo Mokoena" class="border-2 rounded-lg px-3 py-2"><select id="lGrade" class="border-2 rounded-lg px-3 py-2"><option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><input id="lClass" placeholder="Class e.g. 10A" class="border-2 rounded-lg px-3 py-2"><button id="addLearnerBtn" type="button" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black">➕ Add Learner</button></div><p class="text-xs text-gray-500 mt-1">Auto ID: Grade + Class + 3 digits — e.g. 10A001. Names can duplicate, IDs never duplicate.</p><p id="learnerMsg" class="text-sm font-bold mt-1"></p></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Books — Top Up / Reduce</h2><input id="searchBook" placeholder="🔍 Search title / barcode..." class="border rounded-lg px-3 py-2 w-full mt-2"><div id="bookList" class="mt-2 space-y-2 text-sm"></div></div>
+
+<!-- BOOKS LIST -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Books — Grouped by Department / Grade / Subject — Top Up / Reduce</h2>
+<div class="grid md:grid-cols-4 gap-2 mt-2"><select id="filterDept" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Departments</option></select><select id="filterGrade" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="filterSubject" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Subjects</option></select><input id="searchBook" placeholder="🔍 Search title / barcode..." class="border-2 rounded-lg px-3 py-2"></div>
+<div id="bookList" class="mt-2 space-y-2 text-sm"></div></div>
+
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Learners</h2><input id="searchLearner" placeholder="🔍 Search name / ID / class..." class="border rounded-lg px-3 py-2 w-full mt-2"><div id="learnerList" class="mt-2 space-y-2 text-sm"></div></div>
 <div class="flex gap-2 mt-4 flex-wrap"><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Issue →</a><a href="stock.html" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📦 Stock →</a><a href="issue-record.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📋 Print Record →</a><a href="print-barcodes.html" class="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm">🖨️ Print Barcodes →</a></div>
 </div>
+
 <script>
 (function(){
 let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'}; let me=null;
+// --- DEPARTMENT -> SUBJECTS - EDIT HERE TO ADD YOUR SUBJECTS ---
+const DEPTS={
+  'Mathematics': ['Mathematics','Maths Literacy','Mathematical Literacy'],
+  'Sciences': ['Physical Science','Life Sciences','Natural Sciences','Agricultural Science'],
+  'Languages': ['English','English FAL','English HL','Afrikaans','Afrikaans FAL','isiZulu','isiXhosa','Sepedi','Setswana','Sesotho'],
+  'Humanities': ['Geography','History','Social Sciences'],
+  'Commerce': ['Accounting','Business Studies','Economics','Tourism','EMS'],
+  'Technology': ['CAT','Computer Applications Technology','Information Technology','Technology','Technical Sciences','Engineering Graphics & Design'],
+  'Life Orientation': ['Life Orientation'],
+  'Arts': ['Visual Arts','Music','Drama','Creative Arts'],
+  'General': ['General','Other']
+};
 function norm(s){return (s||'').trim().toUpperCase();}
 function getBooks(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]');}catch(e){return [];}}
 function saveBooks(b){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_ltsm',JSON.stringify(b));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_ltsm',JSON.stringify(b));}
 function getLearners(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]');}catch(e){return [];}}
 function saveLearners(l){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_learners',JSON.stringify(l));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_learners',JSON.stringify(l));}
 function getInitials(n){return n.trim().split(/\s+/).map(w=>w[0].toUpperCase()).join('');}
-function setMe(){ let s=null; try{ s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){} if(s&&s.name){ me=s; cur={prefix:s.prefix||'WHS',emis:s.emis||'700310854',name:s.school||'Wordsworth High School'}; document.getElementById('libInfo').textContent='Logged in: '+me.name+' • '+me.role+' • '+me.school; try{ document.getElementById('schoolSel').value=me.prefix+'|'+me.emis+'|'+me.school; }catch(e){} } render(); }
+// Get dept/subject from old book - works for old + new books
+function bookDept(b){ if(b.department) return b.department; if(b.group) return b.group; // Old books: guess from title/subject
+  let t=((b.subject||'')+' '+b.title).toUpperCase(); for(let d in DEPTS){ for(let s of DEPTS[d]){ if(t.includes(s.toUpperCase())) return d; } } return b.department||'General'; }
+function bookSubject(b){ if(b.subject) return b.subject; let t=(b.title||'').toUpperCase(); for(let d in DEPTS){ for(let s of DEPTS[d]){ if(t.includes(s.toUpperCase())) return s; } } return 'General'; }
+
+function buildDeptDropdowns(){
+  let deptSel=document.getElementById('bDept');
+  deptSel.innerHTML='<option value="">-- Select Department --</option>'+Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
+  let fDept=document.getElementById('filterDept');
+  fDept.innerHTML='<option value="ALL">All Departments</option>'+Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
+  let fSub=document.getElementById('filterSubject');
+  let allSubs=[]; Object.values(DEPTS).forEach(arr=> allSubs.push(...arr));
+  fSub.innerHTML='<option value="ALL">All Subjects</option>'+[...new Set(allSubs)].sort().map(s=>'<option value="'+s+'">'+s+'</option>').join('');
+}
+function onDeptChange(){
+  let dept=document.getElementById('bDept').value;
+  let subSel=document.getElementById('bSubject');
+  if(!dept){ subSel.innerHTML='<option value="">-- Select Department First --</option>'; document.getElementById('subjectHint').textContent='Subjects change when you pick Department.'; return; }
+  subSel.innerHTML='<option value="">-- Select Subject --</option>'+DEPTS[dept].map(s=>'<option value="'+s+'">'+s+'</option>').join('');
+  document.getElementById('subjectHint').textContent=DEPTS[dept].length+' subjects in '+dept+' — pick one.';
+  updatePreview();
+}
+function updatePreview(){
+  let dept=document.getElementById('bDept').value; let grade=document.getElementById('bGrade').value; let subj=document.getElementById('bSubject').value; let title=document.getElementById('bTitle').value.trim();
+  document.getElementById('titlePreview').textContent = (dept?dept+' → ':'')+(grade?grade+' → ':'')+(subj?subj+' → ':'')+(title||'[Type Title]');
+}
+function setMe(){ let s=null; try{ s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){} if(s&&s.name){ me=s; if(s.school && s.school!=='ALL' && s.school!=='All Schools'){ cur={prefix:s.prefix||'WHS',emis:s.emis||'700310854',name:s.school}; } document.getElementById('libInfo').textContent='Logged in: '+me.name+' • '+me.role+' • Viewing: '+cur.name; document.getElementById('topStatus').textContent='Logged in: '+me.name+' • '+me.role; try{ document.getElementById('schoolSel').value=cur.prefix+'|'+cur.emis+'|'+cur.name; }catch(e){} } render(); }
 function nextBookBarcode(used){ let ini=getInitials(cur.name); for(let i=1;i<=999999;i++){ let c=ini+String(i).padStart(6,'0'); if(!used.has(c)) return c; } return ini+'000001'; }
 function render(){
   let books=getBooks(); let learners=getLearners(); let total=0, issued=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(c.status==='Issued') issued++; }));
   document.getElementById('cBooks').textContent=total; document.getElementById('cLearners').textContent=learners.length; document.getElementById('cIssued').textContent=issued;
-  let qb=(document.getElementById('searchBook').value||'').toLowerCase();
-  document.getElementById('bookList').innerHTML=books.filter(b=>(b.title+' '+b.grade).toLowerCase().includes(qb)).map((b,idx)=>{ let avail=b.copies.filter(c=>c.status==='Available').length; let iss=b.copies.filter(c=>c.status==='Issued').length; let pack=b.copies.filter(c=>c.status==='Packed').length; return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+b.title+'</b> • '+b.grade+' • Total: <b>'+b.copies.length+'</b> • Available: <b>'+avail+'</b> • Issued: <b>'+iss+'</b> • Packed: <b>'+pack+'</b><br><span class="text-xs text-gray-500">Barcodes: '+b.copies.slice(0,5).map(c=>c.barcode).join(', ')+(b.copies.length>5?' ... +'+(b.copies.length-5)+' more':'')+'</span></div><div class="flex gap-1 h-fit"><button data-topup="'+idx+'" class="topup-btn bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">➕ Top Up</button><button data-reduce="'+idx+'" class="reduce-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">➖ Reduce</button></div></div>'; }).join('')||'<p class="text-gray-500">No books yet. Add first book above.</p>';
+  let fDept=document.getElementById('filterDept').value; let fGrade=document.getElementById('filterGrade').value; let fSub=document.getElementById('filterSubject').value; let qb=(document.getElementById('searchBook').value||'').toLowerCase();
+  let filtered=books.filter(b=>{ let d=bookDept(b); let s=bookSubject(b); if(fDept!=='ALL' && d!==fDept) return false; if(fGrade!=='ALL' && b.grade!==fGrade) return false; if(fSub!=='ALL' && s!==fSub) return false; if(qb && !(b.title+' '+(b.copies||[]).map(c=>c.barcode||c.bookNo||c.code||'').join(' ')+' '+d+' '+s).toLowerCase().includes(qb)) return false; return true; });
+  document.getElementById('bookList').innerHTML=filtered.map((b)=>{
+    let idx=books.indexOf(b); let avail=b.copies.filter(c=>c.status==='Available').length; let iss=b.copies.filter(c=>c.status==='Issued').length; let pack=b.copies.filter(c=>c.status==='Packed').length;
+    return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><span class="text-xs bg-black text-white px-2 py-0.5 rounded font-bold">📁 '+bookDept(b)+'</span> <span class="text-xs bg-blue-100 px-2 py-0.5 rounded font-bold">🎓 '+b.grade+'</span> <span class="text-xs bg-yellow-100 px-2 py-0.5 rounded font-bold">📖 '+bookSubject(b)+'</span><br><b class="text-base">'+b.title+'</b><br>Total: <b>'+b.copies.length+'</b> • Available: <b>'+avail+'</b> • Issued: <b>'+iss+'</b> • Packed: <b>'+pack+'</b><br><span class="text-xs text-gray-500">Barcodes: '+b.copies.slice(0,5).map(c=>c.barcode||c.bookNo||c.code||'').join(', ')+(b.copies.length>5?' ... +'+(b.copies.length-5)+' more':'')+'</span></div><div class="flex gap-1 h-fit"><button data-topup="'+idx+'" class="topup-btn bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">➕ Top Up</button><button data-reduce="'+idx+'" class="reduce-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">➖ Reduce</button></div></div>';
+  }).join('')||'<p class="text-gray-500">No books for this filter. Change filter or add first book above.</p>';
   let ql=(document.getElementById('searchLearner').value||'').toLowerCase();
   document.getElementById('learnerList').innerHTML=learners.filter(l=>(l.name+' '+l.id+' '+l.class+' '+l.grade).toLowerCase().includes(ql)).map((l,idx)=>'<div class="border rounded-lg p-2 flex justify-between gap-2"><div><b>'+l.name+'</b> • ID: <b>'+l.id+'</b> • '+l.grade+' '+l.class+'</div><button data-del-learner="'+idx+'" class="del-learner-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs h-fit">Delete</button></div>').join('')||'<p class="text-gray-500">No learners yet.</p>';
-  document.querySelectorAll('.topup-btn').forEach(b=>b.addEventListener('click',function(){ let idx=parseInt(this.getAttribute('data-topup')); let books=getBooks(); let bks=books[idx]; let qty=parseInt(prompt('Top Up how many for '+bks.title+'?', '10'),10); if(!qty||qty<1) return; let used=new Set(); books.forEach(bb=> (bb.copies||[]).forEach(c=>used.add(norm(c.barcode)))); let added=[]; for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); bks.copies.push({barcode:code,status:'Available'}); added.push(code); } saveBooks(books); alert('✅ Top Up: '+qty+' added\n'+added.join(', ')); render(); }));
-  document.querySelectorAll('.reduce-btn').forEach(b=>b.addEventListener('click',function(){ let idx=parseInt(this.getAttribute('data-reduce')); let books=getBooks(); let bks=books[idx]; let avail=bks.copies.filter(c=>c.status==='Available'); if(!avail.length){ alert('No Available copies to remove.'); return; } let qty=parseInt(prompt('Reduce how many Available for '+bks.title+'? Available: '+avail.length, '1'),10); if(!qty||qty<1) return; if(qty>avail.length){ alert('Only '+avail.length+' Available.'); return; } let toRemove=avail.slice(-qty).map(c=>c.barcode); bks.copies=bks.copies.filter(c=>!toRemove.includes(c.barcode)); saveBooks(books); alert('✅ Reduced: Removed '+qty+'\n'+toRemove.join(', ')); render(); }));
+  document.querySelectorAll('.topup-btn').forEach(b=>b.addEventListener('click',function(){ let idx=parseInt(this.getAttribute('data-topup')); let books=getBooks(); let bks=books[idx]; let qty=parseInt(prompt('Top Up how many for '+bks.title+'?', '10'),10); if(!qty||qty<1) return; let used=new Set(); books.forEach(bb=> (bb.copies||[]).forEach(c=>used.add(norm(c.barcode||c.bookNo||c.code||'')))); let added=[]; for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); bks.copies.push({barcode:code, bookNo:code, status:'Available'}); added.push(code); } saveBooks(books); alert('✅ Top Up: '+qty+' added\n'+added.join(', ')); render(); }));
+  document.querySelectorAll('.reduce-btn').forEach(b=>b.addEventListener('click',function(){ let idx=parseInt(this.getAttribute('data-reduce')); let books=getBooks(); let bks=books[idx]; let avail=bks.copies.filter(c=>c.status==='Available'); if(!avail.length){ alert('No Available copies to remove.'); return; } let qty=parseInt(prompt('Reduce how many Available for '+bks.title+'? Available: '+avail.length, '1'),10); if(!qty||qty<1) return; if(qty>avail.length){ alert('Only '+avail.length+' Available.'); return; } let toRemove=avail.slice(-qty).map(c=>c.barcode); bks.copies=bks.copies.filter(c=>!toRemove.includes(c.barcode)); saveBooks(books); alert('✅ Reduced: Removed '+qty); render(); }));
   document.querySelectorAll('.del-learner-btn').forEach(b=>b.addEventListener('click',function(){ if(!confirm('Delete this learner?')) return; let idx=parseInt(this.getAttribute('data-del-learner')); let ls=getLearners(); ls.splice(idx,1); saveLearners(ls); render(); }));
 }
-document.getElementById('addBookBtn').addEventListener('click',function(){ let title=document.getElementById('bTitle').value.trim(); let grade=document.getElementById('bGrade').value; let qty=parseInt(document.getElementById('bQty').value)||1; if(!title){ alert('Enter Title'); return; } let books=getBooks(); let existing=books.find(b=>b.title===title && b.grade===grade); let used=new Set(); books.forEach(b=> (b.copies||[]).forEach(c=>used.add(norm(c.barcode)))); let added=[]; if(existing){ for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); existing.copies.push({barcode:code,status:'Available'}); added.push(code); } } else { let copies=[]; for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); copies.push({barcode:code,status:'Available'}); added.push(code); } books.push({title:title,grade:grade,copies:copies}); } saveBooks(books); document.getElementById('bookMsg').innerHTML='✅ Added: <b>'+qty+' x '+title+'</b> ('+grade+') — Barcodes: '+added.slice(0,5).join(', ')+(added.length>5?' ...':''); document.getElementById('bTitle').value=''; render(); });
+document.getElementById('bDept').addEventListener('change',onDeptChange);
+document.getElementById('bSubject').addEventListener('change',updatePreview);
+document.getElementById('bGrade').addEventListener('change',updatePreview);
+document.getElementById('bTitle').addEventListener('input',updatePreview);
+document.getElementById('quickMathsBtn').addEventListener('click',function(){ document.getElementById('bDept').value='Mathematics'; onDeptChange(); document.getElementById('bSubject').value='Mathematics'; document.getElementById('bGrade').value='Grade 10'; document.getElementById('bTitle').value='Study And Master Grade 10'; updatePreview(); });
+document.getElementById('quickEnglishBtn').addEventListener('click',function(){ document.getElementById('bDept').value='Languages'; onDeptChange(); document.getElementById('bSubject').value='English'; document.getElementById('bGrade').value='Grade 10'; document.getElementById('bTitle').value='English Grade 10'; updatePreview(); });
+document.getElementById('addBookBtn').addEventListener('click',function(){
+  let dept=document.getElementById('bDept').value; let grade=document.getElementById('bGrade').value; let subject=document.getElementById('bSubject').value; let title=document.getElementById('bTitle').value.trim(); let qty=parseInt(document.getElementById('bQty').value)||1;
+  if(!dept){ alert('❌ Select Department first — e.g. Mathematics'); return; } if(!subject){ alert('❌ Select Subject — e.g. Mathematics'); return; } if(!title){ alert('❌ Type Title — e.g. Study And Master Grade 10'); return; }
+  let books=getBooks();
+  // Match same title + grade + subject + dept - so Top Up adds to same group, not duplicate title
+  let existing=books.find(b=> b.title===title && b.grade===grade && (b.subject||'General')===subject && (b.department||'General')===dept);
+  let used=new Set(); books.forEach(b=> (b.copies||[]).forEach(c=>used.add(norm(c.barcode||c.bookNo||c.code||''))));
+  let added=[];
+  if(existing){ for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); existing.copies.push({barcode:code, bookNo:code, status:'Available'}); added.push(code); } }
+  else { let copies=[]; for(let i=0;i<qty;i++){ let code=nextBookBarcode(used); used.add(code); copies.push({barcode:code, bookNo:code, status:'Available'}); added.push(code); } books.push({title:title, grade:grade, department:dept, group:dept, subject:subject, copies:copies}); }
+  saveBooks(books);
+  document.getElementById('bookMsg').innerHTML='✅ Added: <b>'+qty+' x '+title+'</b> — 📁 '+dept+' • 🎓 '+grade+' • 📖 '+subject+' — Barcodes: '+added.slice(0,5).join(', ')+(added.length>5?' ...':'');
+  document.getElementById('bTitle').value=''; render();
+});
 document.getElementById('addLearnerBtn').addEventListener('click',function(){ let name=document.getElementById('lName').value.trim(); let grade=document.getElementById('lGrade').value; let cls=document.getElementById('lClass').value.trim().toUpperCase(); if(!name||!cls){ alert('Enter Name + Class e.g. 10A'); return; } let learners=getLearners(); let used=new Set(learners.map(l=>norm(l.id))); let gradeNum=grade.replace(/[^0-9]/g,''); let base=gradeNum+cls.replace(/[^A-Z0-9]/g,''); let id=''; for(let i=1;i<=999;i++){ let cand=base+String(i).padStart(3,'0'); if(!used.has(cand)){ id=cand; break; } } learners.push({id:id,name:name,grade:grade,class:cls}); saveLearners(learners); document.getElementById('learnerMsg').innerHTML='✅ Added Learner: <b>'+name+'</b> — ID: <b>'+id+'</b> • '+grade+' '+cls; document.getElementById('lName').value=''; render(); });
 document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; render(); });
+document.getElementById('filterDept').addEventListener('change',render); document.getElementById('filterGrade').addEventListener('change',render); document.getElementById('filterSubject').addEventListener('change',render);
 document.getElementById('searchBook').addEventListener('input',render); document.getElementById('searchLearner').addEventListener('input',render);
-window.addEventListener('makhanani-session-ready', setMe); setTimeout(setMe, 800); render();
+buildDeptDropdowns(); setMe();
 })();
+</script>
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{ if(!user){ window.location.href='login.html'; return; } try{ let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'LIBRARIAN'}; let fresh={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'LIBRARIAN',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),grades:prof.grades||'',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'}; localStorage.setItem('makhanani_session',JSON.stringify(fresh)); document.getElementById('topStatus').textContent='Logged in: '+fresh.name+' • '+fresh.role; }catch(e){} });
 </script>
 </body></html>
