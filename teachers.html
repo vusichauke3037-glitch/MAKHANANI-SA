@@ -1,91 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Add Teachers — Makhanani LTSM | Wordsworth High</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#f7f8fa;color:#1a2340;padding:16px}
-.top{background:#0a1f44;color:#fff;padding:14px 18px;border-radius:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center}
-.top b{font-size:19px}.top b span{color:#f2b705}
-.btn{background:#25D366;color:#fff;padding:10px 18px;border-radius:30px;font-weight:900;text-decoration:none;display:inline-block;border:0;cursor:pointer}
-.btn-dark{background:#0a1f44;color:#fff;padding:10px 18px;border-radius:30px;font-weight:900;text-decoration:none;display:inline-block;border:0;cursor:pointer}
-.btn-red{background:#dc2626;color:#fff;padding:7px 12px;border-radius:20px;font-weight:700;border:0;cursor:pointer;font-size:13px}
-.wrap{max-width:900px;margin:16px auto}
-.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,.06);margin-bottom:16px}
-.card h2{margin-bottom:12px}
-label{font-size:13px;font-weight:700;display:block;margin-top:12px}
-input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;margin-top:4px;font-size:15px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
-th,td{border:1px solid #e2e8f0;padding:10px;text-align:left}th{background:#0a1f44;color:#fff}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<div class="top"><div><b>MAKHANANI <span>LTSM</span></b><div style="font-size:12px;color:#cbd5e1">WORDSWORTH HIGH — ADD TEACHERS</div></div><div><a class="btn-dark" href="dashboard.html">← Back to Dashboard</a></div></div>
-
-<div class="wrap">
-<div class="card">
-<h2>➕ Add New Teacher</h2>
-<div class="grid">
-<div><label>Full Name *</label><input id="tName" placeholder="e.g. Mrs Sematle"></div>
-<div><label>Department *</label>
-<select id="tDept">
-<option>Commerce</option><option>Languages</option><option>Mathematics</option><option>Science</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option>
-</select></div>
-</div>
-<div class="grid">
-<div><label>Subject</label><input id="tSubject" placeholder="e.g. Accounting"></div>
-<div><label>Phone / WhatsApp</label><input id="tPhone" placeholder="078 000 0000"></div>
-</div>
-<div class="grid">
-<div><label>Username / Login</label><input id="tUser" placeholder="e.g. sematle"></div>
-<div><label>Password</label><input id="tPass" placeholder="e.g. 1234"></div>
-</div>
-<br><button class="btn" onclick="addTeacher()">✅ Save Teacher</button>
-<p id="msg" style="margin-top:10px;font-weight:700;color:#059669"></p>
-</div>
-
-<div class="card">
-<h2>👩🏽‍🏫 Teachers List — <span id="count">0</span></h2>
-<input id="search" oninput="render()" placeholder="🔍 Search teacher name / dept..." style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px">
-<div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Dept</th><th>Subject</th><th>Phone</th><th>Login</th><th></th></tr></thead><tbody id="list"></tbody></table></div>
-</div>
-</div>
-
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Add Teachers — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-200 min-h-screen"><script>(function(){ let e=localStorage.getItem('makhanani_active_emis'); if(!e){ location.href='school.html'; return; } window.EMIS=e; window.SCHOOL_NAME=localStorage.getItem('makhanani_active_school')||e; window.SKEY=function(k){ return 'EMIS_'+e+'_'+k; }; window.SGET=function(k,f){ try{ return JSON.parse(localStorage.getItem(SKEY(k))||JSON.stringify(f||[])); }catch(err){ return f||[]; } }; window.SSET=function(k,v){ localStorage.setItem(SKEY(k),JSON.stringify(v)); }; })();</script>
+<div class="max-w-4xl mx-auto p-3 flex gap-2 flex-wrap"><span class="font-black">👩🏽‍🏫 ADD TEACHERS</span><span class="bg-blue-950 text-white px-2 py-1 rounded-full text-xs font-bold" id="badge"></span><a href="dashboard.html" class="bg-gray-800 text-white px-3 py-1 rounded font-bold text-sm">← Dashboard</a><a href="staff.html" class="bg-violet-700 text-white px-3 py-1 rounded font-bold text-sm">👥 All Staff</a></div>
+<div class="max-w-4xl mx-auto px-3 pb-6"><div class="bg-white rounded-xl shadow p-4"><div class="grid grid-cols-2 gap-2"><input id="tName" placeholder="Full Name *" class="border rounded-lg px-3 py-2"><select id="tDept" class="border rounded-lg px-3 py-2"><option>Commerce</option><option>Languages</option><option>Mathematics</option><option>Sciences</option><option>Humanities</option><option>Technology</option></select><input id="tSubject" placeholder="Subject" class="border rounded-lg px-3 py-2"><input id="tPhone" placeholder="Phone" class="border rounded-lg px-3 py-2"><input id="tUser" placeholder="Username" class="border rounded-lg px-3 py-2"><input id="tPass" placeholder="Password" class="border rounded-lg px-3 py-2"></div><button onclick="addTeacher()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold mt-2">✅ Save Teacher</button><p id="msg" class="text-green-600 font-bold text-sm mt-1"></p></div><div class="bg-white rounded-xl shadow p-4 mt-3"><input id="search" oninput="render()" placeholder="🔍 Search..." class="border rounded-lg px-3 py-2 w-full"><div id="list" class="mt-2 text-sm"></div></div></div>
 <script>
-let teachers = JSON.parse(localStorage.getItem('makhanani_teachers')||'[]');
-function save(){ localStorage.setItem('makhanani_teachers', JSON.stringify(teachers)); }
-function addTeacher(){
-  let name=document.getElementById('tName').value.trim();
-  let dept=document.getElementById('tDept').value;
-  let subj=document.getElementById('tSubject').value.trim();
-  let phone=document.getElementById('tPhone').value.trim();
-  let user=document.getElementById('tUser').value.trim();
-  let pass=document.getElementById('tPass').value.trim();
-  if(!name){ alert('Please enter teacher name'); return; }
-  if(!user) user = name.toLowerCase().replace(/[^a-z]/g,'');
-  if(!pass) pass = '1234';
-  teachers.push({name,dept,subj,phone,user,pass});
-  save(); render();
-  document.getElementById('msg').textContent = '✅ ' + name + ' added! Login: ' + user + ' / ' + pass;
-  document.getElementById('tName').value=''; document.getElementById('tSubject').value=''; document.getElementById('tPhone').value=''; document.getElementById('tUser').value=''; document.getElementById('tPass').value='';
-}
-function del(i){ if(confirm('Delete this teacher?')){ teachers.splice(i,1); save(); render(); } }
-function render(){
-  let q=(document.getElementById('search').value||'').toLowerCase();
-  let list=document.getElementById('list'); list.innerHTML='';
-  let filtered=teachers.filter(t=>(t.name+' '+t.dept+' '+t.subj).toLowerCase().includes(q));
-  document.getElementById('count').textContent=filtered.length;
-  if(filtered.length==0){ list.innerHTML='<tr><td colspan="6" style="text-align:center;color:#64748b">No teachers yet. Add one above.</td></tr>'; return; }
-  filtered.forEach((t)=>{
-    let realIndex=teachers.indexOf(t);
-    list.innerHTML+='<tr><td><b>'+t.name+'</b></td><td>'+t.dept+'</td><td>'+(t.subj||'-')+'</td><td>'+(t.phone||'-')+'</td><td>'+t.user+' / '+t.pass+'</td><td><button class="btn-red" onclick="del('+realIndex+')">Delete</button></td></tr>';
-  });
-}
+document.getElementById('badge').textContent='🏫 '+window.SCHOOL_NAME+' • EMIS: '+window.EMIS;
+let teachers=SGET('makhanani_teachers',[]); let staff=SGET('makhanani_staff',[]);
+function addTeacher(){ let name=document.getElementById('tName').value.trim(); let dept=document.getElementById('tDept').value; let subj=document.getElementById('tSubject').value.trim(); let phone=document.getElementById('tPhone').value.trim(); let user=document.getElementById('tUser').value.trim()||name.toLowerCase().replace(/[^a-z]/g,''); let pass=document.getElementById('tPass').value.trim()||'1234'; if(!name){ alert('Enter name'); return; } teachers.push({name,dept,subj,phone,user,pass}); SSET('makhanani_teachers',teachers); staff.push({name,role:'Teacher',dept,subj,phone,user,pass}); SSET('makhanani_staff',staff); document.getElementById('msg').textContent='✅ '+name+' added! Login: '+user+' / '+pass; render(); }
+function del(i){ if(confirm('Delete?')){ let t=teachers[i]; teachers.splice(i,1); SSET('makhanani_teachers',teachers); staff=staff.filter(s=>!(s.name==t.name&&s.role=='Teacher')); SSET('makhanani_staff',staff); render(); } }
+function render(){ let q=(document.getElementById('search').value||'').toLowerCase(); let f=teachers.filter(t=>(t.name+' '+t.dept).toLowerCase().includes(q)); document.getElementById('list').innerHTML=f.length==0?'<p class="text-gray-500">No teachers yet.</p>':f.map(t=>{ let idx=teachers.indexOf(t); return '<div class="bg-gray-50 rounded p-2 mt-1 flex justify-between"><span><b>'+t.name+'</b> — '+t.dept+' — '+(t.subj||'-')+' — '+t.user+' / '+t.pass+'</span><button onclick="del('+idx+')" class="bg-red-600 text-white px-2 py-1 rounded text-xs">Delete</button></div>'; }).join(''); }
 render();
-</script>
-</body>
-</html>
+</script></body></html>
