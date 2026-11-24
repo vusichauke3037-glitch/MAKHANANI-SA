@@ -1,79 +1,114 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Print Barcodes — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><style>@media print{ .no-print{display:none!important;} @page{size:A4;margin:10mm;} }</style></head>
-<body class="bg-gray-100 min-h-screen"><div class="max-w-5xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 no-print flex gap-3 items-center"><img src="logo.png" class="h-12 w-12 rounded-xl border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><h1 class="font-black text-2xl">🖨️ Print Barcodes — A4 3x5 — Real CODE128</h1><p class="text-xs text-gray-500">Prints 15 barcodes per A4 page (3 columns x 5 rows). Scan with phone / scanner.</p></div></div>
-
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Print Barcodes — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script><style>@media print{ .no-print{display:none!important;} @page{size:A4;margin:10mm;} .barcode-card{break-inside:avoid; page-break-inside:avoid;} }</style></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50 no-print"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • PRINT BARCODES</div><div class="text-[11px] text-gray-300">School + MAKHANANI LTSM + BOOK / LEARNER on Top • Number + Grade at Bottom</div></div><div class="ml-auto flex gap-2 flex-wrap"><a href="librarian.html" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">↩️ Return to Librarian</a><a href="stock.html" class="bg-teal-600 text-white px-3 py-1 rounded font-bold text-xs">📦 Stock</a><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
+<div class="max-w-5xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 no-print flex gap-3 items-center flex-wrap"><div><h1 class="font-black text-2xl">🖨️ Print Barcodes — A4 3x5 — Real CODE128</h1><p class="text-xs text-gray-500">TOP: School Name + MAKHANANI LTSM + BOOK / LEARNER • BOTTOM: Textbook Number / Learner ID + Grade</p></div><a href="librarian.html" class="ml-auto bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">↩️ Return to Librarian</a></div>
 <div id="debugBox" class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-4 no-print text-sm font-bold">⏳ Checking books...</div>
 
-<div class="bg-white rounded-2xl p-4 no-print mt-4"><div class="grid md:grid-cols-3 gap-2"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><select id="bookSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="">-- Select Book Title --</option></select><button id="printBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-black">🖨️ Print A4</button></div><div class="flex gap-2 mt-2 flex-wrap"><button id="fixBtn" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm">🔧 Fix Undefined Barcodes — Repair Now</button><button id="exportBtn" type="button" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Export After Fix</button></div><p class="text-xs text-gray-500 mt-1">If you see `undefined`, tap <b>Fix Undefined Barcodes</b> once — it repairs old books saved with wrong field name.</p><p id="fixMsg" class="text-sm font-bold mt-1"></p></div>
+<!-- TYPE SWITCH + FILTERS -->
+<div class="bg-white rounded-2xl p-4 no-print mt-4">
+<div class="flex gap-2 flex-wrap items-center"><span class="font-black text-sm">Print Type:</span><button id="modeBookBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">📚 BOOK Barcodes</button><button id="modeLearnerBtn" type="button" class="bg-gray-200 px-4 py-2 rounded-lg font-bold text-sm">👩‍🎓 LEARNER Barcodes</button><span class="text-xs text-gray-500 ml-1" id="modeHint">Showing BOOK barcodes — Textbook Numbers</span></div>
+<div class="grid md:grid-cols-3 gap-2 mt-3"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><select id="bookSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="">-- Select Book Title --</option></select><button id="printBtn" type="button" class="bg-black text-white px-4 py-2 rounded-lg font-black">🖨️ Print A4</button></div>
+<!-- Learner filters - hidden in Book mode -->
+<div id="learnerFilters" class="grid md:grid-cols-3 gap-2 mt-2 hidden"><select id="learnerGradeFilter" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><input id="learnerClassFilter" placeholder="Filter Class e.g. 10A (leave blank = all)" class="border-2 rounded-lg px-3 py-2"><input id="learnerSearch" placeholder="🔍 Search learner name / ID..." class="border-2 rounded-lg px-3 py-2"></div>
+<div class="flex gap-2 mt-2 flex-wrap"><button id="fixBtn" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm">🔧 Fix Undefined Barcodes — Repair Now</button><button id="exportBtn" type="button" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Export After Fix</button><a href="librarian.html" class="bg-gray-200 px-4 py-2 rounded-lg font-bold text-sm">↩️ Return to Librarian</a></div>
+<p class="text-xs text-gray-500 mt-1">BOOK: One card per textbook copy. LEARNER: One card per learner — scan Learner ID to issue / return.</p><p id="fixMsg" class="text-sm font-bold mt-1"></p></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4"><div id="barcodeGrid" class="grid grid-cols-3 gap-4"></div></div>
+<!-- PREVIEW - WHAT WILL PRINT -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black no-print">👀 Preview — Exactly As It Will Print</h2><p class="text-xs text-gray-500 no-print">TOP: School Name + MAKHANANI LTSM + BOOK / LEARNER • BOTTOM: Textbook Number / Learner ID + Grade</p><div id="barcodeGrid" class="grid grid-cols-3 gap-4 mt-3"></div></div>
+<div class="flex gap-2 mt-4 flex-wrap no-print"><a href="librarian.html" class="bg-green-600 text-white px-6 py-3 rounded-lg font-black">↩️ Return to Librarian</a><a href="stock.html" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📦 Stock →</a><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Issue →</a><a href="dashboard.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📊 Dashboard →</a></div>
 </div>
-
 <script>
 (function(){
-let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
-// FIX: Read barcode from ANY possible field name - old data used different names
-function getCode(c){
-  if(!c) return '';
-  if(typeof c==='string') return c;
-  return c.barcode || c.bookNo || c.bookNumber || c.code || c.no || c.id || c.barCode || c.Barcode || '';
-}
+let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'}; let mode='BOOK';
+function getCode(c){ if(!c) return ''; if(typeof c==='string') return c; return c.barcode || c.bookNo || c.bookNumber || c.code || c.no || c.id || c.barCode || c.Barcode || ''; }
 function getBooks(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]'); }catch(e){ return []; } }
+function getLearners(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]'); }catch(e){ return []; } }
 function saveBooks(b){ localStorage.setItem('EMIS_'+cur.emis+'_makhanani_ltsm',JSON.stringify(b)); localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_ltsm',JSON.stringify(b)); }
 function getInitials(n){ return n.trim().split(/\s+/).map(w=>w[0].toUpperCase()).join(''); }
+function bookLabel(b){ let d=b.department||b.group||'General'; let s=b.subject||'General'; return '📁 '+d+' • 📖 '+s; }
+// *** BARCODE CARD - TOP: School + Brand + Type / BOTTOM: Number + Grade ***
+function barcodeCard(opts){
+  // opts: {type:'BOOK'|'LEARNER', code, numberLabel, title, subtitle, grade, status}
+  let typeBadge = opts.type==='BOOK' ? '📚 BOOK' : '👩‍🎓 LEARNER';
+  let typeColor = opts.type==='BOOK' ? 'bg-black text-white' : 'bg-purple-700 text-white';
+  return '<div class="barcode-card border-2 border-black rounded-lg overflow-hidden bg-white">'
+    // TOP
+    + '<div class="text-center px-2 pt-2 pb-1">'
+    + '<div class="font-black text-[13px] leading-tight uppercase">'+cur.name+'</div>'
+    + '<div class="font-black text-[15px] leading-tight tracking-widest text-yellow-600">MAKHANANI LTSM</div>'
+    + '<div class="mt-1"><span class="'+typeColor+' text-[11px] font-black px-2 py-0.5 rounded">'+typeBadge+'</span></div>'
+    + '<div class="text-[11px] font-bold leading-tight mt-1 truncate">'+opts.title+'</div>'
+    + '<div class="text-[10px] text-gray-500 leading-tight truncate">'+opts.subtitle+'</div>'
+    + '</div>'
+    // BARCODE
+    + '<div class="px-2 py-1 border-y border-dashed border-gray-300 text-center bg-white"><svg class="barcode mx-auto" data-code="'+opts.code+'"></svg></div>'
+    // BOTTOM
+    + '<div class="text-center px-2 py-2">'
+    + '<div class="text-[10px] font-bold text-gray-500 tracking-widest">'+opts.numberLabel+'</div>'
+    + '<div class="font-mono font-black text-[16px] leading-tight">'+(opts.code||'<span class="text-red-600 text-xs">MISSING — Tap Fix</span>')+'</div>'
+    + '<div class="font-black text-[13px] mt-0.5">'+opts.grade+'</div>'
+    + '<div class="text-[10px] text-gray-500">'+(opts.status||'')+'</div>'
+    + '</div>'
+    + '</div>';
+}
 function renderSel(){
-  let books=getBooks();
-  document.getElementById('bookSel').innerHTML='<option value="">-- Select Book Title --</option>'+books.map((b,i)=>'<option value="'+i+'">'+b.title+' ('+b.grade+') — '+(b.copies||[]).length+' copies</option>').join('');
+  let books=getBooks(); let learners=getLearners();
+  document.getElementById('bookSel').innerHTML='<option value="">-- Select Book Title --</option>'+books.map((b,i)=>'<option value="'+i+'">'+b.title+' ('+b.grade+') — '+bookLabel(b)+' — '+(b.copies||[]).length+' copies</option>').join('');
   let undefinedCount=0, total=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ total++; if(!getCode(c)) undefinedCount++; }));
-  if(total===0){ document.getElementById('debugBox').innerHTML='❌ No books on THIS device — Import from phone via Home → Export / Import, or Add books in Librarian.'; }
-  else if(undefinedCount>0){ document.getElementById('debugBox').innerHTML='⚠️ Found <b>'+undefinedCount+' / '+total+'</b> copies with missing / wrong barcode field — Tap <b>🔧 Fix Undefined Barcodes</b> below to repair them. Do NOT print until fixed.'; }
-  else { document.getElementById('debugBox').innerHTML='✅ Books OK — '+total+' copies, all have barcode numbers. Select a title below to print.'; }
+  if(mode==='BOOK'){
+    if(total===0){ document.getElementById('debugBox').innerHTML='❌ No books on THIS device — Go to <a href="librarian.html" class="underline text-blue-600 font-black">Librarian → Add Book</a> or Import from phone via Home → Export / Import.'; }
+    else if(undefinedCount>0){ document.getElementById('debugBox').innerHTML='⚠️ Found <b>'+undefinedCount+' / '+total+'</b> copies with missing / wrong barcode field — Tap <b>🔧 Fix Undefined Barcodes</b> below to repair them. Do NOT print until fixed.'; }
+    else { document.getElementById('debugBox').innerHTML='✅ BOOK Mode — '+total+' textbook copies, all have Textbook Numbers. Select a title below to print.'; }
+  } else {
+    document.getElementById('debugBox').innerHTML='✅ LEARNER Mode — '+learners.length+' learners on '+cur.name+'. Filter by Grade / Class below, then Print. Each card = 1 Learner ID.';
+  }
 }
 function renderGrid(){
+  if(mode==='LEARNER'){ renderLearnerGrid(); return; }
   let idx=document.getElementById('bookSel').value;
   if(idx===''){ document.getElementById('barcodeGrid').innerHTML='<p class="text-gray-500 col-span-3">Select a book title above.</p>'; return; }
-  let b=getBooks()[parseInt(idx)];
-  if(!b){ document.getElementById('barcodeGrid').innerHTML='<p class="text-red-600">Book not found.</p>'; return; }
-  document.getElementById('barcodeGrid').innerHTML=b.copies.map(c=>{
-    let code=getCode(c);
-    let status=c.status||'Available';
-    return '<div class="border rounded p-2 text-center"><div class="text-xs font-bold">'+b.title+'</div><svg class="barcode mx-auto" data-code="'+code+'"></svg><div class="font-mono font-black text-sm">'+(code||'<span class="text-red-600">MISSING — Tap Fix Above</span>')+'</div><div class="text-xs">'+cur.name+' • '+b.grade+' • '+status+'</div></div>';
-  }).join('');
-  document.querySelectorAll('.barcode').forEach(s=>{
-    let code=s.getAttribute('data-code');
-    if(!code){ s.outerHTML='<div class="text-red-600 font-bold text-xs py-4">NO CODE — Tap Fix</div>'; return; }
-    try{ JsBarcode(s, code, {format:'CODE128', width:1.5, height:40, displayValue:false}); }catch(e){ s.outerHTML='<div class="text-red-600 text-xs">Barcode error: '+code+'</div>'; }
-  });
+  let b=getBooks()[parseInt(idx)]; if(!b){ document.getElementById('barcodeGrid').innerHTML='<p class="text-red-600">Book not found.</p>'; return; }
+  document.getElementById('barcodeGrid').innerHTML=b.copies.map(c=>{ let code=getCode(c); return barcodeCard({type:'BOOK', code:code, numberLabel:'TEXTBOOK NUMBER', title:b.title, subtitle:bookLabel(b), grade:b.grade, status:(c.status||'Available')+' • '+cur.name}); }).join('');
+  drawBarcodes();
 }
+function renderLearnerGrid(){
+  let learners=getLearners();
+  let gf=document.getElementById('learnerGradeFilter').value; let cf=(document.getElementById('learnerClassFilter').value||'').toUpperCase().trim(); let q=(document.getElementById('learnerSearch').value||'').toLowerCase();
+  let filtered=learners.filter(l=>{ if(gf!=='ALL' && l.grade!==gf) return false; if(cf && (l.class||'').toUpperCase()!==cf) return false; if(q && !(l.name+' '+l.id).toLowerCase().includes(q)) return false; return true; });
+  if(!filtered.length){ document.getElementById('barcodeGrid').innerHTML='<p class="text-gray-500 col-span-3">No learners for this filter on '+cur.name+'. Add learners in Librarian, or change filter.</p>'; return; }
+  document.getElementById('barcodeGrid').innerHTML=filtered.map(l=> barcodeCard({type:'LEARNER', code:l.id, numberLabel:'LEARNER ID', title:l.name, subtitle:l.grade+' '+l.class+' • '+l.id, grade:l.grade+' '+l.class, status:cur.name}) ).join('');
+  drawBarcodes();
+}
+function drawBarcodes(){
+  document.querySelectorAll('.barcode').forEach(s=>{ let code=s.getAttribute('data-code'); if(!code){ s.outerHTML='<div class="text-red-600 font-bold text-xs py-4">NO CODE — Tap Fix</div>'; return; } try{ JsBarcode(s, code, {format:'CODE128', width:1.5, height:38, displayValue:false, margin:0}); }catch(e){ s.outerHTML='<div class="text-red-600 text-xs">Barcode error: '+code+'</div>'; } });
+}
+function setMode(m){
+  mode=m;
+  document.getElementById('modeBookBtn').className = m==='BOOK' ? 'bg-black text-white px-4 py-2 rounded-lg font-black text-sm' : 'bg-gray-200 px-4 py-2 rounded-lg font-bold text-sm';
+  document.getElementById('modeLearnerBtn').className = m==='LEARNER' ? 'bg-purple-700 text-white px-4 py-2 rounded-lg font-black text-sm' : 'bg-gray-200 px-4 py-2 rounded-lg font-bold text-sm';
+  document.getElementById('modeHint').textContent = m==='BOOK' ? 'Showing BOOK barcodes — Textbook Numbers' : 'Showing LEARNER barcodes — Learner IDs';
+  document.getElementById('learnerFilters').classList.toggle('hidden', m!=='LEARNER');
+  document.getElementById('bookSel').style.display = m==='BOOK' ? '' : 'none';
+  renderSel(); renderGrid();
+}
+document.getElementById('modeBookBtn').addEventListener('click',function(){ setMode('BOOK'); });
+document.getElementById('modeLearnerBtn').addEventListener('click',function(){ setMode('LEARNER'); });
 document.getElementById('fixBtn').addEventListener('click',function(){
-  let books=getBooks();
-  let used=new Set(); books.forEach(b=> (b.copies||[]).forEach(c=>{ let code=getCode(c); if(code) used.add(code.toUpperCase()); }));
+  let books=getBooks(); let used=new Set(); books.forEach(b=> (b.copies||[]).forEach(c=>{ let code=getCode(c); if(code) used.add(code.toUpperCase()); }));
   let fixed=0; let ini=getInitials(cur.name);
   function nextCode(){ for(let i=1;i<=999999;i++){ let cand=ini+String(i).padStart(6,'0'); if(!used.has(cand)){ used.add(cand); return cand; } } return ini+'000001'; }
-  books.forEach(b=>{
-    b.copies=(b.copies||[]).map(c=>{
-      if(typeof c==='string'){ if(!c){ fixed++; return {barcode:nextCode(), status:'Available'}; } return {barcode:c, status:'Available'}; }
-      let code=getCode(c);
-      if(!code){ fixed++; code=nextCode(); }
-      // Normalize to {barcode, status, ...keep other fields}
-      return {...c, barcode:code, bookNo:code};
-    });
-  });
-  saveBooks(books);
-  document.getElementById('fixMsg').innerHTML='✅ Fixed <b>'+fixed+'</b> copies. Barcodes now saved as <b>barcode</b> field — e.g. '+ini+'000001. Select title again to print.';
-  renderSel(); renderGrid();
+  books.forEach(b=>{ b.copies=(b.copies||[]).map(c=>{ if(typeof c==='string'){ if(!c){ fixed++; return {barcode:nextCode(), status:'Available'}; } return {barcode:c, status:'Available'}; } let code=getCode(c); if(!code){ fixed++; code=nextCode(); } return {...c, barcode:code, bookNo:code}; }); });
+  saveBooks(books); document.getElementById('fixMsg').innerHTML='✅ Fixed <b>'+fixed+'</b> copies. Barcodes now saved as <b>barcode</b> field — e.g. '+ini+'000001. Select title again to print.'; renderSel(); renderGrid();
 });
-document.getElementById('exportBtn').addEventListener('click',function(){
-  try{ var data={}; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf('makhanani')>=0) data[k]=localStorage.getItem(k); } var code=btoa(unescape(encodeURIComponent(JSON.stringify(data)))); navigator.clipboard.writeText(code).catch(()=>{}); document.getElementById('fixMsg').innerHTML='✅ Export code copied — Paste it on other device via Home → Import. Keys: '+Object.keys(data).length; }catch(e){ document.getElementById('fixMsg').innerHTML='❌ '+e.message; }
-});
-document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; renderSel(); document.getElementById('barcodeGrid').innerHTML=''; });
+document.getElementById('exportBtn').addEventListener('click',function(){ try{ var data={}; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf('makhanani')>=0) data[k]=localStorage.getItem(k); } var code=btoa(unescape(encodeURIComponent(JSON.stringify(data)))); navigator.clipboard.writeText(code).catch(()=>{}); document.getElementById('fixMsg').innerHTML='✅ Export code copied — Paste it on other device via Home → Import. Keys: '+Object.keys(data).length; }catch(e){ document.getElementById('fixMsg').innerHTML='❌ '+e.message; } });
+document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; renderSel(); renderGrid(); });
 document.getElementById('bookSel').addEventListener('change',renderGrid);
-document.getElementById('printBtn').addEventListener('click',function(){
-  let undefinedCount=0; getBooks().forEach(b=> (b.copies||[]).forEach(c=>{ if(!getCode(c)) undefinedCount++; }));
-  if(undefinedCount>0){ alert('⚠️ '+undefinedCount+' copies still have missing barcodes. Tap 🔧 Fix Undefined Barcodes FIRST, then print.'); return; }
-  window.print();
-});
-renderSel();
+document.getElementById('learnerGradeFilter').addEventListener('change',renderGrid);
+document.getElementById('learnerClassFilter').addEventListener('input',renderGrid);
+document.getElementById('learnerSearch').addEventListener('input',renderGrid);
+document.getElementById('printBtn').addEventListener('click',function(){ if(mode==='BOOK'){ let undefinedCount=0; getBooks().forEach(b=> (b.copies||[]).forEach(c=>{ if(!getCode(c)) undefinedCount++; })); if(undefinedCount>0){ alert('⚠️ '+undefinedCount+' copies still have missing barcodes. Tap 🔧 Fix Undefined Barcodes FIRST, then print.'); return; } } window.print(); });
+setMode('BOOK');
 })();
 </script>
 </body></html>
