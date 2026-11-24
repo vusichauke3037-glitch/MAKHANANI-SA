@@ -1,47 +1,91 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Staff — Teachers + HODs — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Staff — Firebase — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • STAFF</div><div class="text-[11px] text-gray-300">Teachers + HODs + Librarian — Who can issue to whom</div></div><a href="index.html" class="ml-auto bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • STAFF — FIREBASE</div><div class="text-[11px] text-gray-300" id="whoAmI">Checking login...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" type="button" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
 <div class="max-w-5xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 flex flex-wrap gap-2 justify-between"><div><h1 class="font-black text-2xl">👩‍🏫 Staff — Teachers / HODs</h1><p class="text-xs text-gray-500">Teacher = Own Class Only • HOD = Own Department Only • Librarian = Whole School</p></div><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select></div>
-
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">➕ Add Staff Member</h2><div class="grid md:grid-cols-3 gap-2 mt-3">
+<div class="bg-white rounded-2xl p-4"><h1 class="font-black text-2xl">👥 Staff — Firebase Accounts — makhanani-ltsm</h1><p class="text-xs text-gray-500">Admin creates real Firebase login. Teacher = Own Class • HOD = Own Department • Librarian = Whole School</p></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">➕ Create Staff — Email + Password + Role</h2>
+<div class="grid md:grid-cols-3 gap-2 mt-3">
 <input id="sName" placeholder="Full Name e.g. Ms N. Dube" class="border-2 rounded-lg px-3 py-2">
-<select id="sRole" class="border-2 rounded-lg px-3 py-2"><option value="TEACHER">👩‍🏫 Teacher — Own Class Only</option><option value="HOD">👔 HOD — Own Department Only</option><option value="LIBRARIAN">📚 Librarian — Whole School</option></select>
-<input id="sSubject" placeholder="Subject / Department e.g. Mathematics" class="border-2 rounded-lg px-3 py-2">
-<input id="sClass" placeholder="Class (Teacher only) e.g. 10A" class="border-2 rounded-lg px-3 py-2">
+<input id="sEmail" type="email" placeholder="Email e.g. dube@wordsworth.co.za" class="border-2 rounded-lg px-3 py-2">
+<input id="sPass" placeholder="Password e.g. Dube2026 (6+ chars)" class="border-2 rounded-lg px-3 py-2">
+<select id="sRole" class="border-2 rounded-lg px-3 py-2"><option value="TEACHER">👩‍🏫 Teacher — Own Class Only</option><option value="HOD">👔 HOD — Own Department Only</option><option value="LIBRARIAN">📚 Librarian — Whole School</option><option value="ADMIN">🛡️ Admin — All Schools</option></select>
+<input id="sSubject" placeholder="Subject / Dept e.g. Mathematics" class="border-2 rounded-lg px-3 py-2">
+<input id="sClass" placeholder="Class (Teacher) e.g. 10A" class="border-2 rounded-lg px-3 py-2">
 <input id="sGrades" placeholder="Grades (HOD) e.g. 10,11,12" class="border-2 rounded-lg px-3 py-2">
-<input id="sPass" placeholder="Staff PIN e.g. 1234" class="border-2 rounded-lg px-3 py-2">
-</div><button id="addStaffBtn" type="button" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold mt-3">➕ Add Staff</button><p id="staffMsg" class="text-sm font-bold mt-2"></p>
-<p class="text-xs text-gray-500 mt-1">Examples: Teacher Ms Dube — Mathematics — Class 10A — PIN 1234 • HOD Mr Chauke — Mathematics — Grades 10,11,12 — PIN 5678 • Librarian — Whole School — PIN 0000</p></div>
-
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 Staff List — This School</h2><div id="staffList" class="mt-2 space-y-2 text-sm"></div></div>
-<div class="flex gap-2 mt-4"><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Go to Issue (Role) →</a><a href="issue-record.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📋 Print Record Per Class →</a></div>
+<select id="sSchool" class="border-2 rounded-lg px-3 py-2"><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select>
 </div>
-<script>
-(function(){
-let cur={prefix:'WHS',emis:'700310854',name:'Wordsworth High School'};
-function getStaff(){try{return JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_staff')||'[]');}catch(e){return [];}}
-function saveStaff(s){localStorage.setItem('EMIS_'+cur.emis+'_makhanani_staff',JSON.stringify(s));localStorage.setItem('makhanani_'+cur.prefix+'_makhanani_staff',JSON.stringify(s));}
-function render(){
-  let s=getStaff();
-  document.getElementById('staffList').innerHTML=s.map((x,i)=>{
-    let scope = x.role==='TEACHER' ? 'Class: <b>'+x.class+'</b> • Subject: '+x.subject : x.role==='HOD' ? 'Dept: <b>'+x.subject+'</b> • Grades: '+x.grades : 'Whole School';
-    return '<div class="border rounded-lg p-2 flex justify-between gap-2"><div><b>'+x.name+'</b> • '+(x.role==='TEACHER'?'👩‍🏫 Teacher':x.role==='HOD'?'👔 HOD':'📚 Librarian')+'<br>'+scope+' • PIN: '+x.pin+'</div><button data-del="'+i+'" class="del-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs h-fit">Delete</button></div>';
-  }).join('')||'<p class="text-gray-500">No staff yet. Add HOD + Teachers above. Default Librarian: PIN 0000 is built-in if no staff added.</p>';
-  document.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',function(){let i=parseInt(this.getAttribute('data-del'));let s=getStaff();s.splice(i,1);saveStaff(s);render();}));
+<button id="addStaffBtn" type="button" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold mt-3">➕ Create Firebase Account</button>
+<p id="staffMsg" class="text-sm font-bold mt-2"></p>
+<p class="text-xs text-gray-500 mt-1">⚠️ Firebase: Password must be <b>6+ characters</b>. After creating, tell staff their email + password. They login at <b>login.html</b>.</p>
+</div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 Staff List — From Firestore — collection: users</h2><div id="staffList" class="mt-2 space-y-2 text-sm"></div></div>
+</div>
+<script type="module">
+import { auth, db, app } from './firebase-config.js';
+import { onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let me=null, myRole='';
+async function loadStaff(){
+  let snap=await getDocs(collection(db, 'users'));
+  let list=[]; snap.forEach(d=> list.push({id:d.id, ...d.data()}));
+  document.getElementById('staffList').innerHTML=list.map(u=>{
+    let scope = u.role==='TEACHER' ? 'Class: <b>'+(u.class||'')+'</b> • Subject: '+(u.subject||'') : u.role==='HOD' ? 'Dept: <b>'+(u.subject||'')+'</b> • Grades: '+(u.grades||'') : u.role==='ADMIN' ? 'All Schools' : 'Whole School';
+    return '<div class="border rounded-lg p-2 flex justify-between gap-2 flex-wrap"><div><b>'+u.name+'</b> • '+(u.role||'')+'<br>📧 '+u.email+' • School: '+(u.school||'')+'<br>'+scope+'<br><span class="text-xs text-gray-400">UID: '+u.id+'</span></div><div class="flex gap-1 h-fit"><button data-del="'+u.id+'" class="del-btn bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Delete from Firestore</button></div></div>';
+  }).join('')||'<p class="text-gray-500">No staff in Firestore yet. Create Admin in Firebase Console first.</p>';
+  document.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click', async ()=>{
+    if(myRole!=='ADMIN' && myRole!=='LIBRARIAN'){ alert('Only Admin / Librarian can delete.'); return; }
+    if(!confirm('Delete this user from Firestore? This does NOT delete their Firebase Auth login — delete that in Firebase Console > Authentication.')) return;
+    await deleteDoc(doc(db, 'users', b.getAttribute('data-del')));
+    loadStaff();
+  }));
 }
-document.getElementById('addStaffBtn').addEventListener('click',function(){
-  let name=document.getElementById('sName').value.trim(); let role=document.getElementById('sRole').value; let subj=document.getElementById('sSubject').value.trim()||'General'; let cls=document.getElementById('sClass').value.trim().toUpperCase(); let grades=document.getElementById('sGrades').value.trim(); let pin=document.getElementById('sPass').value.trim()||'1234';
-  if(!name){alert('Enter Staff Name');return;}
-  if(role==='TEACHER' && !cls){alert('Teacher must have a Class e.g. 10A');return;}
-  if(role==='HOD' && !grades){alert('HOD must have Grades e.g. 10,11,12');return;}
-  let s=getStaff(); s.push({name:name,role:role,subject:subj,class:cls,grades:grades,pin:pin,school:cur.name});
-  saveStaff(s); document.getElementById('staffMsg').innerHTML='✅ Added: <b>'+name+'</b> — '+role+' — '+(role==='TEACHER'?'Class '+cls:role==='HOD'?'Dept '+subj+' Grades '+grades:'Whole School');
-  document.getElementById('sName').value=''; render();
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  let snap=await getDoc(doc(db, 'users', user.uid));
+  let prof=snap.exists()? snap.data() : {name:user.email, role:'TEACHER'};
+  me=prof; myRole=prof.role||'TEACHER';
+  document.getElementById('whoAmI').textContent='Logged in: '+prof.name+' • '+myRole+' • '+user.email+' • 🔥 makhanani-ltsm';
+  if(myRole==='TEACHER' || myRole==='HOD'){
+    document.getElementById('addStaffBtn').disabled=true;
+    document.getElementById('addStaffBtn').textContent='🔒 Only Admin / Librarian Can Create Accounts';
+    document.getElementById('addStaffBtn').className='bg-gray-400 text-white px-6 py-2 rounded-lg font-bold mt-3';
+  }
+  loadStaff();
 });
-document.getElementById('schoolSel').addEventListener('change',function(){let v=this.value.split('|');cur={prefix:v[0],emis:v[1],name:v[2]};render();});
-render();
-})();
+document.getElementById('addStaffBtn').addEventListener('click', async ()=>{
+  if(myRole==='TEACHER'||myRole==='HOD'){ alert('Only Admin / Librarian can create accounts.'); return; }
+  let name=document.getElementById('sName').value.trim();
+  let email=document.getElementById('sEmail').value.trim().toLowerCase();
+  let pass=document.getElementById('sPass').value.trim();
+  let role=document.getElementById('sRole').value;
+  let subj=document.getElementById('sSubject').value.trim()||'General';
+  let cls=document.getElementById('sClass').value.trim().toUpperCase();
+  let grades=document.getElementById('sGrades').value.trim();
+  let sv=document.getElementById('sSchool').value.split('|');
+  if(!name||!email||!pass){ alert('Enter Name + Email + Password'); return; }
+  if(pass.length<6){ alert('Firebase password must be 6+ characters'); return; }
+  if(role==='TEACHER' && !cls){ alert('Teacher must have Class e.g. 10A'); return; }
+  if(role==='HOD' && !grades){ alert('HOD must have Grades e.g. 10,11,12'); return; }
+  document.getElementById('staffMsg').innerHTML='⏳ Creating Firebase account for '+email+'...';
+  try{
+    let secondaryApp=initializeApp(auth.app.options, 'secondary-'+Date.now());
+    let secondaryAuth=getAuth(secondaryApp);
+    let cred=await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+    let uid=cred.user.uid;
+    await setDoc(doc(db, 'users', uid), {name:name, email:email, role:role, subject:subj, class:cls, grades:grades, school:sv[2], emis:sv[1], prefix:sv[0], createdAt:new Date().toISOString(), createdBy: me?.name||'Admin'});
+    await signOut(secondaryAuth);
+    document.getElementById('staffMsg').innerHTML='✅ Firebase Account Created: <b>'+name+'</b> — '+role+' — Login: <b>'+email+'</b> / <b>'+pass+'</b><br>Send this to them on WhatsApp. They login at <b>login.html</b>';
+    document.getElementById('sName').value=''; document.getElementById('sEmail').value=''; document.getElementById('sPass').value='';
+    loadStaff();
+  }catch(e){
+    let m=e.message;
+    if(m.includes('email-already-in-use')) m='❌ Email already exists in Firebase: '+email+' — Use a different email or delete it in Firebase Console > Authentication.';
+    document.getElementById('staffMsg').innerHTML=m;
+  }
+});
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); window.location.href='login.html'; });
 </script>
 </body></html>
