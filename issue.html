@@ -1,57 +1,54 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Issue / Retrieval — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Issue / Retrieval — Makhanani LTSM LIVE</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
 <style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
 <body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
 <div id="impBanner" style="display:none; background:#dc2626; color:white; text-align:center; padding:10px; font-weight:900; font-size:13px; position:sticky; top:0; z-index:9999;">👀 SUPER ADMIN VIEWING AS <span id="impName"></span> — <button onclick="returnToSuperAdmin()" style="background:white; color:#dc2626; padding:4px 12px; border-radius:999px; font-weight:900; margin-left:8px;">🔙 RETURN TO SUPER ADMIN</button></div>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • ISSUE / RETRIEVAL</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • ISSUE / RETRIEVAL • <span class="text-green-400">LIVE</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
 <div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-orange-500"><h1 class="font-black text-2xl">📥 Issue / Return — Due 30 November</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📤 Issue Book to Learner</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="learnerSelect" class="border-2 rounded-lg px-3 py-2"></select><select id="bookSelect" class="border-2 rounded-lg px-3 py-2"></select><button id="issueBtn" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-black">📤 ISSUE BOOK</button></div><p id="issueMsg" class="text-sm font-bold mt-1"></p></div>
+<div class="bg-white rounded-2xl p-4 border-4 border-orange-500"><h1 class="font-black text-2xl">📥 Issue / Return — Due 30 November — LIVE</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📤 Issue Book to Learner (Firebase)</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="learnerSelect" class="border-2 rounded-lg px-3 py-2"></select><select id="bookSelect" class="border-2 rounded-lg px-3 py-2"></select><button id="issueBtn" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-black">📤 ISSUE BOOK</button></div><p id="issueMsg" class="text-sm font-bold mt-1"></p></div>
 <div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 Return Book</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="returnSelect" class="border-2 rounded-lg px-3 py-2"></select><button id="returnBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black">📥 MARK RETURNED</button><button onclick="printRetrieval()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black">🖨️ Print Retrieval Report</button></div><p id="returnMsg" class="text-sm font-bold mt-1"></p></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📋 Issue History</h2><input id="histSearch" placeholder="🔍 Search learner / book..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="histList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📋 Issue History — LIVE</h2><input id="histSearch" placeholder="🔍 Search learner / book..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="histList" class="mt-2 text-sm">Loading...</div></div>
 </div>
 <script>(function(){ try{ let s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); if(s && s.isImpersonating){ document.getElementById('impBanner').style.display='block'; document.getElementById('impName').textContent=s.name+' ('+s.role+') • '+s.school; } }catch(e){} window.returnToSuperAdmin=function(){ let sup=localStorage.getItem('makhanani_superadmin_session'); if(sup){ localStorage.setItem('makhanani_session',sup); localStorage.removeItem('makhanani_superadmin_session'); localStorage.removeItem('makhanani_impersonating'); location.href='superadmin-dashboard.html'; } else { localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; } }; })();</script>
-<script>
+<script type="module">
+import { initializeApp } from 'firebase/app'; import { getAuth, signOut } from 'firebase/auth'; import { getFirestore, collection, addDoc, getDocs, query, where, onSnapshot } from 'firebase/firestore';
+const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
+const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
 let sess=null; try{ sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
 if(!sess){ location.href='login.html'; }
-document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis;
+document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis+' • LIVE';
 document.getElementById('schoolLine').textContent=sess.school+' • EMIS '+sess.emis+' • '+sess.prefix;
-function getBooks(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_ltsm')||'[]'); }catch(e){ return []; } }
-function getLearners(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_learners')||'[]'); }catch(e){ return []; } }
-function getIssues(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_issues')||'[]'); }catch(e){ return []; } }
-function setIssues(v){ localStorage.setItem('EMIS_'+sess.emis+'_makhanani_issues', JSON.stringify(v)); }
+let books=[], learners=[], issues=[];
 function render(){
-  let books=getBooks(); let learners=getLearners(); let issues=getIssues();
   let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let out=Math.max(0,issued-returned); let pct=issued===0?null:(returned/issued*100);
   document.getElementById('stats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+issued+'</div><div class="text-xs">Issued</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+returned+'</div><div class="text-xs">Returned</div></div><div class="bg-red-50 rounded p-2"><div class="font-black text-xl">'+out+'</div><div class="text-xs">Still Out</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+(pct===null?'—':pct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval</div></div>';
-  document.getElementById('learnerSelect').innerHTML='<option value="">— Select Learner —</option>'+learners.map((l,i)=>'<option value="'+i+'">'+l.name+' • '+l.class+'</option>').join('');
-  document.getElementById('bookSelect').innerHTML='<option value="">— Select Book —</option>'+books.map((b,i)=>'<option value="'+i+'">'+b.title+' • '+b.subject+' • Grade '+b.grade+'</option>').join('');
-  // Outstanding issues for return dropdown
-  let outstanding=[]; let counts={};
-  issues.forEach((iss,idx)=>{ if(iss.action==='Issued'){ let key=iss.learnerName+'|'+iss.bookTitle; counts[key]=(counts[key]||0)+1; } });
-  // Simpler: list all Issued that haven't been returned by counting - show last 50 Issued
-  let issuedList=issues.map((iss,idx)=>({...iss, idx})).filter(x=>x.action==='Issued').slice(-50).reverse();
-  document.getElementById('returnSelect').innerHTML='<option value="">— Select Issued Book to Return —</option>'+issuedList.map(x=>'<option value="'+x.idx+'">'+x.learnerName+' • '+x.bookTitle+' • '+x.date+'</option>').join('');
+  document.getElementById('learnerSelect').innerHTML='<option value="">— Select Learner —</option>'+learners.map((l,i)=>'<option value="'+l.id+'">'+l.name+' • '+l.class+'</option>').join('');
+  document.getElementById('bookSelect').innerHTML='<option value="">— Select Book —</option>'+books.map(b=>'<option value="'+b.id+'">'+b.title+' • '+b.subject+' • Grade '+b.grade+' • Copies '+(b.totalCopies||0)+'</option>').join('');
+  // For return: show Issued entries - we need to track which Issued have been returned by matching learner+book counts
+  // Simple approach: show all Issued, user picks one to return, we add a Returned entry
+  let issuedList=issues.filter(x=>x.action==='Issued').slice(-100).reverse();
+  document.getElementById('returnSelect').innerHTML='<option value="">— Select Issued Book to Return —</option>'+issuedList.map((x,i)=>'<option value="'+x.id+'">'+x.learnerName+' • '+x.bookTitle+' • '+x.date+'</option>').join('');
   let q=(document.getElementById('histSearch').value||'').toLowerCase();
-  let filtered=issues.filter(i=>!q || (i.learnerName+' '+i.bookTitle).toLowerCase().includes(q)).slice(-50).reverse();
-  document.getElementById('histList').innerHTML=filtered.map(i=>'<div class="border rounded p-2 mb-1"><b>'+i.learnerName+'</b> • '+i.bookTitle+' • <b>'+i.action+'</b> • '+(i.date||'')+' • By: '+(i.by||'')+'</div>').join('')||'<p class="text-gray-500">No issues yet.</p>';
+  let filtered=issues.filter(i=>!q || (i.learnerName+' '+i.bookTitle).toLowerCase().includes(q)).slice(0,100);
+  document.getElementById('histList').innerHTML=filtered.map(i=>'<div class="border rounded p-2 mb-1"><b>'+i.learnerName+'</b> • '+i.bookTitle+' • <b>'+i.action+'</b> • '+(i.date||'')+' • By: '+(i.by||'')+'</div>').join('')||'<p class="text-gray-500">No issues in Firebase yet.</p>';
 }
-document.getElementById('issueBtn').addEventListener('click', ()=>{
-  let li=document.getElementById('learnerSelect').value; let bi=document.getElementById('bookSelect').value;
-  if(li===''||bi===''){ document.getElementById('issueMsg').innerHTML='❌ Select Learner + Book'; return; }
-  let learners=getLearners(); let books=getBooks(); let issues=getIssues();
-  let learner=learners[parseInt(li)]; let book=books[parseInt(bi)];
-  issues.push({learnerName:learner.name, learnerClass:learner.class, bookTitle:book.title, subject:book.subject, action:'Issued', date:new Date().toISOString().slice(0,10), by:sess.name});
-  setIssues(issues); document.getElementById('issueMsg').innerHTML='✅ Issued '+book.title+' to '+learner.name; render();
+document.getElementById('issueBtn').addEventListener('click', async ()=>{
+  let lid=document.getElementById('learnerSelect').value; let bid=document.getElementById('bookSelect').value;
+  if(!lid||!bid){ document.getElementById('issueMsg').innerHTML='❌ Select Learner + Book'; return; }
+  let learner=learners.find(l=>l.id===lid); let book=books.find(b=>b.id===bid);
+  try{ await addDoc(collection(db,'issues'), {emis:String(sess.emis), learnerName:learner.name, learnerClass:learner.class, bookTitle:book.title, subject:book.subject, action:'Issued', date:new Date().toISOString().slice(0,10), by:sess.name, createdAt:new Date().toISOString()}); document.getElementById('issueMsg').innerHTML='✅ Issued '+book.title+' to '+learner.name+' — LIVE on all phones!'; }catch(e){ document.getElementById('issueMsg').innerHTML='❌ '+e.message; }
 });
-document.getElementById('returnBtn').addEventListener('click', ()=>{
-  let idx=document.getElementById('returnSelect').value;
-  if(idx===''){ document.getElementById('returnMsg').innerHTML='❌ Select Issued Book'; return; }
-  let issues=getIssues(); let orig=issues[parseInt(idx)];
-  issues.push({learnerName:orig.learnerName, learnerClass:orig.learnerClass, bookTitle:orig.bookTitle, subject:orig.subject, action:'Returned', date:new Date().toISOString().slice(0,10), by:sess.name});
-  setIssues(issues); document.getElementById('returnMsg').innerHTML='✅ Returned '+orig.bookTitle+' from '+orig.learnerName; render();
+document.getElementById('returnBtn').addEventListener('click', async ()=>{
+  let iid=document.getElementById('returnSelect').value;
+  if(!iid){ document.getElementById('returnMsg').innerHTML='❌ Select Issued Book'; return; }
+  let orig=issues.find(x=>x.id===iid);
+  try{ await addDoc(collection(db,'issues'), {emis:String(sess.emis), learnerName:orig.learnerName, learnerClass:orig.learnerClass, bookTitle:orig.bookTitle, subject:orig.subject, action:'Returned', date:new Date().toISOString().slice(0,10), by:sess.name, createdAt:new Date().toISOString()}); document.getElementById('returnMsg').innerHTML='✅ Returned '+orig.bookTitle+' from '+orig.learnerName; }catch(e){ document.getElementById('returnMsg').innerHTML='❌ '+e.message; }
 });
-window.printRetrieval=function(){ let issues=getIssues(); let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let pct=issued===0?0:(returned/issued*100); let rows=issues.slice(-100).reverse().map(i=>'<tr><td>'+i.learnerName+'</td><td>'+(i.learnerClass||'')+'</td><td>'+i.bookTitle+'</td><td>'+i.action+'</td><td>'+i.date+'</td></tr>').join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • RETRIEVAL REPORT • '+sess.school+'</h1><p>EMIS '+sess.emis+' • By: '+sess.name+' • Date: '+new Date().toLocaleString()+' • Retrieval: '+pct.toFixed(1)+'% ('+returned+'/'+issued+') • Due: 30 November</p><table><tr><th>Learner</th><th>Class</th><th>Book</th><th>Action</th><th>Date</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
+window.printRetrieval=function(){ let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let pct=issued===0?0:(returned/issued*100); let rows=issues.slice(0,100).map(i=>'<tr><td>'+i.learnerName+'</td><td>'+(i.learnerClass||'')+'</td><td>'+i.bookTitle+'</td><td>'+i.action+'</td><td>'+i.date+'</td></tr>').join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • RETRIEVAL REPORT • '+sess.school+' • LIVE FIREBASE</h1><p>EMIS '+sess.emis+' • By: '+sess.name+' • Date: '+new Date().toLocaleString()+' • Retrieval: '+pct.toFixed(1)+'% ('+returned+'/'+issued+') • Due: 30 November</p><table><tr><th>Learner</th><th>Class</th><th>Book</th><th>Action</th><th>Date</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
 document.getElementById('histSearch').addEventListener('input', render);
-document.getElementById('logoutBtn').addEventListener('click', ()=>{ if(sess && sess.isImpersonating){ window.returnToSuperAdmin(); return; } localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-render();
+document.getElementById('logoutBtn').addEventListener('click', async()=>{ if(sess && sess.isImpersonating){ window.returnToSuperAdmin(); return; } await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
+onSnapshot(query(collection(db,'books'), where('emis','==',String(sess.emis))), (snap)=>{ books=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
+onSnapshot(query(collection(db,'learners'), where('emis','==',String(sess.emis))), (snap)=>{ learners=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
+onSnapshot(query(collection(db,'issues'), where('emis','==',String(sess.emis))), (snap)=>{ let list=snap.docs.map(d=>({id:d.id, ...d.data()})); list.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')); issues=list; render(); });
 </script></body></html>
