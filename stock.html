@@ -1,19 +1,139 @@
-addEventListener('input',render);
-document.getElementById('resetFilterBtn').addEventListener('click',function(){ document.getElementById('fGroup').value='ALL'; document.getElementById('fGrade').value='ALL'; document.getElementById('fSubject').value='ALL'; document.getElementById('fSearch').value=''; render(); });
-document.getElementById('importBtn').addEventListener('click',function(){ try{ var code=document.getElementById('importCode').value.trim(); if(!code){ alert('Paste export code from phone first.'); return; } var data=JSON.parse(decodeURIComponent(escape(atob(code)))); var c=0; Object.keys(data).forEach(function(k){ localStorage.setItem(k,data[k]); c++; }); document.getElementById('importMsg').innerHTML='✅ Imported '+c+' keys. Reloading...'; setTimeout(()=>location.reload(),500); }catch(e){ document.getElementById('importMsg').innerHTML='❌ Import failed — Paste FULL code.'; } });
-setMe();
-})();
-</script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Stock + Barcodes — Xintimani</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
+<style>@media print{body *{visibility:hidden} #printArea, #printArea *{visibility:visible} #printArea{position:absolute;top:0;left:0;width:100%}}</style></head>
+<body class="bg-gray-100 p-3">
+<div class="max-w-3xl mx-auto">
+<div class="bg-white rounded-2xl p-4 shadow">
+<h1 class="font-black text-2xl">📚 Stock + Barcodes</h1>
+<p class="text-xs text-gray-500">Edit quantity, view / print barcode per book.</p>
+<div class="flex gap-2 mt-3">
+<input id="email" type="email" placeholder="Email" class="border-2 rounded-lg px-3 py-2 flex-1">
+<input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 flex-1">
+<button id="loginBtn" class="bg-black text-white px-4 rounded-lg font-black">LOGIN</button>
+</div>
+<p id="loginMsg" class="text-sm font-bold mt-2"></p>
+<div class="flex gap-2 mt-3">
+<select id="schoolSel" class="border-2 rounded-lg px-3 py-2 flex-1"><option value="">— Select School —</option></select>
+<input id="search" placeholder="🔍 Search title / ISBN / barcode..." class="border-2 rounded-lg px-3 py-2 flex-1">
+<button id="loadBtn" class="bg-blue-600 text-white px-4 rounded-lg font-black">LOAD STOCK</button>
+</div>
+<p id="count" class="text-sm font-bold mt-2"></p>
+</div>
+<div id="list" class="space-y-2 mt-3"></div>
+</div>
+
+<!-- Barcode Modal -->
+<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+<div class="bg-white rounded-2xl p-5 w-full max-w-sm text-center">
+<div id="printArea">
+<p id="mSchool" class="text-xs font-bold text-gray-500"></p>
+<p id="mTitle" class="font-black text-lg leading-tight mt-1"></p>
+<p id="mAuthor" class="text-sm text-gray-600"></p>
+<svg id="barcode" class="mx-auto mt-3 w-full"></svg>
+<p id="mCode" class="font-mono font-black text-lg tracking-widest mt-1"></p>
+<p id="mQty" class="text-xs text-gray-500"></p>
+</div>
+<div class="flex gap-2 mt-4">
+<button onclick="window.print()" class="bg-black text-white flex-1 py-2 rounded-lg font-black">🖨️ PRINT</button>
+<button id="closeModal" class="bg-gray-300 flex-1 py-2 rounded-lg font-black">CLOSE</button>
+</div>
+</div>
+</div>
+
 <script type="module">
-import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-onAuthStateChanged(auth, async (user)=>{
-  if(!user) return;
-  try{ let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'SUPER_ADMIN'};
-  let old=null; try{ old=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-  let fresh={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'SUPER_ADMIN',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),grades:prof.grades||'',school:prof.school||'All Schools',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'};
-  if(JSON.stringify(old)!==JSON.stringify(fresh)){ localStorage.setItem('makhanani_session',JSON.stringify(fresh)); location.reload(); } }catch(e){}
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, updateDoc, orderBy } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+let myUser = null, allBooks = [];
+const SCHOOLS = {'911360870':'George Sonto High School','700310854':'Wordsworth High School','911360825':'SHIRILELE HIGH SCHOOL','200101061':'1 STEP AHEAD ACADEMY','200201086':'2MOROS LEADERS PRIMARY','700401012':'3D CHRISTIAN ACADEMY','200300001':'A B SIWENDU SENIOR PRIMARY'};
+
+// Fill school dropdown
+let sel = document.getElementById('schoolSel');
+Object.keys(SCHOOLS).forEach(emis=>{ let o=document.createElement('option'); o.value=emis; o.textContent=SCHOOLS[emis]+' — '+emis; sel.appendChild(o); });
+
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  try{
+    let cred = await signInWithEmailAndPassword(auth, document.getElementById('email').value.trim().toLowerCase(), document.getElementById('password').value.trim());
+    let snap = await getDoc(doc(db,'users', cred.user.uid));
+    if(!snap.exists()){ document.getElementById('loginMsg').innerHTML='❌ No profile — use fix-profile.html first'; return; }
+    myUser = snap.data();
+    document.getElementById('loginMsg').innerHTML='✅ Logged in: '+myUser.name+' • '+myUser.role+' • '+myUser.school;
+    if(myUser.emis) sel.value = myUser.emis;
+  }catch(e){ document.getElementById('loginMsg').innerHTML='❌ '+e.message.replace('Firebase: ',''); }
 });
-</script>
-</body></html>
+
+async function loadStock(){
+  let emis = sel.value; if(!emis){ alert('Select school first'); return; }
+  document.getElementById('count').innerHTML='⏳ Loading...';
+  try{
+    // Try emis field first, fallback to school field
+    let snap = await getDocs(query(collection(db,'books'), where('emis','==', emis)));
+    if(snap.empty) snap = await getDocs(query(collection(db,'books'), where('schoolEmis','==', emis)));
+    if(snap.empty) snap = await getDocs(query(collection(db,'books'), where('school','==', SCHOOLS[emis])));
+    allBooks = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    render();
+  }catch(e){ document.getElementById('count').innerHTML='❌ '+e.message; }
+}
+document.getElementById('loadBtn').addEventListener('click', loadStock);
+document.getElementById('search').addEventListener('input', render);
+
+function getQty(b){ return b.quantity ?? b.stock ?? b.copies ?? b.totalCopies ?? 0; }
+function getCode(b){ return String(b.barcode || b.isbn || b.isbn13 || b.code || b.id); }
+
+function render(){
+  let q = document.getElementById('search').value.trim().toLowerCase();
+  let list = allBooks.filter(b=>{
+    if(!q) return true;
+    return String(b.title||'').toLowerCase().includes(q) || String(b.author||'').toLowerCase().includes(q) || getCode(b).toLowerCase().includes(q);
+  });
+  let totalQty = allBooks.reduce((s,b)=>s+Number(getQty(b)||0),0);
+  document.getElementById('count').innerHTML = '📚 Titles: <b>'+allBooks.length+'</b> • Total copies: <b>'+totalQty+'</b> • Showing: '+list.length;
+  document.getElementById('list').innerHTML = list.length ? '' : '<div class="bg-white rounded-xl p-4 text-center text-gray-500">No books found for this school.<br><span class="text-xs">Check: Are books saved with emis = '+sel.value+' ?</span></div>';
+  list.forEach(b=>{
+    let qty = getQty(b);
+    let div = document.createElement('div');
+    div.className='bg-white rounded-xl p-3 flex gap-3 items-center shadow';
+    div.innerHTML = `
+      <div class="flex-1 min-w-0">
+        <p class="font-black leading-tight truncate">${b.title||'NO TITLE'}</p>
+        <p class="text-xs text-gray-500">${b.author||''} • ${b.grade||b.class||''} • ${b.category||''}</p>
+        <p class="text-xs font-mono text-gray-500">Barcode: ${getCode(b)}</p>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button class="minus bg-red-100 text-red-700 w-8 h-8 rounded-lg font-black text-lg">−</button>
+        <input class="qtyInput border-2 rounded-lg w-16 text-center font-black py-1" type="number" value="${qty}" min="0">
+        <button class="plus bg-green-100 text-green-700 w-8 h-8 rounded-lg font-black text-lg">+</button>
+      </div>
+      <div class="flex flex-col gap-1 shrink-0">
+        <button class="saveBtn bg-blue-600 text-white px-3 py-1 rounded-lg font-black text-xs">SAVE</button>
+        <button class="barcodeBtn bg-black text-white px-3 py-1 rounded-lg font-black text-xs">📊 BARCODE</button>
+      </div>`;
+    div.querySelector('.minus').onclick = ()=>{ div.querySelector('.qtyInput').value = Math.max(0, Number(div.querySelector('.qtyInput').value||0)-1); };
+    div.querySelector('.plus').onclick = ()=>{ div.querySelector('.qtyInput').value = Number(div.querySelector('.qtyInput').value||0)+1; };
+    div.querySelector('.saveBtn').onclick = async ()=>{
+      let newQty = Number(div.querySelector('.qtyInput').value||0);
+      try{
+        // Save to ALL possible qty fields so other pages see it
+        await updateDoc(doc(db,'books', b.id), {quantity:newQty, stock:newQty, copies:newQty, updatedAt:new Date().toISOString()});
+        b.quantity=newQty; b.stock=newQty; b.copies=newQty;
+        div.querySelector('.saveBtn').textContent='✅ SAVED'; setTimeout(()=>div.querySelector('.saveBtn').textContent='SAVE',1500);
+        render(); // refresh totals
+      }catch(e){ alert('Save failed: '+e.message); }
+    };
+    div.querySelector('.barcodeBtn').onclick = ()=>{
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('mSchool').textContent = SCHOOLS[sel.value] || '';
+      document.getElementById('mTitle').textContent = b.title||'';
+      document.getElementById('mAuthor').textContent = b.author||'';
+      document.getElementById('mCode').textContent = getCode(b);
+      document.getElementById('mQty').textContent = 'Stock: '+getQty(b)+' copies';
+      try{ JsBarcode('#barcode', getCode(b), {format:'CODE128', width:2, height:70, displayValue:false}); }catch(e){ document.getElementById('barcode').outerHTML='<p>Barcode failed: '+e.message+' — code must be letters/numbers only</p>'; }
+    };
+    document.getElementById('list').appendChild(div);
+  });
+}
+document.getElementById('closeModal').addEventListener('click', ()=>document.getElementById('modal').classList.add('hidden'));
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') document.getElementById('modal').classList.add('hidden'); });
+</script></body></html>
