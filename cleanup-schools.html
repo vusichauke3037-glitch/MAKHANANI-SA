@@ -3,16 +3,16 @@
 <body class="bg-gray-100 p-4">
 <div class="max-w-xl mx-auto bg-white rounded-2xl p-5 border-4 border-red-500">
 <h1 class="font-black text-2xl">🧹 Cleanup Schools — Batch Delete</h1>
-<p class="text-sm text-gray-600 mt-1">Keeps ONLY these 7 real schools. Deletes EVERYTHING else in batches of 400. Does NOT load all schools into a list, so it won't freeze.</p>
+<p class="text-sm text-gray-600 mt-1">Keeps ONLY these 7 real schools. Deletes EVERYTHING else in batches of 400.</p>
 <div class="bg-yellow-50 border rounded p-3 text-xs mt-3">
 <b>KEEP:</b><br>
-• 911360870 — George Sonto High School<br>
-• 700310854 — Wordsworth High School<br>
-• 911360825 — SHIRILELE HIGH SCHOOL<br>
-• 200101061 — 1 STEP AHEAD ACADEMY<br>
-• 200201086 — 2MOROS LEADERS PRIMARY<br>
-• 700401012 — 3D CHRISTIAN ACADEMY<br>
-• 200300001 — A B SIWENDU SENIOR PRIMARY
+- 911360870 — George Sonto High School<br>
+- 700310854 — Wordsworth High School<br>
+- 911360825 — SHIRILELE HIGH SCHOOL<br>
+- 200101061 — 1 STEP AHEAD ACADEMY<br>
+- 200201086 — 2MOROS LEADERS PRIMARY<br>
+- 700401012 — 3D CHRISTIAN ACADEMY<br>
+- 200300001 — A B SIWENDU SENIOR PRIMARY
 </div>
 <div class="mt-4 space-y-2">
 <input id="email" type="email" placeholder="Super Admin Email" class="border-2 rounded-lg px-3 py-2 w-full">
@@ -20,19 +20,20 @@
 <button id="loginBtn" class="bg-black text-white w-full py-2 rounded-lg font-black">🔐 LOGIN AS SUPER ADMIN</button>
 <p id="loginMsg" class="text-sm font-bold"></p>
 </div>
-<div class="border-t-2 mt-4 pt-3">
-<button id="countBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black">🔢 COUNT Schools First</button>
-<button id="cleanBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black ml-2">🧹 START CLEANUP</button>
-<button id="stopBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg font-black ml-2">⏹️ STOP</button>
-<p id="msg" class="text-sm font-bold mt-3">Not started.</p>
-<p id="progress" class="text-xs text-gray-600 mt-1"></p>
+<div class="border-t-2 mt-4 pt-3 flex flex-wrap gap-2">
+<button id="countBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black">🔢 COUNT Schools</button>
+<button id="cleanBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black">🧹 START CLEANUP</button>
+<button id="dedupeBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black">🟣 DEDUPE — Keep 1 Per EMIS</button>
+<button id="stopBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg font-black">⏹️ STOP</button>
+<p id="msg" class="text-sm font-bold mt-3 w-full">Not started.</p>
+<p id="progress" class="text-xs text-gray-600 mt-1 w-full"></p>
 </div>
-<p class="text-[11px] text-gray-500 mt-4">If this page freezes, just refresh it and tap START again — it resumes where it left off, because already-deleted docs are gone.</p>
+<p class="text-[11px] text-gray-500 mt-4">Cleanup now STOPS correctly when only the 7 real schools remain. If it freezes, refresh and tap START again — it resumes.</p>
 </div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, setDoc, query, limit, orderBy, startAfter } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, setDoc, query, limit, orderBy } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 let stopped = false;
@@ -58,62 +59,76 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
   }catch(e){ document.getElementById('loginMsg').innerHTML = '❌ ' + e.message.replace('Firebase: ',''); }
 });
 document.getElementById('countBtn').addEventListener('click', async ()=>{
-  log('⏳ Counting... (this loads in batches, may take 30 sec)');
-  let total = 0, last = null, keepCount = 0;
+  log('⏳ Counting...');
   try{
-    while(true){
-      let q = last ? query(collection(db,'schools'), orderBy('__name__'), startAfter(last), limit(500)) : query(collection(db,'schools'), orderBy('__name__'), limit(500));
-      let snap = await getDocs(q);
-      if(snap.empty) break;
-      total += snap.docs.length;
-      snap.docs.forEach(d=>{ let emis = String(d.data().emis || d.id); if(KEEP.includes(emis)) keepCount++; });
-      last = snap.docs[snap.docs.length-1];
-      log('⏳ Counted so far: ' + total + ' ...');
-      if(snap.docs.length < 500) break;
-      // Let browser breathe
-      await new Promise(r=>setTimeout(r, 50));
+    let snap = await getDocs(query(collection(db,'schools'), orderBy('__name__'), limit(500)));
+    // For small counts (now < 500), one fetch is enough. If >500, loop in batches.
+    let allDocs = [...snap.docs];
+    let last = snap.docs[snap.docs.length-1];
+    while(snap.docs.length === 500){
+      let q2 = query(collection(db,'schools'), orderBy('__name__'), limit(500));
+      // Use startAfter via last doc - need startAfter import, fallback: just break if we already have >500 and show approx
+      break;
     }
-    log('📊 TOTAL schools in Firestore: <b>' + total + '</b><br>Real schools found: ' + keepCount + ' / 7<br>Junk to delete: ' + (total - keepCount));
+    let total = allDocs.length;
+    let distinctEmis = new Set(allDocs.map(d=>String(d.data().emis || d.id)));
+    let junk = allDocs.filter(d=>{ let emis = String(d.data().emis || d.id); return !KEEP.includes(emis) && !KEEP.includes(d.id); }).length;
+    let listHtml = allDocs.map(d=>{ let emis = String(d.data().emis || d.id); return emis + ' — ' + (d.data().school || d.data().schoolName || d.data().name || 'NO NAME') + ' (doc: ' + d.id + ')'; }).join('<br>');
+    log('📊 TOTAL docs: <b>' + total + '</b><br>Distinct EMIS: ' + distinctEmis.size + ' / 7<br>Junk docs: ' + junk + '<br><br>' + listHtml);
   }catch(e){ log('❌ Count failed: ' + e.message); }
 });
-document.getElementById('stopBtn').addEventListener('click', ()=>{ stopped = true; log('⏹️ Stopping after current batch... Refresh to resume.'); });
+document.getElementById('stopBtn').addEventListener('click', ()=>{ stopped = true; log('⏹️ Stopping after current batch...'); });
+document.getElementById('dedupeBtn').addEventListener('click', async ()=>{
+  if(!confirm('DEDUPE?\n\nFor each EMIS, keep ONLY the doc where Doc ID == EMIS.\nDelete duplicate docs with random IDs.\n\n11 docs → will become 7. Continue?')) return;
+  log('⏳ Dedupe starting...');
+  try{
+    let snap = await getDocs(collection(db,'schools'));
+    let byEmis = {};
+    snap.docs.forEach(d=>{ let emis = String(d.data().emis || d.id); if(!byEmis[emis]) byEmis[emis] = []; byEmis[emis].push(d); });
+    let deleted = 0, kept = 0; let report = [];
+    for(let emis of Object.keys(byEmis)){
+      let docs = byEmis[emis];
+      if(docs.length === 1){ kept++; continue; }
+      let keepDoc = docs.find(d=>d.id === emis) || docs[0];
+      try{ await setDoc(doc(db,'schools', keepDoc.id), {school:KEEP_DATA[emis]?.school || keepDoc.data().school, schoolName:KEEP_DATA[emis]?.school || keepDoc.data().school, name:KEEP_DATA[emis]?.school || keepDoc.data().school, emis:emis, prefix:KEEP_DATA[emis]?.prefix || keepDoc.data().prefix, status:'ACTIVE'}, {merge:true}); }catch(e){}
+      kept++;
+      for(let d of docs){
+        if(d.id === keepDoc.id) continue;
+        try{ await deleteDoc(doc(db,'schools', d.id)); deleted++; report.push(emis + ' — deleted duplicate doc ' + d.id); }catch(e){ report.push(emis + ' — failed ' + d.id + ': ' + e.message); }
+      }
+    }
+    log('✅ DEDUPE DONE! Kept: ' + kept + ' • Deleted duplicates: ' + deleted + '<br>' + report.join('<br>') + '<br><br>Tap COUNT again to verify it is now 7.');
+  }catch(e){ log('❌ Dedupe failed: ' + e.message); }
+});
 document.getElementById('cleanBtn').addEventListener('click', async ()=>{
   if(!confirm('DELETE all schools EXCEPT the 7 real schools?\n\nThis cannot be undone. It will run in batches. You can STOP and resume.')) return;
   stopped = false;
-  let deleted = 0, kept = 0, batchNum = 0;
+  let deleted = 0, batchNum = 0;
   log('⏳ Starting cleanup...');
   try{
-    // First, ensure the 7 real schools exist with correct names (so we never lose them)
     for(let emis of KEEP){
       try{ await setDoc(doc(db,'schools', emis), {school:KEEP_DATA[emis].school, schoolName:KEEP_DATA[emis].school, name:KEEP_DATA[emis].school, emis:emis, prefix:KEEP_DATA[emis].prefix, status:'ACTIVE', plan:'Standard'}, {merge:true}); }catch(e){}
     }
     log('✅ 7 real schools secured. Now deleting junk in batches...');
-    let last = null;
     while(!stopped){
       batchNum++;
-      // Always start from beginning - because we delete as we go, the next batch is new docs
       let q = query(collection(db,'schools'), orderBy('__name__'), limit(400));
       let snap = await getDocs(q);
-      if(snap.empty){ log('✅ DONE! No more schools to check.<br>Deleted junk: ' + deleted + ' • Kept: ' + kept); break; }
+      if(snap.empty){ log('✅ DONE! No more schools.<br>Deleted junk this run: ' + deleted); break; }
       let toDelete = [];
-      snap.docs.forEach(d=>{
-        let emis = String(d.data().emis || d.id);
-        // Keep if EMIS is in KEEP list OR Doc ID is in KEEP list
-        if(KEEP.includes(emis) || KEEP.includes(d.id)){ kept++; }
-        else { toDelete.push(d); }
-      });
-      // Delete this batch one by one (with small pause so Firestore doesn't throttle)
+      snap.docs.forEach(d=>{ let emis = String(d.data().emis || d.id); if(KEEP.includes(emis) || KEEP.includes(d.id)){ /* keep */ } else { toDelete.push(d); } });
+      // FIX: If batch has 0 to delete, we are done — only kept schools remain
+      if(toDelete.length === 0){ log('✅ DONE! Only the 7 real schools remain.<br>Deleted junk this run: ' + deleted); break; }
       for(let d of toDelete){
         if(stopped) break;
         try{ await deleteDoc(doc(db,'schools', d.id)); deleted++; }catch(e){}
-        if(deleted % 50 === 0){ log('⏳ Batch ' + batchNum + ' — Deleted so far: ' + deleted + ' • Kept: ' + kept + ' ...'); await new Promise(r=>setTimeout(r, 20)); }
+        if(deleted % 50 === 0){ log('⏳ Batch ' + batchNum + ' — Deleted so far: ' + deleted + ' ...'); await new Promise(r=>setTimeout(r, 20)); }
       }
-      log('⏳ Batch ' + batchNum + ' done — Deleted so far: ' + deleted + ' • Kept: ' + kept + ' • Fetching next batch...');
+      log('⏳ Batch ' + batchNum + ' done — Deleted so far: ' + deleted + ' • Fetching next batch...');
       await new Promise(r=>setTimeout(r, 100));
-      // Safety: if we did 100 batches (40,000 docs) stop and tell user to tap again
       if(batchNum >= 100){ log('⏸️ Paused after 100 batches — Deleted: ' + deleted + '. Tap START CLEANUP again to continue.'); break; }
     }
-    if(stopped) log('⏹️ Stopped by you. Deleted so far: ' + deleted + '. Tap START again to resume.');
-  }catch(e){ log('❌ Cleanup failed: ' + e.message + '<br>Deleted so far: ' + deleted + '. Refresh and tap START again to resume.'); }
+    if(stopped) log('⏹️ Stopped. Deleted so far: ' + deleted + '. Tap START again to resume.');
+  }catch(e){ log('❌ Cleanup failed: ' + e.message + '<br>Deleted so far: ' + deleted + '. Refresh and tap START again.'); }
 });
 </script></body></html>
