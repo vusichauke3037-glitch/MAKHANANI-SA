@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Super Admin — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
+<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
+<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • <span class="text-red-400">SUPER ADMIN</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
+<div class="max-w-6xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 border-4 border-red-500"><h1 class="font-black text-2xl">👑 Super Admin Dashboard</h1><p class="text-xs text-gray-500">All Schools • All Users • Subscription • Retrieval • Due 30 November</p><div id="stats" class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3 text-center"></div></div>
+
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500"><h2 class="font-black">🏫 Add New School</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="newSchoolName" placeholder="School Name e.g. Thabazimbi High" class="border-2 rounded-lg px-3 py-2"><input id="newEmis" placeholder="EMIS e.g. 911360871" class="border-2 rounded-lg px-3 py-2"><input id="newPrefix" placeholder="Prefix e.g. THS" class="border-2 rounded-lg px-3 py-2 uppercase"><input id="newPrincipalEmail" placeholder="Principal Email" class="border-2 rounded-lg px-3 py-2"></div><button id="addSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-2">🏫 Add School to Firebase</button><p id="addSchoolMsg" class="text-sm font-bold mt-1"></p><p class="text-[11px] text-gray-500">Known: George Sonto 911360870 GSHS • Wordsworth 700310854 WHS — already in system, don't add again.</p></div>
+
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🏫 All Schools</h2><div class="flex gap-2 mt-2 flex-wrap"><button onclick="printAllSchools()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">🖨️ Print All Schools</button><button id="refreshBtn" class="bg-black text-white px-3 py-1 rounded text-xs font-bold">🔄 Refresh</button></div><div id="schoolList" class="mt-2 text-sm"></div></div>
+
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 All Users (Firebase)</h2><input id="userSearch" placeholder="🔍 Search name / email / school..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="userList" class="mt-2 text-sm"></div></div>
+
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500"><h2 class="font-black">💳 Subscription Control</h2><p class="text-xs text-gray-500">Super Admin can Activate / Suspend a school. Suspended school sees “Subscription Expired” on login.</p><div id="subList" class="mt-2 text-sm"></div></div>
+
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 Retrieval — By School (from Local Data)</h2><p class="text-xs text-gray-500">This reads localStorage data per EMIS (until Books move to Firebase). Firebase users above are live.</p><div id="retrievalList" class="mt-2 text-sm"></div><button onclick="printRetrievalAll()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mt-2">🖨️ Print Retrieval All Schools</button></div>
+</div>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let cur=null, schools=[], users=[];
+function getDueDate(s){ let d=s?new Date(s+'T00:00:00'):new Date(); let due=new Date(d.getFullYear(),10,30); if(d>due) due=new Date(d.getFullYear()+1,10,30); return due.toISOString().slice(0,10); }
+function formatDue(due){ return new Date(due+'T00:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}); }
+function retrievalForEmis(emis){
+  try{
+    let issues=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_issues')||'[]');
+    let issued=issues.filter(i=>i.action==='Issued').length;
+    let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length;
+    let out=issued-returned; if(out<0) out=0;
+    let pct=issued===0?null:(returned/issued*100);
+    let learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]');
+    let books=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]');
+    let totalCopies=books.reduce((a,b)=>a+(b.copies||[]).length,0);
+    return {issued, returned, out, pct, learners: learners.length, books: totalCopies};
+  }catch(e){ return {issued:0, returned:0, out:0, pct:null, learners:0, books:0}; }
+}
+async function loadAll(){
+  // Schools from Firestore + fallback to known
+  try{
+    let snap=await getDocs(collection(db,'schools'));
+    schools=snap.docs.map(d=>({id:d.id, ...d.data()}));
+  }catch(e){ schools=[]; }
+  let known=[{emis:'911360870', school:'George Sonto High School', prefix:'GSHS'}, {emis:'700310854', school:'Wordsworth High School', prefix:'WHS'}];
+  known.forEach(k=>{ if(!schools.some(s=>String(s.emis)===k.emis)) schools.push(k); });
+  try{
+    let snap=await getDocs(collection(db,'users'));
+    users=snap.docs.map(d=>({id:d.id, ...d.data()}));
+  }catch(e){ users=[]; }
+  render();
+}
+function render(){
+  document.getElementById('topStatus').textContent=(cur?cur.name+' • '+cur.email:'')+' • ALL SCHOOLS';
+  let totalUsers=users.length;
+  let totalSchools=schools.length;
+  let activeSchools=schools.filter(s=>s.status!=='SUSPENDED').length;
+  let principals=users.filter(u=>u.role==='PRINCIPAL').length;
+  let teachers=users.filter(u=>u.role==='TEACHER'||u.role==='HOD'||u.role==='LIBRARIAN').length;
+  document.getElementById('stats').innerHTML=
+    '<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+totalSchools+'</div><div class="text-xs">Schools</div></div>'+
+    '<div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+activeSchools+'</div><div class="text-xs">Active</div></div>'+
+    '<div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+totalUsers+'</div><div class="text-xs">Firebase Users</div></div>'+
+    '<div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+principals+'</div><div class="text-xs">Principals</div></div>'+
+    '<div class="bg-orange-50 rounded p-2"><div class="font-black text-xl">'+teachers+'</div><div class="text-xs">HOD/Teacher/Librarian</div></div>';
+  document.getElementById('schoolList').innerHTML=schools.map(s=>{
+    let r=retrievalForEmis(s.emis);
+    return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS <b>'+s.emis+'</b> • Prefix <b>'+s.prefix+'</b> • Status <b>'+(s.status||'ACTIVE')+'</b><br>Books: '+r.books+' • Learners: '+r.learners+' • Issued: '+r.issued+' • Returned: '+r.returned+' • Retrieval: <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b> • Due: <b>30 November</b><div class="flex gap-1 mt-1"><button onclick="viewSchoolUsers(\''+s.emis+'\')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">👥 View Users</button><button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">'+(s.status==='SUSPENDED'?'✅ Activate':'⛔ Suspend')+'</button></div></div>';
+  }).join('');
+  document.getElementById('subList').innerHTML=schools.map(s=>'<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS '+s.emis+' • Subscription: <b>'+(s.status||'ACTIVE')+'</b> • Plan: '+(s.plan||'Standard')+' • Expires: '+(s.expires||'—')+' <button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold ml-2">Toggle</button></div>').join('');
+  let q=(document.getElementById('userSearch').value||'').toLowerCase();
+  let filtered=users.filter(u=>!q || (u.name+' '+u.email+' '+u.school+' '+u.role).toLowerCase().includes(q));
+  document.getElementById('userList').innerHTML=filtered.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.email+' • Role <b>'+u.role+'</b> • School <b>'+u.school+' ('+u.emis+')</b> • Subjects: '+(u.subjects||[]).join(', ')+' • Classes: '+(u.classes||[]).join(', ')+'<div class="flex gap-1 mt-1"><button onclick="resetUserRole(\''+u.id+'\')" class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">🔄 Change Role</button><button onclick="deleteUser(\''+u.id+'\',\''+u.name+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">🗑️ Delete User</button></div></div>').join('')||'<p class="text-gray-500">No Firebase users yet. Create accounts via Login → CREATE ACCOUNT.</p>';
+  document.getElementById('retrievalList').innerHTML=schools.map(s=>{ let r=retrievalForEmis(s.emis); return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> — Retrieval <b>'+(r.pct===null?'— No books yet':r.pct.toFixed(1)+'%')+'</b> ('+r.returned+'/'+r.issued+') • Still Out: '+r.out+'</div>'; }).join('');
+}
+window.viewSchoolUsers=function(emis){ document.getElementById('userSearch').value=emis; render(); document.getElementById('userSearch').scrollIntoView({behavior:'smooth'}); };
+window.toggleSchool=async function(emis, current){
+  let newStatus = current==='SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
+  if(!confirm('Set school '+emis+' to '+newStatus+'?')) return;
+  try{ await setDoc(doc(db,'schools',String(emis)), {status:newStatus}, {merge:true}); alert('✅ School '+emis+' → '+newStatus); loadAll(); }catch(e){ alert('❌ '+e.message); }
+};
+window.resetUserRole=async function(uid){
+  let newRole=prompt('New Role (SUPER_ADMIN / PRINCIPAL / HOD / TEACHER / LIBRARIAN):','TEACHER');
+  if(!newRole) return;
+  try{ await updateDoc(doc(db,'users',uid), {role:newRole.trim().toUpperCase()}); alert('✅ Role updated'); loadAll(); }catch(e){ alert('❌ '+e.message); }
+};
+window.deleteUser=async function(uid, name){
+  if(!confirm('Delete user '+name+' from Firestore? This does NOT delete their Firebase Auth login, only profile.')) return;
+  try{ await deleteDoc(doc(db,'users',uid)); alert('✅ Deleted'); loadAll(); }catch(e){ alert('❌ '+e.message); }
+};
+window.printAllSchools=function(){
+  let rows=schools.map(s=>{ let r=retrievalForEmis(s.emis); return '<tr><td><b>'+s.school+'</b></td><td>'+s.emis+'</td><td>'+s.prefix+'</td><td>'+(s.status||'ACTIVE')+'</td><td>'+r.books+'</td><td>'+r.learners+'</td><td>'+r.issued+'</td><td>'+r.returned+'</td><td><b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></td></tr>'; }).join('');
+  document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • SUPER ADMIN • ALL SCHOOLS</h1><p>By: '+(cur?cur.name:'')+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>School</th><th>EMIS</th><th>Prefix</th><th>Status</th><th>Books</th><th>Learners</th><th>Issued</th><th>Returned</th><th>Retrieval %</th></tr>'+rows+'</table>';
+  setTimeout(()=>window.print(),100);
+};
+window.printRetrievalAll=function(){
+  let rows=schools.map(s=>{ let r=retrievalForEmis(s.emis); return '<tr><td><b>'+s.school+'</b></td><td>'+r.issued+'</td><td>'+r.returned+'</td><td>'+r.out+'</td><td><b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></td></tr>'; }).join('');
+  document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • RETRIEVAL ALL SCHOOLS • Due 30 November</h1><table><tr><th>School</th><th>Issued</th><th>Returned</th><th>Still Out</th><th>Retrieval %</th></tr>'+rows+'</table>';
+  setTimeout(()=>window.print(),100);
+};
+document.getElementById('addSchoolBtn').addEventListener('click', async ()=>{
+  let name=document.getElementById('newSchoolName').value.trim();
+  let emis=document.getElementById('newEmis').value.trim();
+  let prefix=document.getElementById('newPrefix').value.trim().toUpperCase();
+  let principalEmail=document.getElementById('newPrincipalEmail').value.trim().toLowerCase();
+  if(!name||!emis||!prefix){ document.getElementById('addSchoolMsg').innerHTML='❌ Fill School + EMIS + Prefix'; return; }
+  try{
+    await setDoc(doc(db,'schools',emis), {school:name, emis:emis, prefix:prefix, principalEmail:principalEmail||'', status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString(), createdBy:cur?cur.email:''});
+    document.getElementById('addSchoolMsg').innerHTML='✅ Added '+name+' • EMIS '+emis+' • '+prefix;
+    document.getElementById('newSchoolName').value=''; document.getElementById('newEmis').value=''; document.getElementById('newPrefix').value=''; document.getElementById('newPrincipalEmail').value='';
+    loadAll();
+  }catch(e){ document.getElementById('addSchoolMsg').innerHTML='❌ '+e.message; }
+});
+document.getElementById('refreshBtn').addEventListener('click', loadAll);
+document.getElementById('userSearch').addEventListener('input', render);
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; });
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ location.href='superadmin-login.html'; return; }
+  try{
+    let snap=await getDoc(doc(db,'users',user.uid));
+    let profile=snap.exists()?snap.data():null;
+    if(!profile || profile.role!=='SUPER_ADMIN'){ alert('Not Super Admin'); location.href='login.html'; return; }
+    cur={name:profile.name, email:profile.email};
+    loadAll();
+  }catch(e){ location.href='superadmin-login.html'; }
+});
+</script></body></html>
