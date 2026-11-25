@@ -1,267 +1,49 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MAKHANANI LTSM — Xintimani • LIVE</title><script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Xintimani Group Holdings (Pty) Ltd — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
 <style>@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}.liveDot{animation:pulseDot 1.5s infinite}</style></head>
-<body class="bg-gray-100 pb-20"><div class="max-w-4xl mx-auto p-3">
-
-<!-- HEADER -->
-<div class="bg-black text-white rounded-2xl p-5 text-center">
-<p class="text-[11px] font-black tracking-[0.3em] text-yellow-400">MAKHANANI LTSM</p>
-<h1 class="font-black text-3xl mt-1">📚 XINTIMANI</h1>
-<p class="text-xs text-gray-300 mt-1">Library Textbook Management System • Bushbuckridge • Mpumalanga</p>
-<p class="text-[11px] mt-2"><span class="liveDot inline-block w-2 h-2 bg-green-400 rounded-full"></span> <span class="text-green-400 font-bold">● LIVE FIREBASE</span> • Last update: <span id="lastUpdate" class="text-yellow-300 font-bold">—</span></p>
-<p id="who" class="text-xs text-yellow-300 font-bold mt-2">Not logged in — login below or register a school</p>
-<div class="flex gap-2 justify-center mt-3 flex-wrap">
-<a href="dashboard.html" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-black text-sm">📊 DASHBOARD</a>
-<a href="librarian-dashboard.html" class="bg-white text-black px-4 py-2 rounded-lg font-black text-sm">📚 LIBRARIAN DASHBOARD <span class="text-green-600 text-[10px]">● LIVE</span></a>
-<a href="fix-profile.html" class="bg-gray-700 text-white px-4 py-2 rounded-lg font-black text-sm">🔧 FIX PROFILE</a>
-<button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black text-sm hidden">LOGOUT</button>
-</div>
-</div>
-
-<!-- LIVE GLOBAL STATS -->
-<div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black">📊 LIVE Stats — All Schools</h2>
-<div id="globalStats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-center">
-<div class="bg-blue-50 rounded-xl p-3"><p class="text-2xl font-black" id="gSchools">—</p><p class="text-xs text-gray-500">Schools</p></div>
-<div class="bg-yellow-50 rounded-xl p-3"><p class="text-2xl font-black" id="gBooks">—</p><p class="text-xs text-gray-500">Book Titles</p></div>
-<div class="bg-green-50 rounded-xl p-3"><p class="text-2xl font-black" id="gCopies">—</p><p class="text-xs text-gray-500">Total Copies</p></div>
-<div class="bg-purple-50 rounded-xl p-3"><p class="text-2xl font-black" id="gLearners">—</p><p class="text-xs text-gray-500">Learners</p></div>
-<div class="bg-orange-50 rounded-xl p-3"><p class="text-2xl font-black" id="gUsers">—</p><p class="text-xs text-gray-500">Users</p></div>
-<div class="bg-red-50 rounded-xl p-3"><p class="text-2xl font-black" id="gIssues">—</p><p class="text-xs text-gray-500">Issues</p></div>
-<div class="bg-teal-50 rounded-xl p-3"><p class="text-2xl font-black" id="gReturns">—</p><p class="text-xs text-gray-500">Returns</p></div>
-<div class="bg-gray-50 rounded-xl p-3"><p class="text-2xl font-black" id="gOut">—</p><p class="text-xs text-gray-500">Still Out</p></div>
-</div>
-</div>
-
-<!-- LOGIN / REGISTER TABS -->
-<div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<div class="flex gap-2">
-<button id="tabLogin" class="flex-1 bg-black text-white py-2 rounded-lg font-black text-sm">🔐 LOGIN</button>
-<button id="tabRegister" class="flex-1 bg-white border-2 py-2 rounded-lg font-black text-sm">🏫 REGISTER SCHOOL</button>
-</div>
-
-<!-- LOGIN -->
-<div id="panelLogin" class="mt-3">
-<input id="email" type="email" placeholder="Email — e.g. librarian@wordsworth.co.za" class="border-2 rounded-lg px-3 py-2 w-full">
-<input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
-<button id="loginBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">LOGIN</button>
-<p id="loginMsg" class="text-sm font-bold mt-2"></p>
-<p class="text-xs text-gray-500 mt-2">Test: Wordsworth Librarian — use your registered email. If profile is missing, use <a href="fix-profile.html" class="text-blue-600 font-bold underline">Fix Profile</a></p>
-</div>
-
-<!-- REGISTER -->
-<div id="panelRegister" class="hidden mt-3">
-<p class="text-xs font-bold text-gray-600">Register a NEW school + Principal account. You will be SUPER ADMIN / PRINCIPAL for that school.</p>
-<input id="rSchool" placeholder="School Name — e.g. Wordsworth High School" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
-<input id="rEmis" placeholder="EMIS Number — e.g. 700310854" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
-<input id="rName" placeholder="Principal Full Name" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
-<input id="rEmail" type="email" placeholder="Principal Email" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
-<input id="rPass" type="password" placeholder="Create Password (min 6 chars)" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
-<button id="registerBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">✅ REGISTER SCHOOL</button>
-<p id="registerMsg" class="text-sm font-bold mt-2"></p>
-<p class="text-xs text-gray-500 mt-1">Prefix is auto-created: First letter of each word. Wordsworth High School → WHS. George Sonto High School → GSHS.</p>
-</div>
-</div>
-
-<!-- MY SCHOOL - AFTER LOGIN -->
-<div id="mySchoolCard" class="hidden bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black">🏫 My School — LIVE</h2>
-<p id="mySchoolName" class="text-sm font-bold text-gray-600"></p>
-<div class="grid grid-cols-3 gap-2 mt-3 text-center">
-<div class="bg-blue-50 rounded-xl p-3"><p class="text-2xl font-black" id="myBooks">—</p><p class="text-xs text-gray-500">Titles</p></div>
-<div class="bg-yellow-50 rounded-xl p-3"><p class="text-2xl font-black" id="myCopies">—</p><p class="text-xs text-gray-500">Copies</p></div>
-<div class="bg-purple-50 rounded-xl p-3"><p class="text-2xl font-black" id="myLearners">—</p><p class="text-xs text-gray-500">Learners</p></div>
-</div>
-<div class="flex gap-2 mt-3">
-<a href="dashboard.html" class="bg-black text-white flex-1 text-center py-2 rounded-lg font-black text-sm">📊 OPEN DASHBOARD</a>
-<a href="librarian-dashboard.html" class="bg-yellow-400 text-black flex-1 text-center py-2 rounded-lg font-black text-sm">📚 OPEN LIBRARIAN</a>
-</div>
-</div>
-
-<!-- ALL SCHOOLS - LIVE -->
-<div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<div class="flex justify-between items-center flex-wrap gap-2">
-<h2 class="font-black">🏫 All Schools — LIVE</h2>
-<input id="schoolSearch" placeholder="🔍 Search school / EMIS..." class="border-2 rounded-lg px-3 py-1 text-sm flex-1 min-w-[160px]">
-</div>
-<p class="text-xs text-gray-500 mt-1">Tap a school to see its prefix. Suspended schools show ⛔ and cannot login.</p>
-<div id="schoolsList" class="mt-2 space-y-2">Loading LIVE schools...</div>
-</div>
-
-<!-- SUPER ADMIN - LIVE -->
-<div id="superCard" class="hidden bg-red-50 border-2 border-red-300 rounded-2xl p-4 mt-3">
-<h2 class="font-black text-red-700">👑 SUPER ADMIN — LIVE</h2>
-<p class="text-xs text-gray-600">Suspend / Unsuspend any school. Suspended school cannot login.</p>
-<div id="superList" class="mt-2 space-y-2"></div>
-</div>
-
-<!-- HOW IT WORKS -->
-<div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black">❓ How Book Numbers Work</h2>
-<p class="text-sm mt-1">Format: <b>Prefix + 6 digits</b> — Prefix = First letter of each word in school name.</p>
-<ul class="text-sm mt-2 space-y-1 list-disc pl-5">
-<li><b>Wordsworth High School</b> → WHS + 000001 = <b>WHS000001</b></li>
-<li><b>George Sonto High School</b> → GSHS + 000001 = <b>GSHS000001</b></li>
-<li>Accounting: G10 Learners <b>WHS000001-70</b> • G10 Workbook <b>WHS000071 (Qty 1)</b> • G11 Learners 72-131 • G11 Workbook <b>WHS000132 (Qty 1)</b> • G12 Learners 133-212 • G12 Workbook <b>WHS000213 (Qty 1)</b></li>
-<li>Workbook Qty is always <b>1</b>. Learners get the rest. No duplicates, no skipping.</li>
-<li>Assign Numbers: In Librarian Dashboard → Yellow panel → Choose <b>START</b> for each already-added book → Preview → Apply.</li>
-</ul>
-</div>
-
+<body class="bg-gray-100 min-h-screen">
+<div id="topBar" class="hidden bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50 text-[13px] font-bold"><img src="logo.png" class="h-6 w-6 rounded-full bg-white"><span id="topBarText"></span><button id="fbLogoutBtn" class="ml-auto bg-red-600 text-white px-3 py-1 rounded-lg font-bold text-xs">Logout</button></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Xintimani Group Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • HOLDINGS (PTY) LTD</div><div class="text-[11px] text-gray-300">293 Smit Street, Hillbrow, Johannesburg, 2038 • WhatsApp 078 023 3263 • vusichauke3037@gmail.com</div></div><a href="librarian-dashboard.html" class="ml-auto bg-yellow-500 text-black px-4 py-2 rounded-lg font-black text-sm">📚 Makhanani LTSM →</a></div>
+<div class="max-w-5xl mx-auto p-4">
+<div class="bg-black text-white rounded-2xl p-6 md:p-8 text-center"><img src="logo.png" class="h-24 w-24 mx-auto rounded-2xl bg-white border-2 border-yellow-400 p-2" alt="Xintimani Group Logo"><h1 class="font-black text-3xl md:text-4xl mt-3">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="text-yellow-400 font-bold tracking-widest text-sm">HOLDINGS (PTY) LTD</p><p class="text-sm text-gray-300 mt-2 max-w-2xl mx-auto">Building communities through education, support and opportunity. Joy. Cherished. Mercy.</p><p class="text-xs text-gray-400 mt-2">Directors: Vusi Chauke + Hloniphani Success Masia • Reg: 2026 / 934898 / 07 • <span class="liveDot inline-block w-2 h-2 bg-green-400 rounded-full"></span> <span class="text-green-400 font-bold">● LIVE</span> • Last update: <span id="lastUpdate" class="text-yellow-300 font-bold">—</span></p><div class="flex gap-2 justify-center mt-4 flex-wrap"><a href="librarian-dashboard.html" class="bg-yellow-500 text-black px-6 py-3 rounded-xl font-black">📚 Open Makhanani LTSM →</a><a href="login.html" class="bg-white text-black px-6 py-3 rounded-xl font-black">🔐 Staff Login</a><a href="#contact" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-black border border-gray-600">📞 Contact Us</a></div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statBooks">0</div><div class="text-xs font-bold text-gray-500">📚 BOOKS TRACKED</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statLearners">0</div><div class="text-xs font-bold text-gray-500">👩‍🎓 LEARNERS REACHED</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statSchools">2</div><div class="text-xs font-bold text-gray-500">🏫 SCHOOLS</div></div><div class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl font-black" id="statIssued">0</div><div class="text-xs font-bold text-gray-500">📤 BOOKS ISSUED</div></div></div>
+<div class="bg-white rounded-2xl p-5 mt-4"><h2 class="font-black text-2xl">🤝 About Xintimani Group</h2><p class="text-sm mt-2">Xintimani Group Holdings (Pty) Ltd is a South African company based in Hillbrow, Johannesburg. We believe every learner deserves a book in their hands — tracked, accounted for, and cherished.</p><p class="text-sm mt-2">Our flagship project is <b>Makhanani LTSM</b> — a Learner Teacher Support Material system that helps schools manage textbooks from request to issue to return, with no duplicate, no skipping, and 1 Learner 1 Title.</p><div class="grid md:grid-cols-3 gap-3 mt-4"><div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3"><div class="font-black">✨ Joy</div><p class="text-xs mt-1">Learning should bring joy. A learner with a book is a learner with a chance.</p></div><div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3"><div class="font-black">💛 Cherished</div><p class="text-xs mt-1">Every book is cherished. Every learner is valued. Every record matters.</p></div><div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3"><div class="font-black">🙏 Mercy</div><p class="text-xs mt-1">We serve with mercy — supporting schools and families who need it most.</p></div></div></div>
+<div class="bg-white rounded-2xl p-5 mt-4"><h2 class="font-black text-2xl">🚀 What We Do</h2><div class="grid md:grid-cols-2 gap-3 mt-3"><div class="border rounded-xl p-3"><div class="font-black">📚 Makhanani LTSM — Book Management</div><p class="text-xs text-gray-600 mt-1">Request → HOD Approve → Librarian Package → Teacher Issue Packed → Anyone Retrieve. Barcodes WHS000001 / GSH000001, Learner IDs 10A001, Issue Record per Class, Loan Form for Parents.</p><a href="librarian-dashboard.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">Open Makhanani LTSM →</a></div><div class="border rounded-xl p-3"><div class="font-black">📦 Stock — By Group / Grade / Subject</div><p class="text-xs text-gray-600 mt-1">Stock arranged by Department (Mathematics, Sciences, Languages, Commerce) → Grade → Subject → Title. See Available / Issued / Packed / Low Stock.</p><a href="librarian-dashboard.html" class="bg-teal-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">View Stock →</a></div><div class="border rounded-xl p-3"><div class="font-black">🏫 School Support & Donations</div><p class="text-xs text-gray-600 mt-1">We help schools get donations of textbooks, stationery and library books. Every donation is tracked and acknowledged.</p><a href="donation-letter-whs.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs mt-2 inline-block">Donation — WHS →</a> <a href="donation-letter-gsh.html" class="bg-yellow-300 text-black px-3 py-1 rounded font-bold text-xs mt-2 inline-block">GSH →</a></div><div class="border rounded-xl p-3"><div class="font-black">📊 Dashboards — For Every Role</div><p class="text-xs text-gray-600 mt-1">Super Admin sees everything. Admin sees all schools. Librarian sees whole school. HOD sees own departments. Teacher sees own classes only.</p><a href="dashboard.html" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">My Dashboard →</a></div></div></div>
+<div class="bg-white rounded-2xl p-5 mt-4"><h2 class="font-black text-2xl">🏫 Schools We Serve</h2><div class="grid md:grid-cols-2 gap-3 mt-3"><div class="border-2 border-black rounded-xl p-4"><div class="flex gap-3 items-center"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">Wordsworth High School</div><div class="text-xs text-gray-500">EMIS 700310854 • WHS • Book: WHS000001</div></div></div><div class="grid grid-cols-3 gap-2 mt-3 text-center text-sm"><div class="bg-gray-50 rounded p-2"><div class="font-black" id="wBooks">0</div><div class="text-xs">Books</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="wLearners">0</div><div class="text-xs">Learners</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="wIssued">0</div><div class="text-xs">Issued</div></div></div><a href="librarian-dashboard.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs mt-3 inline-block">Open Wordsworth →</a></div><div class="border-2 border-black rounded-xl p-4"><div class="flex gap-3 items-center"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">George Sonto High School</div><div class="text-xs text-gray-500">EMIS 911360870 • GSH • Book: GSH000001</div></div></div><div class="grid grid-cols-3 gap-2 mt-3 text-center text-sm"><div class="bg-gray-50 rounded p-2"><div class="font-black" id="gBooks">0</div><div class="text-xs">Books</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="gLearners">0</div><div class="text-xs">Learners</div></div><div class="bg-gray-50 rounded p-2"><div class="font-black" id="gIssued">0</div><div class="text-xs">Issued</div></div></div><a href="librarian-dashboard.html" class="bg-black text-white px-3 py-1 rounded font-bold text-xs mt-3 inline-block">Open George Sonto →</a></div></div></div>
+<div class="bg-white rounded-2xl p-5 mt-4"><h2 class="font-black text-2xl">👥 Leadership</h2><div class="grid md:grid-cols-2 gap-3 mt-3"><div class="border rounded-xl p-4 flex gap-3"><img src="logo.png" class="h-14 w-14 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black text-lg">Vusi Chauke</div><div class="text-xs font-bold text-yellow-600">Director — Founder</div><p class="text-xs text-gray-600 mt-1">Founder of Makhanani LTSM. Leads Xintimani Group, school partnerships and LTSM tracking.</p><p class="text-xs mt-1">📱 WhatsApp: <b>078 023 3263</b><br>📧 <b>vusichauke3037@gmail.com</b></p></div></div><div class="border rounded-xl p-4 flex gap-3"><img src="logo.png" class="h-14 w-14 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black text-lg">Hloniphani Success Masia</div><div class="text-xs font-bold text-yellow-600">Director</div><p class="text-xs text-gray-600 mt-1">Co-Director of Xintimani Group. Leads operations, donations and community support.</p><p class="text-xs mt-1">📱 WhatsApp: <b>078 023 3263</b><br>📧 <b>vusichauke3037@gmail.com</b></p></div></div></div></div>
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-5 mt-4"><h2 class="font-black text-2xl">🔄 How Makhanani LTSM Works</h2><div class="grid md:grid-cols-5 gap-2 mt-3 text-center text-sm"><div class="bg-white border rounded-xl p-3"><div class="text-2xl">📝</div><div class="font-black">1. Teacher Requests</div><p class="text-xs">Teacher picks own class + subject, requests books from HOD.</p></div><div class="bg-white border rounded-xl p-3"><div class="text-2xl">✅</div><div class="font-black">2. HOD Approves</div><p class="text-xs">HOD of that department approves / rejects quantity.</p></div><div class="bg-white border rounded-xl p-3"><div class="text-2xl">📦</div><div class="font-black">3. Librarian Packages</div><p class="text-xs">Librarian packs approved quantity for that teacher + class.</p></div><div class="bg-white border rounded-xl p-3"><div class="text-2xl">📤</div><div class="font-black">4. Teacher Issues</div><p class="text-xs">Teacher scans Packed book + Learner in own class, issues.</p></div><div class="bg-white border rounded-xl p-3"><div class="text-2xl">↩️</div><div class="font-black">5. Anyone Retrieves</div><p class="text-xs">Any staff can retrieve / return book. Becomes Available again.</p></div></div><p class="text-xs mt-3 text-center"><b>Rules:</b> Book WHS000001 • Learner 10A001 • No Duplicate • No Skipping • 1 Learner 1 Title • Grade Mismatch Blocked</p></div>
+<div id="contact" class="bg-black text-white rounded-2xl p-5 mt-4"><h2 class="font-black text-2xl">📞 Contact Xintimani Group</h2><div class="grid md:grid-cols-3 gap-3 mt-3 text-sm"><div class="bg-gray-900 rounded-xl p-3"><div class="font-black text-yellow-400">📍 Address</div><p class="mt-1">293 Smit Street,<br>Hillbrow, Johannesburg,<br>2038, South Africa</p></div><div class="bg-gray-900 rounded-xl p-3"><div class="font-black text-yellow-400">📱 Phone / WhatsApp</div><p class="mt-1">078 023 3263<br><a href="https://wa.me/27780233263" target="_blank" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs mt-2 inline-block">💬 WhatsApp Us →</a></p></div><div class="bg-gray-900 rounded-xl p-3"><div class="font-black text-yellow-400">📧 Email</div><p class="mt-1">vusichauke3037@gmail.com<br><a href="mailto:vusichauke3037@gmail.com" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs mt-2 inline-block">✉️ Email Us →</a></p></div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4"><a href="librarian-dashboard.html" class="bg-yellow-500 text-black py-3 rounded-xl font-black text-center text-sm">📚 Makhanani LTSM</a><a href="login.html" class="bg-white text-black py-3 rounded-xl font-black text-center text-sm">🔐 Staff Login</a><a href="donation-letter-whs.html" class="bg-gray-800 text-white py-3 rounded-xl font-black text-center text-sm border border-gray-600">📄 Donate — WHS</a><a href="donation-letter-gsh.html" class="bg-gray-800 text-white py-3 rounded-xl font-black text-center text-sm border border-gray-600">📄 Donate — GSH</a></div></div>
+<div class="text-center text-xs text-gray-400 mt-4 pb-4">Xintimani Group Holdings (Pty) Ltd • Reg 2026 / 934898 / 07 • 293 Smit Street, Hillbrow, Johannesburg, 2038 • Directors: Vusi Chauke + Hloniphani Success Masia • WhatsApp 078 023 3263 • vusichauke3037@gmail.com<br>Makhanani LTSM — Joy. Cherished. Mercy.</div>
 </div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-const DEFAULT_SCHOOLS=[
-{emis:'911360870', school:'George Sonto High School', prefix:'GSHS', status:'ACTIVE'},
-{emis:'700310854', school:'Wordsworth High School', prefix:'WHS', status:'ACTIVE'},
-{emis:'911360825', school:'SHIRILELE HIGH SCHOOL', prefix:'SHS', status:'ACTIVE'},
-{emis:'200101061', school:'1 STEP AHEAD ACADEMY', prefix:'ISA', status:'ACTIVE'},
-{emis:'200201086', school:'2MOROS LEADERS PRIMARY', prefix:'MLP', status:'ACTIVE'},
-{emis:'700401012', school:'3D CHRISTIAN ACADEMY', prefix:'CA', status:'ACTIVE'},
-{emis:'200300001', school:'A B SIWENDU SENIOR PRIMARY', prefix:'ABSSP', status:'ACTIVE'},
-];
-let myUser=null, myEmis='';
-let allSchools=[], allBooks=[], allLearners=[], allUsers=[], allTx=[], allBookCopies=[];
-let unsubs=[];
-function touchLive(){ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(); }
-function schoolPrefix(name){ if(!name) return 'SCH'; let w=String(name).trim().split(/\s+/).filter(x=>x.length); let stop=new Set(['OF','THE','AND','&']); return w.filter(x=>!stop.has(x.toUpperCase())).map(x=>x[0].toUpperCase()).join('')||'SCH'; }
-function startLive(){
-  unsubs.forEach(u=>{ try{ if(u) u(); }catch(e){} }); unsubs=[];
-  // Schools LIVE
-  unsubs.push(onSnapshot(collection(db,'schools'), (snap)=>{
-    let map=new Map(); DEFAULT_SCHOOLS.forEach(s=>map.set(String(s.emis), {...s}));
-    snap.docs.forEach(d=>{ let s=d.data(); if(s.emis) map.set(String(s.emis), {emis:String(s.emis), school:s.school||s.schoolName||s.name||'School '+s.emis, prefix:s.prefix||schoolPrefix(s.school||s.schoolName||''), status:s.status||'ACTIVE', principalEmail:s.principalEmail||'', createdAt:s.createdAt||''}); });
-    allSchools=[...map.values()].sort((a,b)=>(a.school||'').localeCompare(b.school||'')); touchLive(); render(); renderSchools(); renderSuper();
-  }));
-  // Books LIVE - ALL schools for global stats
-  unsubs.push(onSnapshot(collection(db,'books'), (snap)=>{ allBooks=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
-  // BookCopies LIVE
-  unsubs.push(onSnapshot(collection(db,'bookCopies'), (snap)=>{ allBookCopies=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
-  // Learners LIVE
-  unsubs.push(onSnapshot(collection(db,'learners'), (snap)=>{ allLearners=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
-  // Users LIVE
-  unsubs.push(onSnapshot(collection(db,'users'), (snap)=>{ allUsers=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); renderSuper(); }));
-  // Transactions LIVE
-  unsubs.push(onSnapshot(collection(db,'transactions'), (snap)=>{ allTx=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
-}
+let allBooks=[], allLearners=[], allTx=[], allCopies=[];
+function touch(){ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(); }
 function render(){
-  // Global
-  let copies=allBooks.reduce((a,b)=>a+Number(b.quantity??b.stock??b.copies??b.totalCopies??0),0);
-  let issued=allTx.filter(t=>t.type==='ISSUE').length;
-  let returned=allTx.filter(t=>t.type==='RETURN').length;
-  document.getElementById('gSchools').textContent=allSchools.length;
-  document.getElementById('gBooks').textContent=allBooks.length;
-  document.getElementById('gCopies').textContent=copies;
-  document.getElementById('gLearners').textContent=allLearners.length;
-  document.getElementById('gUsers').textContent=allUsers.length;
-  document.getElementById('gIssues').textContent=issued;
-  document.getElementById('gReturns').textContent=returned;
-  document.getElementById('gOut').textContent=Math.max(0, issued-returned);
-  // My school
-  if(myUser && myEmis){
-    let mine=allBooks.filter(b=>String(b.emis)===String(myEmis));
-    let myCopies=mine.reduce((a,b)=>a+Number(b.quantity??b.stock??b.copies??0),0);
-    let myLearners=allLearners.filter(l=>String(l.emis)===String(myEmis));
-    document.getElementById('mySchoolCard').classList.remove('hidden');
-    let s=allSchools.find(x=>String(x.emis)===String(myEmis));
-    document.getElementById('mySchoolName').textContent=(s?.school||myUser.school||'')+' • EMIS '+myEmis+' • Prefix '+(s?.prefix||'')+' • Role '+myUser.role;
-    document.getElementById('myBooks').textContent=mine.length;
-    document.getElementById('myCopies').textContent=myCopies;
-    document.getElementById('myLearners').textContent=myLearners.length;
-  }
+  let wBooks=allBooks.filter(b=>String(b.emis)==='700310854'); let gBooks=allBooks.filter(b=>String(b.emis)==='911360870');
+  let wCopies=wBooks.reduce((a,b)=>a+Number(b.quantity??b.stock??b.copies??0),0); let gCopies=gBooks.reduce((a,b)=>a+Number(b.quantity??b.stock??b.copies??0),0);
+  let wLearners=allLearners.filter(l=>String(l.emis)==='700310854').length; let gLearners=allLearners.filter(l=>String(l.emis)==='911360870').length;
+  let wIssued=allTx.filter(t=>String(t.emis)==='700310854' && t.type==='ISSUE').length; let gIssued=allTx.filter(t=>String(t.emis)==='911360870' && t.type==='ISSUE').length;
+  document.getElementById('wBooks').textContent=wCopies; document.getElementById('wLearners').textContent=wLearners; document.getElementById('wIssued').textContent=wIssued;
+  document.getElementById('gBooks').textContent=gCopies; document.getElementById('gLearners').textContent=gLearners; document.getElementById('gIssued').textContent=gIssued;
+  document.getElementById('statBooks').textContent=wCopies+gCopies; document.getElementById('statLearners').textContent=wLearners+gLearners; document.getElementById('statIssued').textContent=wIssued+gIssued; document.getElementById('statSchools').textContent=2;
+  if(allBooks.length===0 && allCopies.length>0){ let wC=allCopies.filter(c=>String(c.emis)==='700310854').length; let gC=allCopies.filter(c=>String(c.emis)==='911360870').length; document.getElementById('wBooks').textContent=wC; document.getElementById('gBooks').textContent=gC; document.getElementById('statBooks').textContent=wC+gC; }
 }
-function renderSchools(){
-  let q=document.getElementById('schoolSearch').value.trim().toLowerCase();
-  let list=allSchools.filter(s=>!q || (s.school||'').toLowerCase().includes(q) || String(s.emis).includes(q) || (s.prefix||'').toLowerCase().includes(q));
-  let el=document.getElementById('schoolsList');
-  if(!list.length){ el.innerHTML='<p class="text-gray-500 text-sm">No schools found.</p>'; return; }
-  el.innerHTML=list.map(s=>{
-    let books=allBooks.filter(b=>String(b.emis)===String(s.emis)).length;
-    let suspended=s.status==='SUSPENDED';
-    return `<div class="border rounded-xl p-3 flex justify-between items-center ${suspended?'bg-red-50 border-red-300':''}"><div><p class="font-black">${s.school} ${suspended?'⛔ SUSPENDED':''}</p><p class="text-xs text-gray-500">EMIS ${s.emis} • Prefix <b>${s.prefix}</b> • First Book: <b>${s.prefix}000001</b> • Titles: ${books} ${s.principalEmail?'• Principal: '+s.principalEmail:''}</p></div><a href="librarian-dashboard.html" class="bg-black text-white px-3 py-1 rounded-lg font-black text-xs shrink-0">OPEN →</a></div>`;
-  }).join('');
-}
-function renderSuper(){
-  let isSuper = myUser && ['SUPER_ADMIN','SUPERADMIN','ADMIN'].includes(String(myUser.role||'').toUpperCase());
-  let card=document.getElementById('superCard');
-  if(!isSuper){ card.classList.add('hidden'); return; }
-  card.classList.remove('hidden');
-  document.getElementById('superList').innerHTML=allSchools.map(s=>{
-    let suspended=s.status==='SUSPENDED';
-    return `<div class="bg-white rounded-xl p-3 flex justify-between items-center"><div><p class="font-black text-sm">${s.school}</p><p class="text-xs text-gray-500">EMIS ${s.emis} • ${s.prefix} • ${suspended?'⛔ SUSPENDED':'✅ ACTIVE'}</p></div><button data-emis="${s.emis}" data-action="${suspended?'UNSUSPEND':'SUSPEND'}" class="superToggle ${suspended?'bg-green-600':'bg-red-600'} text-white px-3 py-1 rounded-lg font-black text-xs">${suspended?'✅ UNSUSPEND':'⛔ SUSPEND'}</button></div>`;
-  }).join('');
-  document.querySelectorAll('.superToggle').forEach(btn=>{
-    btn.onclick=async()=>{
-      let emis=btn.dataset.emis; let action=btn.dataset.action;
-      // Find school doc - schools collection doc id may be EMIS or auto-id, search by emis
-      let snap=await import('firebase/firestore').then(m=>null);
-      // Use query already imported? We use getDocs via dynamic - simpler: update by doc id = emis if exists, else find in allSchools
-      // Try doc(db,'schools',emis) first
-      try{
-        let ref=doc(db,'schools',emis);
-        let s=await getDoc(ref);
-        if(s.exists()){ await updateDoc(ref,{status: action==='SUSPEND'?'SUSPENDED':'ACTIVE', updatedAt:new Date().toISOString()}); }
-        else {
-          // Find doc with this emis via collection scan - use allSchools? Need query - we already have onSnapshot, but for update we need doc id.
-          // Fallback: create doc with emis as id
-          await setDoc(ref,{emis:emis, school: allSchools.find(x=>String(x.emis)===String(emis))?.school||'', prefix: allSchools.find(x=>String(x.emis)===String(emis))?.prefix||'', status: action==='SUSPEND'?'SUSPENDED':'ACTIVE', updatedAt:new Date().toISOString()}, {merge:true});
-        }
-        alert('✅ '+action+'ED school '+emis+' — LIVE update sent');
-      }catch(e){ alert('❌ '+e.message); }
-    };
-  });
-}
-document.getElementById('schoolSearch').addEventListener('input', renderSchools);
-document.getElementById('tabLogin').addEventListener('click', ()=>{
-  document.getElementById('panelLogin').classList.remove('hidden'); document.getElementById('panelRegister').classList.add('hidden');
-  document.getElementById('tabLogin').className='flex-1 bg-black text-white py-2 rounded-lg font-black text-sm'; document.getElementById('tabRegister').className='flex-1 bg-white border-2 py-2 rounded-lg font-black text-sm';
+onSnapshot(collection(db,'books'), (snap)=>{ allBooks=snap.docs.map(d=>({id:d.id,...d.data()})); touch(); render(); });
+onSnapshot(collection(db,'bookCopies'), (snap)=>{ allCopies=snap.docs.map(d=>({id:d.id,...d.data()})); touch(); render(); });
+onSnapshot(collection(db,'learners'), (snap)=>{ allLearners=snap.docs.map(d=>({id:d.id,...d.data()})); touch(); render(); });
+onSnapshot(collection(db,'transactions'), (snap)=>{ allTx=snap.docs.map(d=>({id:d.id,...d.data()})); touch(); render(); });
+onAuthStateChanged(auth, async (user)=>{
+  if(!user) return;
+  let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'TEACHER'};
+  window.MAKHANANI_SESSION={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'TEACHER',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'};
+  localStorage.setItem('makhanani_session',JSON.stringify(window.MAKHANANI_SESSION));
+  let bar=document.getElementById('topBar'); bar.classList.remove('hidden');
+  document.getElementById('topBarText').textContent=prof.name+' • '+prof.role+' • '+(prof.school||'');
+  document.getElementById('fbLogoutBtn').onclick=async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.reload(); };
 });
-document.getElementById('tabRegister').addEventListener('click', ()=>{
-  document.getElementById('panelLogin').classList.add('hidden'); document.getElementById('panelRegister').classList.remove('hidden');
-  document.getElementById('tabRegister').className='flex-1 bg-black text-white py-2 rounded-lg font-black text-sm'; document.getElementById('tabLogin').className='flex-1 bg-white border-2 py-2 rounded-lg font-black text-sm';
-});
-document.getElementById('loginBtn').addEventListener('click', async()=>{
-  let email=document.getElementById('email').value.trim().toLowerCase(); let pass=document.getElementById('password').value.trim();
-  try{
-    let cred=await signInWithEmailAndPassword(auth, email, pass);
-    let s=await getDoc(doc(db,'users',cred.user.uid));
-    if(!s.exists()){ document.getElementById('loginMsg').innerHTML='❌ No profile — use <a href="fix-profile.html" class="underline text-blue-600">Fix Profile</a>'; return; }
-    myUser=s.data(); myEmis=myUser.emis;
-    // Check suspended
-    let sch=allSchools.find(x=>String(x.emis)===String(myEmis));
-    if(sch && sch.status==='SUSPENDED'){ document.getElementById('loginMsg').innerHTML='⛔ School SUSPENDED — contact Super Admin'; await signOut(auth); return; }
-    afterLogin();
-  }catch(e){ document.getElementById('loginMsg').innerHTML='❌ '+e.message.replace('Firebase: ',''); }
-});
-document.getElementById('registerBtn').addEventListener('click', async()=>{
-  let school=document.getElementById('rSchool').value.trim(); let emis=document.getElementById('rEmis').value.trim(); let name=document.getElementById('rName').value.trim(); let email=document.getElementById('rEmail').value.trim().toLowerCase(); let pass=document.getElementById('rPass').value.trim();
-  if(!school||!emis||!name||!email||!pass){ document.getElementById('registerMsg').innerHTML='❌ Fill all fields'; return; }
-  if(pass.length<6){ document.getElementById('registerMsg').innerHTML='❌ Password must be 6+ chars'; return; }
-  try{
-    let cred=await createUserWithEmailAndPassword(auth, email, pass);
-    let prefix=schoolPrefix(school);
-    await setDoc(doc(db,'schools',emis), {emis:emis, school:school, schoolName:school, prefix:prefix, principalEmail:email, principalName:name, status:'ACTIVE', createdAt:new Date().toISOString()});
-    await setDoc(doc(db,'users',cred.user.uid), {name:name, email:email, emis:emis, school:school, role:'PRINCIPAL', createdAt:new Date().toISOString()});
-    // Init counter at 0
-    await setDoc(doc(db,'counters',emis+'_BOOK'), {seq:0, emis:emis, type:'BOOK', prefix:prefix, updatedAt:new Date().toISOString()});
-    myUser={name:name,email:email,emis:emis,school:school,role:'PRINCIPAL'}; myEmis=emis;
-    document.getElementById('registerMsg').innerHTML='✅ School registered! Prefix: <b>'+prefix+'</b> • First book will be '+prefix+'000001 • Redirecting to Dashboard...';
-    setTimeout(()=>{ window.location.href='dashboard.html'; }, 1200);
-  }catch(e){ document.getElementById('registerMsg').innerHTML='❌ '+e.message.replace('Firebase: ',''); }
-});
-document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); location.reload(); });
-function afterLogin(){
-  document.getElementById('who').innerHTML='✅ '+myUser.name+' • '+myUser.role+' • '+(myUser.school||'')+' ('+myEmis+')';
-  document.getElementById('logoutBtn').classList.remove('hidden');
-  render(); renderSuper();
-}
-onAuthStateChanged(auth, async(u)=>{
-  startLive();
-  if(u && !myUser){ let s=await getDoc(doc(db,'users',u.uid)); if(s.exists()){ myUser=s.data(); myEmis=myUser.emis; afterLogin(); } }
-});
-startLive();
 </script></body></html>
