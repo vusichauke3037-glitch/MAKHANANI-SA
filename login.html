@@ -1,82 +1,114 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Makhanani LTSM Firebase</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js","firebase/analytics":"https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js"}}</script>
+</head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-<div class="text-center"><img src="logo.png" class="h-20 w-20 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-2xl mt-2">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="font-bold">MAKHANANI LTSM</p><p class="text-xs text-gray-500">George Sonto • Wordsworth • All books due 30 November</p></div>
-<div class="mt-4"><label class="text-xs font-bold">SCHOOL / EMIS</label><select id="schoolSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></select></div>
+<div class="text-center"><img src="logo.png" class="h-20 w-20 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-2xl mt-2">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="font-bold">MAKHANANI LTSM • FIREBASE</p><p class="text-xs text-gray-500">George Sonto • Wordsworth • All books due 30 November</p></div>
+
+<div class="mt-4"><label class="text-xs font-bold">SCHOOL</label><select id="schoolSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="911360870">George Sonto High School • EMIS 911360870 • GSHS</option><option value="700310854">Wordsworth High School • EMIS 700310854 • WHS</option></select></div>
 <div class="mt-2"><label class="text-xs font-bold">ROLE</label><select id="roleSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="PRINCIPAL">Principal</option><option value="HOD">HOD</option><option value="TEACHER">Teacher</option><option value="LIBRARIAN">Librarian</option></select></div>
-<div class="mt-2"><label class="text-xs font-bold">NAME (as registered)</label><input id="nameInput" placeholder="e.g. Naledi Dube / Mr Mokoena" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
-<div class="mt-2"><label class="text-xs font-bold">PASSWORD / PIN</label><input id="passInput" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
-<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-4">🔐 LOGIN</button>
+<div class="mt-2"><label class="text-xs font-bold">EMAIL (Firebase Login)</label><input id="emailInput" type="email" placeholder="e.g. mokoena@georgesonto.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
+<div class="mt-2"><label class="text-xs font-bold">PASSWORD</label><input id="passInput" type="password" placeholder="Password (min 6 chars)" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
+
+<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-4">🔐 LOGIN WITH FIREBASE</button>
+<button id="registerBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-bold mt-2 text-sm">✨ FIRST TIME? CREATE ACCOUNT FOR THIS SCHOOL + ROLE</button>
 <p id="loginMsg" class="text-sm font-bold mt-2 text-center"></p>
-<div class="bg-red-50 border border-red-300 rounded-lg p-3 mt-3 text-xs"><b>⚠️ EMIS was swapped before?</b><br>If you created George Sonto users/books while EMIS was 700310854, tap below ONCE to move them to correct EMIS 911360870.<br><button id="moveBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold mt-1">↪️ Move George Sonto Data 700310854 → 911360870</button><p id="moveMsg" class="font-bold mt-1"></p></div>
-<div class="flex gap-2 mt-3"><a href="index.html" class="flex-1 text-center bg-yellow-500 text-black py-2 rounded-lg font-bold text-sm">🏠 Home</a><a href="index.html#registerSchool" class="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg font-bold text-sm">🏫 Register New School</a></div>
+
+<div class="bg-blue-50 border rounded-lg p-3 mt-3 text-xs"><b>How it works:</b><br>1. First time: Fill School + Role + Email + Password → Tap <b>CREATE ACCOUNT</b><br>2. Next time: Same Email + Password → Tap <b>LOGIN</b><br>3. Works on any phone. No more <i>undefined</i>.</div>
+<div class="bg-yellow-50 border rounded-lg p-3 mt-2 text-xs"><b>Test:</b><br>George Sonto Principal: <b>principal@georgesonto.co.za / 123456</b><br>Wordsworth Principal: <b>principal@wordsworth.co.za / 123456</b><br><i>Use CREATE ACCOUNT first, then LOGIN.</i></div>
+<div class="flex gap-2 mt-3"><a href="index.html" class="flex-1 text-center bg-yellow-500 text-black py-2 rounded-lg font-bold text-sm">🏠 Home</a></div>
 </div>
-<script>
-(function(){
-let schools=[];
-const CORRECT = [
-  {school:'George Sonto High School', name:'George Sonto High School', schoolName:'George Sonto High School', emis:'911360870', EMIS:'911360870', prefix:'GSHS'},
-  {school:'Wordsworth High School', name:'Wordsworth High School', schoolName:'Wordsworth High School', emis:'700310854', EMIS:'700310854', prefix:'WHS'}
-];
-function loadSchools(){
-  try{ schools=JSON.parse(localStorage.getItem('makhanani_schools')||'[]'); }catch(e){ schools=[]; }
-  if(!Array.isArray(schools)) schools=[];
-  // Force correct EMIS by PREFIX - this fixes the swap
-  schools = schools.map(s=>{
-    let p=String(s.prefix||s.code||'').toUpperCase();
-    let found=CORRECT.find(c=>c.prefix===p);
-    if(found) return {...found};
-    let name=s.school||s.name||s.schoolName||'Unknown School';
-    let emis=s.emis||s.EMIS||'';
-    return {school:name, name:name, schoolName:name, emis:String(emis), EMIS:String(emis), prefix:p};
-  });
-  // Ensure both correct schools exist
-  CORRECT.forEach(c=>{ if(!schools.some(s=>s.prefix===c.prefix)) schools.push({...c}); });
-  // Remove duplicates by prefix
-  let seen={}; schools=schools.filter(s=>{ if(seen[s.prefix]) return false; seen[s.prefix]=true; return true; });
-  localStorage.setItem('makhanani_schools', JSON.stringify(schools));
-  document.getElementById('schoolSelect').innerHTML=schools.map(s=>'<option value="'+s.emis+'">'+s.school+' • EMIS '+s.emis+' • '+s.prefix+'</option>').join('');
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAnalytics } from 'firebase/analytics';
+
+// YOUR FIREBASE CONFIG - makhanani-ltsm
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+
+const app = initializeApp(firebaseConfig);
+try{ getAnalytics(app); }catch(e){}
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const SCHOOLS = {
+  '911360870': {school:'George Sonto High School', emis:'911360870', prefix:'GSHS'},
+  '700310854': {school:'Wordsworth High School', emis:'700310854', prefix:'WHS'}
+};
+function show(msg){ document.getElementById('loginMsg').innerHTML = msg; }
+
+async function saveSession(user, emis, role){
+  let school = SCHOOLS[emis];
+  let profile = null;
+  try{ let snap = await getDoc(doc(db, 'users', user.uid)); if(snap.exists()) profile = snap.data(); }catch(e){}
+  let cur = {
+    school: school.school, emis: emis, prefix: school.prefix,
+    name: profile?.name || user.email, role: role,
+    subjects: profile?.subjects || ['General'],
+    classes: profile?.classes || [],
+    email: user.email, uid: user.uid
+  };
+  localStorage.setItem('makhanani_session', JSON.stringify(cur));
+  localStorage.setItem('makhanani_schools', JSON.stringify(Object.values(SCHOOLS)));
+  return cur;
 }
-function getUsers(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_users')||'[]'); }catch(e){ return []; } }
-document.getElementById('moveBtn').addEventListener('click',function(){
-  if(!confirm('Move ALL George Sonto data from OLD wrong EMIS 700310854 to CORRECT 911360870?\n\nThis copies Users, Books, Learners, Issues, Requests.\n\nTap OK ONLY if your George Sonto data was created under 700310854.\nIf your 700310854 data is actually Wordsworth data, tap CANCEL.')) return;
-  let keys=['makhanani_users','makhanani_ltsm','makhanani_learners','makhanani_issues','makhanani_requests'];
-  let moved=[];
-  keys.forEach(k=>{
-    let oldKey='EMIS_700310854_'+k;
-    let newKey='EMIS_911360870_'+k;
-    let oldVal=localStorage.getItem(oldKey);
-    let newVal=localStorage.getItem(newKey);
-    if(oldVal && !newVal){
-      localStorage.setItem(newKey, oldVal);
-      moved.push(k+' ('+JSON.parse(oldVal).length+' items)');
-    } else if(oldVal && newVal){
-      moved.push(k+' — already exists in 911360870, NOT overwritten');
-    }
-  });
-  document.getElementById('moveMsg').innerHTML='✅ Moved: '+(moved.length?moved.join(', '):'Nothing found in 700310854')+'<br>Now login with George Sonto • EMIS 911360870';
-  alert('✅ Done. Now login as George Sonto • 911360870');
-});
-document.getElementById('loginBtn').addEventListener('click',function(){
-  let emis=document.getElementById('schoolSelect').value;
-  let role=document.getElementById('roleSelect').value;
-  let name=document.getElementById('nameInput').value.trim();
-  let pass=document.getElementById('passInput').value.trim();
-  if(!name||!pass){ document.getElementById('loginMsg').innerHTML='❌ Fill Name + Password.'; return; }
-  let school=schools.find(s=>String(s.emis)===String(emis));
-  let users=getUsers(emis);
-  if(users.length===0 && role==='PRINCIPAL' && pass==='1234'){
-    localStorage.setItem('makhanani_session', JSON.stringify({school:school.school, emis:emis, prefix:school.prefix, name:name, role:'PRINCIPAL', subjects:['General'], classes:[]}));
-    document.getElementById('loginMsg').innerHTML='✅ Welcome Principal '+name;
-    setTimeout(()=>location.href='principal-dashboard.html',800); return;
+
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  let emis = document.getElementById('schoolSelect').value;
+  let role = document.getElementById('roleSelect').value;
+  let email = document.getElementById('emailInput').value.trim().toLowerCase();
+  let pass = document.getElementById('passInput').value.trim();
+  if(!email || !pass){ show('❌ Fill Email + Password'); return; }
+  show('⏳ Logging in...');
+  try{
+    let cred = await signInWithEmailAndPassword(auth, email, pass);
+    let cur = await saveSession(cred.user, emis, role);
+    show('✅ Welcome '+cur.name+' — '+cur.school+' ('+cur.role+')');
+    let dest = role==='PRINCIPAL'?'principal-dashboard.html':role==='HOD'?'hod-dashboard.html':role==='TEACHER'?'teacher-dashboard.html':'librarian.html';
+    setTimeout(()=> location.href = dest, 800);
+  }catch(e){
+    show('❌ '+e.message.replace('Firebase: ','')+'<br>First time? Tap CREATE ACCOUNT.');
   }
-  let u=users.find(x=>x.name.toLowerCase()===name.toLowerCase() && String(x.role).toUpperCase()===role && String(x.password)===String(pass));
-  if(!u){ document.getElementById('loginMsg').innerHTML='❌ Wrong Name / Role / Password for '+school.school+' (EMIS '+emis+').'; return; }
-  localStorage.setItem('makhanani_session', JSON.stringify({school:school.school, emis:emis, prefix:school.prefix, name:u.name, role:u.role.toUpperCase(), subjects:u.subjects||[], classes:u.classes||[]}));
-  document.getElementById('loginMsg').innerHTML='✅ Welcome '+u.name+' ('+u.role+') — '+school.school;
-  let dest=u.role.toUpperCase()==='PRINCIPAL'?'principal-dashboard.html':u.role.toUpperCase()==='HOD'?'hod-dashboard.html':u.role.toUpperCase()==='TEACHER'?'teacher-dashboard.html':'librarian.html';
-  setTimeout(()=>location.href=dest,800);
 });
-loadSchools();
-})();
+
+document.getElementById('registerBtn').addEventListener('click', async ()=>{
+  let emis = document.getElementById('schoolSelect').value;
+  let role = document.getElementById('roleSelect').value;
+  let email = document.getElementById('emailInput').value.trim().toLowerCase();
+  let pass = document.getElementById('passInput').value.trim();
+  if(!email || pass.length<6){ show('❌ Email + Password min 6 chars for CREATE ACCOUNT'); return; }
+  let name = prompt('Full Name as registered (e.g. Mr Mokoena):', '');
+  if(!name){ show('❌ Name needed'); return; }
+  let subjects = prompt('Subjects (comma, e.g. Mathematics) — or General:', 'General') || 'General';
+  let classes = prompt('Classes (comma, e.g. 10A,10B) — leave blank if none:', '') || '';
+  show('⏳ Creating account...');
+  try{
+    let cred = await createUserWithEmailAndPassword(auth, email, pass);
+    let school = SCHOOLS[emis];
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      uid: cred.user.uid, name: name.trim(), email: email, role: role,
+      emis: emis, school: school.school, prefix: school.prefix,
+      subjects: subjects.split(',').map(s=>s.trim()).filter(Boolean),
+      classes: classes.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean),
+      createdAt: new Date().toISOString()
+    });
+    await setDoc(doc(db, 'schools', emis), { emis, school: school.school, prefix: school.prefix }, {merge:true});
+    let cur = await saveSession(cred.user, emis, role);
+    show('✅ Account created! Welcome '+name+' — '+school.school);
+    let dest = role==='PRINCIPAL'?'principal-dashboard.html':role==='HOD'?'hod-dashboard.html':role==='TEACHER'?'teacher-dashboard.html':'librarian.html';
+    setTimeout(()=> location.href = dest, 1000);
+  }catch(e){
+    show('❌ '+e.message.replace('Firebase: ',''));
+  }
+});
 </script></body></html>
