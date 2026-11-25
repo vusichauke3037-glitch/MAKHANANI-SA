@@ -1,127 +1,37 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HOD Dashboard — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HOD Dashboard — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script></head>
 <body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • HOD DASHBOARD</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2 flex-wrap"><a href="dashboard.html" class="bg-purple-600 text-white px-3 py-1 rounded font-bold text-xs">📊 My Dashboard</a><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • HOD</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2 flex-wrap"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
 <div class="max-w-6xl mx-auto p-4">
-<div id="roleBanner" class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-3 text-sm font-bold">⏳ Checking login...</div>
-
-<div class="bg-white rounded-2xl p-4 mt-4 flex flex-wrap gap-2 justify-between items-center"><div><h1 class="font-black text-2xl">👔 HOD Dashboard</h1><p class="text-xs text-gray-500" id="hodInfo">Loading...</p><p class="text-xs text-gray-500" id="hodScope">-</p></div><div class="flex gap-2 flex-wrap"><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL|ALL|All Schools">All Schools</option><option value="WHS|700310854|Wordsworth High School">Wordsworth High School</option><option value="GSH|911360870|George Sonto High School">George Sonto High School</option></select><a href="dashboard.html" class="bg-purple-600 text-white px-3 py-2 rounded-lg font-bold text-sm">📊 My Dashboard →</a></div></div>
-
-<!-- SUPER_ADMIN / ADMIN VIEW AS HOD - ONLY FOR NON-HOD -->
-<div id="viewAsBox" class="bg-purple-50 border-2 border-purple-400 rounded-2xl p-4 mt-4 hidden"><h2 class="font-black">👀 You Are Viewing As SUPER_ADMIN / ADMIN — Pick A Department To View</h2><p class="text-xs text-gray-600 mt-1">SUPER_ADMIN has no Department of your own, so My Department = 0 is correct for you. Pick a Department below to see THAT HOD's approvals, stock, and requests. Or pick All Departments to see whole school.</p><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="viewDeptSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Departments — Whole School</option></select><select id="viewGradeSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Grades</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select><select id="viewSubjectSel" class="border-2 rounded-lg px-3 py-2 font-bold"><option value="ALL">All Subjects</option></select></div><p id="viewAsMsg" class="text-xs font-bold mt-1"></p></div>
-
-<div id="importBoxWrap" class="bg-red-50 border-2 border-red-500 rounded-2xl p-4 mt-4 hidden"><h2 class="font-black">❌ Data Shows 0 On THIS Device — Import From Phone</h2><p class="text-xs mt-1">This laptop has no data yet. Export on phone → Paste here → Import. Do NOT re-add books/learners here.</p><textarea id="importCode" class="border w-full rounded-lg p-2 mt-2 text-xs font-mono h-20" placeholder="Paste export code from phone here..."></textarea><div class="flex gap-2 mt-2"><button id="importBtn" type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">📥 Import Data Now</button><button id="pasteBtn" type="button" class="bg-gray-200 px-4 py-2 rounded-lg font-bold text-sm">📋 Paste From Clipboard</button></div><p id="importMsg" class="text-xs font-bold mt-1"></p></div>
-
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center border-2 border-yellow-300"><div class="text-3xl font-black text-yellow-600" id="cPending">0</div><div class="text-xs font-bold text-gray-500">📝 PENDING APPROVAL</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-green-200"><div class="text-3xl font-black text-green-600" id="cApproved">0</div><div class="text-xs font-bold text-gray-500">✅ APPROVED</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-red-200"><div class="text-3xl font-black text-red-600" id="cRejected">0</div><div class="text-xs font-bold text-gray-500">❌ REJECTED</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-blue-200"><div class="text-3xl font-black text-blue-700" id="cTitles">0</div><div class="text-xs font-bold text-gray-500">📖 TITLES IN DEPT</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-purple-200"><div class="text-3xl font-black text-purple-700" id="cBooks">0</div><div class="text-xs font-bold text-gray-500">📚 BOOKS IN DEPT</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-orange-200"><div class="text-3xl font-black text-orange-600" id="cIssued">0</div><div class="text-xs font-bold text-gray-500">📤 ISSUED IN DEPT</div></div></div>
-
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📝 Requests Needing My Approval — Tap Approve / Reject</h2><p class="text-xs text-gray-500">Only PENDING requests for YOUR Department + Grades show here for HOD. SUPER_ADMIN sees all when filter = All Departments.</p><div id="reqList" class="mt-2 space-y-2 text-sm"><p class="text-gray-500">No pending requests. All clear ✅</p></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📖 Stock In My Department — By Grade / Subject</h2><div id="stockTable" class="mt-2 overflow-x-auto"><p class="text-gray-500 text-sm">No stock in this Department on this device — Import from phone, or add books in Librarian.</p></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Learners In My Grades</h2><div id="learnerTable" class="mt-2 overflow-x-auto"><p class="text-gray-500 text-sm">No learners in your grades on this device.</p></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🕒 Recent Decisions</h2><div id="recentList" class="mt-2 space-y-2 text-sm"><p class="text-gray-500">No decisions yet.</p></div></div>
-<div class="flex gap-2 mt-4 flex-wrap"><a href="issue.html" class="bg-black text-white px-4 py-2 rounded-lg font-bold text-sm">📤 Issue →</a><a href="stock.html" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📦 Stock →</a><a href="librarian.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📚 Librarian →</a><a href="dashboard.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-sm">📊 Dashboard →</a></div>
+<div class="bg-white rounded-2xl p-4"><h1 class="font-black text-2xl">📋 HOD Dashboard</h1><p class="text-xs text-gray-500" id="schoolLine">Loading...</p></div>
+<div id="subBanner" class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-3 mt-4 text-sm font-bold hidden"></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📋 Requests — My Subjects — Approve / Reject</h2><p class="text-xs text-gray-500">HOD sees only requests for their subjects. If your subjects are General, you see all.</p><div id="reqList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Stock — My Subjects</h2><div id="stockList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📦 Issue / Return — View</h2><div id="issueList" class="mt-2 text-sm"></div><a href="issue.html" class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm mt-2">📦 Open Issue / Return →</a></div>
 </div>
 <script>
 (function(){
-let cur={prefix:'ALL',emis:'ALL',name:'All Schools'}; let me=null; let viewDept='ALL'; let viewGrade='ALL'; let viewSubject='ALL';
-const DEFAULT_DEPTS={
-  'Mathematics': ['Mathematics','Maths Literacy','Mathematical Literacy'],
-  'Sciences': ['Physical Science','Life Sciences','Natural Sciences','Agricultural Science'],
-  'Languages': ['English','English FAL','English HL','Afrikaans','Afrikaans FAL','isiZulu','isiXhosa','Sepedi','Setswana','Sesotho'],
-  'Humanities': ['Geography','History','Social Sciences'],
-  'Commerce': ['Accounting','Business Studies','Economics','Tourism','EMS'],
-  'Technology': ['CAT','Computer Applications Technology','Information Technology','Technology','Technical Sciences','Engineering Graphics & Design'],
-  'Life Orientation': ['Life Orientation'],
-  'Arts': ['Visual Arts','Music','Drama','Creative Arts'],
-  'General': ['General','Other']
-};
-function loadDepts(){ let custom={}; try{ custom=JSON.parse(localStorage.getItem('makhanani_departments')||'{}'); }catch(e){ custom={}; } let merged={}; Object.keys(DEFAULT_DEPTS).forEach(k=> merged[k]=[...DEFAULT_DEPTS[k]]); Object.keys(custom).forEach(k=>{ if(merged[k]){ custom[k].forEach(s=>{ if(!merged[k].includes(s)) merged[k].push(s); }); } else { merged[k]=[...custom[k]]; } }); return merged; }
-let DEPTS=loadDepts();
-function getBooksFor(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); }catch(e){ return []; } }
-function getLearnersFor(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]'); }catch(e){ return []; } }
-function getHistFor(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_history')||'[]'); }catch(e){ return []; } }
-function getReqsFor(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_requests')||'[]'); }catch(e){ return []; } }
-function saveReqsFor(emis, reqs){ localStorage.setItem('EMIS_'+emis+'_makhanani_requests', JSON.stringify(reqs)); }
-function getAll(fn){ if(cur.emis==='ALL') return [...fn('700310854'), ...fn('911360870')]; return fn(cur.emis); }
-function tryDecode(code){ code=code.trim(); try{ let j=JSON.parse(decodeURIComponent(escape(atob(code)))); if(j&&typeof j==='object') return j; }catch(e){} try{ let j=JSON.parse(code); if(j&&typeof j==='object') return j; }catch(e){} try{ let j=JSON.parse(atob(code)); if(j&&typeof j==='object') return j; }catch(e){} return null; }
-function bookDept(b){ if(b.department) return b.department; if(b.group) return b.group; let t=((b.subject||'')+' '+b.title).toUpperCase(); for(let d in DEPTS){ for(let s of DEPTS[d]){ if(t.includes(s.toUpperCase())) return d; } } return 'General'; }
-function bookSubject(b){ if(b.subject) return b.subject; let t=(b.title||'').toUpperCase(); for(let d in DEPTS){ for(let s of DEPTS[d]){ if(t.includes(s.toUpperCase())) return s; } } return 'General'; }
-function buildViewAs(){
-  let isNonHOD = me && ['SUPER_ADMIN','ADMIN','LIBRARIAN','TEACHER'].includes(me.role);
-  document.getElementById('viewAsBox').classList.toggle('hidden', !isNonHOD);
-  if(!isNonHOD) return;
-  document.getElementById('viewDeptSel').innerHTML='<option value="ALL">All Departments — Whole School</option>'+Object.keys(DEPTS).map(d=>'<option value="'+d+'">'+d+'</option>').join('');
-  document.getElementById('viewDeptSel').value=viewDept;
-  let subs=[]; if(viewDept==='ALL'){ Object.values(DEPTS).forEach(a=> subs.push(...a)); } else { subs=DEPTS[viewDept]||[]; }
-  document.getElementById('viewSubjectSel').innerHTML='<option value="ALL">All Subjects</option>'+[...new Set(subs)].sort().map(s=>'<option value="'+s+'">'+s+'</option>').join('');
-  document.getElementById('viewSubjectSel').value=viewSubject;
-  document.getElementById('viewGradeSel').value=viewGrade;
-}
+let cur=null;
 function render(){
-  let s=null; try{ s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-  if(!s||!s.name){ document.getElementById('topStatus').textContent='Not logged in'; document.getElementById('roleBanner').innerHTML='❌ NOT LOGGED IN — Go to <a href="login.html" class="underline text-blue-600 font-black">login.html</a>'; document.getElementById('hodInfo').textContent='Not logged in'; return; }
-  if(!Array.isArray(s.classes)) s.classes=s.class?[s.class]:[]; if(!Array.isArray(s.subjects)) s.subjects=s.subject?[s.subject]:['General']; me=s; DEPTS=loadDepts();
-  document.getElementById('topStatus').textContent='Logged in: '+me.name+' • '+me.role;
-  // *** NO REDIRECT - EVERY ROLE ALLOWED ***
-  if(me.role==='HOD'){ document.getElementById('roleBanner').innerHTML='✅ Logged in as HOD <b>'+me.name+'</b> • Departments / Subjects: '+(me.subjects.join(', ')||'None — Ask Admin to set subjects in Firestore')+' • Grades: '+(me.grades||'All')+' — Showing ONLY your Departments + Grades.'; document.getElementById('hodInfo').textContent=me.name+' • HOD • Depts: '+me.subjects.join(', ')+' • Grades: '+(me.grades||'All'); }
-  else if(me.role==='SUPER_ADMIN' || me.role==='ADMIN'){ document.getElementById('roleBanner').innerHTML='✅ Logged in as <b>'+me.name+'</b> • '+me.role+' — You can view HOD Dashboard. You have no Department of your own, so pick a Department above to view THAT HOD\'s work. You are <b>NOT</b> being redirected.'; document.getElementById('hodInfo').textContent='Viewing as: '+me.name+' • '+me.role+' • Dept filter: '+viewDept+' • Grade: '+viewGrade+' • Subject: '+viewSubject; }
-  else { document.getElementById('roleBanner').innerHTML='✅ Logged in as <b>'+me.name+'</b> • '+me.role+' — Viewing HOD Dashboard. Pick a Department above if you want to filter.'; document.getElementById('hodInfo').textContent=me.name+' • '+me.role; }
-  document.getElementById('hodScope').textContent='School: '+cur.name+' • If numbers are 0, Import from phone below — this laptop has no data yet.';
-  buildViewAs();
-  let allBooks=getAll(getBooksFor); let allLearners=getAll(getLearnersFor); let allHist=getAll(getHistFor); let allReqs=getAll(getReqsFor);
-  let books, learners, reqs;
-  if(me.role==='HOD'){
-    let mySubs=(me.subjects||[]).map(x=>x.toUpperCase()); let grades=(me.grades||'').split(',').map(g=>g.trim()).filter(Boolean);
-    books=allBooks.filter(b=>{ let d=bookDept(b).toUpperCase(); let sub=bookSubject(b).toUpperCase(); let match=mySubs.some(ms=> d.includes(ms) || ms.includes(d) || sub.includes(ms) || ms.includes(sub) || b.title.toUpperCase().includes(ms)); if(!match) return false; if(grades.length && !grades.includes((b.grade||'').replace(/[^0-9]/g,''))) return false; return true; });
-    learners=allLearners.filter(l=> !grades.length || grades.includes((l.grade||'').replace(/[^0-9]/g,'')));
-    reqs=allReqs.filter(r=>{ let sub=(r.subject||'').toUpperCase(); let match=mySubs.some(ms=> sub.includes(ms) || ms.includes(sub)); if(!match) return false; if(grades.length && !grades.includes((r.grade||'').replace(/[^0-9]/g,''))) return false; return true; });
-  } else {
-    // SUPER_ADMIN / others - use view filters
-    books=allBooks.filter(b=>{ if(viewDept!=='ALL' && bookDept(b)!==viewDept) return false; if(viewSubject!=='ALL' && bookSubject(b)!==viewSubject) return false; if(viewGrade!=='ALL' && b.grade!==viewGrade) return false; return true; });
-    learners=allLearners.filter(l=> viewGrade==='ALL' || l.grade===viewGrade);
-    reqs=allReqs.filter(r=>{ if(viewDept!=='ALL'){ // Map request subject -> dept
-      let rDept='General'; for(let d in DEPTS){ if(DEPTS[d].includes(r.subject)) rDept=d; } if(rDept!==viewDept) return false; } if(viewSubject!=='ALL' && r.subject!==viewSubject) return false; if(viewGrade!=='ALL' && r.grade!==viewGrade) return false; return true; });
-  }
-  let totalBooks=0, issuedBooks=0; books.forEach(b=> (b.copies||[]).forEach(c=>{ totalBooks++; if(c.status==='Issued') issuedBooks++; }));
-  document.getElementById('cPending').textContent=reqs.filter(r=>r.status==='PENDING').length; document.getElementById('cApproved').textContent=reqs.filter(r=>r.status==='APPROVED').length; document.getElementById('cRejected').textContent=reqs.filter(r=>r.status==='REJECTED').length; document.getElementById('cTitles').textContent=books.length; document.getElementById('cBooks').textContent=totalBooks; document.getElementById('cIssued').textContent=issuedBooks;
-  let totalAllBooks=allBooks.reduce((a,b)=>a+(b.copies||[]).length,0);
-  if(totalAllBooks===0 && allLearners.length===0){ document.getElementById('importBoxWrap').classList.remove('hidden'); } else { document.getElementById('importBoxWrap').classList.add('hidden'); }
-  // Pending list with Approve / Reject - works for HOD + SUPER_ADMIN
-  let pending=reqs.filter(r=>r.status==='PENDING');
-  if(pending.length) document.getElementById('reqList').innerHTML=pending.slice().reverse().map((r)=>{
-    let idx=allReqs.indexOf(r);
-    return '<div class="border rounded-lg p-3 flex justify-between gap-2 flex-wrap"><div><b>'+(r.title||'')+'</b> • 📖 '+(r.subject||'')+' • 🎓 '+(r.grade||'')+' '+(r.class||'')+'<br>Teacher: <b>'+(r.teacher||'')+'</b> • Qty: <b>'+(r.qty||r.quantity||'')+'</b> • Requested: '+(r.date||r.requestedDate||'')+'<br><span class="text-xs text-gray-500">'+(r.note||'')+'</span></div><div class="flex gap-1 h-fit"><button data-approve="'+idx+'" class="approve-btn bg-green-600 text-white px-4 py-1 rounded font-bold text-sm">✅ Approve</button><button data-reject="'+idx+'" class="reject-btn bg-red-600 text-white px-4 py-1 rounded font-bold text-sm">❌ Reject</button></div></div>';
-  }).join('');
-  else document.getElementById('reqList').innerHTML='<p class="text-gray-500">No pending requests. All clear ✅</p>';
-  document.querySelectorAll('.approve-btn').forEach(b=>b.addEventListener('click',function(){ decide(parseInt(this.getAttribute('data-approve')), 'APPROVED'); }));
-  document.querySelectorAll('.reject-btn').forEach(b=>b.addEventListener('click',function(){ decide(parseInt(this.getAttribute('data-reject')), 'REJECTED'); }));
-  if(books.length) document.getElementById('stockTable').innerHTML='<table class="w-full border-collapse border text-sm"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">Title</th><th class="border p-2 text-left">Dept</th><th class="border p-2 text-left">Grade</th><th class="border p-2 text-left">Subject</th><th class="border p-2">Total</th><th class="border p-2">Avail</th><th class="border p-2">Issued</th></tr></thead><tbody>'+books.map(b=>{ let copies=b.copies||[]; return '<tr><td class="border p-2 font-bold">'+b.title+'</td><td class="border p-2">'+bookDept(b)+'</td><td class="border p-2">'+b.grade+'</td><td class="border p-2">'+bookSubject(b)+'</td><td class="border p-2 text-center">'+copies.length+'</td><td class="border p-2 text-center">'+copies.filter(c=>c.status==='Available').length+'</td><td class="border p-2 text-center">'+copies.filter(c=>c.status==='Issued').length+'</td></tr>'; }).join('')+'</tbody></table>';
-  if(learners.length) document.getElementById('learnerTable').innerHTML='<table class="w-full border-collapse border text-sm"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">Learner</th><th class="border p-2 text-left">ID</th><th class="border p-2 text-left">Grade</th><th class="border p-2 text-left">Class</th></tr></thead><tbody>'+learners.slice(0,50).map(l=>'<tr><td class="border p-2 font-bold">'+l.name+'</td><td class="border p-2">'+l.id+'</td><td class="border p-2">'+l.grade+'</td><td class="border p-2">'+l.class+'</td></tr>').join('')+'</tbody></table><p class="text-xs text-gray-500 mt-1">Showing first 50 of '+learners.length+' learners.</p>';
-  let decided=allReqs.filter(r=>r.status==='APPROVED'||r.status==='REJECTED');
-  if(decided.length) document.getElementById('recentList').innerHTML=decided.slice().reverse().slice(0,8).map(r=>'<div class="border rounded p-2 flex justify-between gap-2 flex-wrap"><div><b>'+(r.title||'')+'</b> • '+(r.subject||'')+' • '+(r.grade||'')+' • Teacher: '+(r.teacher||'')+'</div><span class="font-bold '+(r.status==='APPROVED'?'text-green-600':'text-red-600')+'">'+r.status+' • By: '+(r.decidedBy||r.approvedBy||'')+'</span></div>').join('');
+  try{ cur=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){ cur=null; }
+  if(!cur){ document.getElementById('schoolLine').innerHTML='❌ NOT LOGGED IN — <a href="login.html" class="underline text-blue-600 font-black">Go to login</a>'; return; }
+  let sc=window.checkSubscription?window.checkSubscription(cur.school, cur.emis, {block:true}):null; if(sc && sc.locked && !sc.adminBypass) return;
+  document.getElementById('topStatus').textContent=cur.name+' • '+cur.role+' • '+cur.school+' • EMIS '+cur.emis;
+  document.getElementById('schoolLine').innerHTML='School: <b>'+cur.school+'</b> • EMIS: <b>'+cur.emis+'</b> • Subjects: <b>'+(cur.subjects||[]).join(', ')+'</b>';
+  if(window.showSubBanner) window.showSubBanner('subBanner', cur.school, cur.emis);
+  let books=[]; let requests=[]; let issues=[];
+  try{ books=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]'); }catch(e){}
+  try{ requests=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_requests')||'[]'); }catch(e){}
+  try{ issues=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_issues')||'[]'); }catch(e){}
+  let mySubs=cur.subjects||[]; let isGeneral=mySubs.includes('General');
+  let filteredReq=isGeneral?requests:requests.filter(r=>mySubs.some(s=> (r.subject||'').toLowerCase().includes(s.toLowerCase()) || (r.title||'').toLowerCase().includes(s.toLowerCase())));
+  document.getElementById('reqList').innerHTML=filteredReq.map((r)=>{ let idx=requests.indexOf(r); return '<div class="border rounded p-2 mb-1 flex justify-between gap-2 flex-wrap"><div><b>'+r.title+'</b> • Subject '+(r.subject||'—')+' • By '+r.by+' • Grade '+r.grade+' • Qty '+r.qty+' • <b>'+r.status+'</b></div><div class="flex gap-1"><button data-approve="'+idx+'" class="approve-btn bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">✅ Approve</button><button data-reject="'+idx+'" class="reject-btn bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">❌ Reject</button></div></div>'; }).join('')||'<p class="text-gray-500">No requests for your subjects.</p>';
+  document.querySelectorAll('.approve-btn').forEach(b=>b.addEventListener('click',function(){ let i=parseInt(this.getAttribute('data-approve')); requests[i].status='Approved'; localStorage.setItem('EMIS_'+cur.emis+'_makhanani_requests', JSON.stringify(requests)); render(); }));
+  document.querySelectorAll('.reject-btn').forEach(b=>b.addEventListener('click',function(){ let i=parseInt(this.getAttribute('data-reject')); requests[i].status='Rejected'; localStorage.setItem('EMIS_'+cur.emis+'_makhanani_requests', JSON.stringify(requests)); render(); }));
+  let myBooks=isGeneral?books:books.filter(b=>mySubs.some(s=> (b.subject||'').toLowerCase().includes(s.toLowerCase())));
+  document.getElementById('stockList').innerHTML=myBooks.map(b=>'<div class="border rounded p-2 mb-1"><b>'+b.title+'</b> • '+(b.subject||'')+' • Grade '+(b.grade||'')+' • Copies '+(b.copies||[]).length+' • Available '+(b.copies||[]).filter(c=>c.status==='Available').length+' • Book Numbers: '+((b.copies||[]).slice(0,3).map(c=>c.barcode).join(', '))+'</div>').join('')||'<p class="text-gray-500">No books for your subjects.</p>';
+  document.getElementById('issueList').innerHTML=issues.slice(-10).reverse().map(i=>'<div class="border rounded p-2 mb-1">Book <b>'+i.barcode+'</b> • Learner <b>'+i.learnerId+'</b> • '+i.action+' • '+(i.date||'')+'</div>').join('')||'<p class="text-gray-500">No issues yet.</p>';
 }
-function decide(idx, status){
-  // Find which EMIS this request belongs to - try both, update the one that has it
-  let found=false;
-  ['700310854','911360870'].forEach(emis=>{
-    let reqs=getReqsFor(emis); let match=reqs.find(r=>{ let all=getAll(getReqsFor); return all[idx]===r || (r.title===getAll(getReqsFor)[idx].title && r.teacher===getAll(getReqsFor)[idx].teacher && r.status==='PENDING'); });
-    if(match){ match.status=status; match.decidedBy=me.name; match.decidedDate=new Date().toISOString().slice(0,10); saveReqsFor(emis, reqs); found=true; }
-  });
-  // Fallback: if cur is single school, update that school's list by index in filtered view - simplest: reload and re-filter by title
-  if(!found && cur.emis!=='ALL'){ let reqs=getReqsFor(cur.emis); let all=getAll(getReqsFor); let target=all[idx]; let m=reqs.find(r=>r.title===target.title && r.teacher===target.teacher && r.status==='PENDING'); if(m){ m.status=status; m.decidedBy=me.name; saveReqsFor(cur.emis, reqs); found=true; } }
-  alert(status==='APPROVED' ? '✅ Approved — Librarian can now package it.' : '❌ Rejected.'); render();
-}
-document.getElementById('schoolSel').addEventListener('change',function(){ let v=this.value.split('|'); cur={prefix:v[0],emis:v[1],name:v[2]}; render(); });
-document.getElementById('viewDeptSel').addEventListener('change',function(){ viewDept=this.value; viewSubject='ALL'; render(); });
-document.getElementById('viewGradeSel').addEventListener('change',function(){ viewGrade=this.value; render(); });
-document.getElementById('viewSubjectSel').addEventListener('change',function(){ viewSubject=this.value; render(); });
-document.getElementById('importBtn').addEventListener('click',function(){ try{ var code=document.getElementById('importCode').value; if(!code.trim()){ alert('Paste export code from phone first.'); return; } var data=tryDecode(code); if(!data){ document.getElementById('importMsg').innerHTML='❌ Import failed — Paste FULL code.'; return; } var c=0; Object.keys(data).forEach(function(k){ localStorage.setItem(k,data[k]); c++; }); document.getElementById('importMsg').innerHTML='✅ Imported '+c+' keys. Reloading...'; setTimeout(()=>location.reload(),800); }catch(e){ document.getElementById('importMsg').innerHTML='❌ '+e.message; } });
-document.getElementById('pasteBtn').addEventListener('click',async function(){ try{ let t=await navigator.clipboard.readText(); if(t){ document.getElementById('importCode').value=t; document.getElementById('importMsg').innerHTML='✅ Pasted '+t.length+' chars. Tap Import.'; } }catch(e){ document.getElementById('importMsg').innerHTML='Long-press box → Paste.'; } });
 render();
 })();
-</script>
-<script type="module">
-import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-onAuthStateChanged(auth, async (user)=>{ if(!user) return; try{ let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'HOD'}; let fresh={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'HOD',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),grades:prof.grades||'',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'}; let old=localStorage.getItem('makhanani_session'); if(old!==JSON.stringify(fresh)){ localStorage.setItem('makhanani_session',JSON.stringify(fresh)); location.reload(); } }catch(e){} });
 </script>
 </body></html>
