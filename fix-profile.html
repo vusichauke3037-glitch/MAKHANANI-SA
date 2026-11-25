@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fix Missing Profile</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
+<body class="bg-gray-100 p-4">
+<div class="max-w-md mx-auto bg-white rounded-2xl p-5">
+<h1 class="font-black text-xl">🛠️ Fix Missing Profile</h1>
+<p class="text-sm text-gray-600">Login with the account that says "NO profile", then tap CREATE PROFILE. It will create ONLY the Firestore doc, not a new Auth account.</p>
+<input id="email" type="email" placeholder="Email — librarian@wordsworth.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-3">
+<input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<input id="name" type="text" placeholder="Full Name" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<select id="emis" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<option value="700310854">Wordsworth High School — 700310854</option>
+<option value="911360870">George Sonto High School — 911360870</option>
+<option value="911360825">SHIRILELE HIGH SCHOOL — 911360825</option>
+<option value="200101061">1 STEP AHEAD ACADEMY — 200101061</option>
+<option value="200201086">2MOROS LEADERS PRIMARY — 200201086</option>
+<option value="700401012">3D CHRISTIAN ACADEMY — 700401012</option>
+<option value="200300001">A B SIWENDU SENIOR PRIMARY — 200300001</option>
+</select>
+<select id="role" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<option value="LIBRARIAN">LIBRARIAN</option>
+<option value="TEACHER">TEACHER</option>
+<option value="PRINCIPAL">PRINCIPAL / HOD</option>
+</select>
+<button id="fixBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-3">✅ CREATE PROFILE IN FIRESTORE</button>
+<p id="msg" class="text-sm font-bold mt-3"></p>
+</div>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+const SCHOOLS = {'700310854':'Wordsworth High School','911360870':'George Sonto High School','911360825':'SHIRILELE HIGH SCHOOL','200101061':'1 STEP AHEAD ACADEMY','200201086':'2MOROS LEADERS PRIMARY','700401012':'3D CHRISTIAN ACADEMY','200300001':'A B SIWENDU SENIOR PRIMARY'};
+document.getElementById('fixBtn').addEventListener('click', async ()=>{
+  let email = document.getElementById('email').value.trim().toLowerCase();
+  let pass = document.getElementById('password').value.trim();
+  let name = document.getElementById('name').value.trim();
+  let emis = document.getElementById('emis').value;
+  let role = document.getElementById('role').value;
+  let msg = document.getElementById('msg');
+  if(!email || !pass || !name){ msg.innerHTML = '❌ Fill email, password and name'; return; }
+  msg.innerHTML = '⏳ Logging in...';
+  try{
+    let cred = await signInWithEmailAndPassword(auth, email, pass);
+    let uid = cred.user.uid;
+    let existing = await getDoc(doc(db,'users', uid));
+    if(existing.exists()){ msg.innerHTML = '✅ Profile ALREADY exists — UID: ' + uid + '<br>Role: ' + existing.data().role + ' • School: ' + existing.data().school + '<br><br>Just go back to login.html and login normally. If login still fails, the role/school is wrong — tell me what it shows.'; return; }
+    await setDoc(doc(db,'users', uid), {name:name, email:email, role:role, emis:emis, school:SCHOOLS[emis], schoolName:SCHOOLS[emis], status:'ACTIVE', createdAt:new Date().toISOString()});
+    msg.innerHTML = '✅ PROFILE CREATED!<br>UID: ' + uid + '<br>Name: ' + name + '<br>Role: ' + role + '<br>School: ' + SCHOOLS[emis] + ' (' + emis + ')<br><br>Now close this page and login at login.html with the SAME email + password.';
+  }catch(e){ msg.innerHTML = '❌ ' + e.message.replace('Firebase: ',''); }
+});
+</script></body></html>
