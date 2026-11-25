@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Cleanup Schools — Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
+<body class="bg-gray-100 p-4">
+<div class="max-w-xl mx-auto bg-white rounded-2xl p-5 border-4 border-red-500">
+<h1 class="font-black text-2xl">🧹 Cleanup Schools — Batch Delete</h1>
+<p class="text-sm text-gray-600 mt-1">Keeps ONLY these 7 real schools. Deletes EVERYTHING else in batches of 400. Does NOT load all schools into a list, so it won't freeze.</p>
+<div class="bg-yellow-50 border rounded p-3 text-xs mt-3">
+<b>KEEP:</b><br>
+• 911360870 — George Sonto High School<br>
+• 700310854 — Wordsworth High School<br>
+• 911360825 — SHIRILELE HIGH SCHOOL<br>
+• 200101061 — 1 STEP AHEAD ACADEMY<br>
+• 200201086 — 2MOROS LEADERS PRIMARY<br>
+• 700401012 — 3D CHRISTIAN ACADEMY<br>
+• 200300001 — A B SIWENDU SENIOR PRIMARY
+</div>
+<div class="mt-4 space-y-2">
+<input id="email" type="email" placeholder="Super Admin Email" class="border-2 rounded-lg px-3 py-2 w-full">
+<input id="password" type="password" placeholder="Super Admin Password" class="border-2 rounded-lg px-3 py-2 w-full">
+<button id="loginBtn" class="bg-black text-white w-full py-2 rounded-lg font-black">🔐 LOGIN AS SUPER ADMIN</button>
+<p id="loginMsg" class="text-sm font-bold"></p>
+</div>
+<div class="border-t-2 mt-4 pt-3">
+<button id="countBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black">🔢 COUNT Schools First</button>
+<button id="cleanBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black ml-2">🧹 START CLEANUP</button>
+<button id="stopBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg font-black ml-2">⏹️ STOP</button>
+<p id="msg" class="text-sm font-bold mt-3">Not started.</p>
+<p id="progress" class="text-xs text-gray-600 mt-1"></p>
+</div>
+<p class="text-[11px] text-gray-500 mt-4">If this page freezes, just refresh it and tap START again — it resumes where it left off, because already-deleted docs are gone.</p>
+</div>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, setDoc, query, limit, orderBy, startAfter } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+let stopped = false;
+const KEEP = ['911360870','700310854','911360825','200101061','200201086','700401012','200300001'];
+const KEEP_DATA = {
+  '911360870': {school:'George Sonto High School', prefix:'GSHS'},
+  '700310854': {school:'Wordsworth High School', prefix:'WHS'},
+  '911360825': {school:'SHIRILELE HIGH SCHOOL', prefix:'SHS'},
+  '200101061': {school:'1 STEP AHEAD ACADEMY', prefix:'SAA'},
+  '200201086': {school:'2MOROS LEADERS PRIMARY', prefix:'MLP'},
+  '700401012': {school:'3D CHRISTIAN ACADEMY', prefix:'DCA'},
+  '200300001': {school:'A B SIWENDU SENIOR PRIMARY', prefix:'ABSSPS'}
+};
+function log(m){ document.getElementById('msg').innerHTML = m; }
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  let email = document.getElementById('email').value.trim().toLowerCase();
+  let pass = document.getElementById('password').value.trim();
+  try{
+    let cred = await signInWithEmailAndPassword(auth, email, pass);
+    let snap = await getDoc(doc(db,'users', cred.user.uid));
+    if(!snap.exists() || snap.data().role !== 'SUPER_ADMIN'){ document.getElementById('loginMsg').innerHTML = '❌ Not Super Admin'; return; }
+    document.getElementById('loginMsg').innerHTML = '✅ Logged in as Super Admin — ' + snap.data().name;
+  }catch(e){ document.getElementById('loginMsg').innerHTML = '❌ ' + e.message.replace('Firebase: ',''); }
+});
+document.getElementById('countBtn').addEventListener('click', async ()=>{
+  log('⏳ Counting... (this loads in batches, may take 30 sec)');
+  let total = 0, last = null, keepCount = 0;
+  try{
+    while(true){
+      let q = last ? query(collection(db,'schools'), orderBy('__name__'), startAfter(last), limit(500)) : query(collection(db,'schools'), orderBy('__name__'), limit(500));
+      let snap = await getDocs(q);
+      if(snap.empty) break;
+      total += snap.docs.length;
+      snap.docs.forEach(d=>{ let emis = String(d.data().emis || d.id); if(KEEP.includes(emis)) keepCount++; });
+      last = snap.docs[snap.docs.length-1];
+      log('⏳ Counted so far: ' + total + ' ...');
+      if(snap.docs.length < 500) break;
+      // Let browser breathe
+      await new Promise(r=>setTimeout(r, 50));
+    }
+    log('📊 TOTAL schools in Firestore: <b>' + total + '</b><br>Real schools found: ' + keepCount + ' / 7<br>Junk to delete: ' + (total - keepCount));
+  }catch(e){ log('❌ Count failed: ' + e.message); }
+});
+document.getElementById('stopBtn').addEventListener('click', ()=>{ stopped = true; log('⏹️ Stopping after current batch... Refresh to resume.'); });
+document.getElementById('cleanBtn').addEventListener('click', async ()=>{
+  if(!confirm('DELETE all schools EXCEPT the 7 real schools?\n\nThis cannot be undone. It will run in batches. You can STOP and resume.')) return;
+  stopped = false;
+  let deleted = 0, kept = 0, batchNum = 0;
+  log('⏳ Starting cleanup...');
+  try{
+    // First, ensure the 7 real schools exist with correct names (so we never lose them)
+    for(let emis of KEEP){
+      try{ await setDoc(doc(db,'schools', emis), {school:KEEP_DATA[emis].school, schoolName:KEEP_DATA[emis].school, name:KEEP_DATA[emis].school, emis:emis, prefix:KEEP_DATA[emis].prefix, status:'ACTIVE', plan:'Standard'}, {merge:true}); }catch(e){}
+    }
+    log('✅ 7 real schools secured. Now deleting junk in batches...');
+    let last = null;
+    while(!stopped){
+      batchNum++;
+      // Always start from beginning - because we delete as we go, the next batch is new docs
+      let q = query(collection(db,'schools'), orderBy('__name__'), limit(400));
+      let snap = await getDocs(q);
+      if(snap.empty){ log('✅ DONE! No more schools to check.<br>Deleted junk: ' + deleted + ' • Kept: ' + kept); break; }
+      let toDelete = [];
+      snap.docs.forEach(d=>{
+        let emis = String(d.data().emis || d.id);
+        // Keep if EMIS is in KEEP list OR Doc ID is in KEEP list
+        if(KEEP.includes(emis) || KEEP.includes(d.id)){ kept++; }
+        else { toDelete.push(d); }
+      });
+      // Delete this batch one by one (with small pause so Firestore doesn't throttle)
+      for(let d of toDelete){
+        if(stopped) break;
+        try{ await deleteDoc(doc(db,'schools', d.id)); deleted++; }catch(e){}
+        if(deleted % 50 === 0){ log('⏳ Batch ' + batchNum + ' — Deleted so far: ' + deleted + ' • Kept: ' + kept + ' ...'); await new Promise(r=>setTimeout(r, 20)); }
+      }
+      log('⏳ Batch ' + batchNum + ' done — Deleted so far: ' + deleted + ' • Kept: ' + kept + ' • Fetching next batch...');
+      await new Promise(r=>setTimeout(r, 100));
+      // Safety: if we did 100 batches (40,000 docs) stop and tell user to tap again
+      if(batchNum >= 100){ log('⏸️ Paused after 100 batches — Deleted: ' + deleted + '. Tap START CLEANUP again to continue.'); break; }
+    }
+    if(stopped) log('⏹️ Stopped by you. Deleted so far: ' + deleted + '. Tap START again to resume.');
+  }catch(e){ log('❌ Cleanup failed: ' + e.message + '<br>Deleted so far: ' + deleted + '. Refresh and tap START again to resume.'); }
+});
+</script></body></html>
