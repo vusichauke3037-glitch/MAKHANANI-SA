@@ -1,30 +1,48 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Makhanani LTSM Firebase</title><script src="https://cdn.tailwindcss.com"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js","firebase/analytics":"https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js"}}</script>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-<div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-<div class="text-center"><img src="logo.png" class="h-20 w-20 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-2xl mt-2">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="font-bold">MAKHANANI LTSM • FIREBASE</p><p class="text-xs text-gray-500">George Sonto • Wordsworth • All books due 30 November</p></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LOGIN</div><div class="text-[11px] text-gray-300">Makhanani LTSM • LIVE Firebase</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><a href="superadmin-login.html" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">👑 Super Admin</a></div></div>
 
-<div class="mt-4"><label class="text-xs font-bold">SCHOOL</label><select id="schoolSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="911360870">George Sonto High School • EMIS 911360870 • GSHS</option><option value="700310854">Wordsworth High School • EMIS 700310854 • WHS</option></select></div>
-<div class="mt-2"><label class="text-xs font-bold">ROLE</label><select id="roleSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="PRINCIPAL">Principal</option><option value="HOD">HOD</option><option value="TEACHER">Teacher</option><option value="LIBRARIAN">Librarian</option></select></div>
-<div class="mt-2"><label class="text-xs font-bold">EMAIL (Firebase Login)</label><input id="emailInput" type="email" placeholder="e.g. mokoena@georgesonto.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
-<div class="mt-2"><label class="text-xs font-bold">PASSWORD</label><input id="passInput" type="password" placeholder="Password (min 6 chars)" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
+<div class="max-w-md mx-auto p-4">
+<div class="bg-white rounded-2xl p-5 border-4 border-yellow-400 mt-4">
+<h1 class="font-black text-2xl text-center">🔐 Login</h1>
+<p class="text-xs text-gray-500 text-center mt-1">School Users: Principal / HOD / Teacher / Librarian<br>Super Admin: Use <a href="superadmin-login.html" class="text-red-600 font-bold underline">Super Admin Login</a></p>
 
-<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-4">🔐 LOGIN WITH FIREBASE</button>
-<button id="registerBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-bold mt-2 text-sm">✨ FIRST TIME? CREATE ACCOUNT FOR THIS SCHOOL + ROLE</button>
-<p id="loginMsg" class="text-sm font-bold mt-2 text-center"></p>
-
-<div class="bg-blue-50 border rounded-lg p-3 mt-3 text-xs"><b>How it works:</b><br>1. First time: Fill School + Role + Email + Password → Tap <b>CREATE ACCOUNT</b><br>2. Next time: Same Email + Password → Tap <b>LOGIN</b><br>3. Works on any phone. No more <i>undefined</i>.</div>
-<div class="bg-yellow-50 border rounded-lg p-3 mt-2 text-xs"><b>Test:</b><br>George Sonto Principal: <b>principal@georgesonto.co.za / 123456</b><br>Wordsworth Principal: <b>principal@wordsworth.co.za / 123456</b><br><i>Use CREATE ACCOUNT first, then LOGIN.</i></div>
-<div class="flex gap-2 mt-3"><a href="index.html" class="flex-1 text-center bg-yellow-500 text-black py-2 rounded-lg font-bold text-sm">🏠 Home</a></div>
+<div class="mt-4 space-y-2">
+<label class="block"><span class="text-xs font-bold">🏫 School / EMIS</span><select id="schoolSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></select><p class="text-[11px] text-gray-500 mt-1">Or type EMIS below if school not listed:</p><input id="emisInput" placeholder="EMIS e.g. 911360870" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></label>
+<label class="block"><span class="text-xs font-bold">📧 Email</span><input id="email" type="email" placeholder="you@school.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></label>
+<label class="block"><span class="text-xs font-bold">🔑 Password</span><input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></label>
+<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black">🔐 LOGIN →</button>
+<p id="msg" class="text-sm font-bold text-center"></p>
+<p class="text-[11px] text-gray-500 text-center">George Sonto: EMIS <b>911360870</b> • Wordsworth: EMIS <b>700310854</b></p>
 </div>
+</div>
+
+<div class="bg-white rounded-2xl p-5 border-2 border-blue-500 mt-4">
+<h2 class="font-black text-lg">🆕 Create Account — First Time?</h2>
+<p class="text-xs text-gray-500">Principal / HOD / Teacher / Librarian — Create your Firebase account here. Your profile is saved in Firestore and Super Admin sees you instantly.</p>
+<div class="mt-3 space-y-2">
+<input id="regName" placeholder="Full Name e.g. Thabo Mokoena" class="border-2 rounded-lg px-3 py-2 w-full">
+<select id="regRole" class="border-2 rounded-lg px-3 py-2 w-full"><option value="TEACHER">TEACHER</option><option value="PRINCIPAL">PRINCIPAL</option><option value="HOD">HOD</option><option value="LIBRARIAN">LIBRARIAN</option></select>
+<input id="regEmail" type="email" placeholder="Email e.g. thabo@school.co.za" class="border-2 rounded-lg px-3 py-2 w-full">
+<input id="regPass" type="password" placeholder="Password (min 6 chars)" class="border-2 rounded-lg px-3 py-2 w-full">
+<input id="regSubjects" placeholder="Subjects e.g. Maths, English (comma separated)" class="border-2 rounded-lg px-3 py-2 w-full">
+<input id="regClasses" placeholder="Classes e.g. 10A, 10B (comma separated, Teacher/HOD only)" class="border-2 rounded-lg px-3 py-2 w-full">
+<p class="text-[11px] text-gray-500">School = Selected School above. Make sure School / EMIS at top is correct before creating account.</p>
+<button id="createBtn" class="bg-blue-600 text-white w-full py-3 rounded-lg font-black">🆕 CREATE ACCOUNT</button>
+<p id="regMsg" class="text-sm font-bold text-center"></p>
+</div>
+</div>
+
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-4 mt-4 text-center"><p class="font-black">Forgot Password?</p><p class="text-xs text-gray-600 mt-1">Contact your Principal or Super Admin to reset.<br>Super Admin can change your Role in Super Admin Dashboard → All Users → 🔄 Change Role.</p></div>
+<div class="text-center text-xs text-gray-500 mt-4">© 2026 Xintimani Group • Makhanani LTSM • All books due 30 November</div>
+</div>
+
 <script type="module">
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
-import { getAnalytics } from 'firebase/analytics';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where } from 'firebase/firestore';
 
-// YOUR FIREBASE CONFIG - makhanani-ltsm
 const firebaseConfig = {
   apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
   authDomain: "makhanani-ltsm.firebaseapp.com",
@@ -35,80 +53,226 @@ const firebaseConfig = {
   appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
   measurementId: "G-PEST1XFCR8"
 };
-
 const app = initializeApp(firebaseConfig);
-try{ getAnalytics(app); }catch(e){}
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const SCHOOLS = {
-  '911360870': {school:'George Sonto High School', emis:'911360870', prefix:'GSHS'},
-  '700310854': {school:'Wordsworth High School', emis:'700310854', prefix:'WHS'}
-};
-function show(msg){ document.getElementById('loginMsg').innerHTML = msg; }
-
-async function saveSession(user, emis, role){
-  let school = SCHOOLS[emis];
-  let profile = null;
-  try{ let snap = await getDoc(doc(db, 'users', user.uid)); if(snap.exists()) profile = snap.data(); }catch(e){}
-  let cur = {
-    school: school.school, emis: emis, prefix: school.prefix,
-    name: profile?.name || user.email, role: role,
-    subjects: profile?.subjects || ['General'],
-    classes: profile?.classes || [],
-    email: user.email, uid: user.uid
-  };
-  localStorage.setItem('makhanani_session', JSON.stringify(cur));
-  localStorage.setItem('makhanani_schools', JSON.stringify(Object.values(SCHOOLS)));
-  return cur;
+let schools = [];
+function getSelectedEmis(){
+  let fromSelect = document.getElementById('schoolSelect').value;
+  let fromInput = document.getElementById('emisInput').value.trim();
+  return fromInput || fromSelect || '';
+}
+function getSelectedSchool(emis){
+  return schools.find(s=>String(s.emis)===String(emis));
+}
+function show(msg, isError=true){
+  let el = document.getElementById('msg');
+  el.innerHTML = msg;
+  el.style.color = isError ? '#dc2626' : '#16a34a';
+}
+function showReg(msg, isError=true){
+  let el = document.getElementById('regMsg');
+  el.innerHTML = msg;
+  el.style.color = isError ? '#dc2626' : '#16a34a';
+}
+function destForRole(role){
+  role = String(role||'').toUpperCase();
+  if(role==='PRINCIPAL') return 'principal-dashboard.html';
+  if(role==='HOD') return 'hod-dashboard.html';
+  if(role==='TEACHER') return 'teacher-dashboard.html';
+  if(role==='LIBRARIAN') return 'librarian.html';
+  if(role==='SUPER_ADMIN') return 'superadmin-dashboard.html';
+  return 'principal-dashboard.html';
 }
 
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-  let emis = document.getElementById('schoolSelect').value;
-  let role = document.getElementById('roleSelect').value;
-  let email = document.getElementById('emailInput').value.trim().toLowerCase();
-  let pass = document.getElementById('passInput').value.trim();
-  if(!email || !pass){ show('❌ Fill Email + Password'); return; }
-  show('⏳ Logging in...');
+// Load schools LIVE for dropdown
+async function loadSchools(){
   try{
+    let snap = await getDocs(collection(db,'schools'));
+    schools = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  }catch(e){ schools = []; }
+  let known = [
+    {emis:'911360870', school:'George Sonto High School', prefix:'GSHS', status:'ACTIVE'},
+    {emis:'700310854', school:'Wordsworth High School', prefix:'WHS', status:'ACTIVE'}
+  ];
+  known.forEach(k=>{ if(!schools.some(s=>String(s.emis)===k.emis)) schools.push(k); });
+  // Sort by school name
+  schools.sort((a,b)=>(a.school||'').localeCompare(b.school||''));
+  document.getElementById('schoolSelect').innerHTML = schools.map(s=>{
+    let suspended = s.status==='SUSPENDED';
+    return '<option value="'+s.emis+'">'+s.school+' • EMIS '+s.emis+' • '+s.prefix+(suspended?' • ⛔ SUSPENDED':'')+'</option>';
+  }).join('');
+  // Auto-fill EMIS input when select changes
+  document.getElementById('schoolSelect').addEventListener('change', ()=>{
+    document.getElementById('emisInput').value = document.getElementById('schoolSelect').value;
+  });
+  // Set default
+  if(schools.length) document.getElementById('emisInput').value = schools[0].emis;
+}
+loadSchools();
+
+// ---- LOGIN ----
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  let emis = getSelectedEmis();
+  let email = document.getElementById('email').value.trim().toLowerCase();
+  let pass = document.getElementById('password').value.trim();
+  if(!emis){ show('❌ Select School / Enter EMIS'); return; }
+  if(!email || !pass){ show('❌ Enter Email + Password'); return; }
+
+  show('⏳ Logging in...', false);
+  try{
+    // 1. Check school exists + NOT suspended BEFORE login (or right after - we check both)
+    let schoolSnap = await getDoc(doc(db,'schools', String(emis)));
+    if(schoolSnap.exists()){
+      let sdata = schoolSnap.data();
+      if(sdata.status==='SUSPENDED'){
+        show('⛔ SUBSCRIPTION EXPIRED<br>'+(sdata.school||'This School')+' (EMIS '+emis+') has been suspended.<br>Contact Xintimani Group to reactivate.');
+        return;
+      }
+    } else {
+      // School not in Firestore yet - allow login if user exists, but warn
+      // Don't block - user may be George Sonto / Wordsworth not yet created as school doc
+    }
+
+    // 2. Firebase Auth login
     let cred = await signInWithEmailAndPassword(auth, email, pass);
-    let cur = await saveSession(cred.user, emis, role);
-    show('✅ Welcome '+cur.name+' — '+cur.school+' ('+cur.role+')');
-    let dest = role==='PRINCIPAL'?'principal-dashboard.html':role==='HOD'?'hod-dashboard.html':role==='TEACHER'?'teacher-dashboard.html':'librarian.html';
-    setTimeout(()=> location.href = dest, 800);
+    let uid = cred.user.uid;
+
+    // 3. Get user profile from Firestore
+    let userSnap = await getDoc(doc(db,'users', uid));
+    if(!userSnap.exists()){
+      show('❌ Account found in Auth but NO profile in Firestore.<br>Tap CREATE ACCOUNT below or contact Super Admin.');
+      await signOut(auth);
+      return;
+    }
+    let profile = userSnap.data();
+
+    // 4. Check role - Super Admin must use superadmin-login.html
+    if(profile.role==='SUPER_ADMIN'){
+      show('👑 This is a Super Admin account.<br>Please use <a href="superadmin-login.html" class="underline font-bold">Super Admin Login</a>');
+      await signOut(auth);
+      return;
+    }
+
+    // 5. Check EMIS matches selected school (prevent Wordsworth user logging into George Sonto)
+    if(String(profile.emis)!==String(emis)){
+      show('❌ EMIS mismatch!<br>Your account is for <b>'+profile.school+' (EMIS '+profile.emis+')</b><br>but you selected EMIS <b>'+emis+'</b>.<br>Change School dropdown to '+profile.school);
+      await signOut(auth);
+      return;
+    }
+
+    // 6. Re-check suspension AFTER login (in case it changed during login)
+    try{
+      let schoolSnap2 = await getDoc(doc(db,'schools', String(emis)));
+      if(schoolSnap2.exists() && schoolSnap2.data().status==='SUSPENDED'){
+        show('⛔ SUBSCRIPTION EXPIRED<br>'+(schoolSnap2.data().school||profile.school)+' has been suspended.<br>Contact Xintimani Group.');
+        await signOut(auth);
+        return;
+      }
+    }catch(e){}
+
+    // 7. Save session for dashboards (localStorage session + Firestore profile)
+    let session = {
+      school: profile.school,
+      emis: String(profile.emis),
+      prefix: profile.prefix||'',
+      name: profile.name,
+      role: String(profile.role||'TEACHER').toUpperCase(),
+      subjects: profile.subjects||['General'],
+      classes: profile.classes||[],
+      email: profile.email,
+      uid: uid,
+      isImpersonating: false
+    };
+    // Clear any old impersonation
+    localStorage.removeItem('makhanani_superadmin_session');
+    localStorage.removeItem('makhanani_impersonating');
+    localStorage.setItem('makhanani_session', JSON.stringify(session));
+
+    show('✅ Welcome '+profile.name+' ('+profile.role+') — '+profile.school+' — Redirecting...', false);
+    setTimeout(()=>{ location.href = destForRole(profile.role); }, 800);
+
   }catch(e){
-    show('❌ '+e.message.replace('Firebase: ','')+'<br>First time? Tap CREATE ACCOUNT.');
+    let msg = e.message.replace('Firebase: ','');
+    if(msg.includes('invalid-credential') || msg.includes('wrong-password') || msg.includes('user-not-found')){
+      show('❌ Wrong Email or Password.<br>Check Email + Password, or tap CREATE ACCOUNT below.');
+    } else if(msg.includes('too-many-requests')){
+      show('❌ Too many attempts. Wait 1 minute and try again.');
+    } else if(msg.includes('network')){
+      show('❌ No internet. Check data / WiFi and try again.');
+    } else {
+      show('❌ '+msg);
+    }
   }
 });
 
-document.getElementById('registerBtn').addEventListener('click', async ()=>{
-  let emis = document.getElementById('schoolSelect').value;
-  let role = document.getElementById('roleSelect').value;
-  let email = document.getElementById('emailInput').value.trim().toLowerCase();
-  let pass = document.getElementById('passInput').value.trim();
-  if(!email || pass.length<6){ show('❌ Email + Password min 6 chars for CREATE ACCOUNT'); return; }
-  let name = prompt('Full Name as registered (e.g. Mr Mokoena):', '');
-  if(!name){ show('❌ Name needed'); return; }
-  let subjects = prompt('Subjects (comma, e.g. Mathematics) — or General:', 'General') || 'General';
-  let classes = prompt('Classes (comma, e.g. 10A,10B) — leave blank if none:', '') || '';
-  show('⏳ Creating account...');
+// ---- CREATE ACCOUNT ----
+document.getElementById('createBtn').addEventListener('click', async ()=>{
+  let emis = getSelectedEmis();
+  let name = document.getElementById('regName').value.trim();
+  let role = document.getElementById('regRole').value;
+  let email = document.getElementById('regEmail').value.trim().toLowerCase();
+  let pass = document.getElementById('regPass').value.trim();
+  let subjectsRaw = document.getElementById('regSubjects').value.trim();
+  let classesRaw = document.getElementById('regClasses').value.trim();
+  if(!emis){ showReg('❌ Select School / Enter EMIS at top first'); return; }
+  if(!name || !email || pass.length<6){ showReg('❌ Fill Name + Email + Password (min 6 chars)'); return; }
+
+  let school = getSelectedSchool(emis);
+  // If school not in Firestore, create a placeholder from known list or use EMIS as school name
+  let schoolName = school ? school.school : 'School '+emis;
+  let prefix = school ? school.prefix : emis.slice(-4);
+
+  // Check suspension before creating
+  try{
+    let schoolSnap = await getDoc(doc(db,'schools', String(emis)));
+    if(schoolSnap.exists() && schoolSnap.data().status==='SUSPENDED'){
+      showReg('⛔ Cannot create account — '+schoolSnap.data().school+' is SUSPENDED (Subscription Expired). Contact Xintimani Group.');
+      return;
+    }
+  }catch(e){}
+
+  showReg('⏳ Creating account...', false);
   try{
     let cred = await createUserWithEmailAndPassword(auth, email, pass);
-    let school = SCHOOLS[emis];
-    await setDoc(doc(db, 'users', cred.user.uid), {
-      uid: cred.user.uid, name: name.trim(), email: email, role: role,
-      emis: emis, school: school.school, prefix: school.prefix,
-      subjects: subjects.split(',').map(s=>s.trim()).filter(Boolean),
-      classes: classes.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean),
+    let subjects = subjectsRaw ? subjectsRaw.split(',').map(s=>s.trim()).filter(Boolean) : ['General'];
+    let classes = classesRaw ? classesRaw.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean) : [];
+    await setDoc(doc(db,'users', cred.user.uid), {
+      uid: cred.user.uid,
+      name: name,
+      email: email,
+      role: role,
+      emis: String(emis),
+      school: schoolName,
+      prefix: prefix,
+      subjects: subjects,
+      classes: classes,
       createdAt: new Date().toISOString()
     });
-    await setDoc(doc(db, 'schools', emis), { emis, school: school.school, prefix: school.prefix }, {merge:true});
-    let cur = await saveSession(cred.user, emis, role);
-    show('✅ Account created! Welcome '+name+' — '+school.school);
-    let dest = role==='PRINCIPAL'?'principal-dashboard.html':role==='HOD'?'hod-dashboard.html':role==='TEACHER'?'teacher-dashboard.html':'librarian.html';
-    setTimeout(()=> location.href = dest, 1000);
+    // Also ensure school doc exists (if it didn't)
+    if(!school){
+      try{ await setDoc(doc(db,'schools', String(emis)), {school: schoolName, emis: String(emis), prefix: prefix, status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()}, {merge:true}); }catch(e){}
+    }
+    showReg('✅ Account Created! '+name+' ('+role+') • '+schoolName+'<br>Now login above with Email + Password.', false);
+    // Pre-fill login fields
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = '';
+    document.getElementById('emisInput').value = emis;
+    // Clear reg fields
+    document.getElementById('regName').value=''; document.getElementById('regEmail').value=''; document.getElementById('regPass').value=''; document.getElementById('regSubjects').value=''; document.getElementById('regClasses').value='';
+    window.scrollTo({top:0, behavior:'smooth'});
   }catch(e){
-    show('❌ '+e.message.replace('Firebase: ',''));
+    let msg = e.message.replace('Firebase: ','');
+    if(msg.includes('email-already-in-use')){
+      showReg('❌ Email already registered.<br>Try LOGIN above with that email, or use a different email.');
+    } else {
+      showReg('❌ '+msg);
+    }
   }
 });
+
+// Enter key = login
+document.getElementById('password').addEventListener('keypress', (e)=>{ if(e.key==='Enter') document.getElementById('loginBtn').click(); });
+document.getElementById('email').addEventListener('keypress', (e)=>{ if(e.key==='Enter') document.getElementById('loginBtn').click(); });
 </script></body></html>
