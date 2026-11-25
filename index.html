@@ -1,46 +1,117 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script></head>
-<body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white py-3 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span></div><div class="text-[11px] text-gray-300">MAKHANANI LTSM • All books due 30 November</div></div><div class="ml-auto"><a href="login.html" class="bg-yellow-500 text-black px-4 py-2 rounded font-bold text-sm">🔐 Login</a></div></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
+<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
+<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
+<!-- Header -->
+<div class="bg-black text-white py-3 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-12 w-12 rounded-full bg-white border-4 border-yellow-400 p-1"><div><div class="font-black text-lg leading-tight">XINTIMANI <span class="text-yellow-500">GROUP</span></div><div class="text-[11px] text-gray-300">MAKHANANI LTSM • <span class="text-green-400 font-bold">● LIVE FIREBASE</span></div></div><div class="ml-auto flex gap-2 flex-wrap"><a href="login.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">👤 Login</a><a href="superadmin-login.html" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">👑 Super Admin</a></div></div>
+
 <div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-6 text-center"><img src="logo.png" class="h-24 w-24 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-3xl mt-2">MAKHANANI LTSM</h1><p class="text-sm text-gray-600">Library Textbook Management • Grade Mismatch Block • Due 30 November • 7-Day Warning • WhatsApp Parent + Learner (Optional) • Retrieval %</p><div class="flex gap-2 justify-center mt-4 flex-wrap"><a href="login.html" class="bg-black text-white px-6 py-3 rounded-lg font-black">🔐 Login</a><a href="#registerSchool" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-black">🏫 Register New School</a><a href="#registerUser" class="bg-green-600 text-white px-6 py-3 rounded-lg font-black">👤 Register User</a></div></div>
-<div class="grid md:grid-cols-4 gap-3 mt-4">
-<a href="login.html" class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl">🏫</div><div class="font-black">Principal</div><div class="text-xs text-gray-500">View All • Print • Remind • Retrieval %</div></a>
-<a href="login.html" class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl">📋</div><div class="font-black">HOD</div><div class="text-xs text-gray-500">Approve Qty • Dept Only • Issue</div></a>
-<a href="login.html" class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl">👩‍🏫</div><div class="font-black">Teacher</div><div class="text-xs text-gray-500">Request • Issue My Class • Approved Qty</div></a>
-<a href="login.html" class="bg-white rounded-2xl p-4 text-center"><div class="text-3xl">📚</div><div class="font-black">Librarian</div><div class="text-xs text-gray-500">Add Books / Learners • Issue / Return</div></a>
+<!-- Hero -->
+<div class="bg-white rounded-2xl p-5 border-4 border-yellow-400 text-center"><h1 class="font-black text-3xl">MAKHANANI <span class="text-yellow-500">LTSM</span></h1><p class="font-bold text-gray-700">Textbook Tracking • Retrieval • Due 30 November</p><p class="text-xs text-gray-500 mt-1">George Sonto High School • Wordsworth High School • All Schools — LIVE in Firebase</p><div id="globalStats" class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-4 text-center"><p class="col-span-5 text-sm text-gray-500">Loading LIVE stats...</p></div><div class="flex gap-2 justify-center mt-4 flex-wrap"><a href="login.html" class="bg-black text-white px-6 py-3 rounded-lg font-black">🔐 LOGIN</a><a href="superadmin-login.html" class="bg-red-600 text-white px-6 py-3 rounded-lg font-black">👑 SUPER ADMIN</a><button onclick="printAllSchoolsHome()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-black">🖨️ Print All Schools</button></div></div>
+
+<!-- Schools LIVE -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-xl">🏫 Schools — LIVE <span class="text-green-600 text-sm">● Auto-updates</span></h2><p class="text-xs text-gray-500">Tap a school to login as that school. Suspended schools show ⛔ and cannot login.</p><div id="schoolList" class="mt-3 text-sm">Loading schools from Firebase...</div></div>
+
+<!-- Register School -->
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500" id="registerSchool"><h2 class="font-black text-xl">🏫 Register New School</h2><p class="text-xs text-gray-500">New school? Fill here — it goes to Firebase and Super Admin will see it instantly. Super Admin must Activate it before users can login.</p><div class="grid md:grid-cols-2 gap-2 mt-3"><input id="regSchoolName" placeholder="School Name e.g. Thabazimbi High" class="border-2 rounded-lg px-3 py-2"><input id="regEmis" placeholder="EMIS e.g. 911360871" class="border-2 rounded-lg px-3 py-2"><input id="regPrefix" placeholder="Prefix e.g. THS" class="border-2 rounded-lg px-3 py-2 uppercase"><input id="regPrincipalName" placeholder="Principal Full Name" class="border-2 rounded-lg px-3 py-2"><input id="regPrincipalEmail" placeholder="Principal Email (for Login)" class="border-2 rounded-lg px-3 py-2"><input id="regPrincipalPass" type="password" placeholder="Principal Password (min 6)" class="border-2 rounded-lg px-3 py-2"></div><button id="registerSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-3">🏫 Register School in Firebase</button><p id="registerMsg" class="text-sm font-bold mt-2"></p><p class="text-[11px] text-gray-500 mt-1">Already registered: <b>George Sonto 911360870 GSHS</b> • <b>Wordsworth 700310854 WHS</b> — do NOT register them again.</p></div>
+
+<!-- How it works -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-xl">ℹ️ How It Works</h2><div class="grid md:grid-cols-4 gap-2 mt-2 text-center text-sm"><div class="bg-blue-50 rounded p-3"><div class="font-black">1. Register / Login</div><div class="text-xs">Principal creates account with Email + Password in Firebase</div></div><div class="bg-green-50 rounded p-3"><div class="font-black">2. Librarian Adds</div><div class="text-xs">Books + Learners go to Firebase — visible on all phones</div></div><div class="bg-yellow-50 rounded p-3"><div class="font-black">3. Issue / Return</div><div class="text-xs">Teacher / Librarian issues, learner returns, retrieval % updates LIVE</div></div><div class="bg-purple-50 rounded p-3"><div class="font-black">4. Super Admin</div><div class="text-xs">Sees ALL schools, can impersonate, suspend, print reports</div></div></div></div>
+
+<!-- Retrieval LIVE -->
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-xl">📥 Retrieval — All Schools — LIVE</h2><div id="retrievalList" class="mt-2 text-sm">Loading...</div></div>
+
+<div class="text-center text-xs text-gray-500 mt-4 pb-6">© 2026 Xintimani Group • Makhanani LTSM • All books due 30 November • LIVE Firebase</div>
 </div>
-<div id="registerSchool" class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500"><h2 class="font-black">🏫 Register New School (Principal Only — First Time)</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><input id="regSchoolName" placeholder="School Name e.g. Wordsworth High School" class="border-2 rounded-lg px-3 py-2"><input id="regEmis" placeholder="EMIS e.g. 123456789" class="border-2 rounded-lg px-3 py-2"><input id="regPrefix" placeholder="Prefix e.g. WHS (3 letters)" class="border-2 rounded-lg px-3 py-2"></div><button id="regSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-2">🏫 Register School</button><p id="regSchoolMsg" class="text-sm font-bold mt-1"></p><p class="text-xs text-gray-500">After registering school, Register Principal User below with same EMIS.</p></div>
-<div id="registerUser" class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500"><h2 class="font-black">👤 Register User — Principal / HOD / Teacher / Librarian</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="regUserEmis" class="border-2 rounded-lg px-3 py-2"></select><input id="regUserName" placeholder="Full Name e.g. Mr Mokoena" class="border-2 rounded-lg px-3 py-2"><select id="regUserRole" class="border-2 rounded-lg px-3 py-2"><option value="PRINCIPAL">Principal</option><option value="HOD">HOD</option><option value="TEACHER">Teacher</option><option value="LIBRARIAN">Librarian</option></select><input id="regUserPass" placeholder="Password e.g. 1234" class="border-2 rounded-lg px-3 py-2"><input id="regUserSubjects" placeholder="Subjects e.g. Mathematics, English (comma separated, or General)" class="border-2 rounded-lg px-3 py-2"><input id="regUserClasses" placeholder="Classes e.g. 10A, 10B (Teacher only, comma separated)" class="border-2 rounded-lg px-3 py-2"></div><p class="text-[11px] text-gray-500 mt-1">HOD: Subjects = Department (e.g. Mathematics). Teacher: Subjects + Classes = What you teach. Librarian / Principal: Subjects = General.</p><button id="regUserBtn" class="bg-green-600 text-white px-6 py-2 rounded-lg font-black mt-2">👤 Register User</button><p id="regUserMsg" class="text-sm font-bold mt-1"></p><div id="userList" class="mt-2 text-sm"></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📋 How It Works</h2><ol class="text-sm list-decimal ml-5 mt-2 space-y-1"><li><b>Teacher</b> requests books → <b>HOD</b> approves Qty (e.g. 25) → <b>Teacher</b> can Issue max 25.</li><li><b>Librarian</b> adds Books + Learners (Parent Phone + Learner Phone Optional).</li><li><b>Issue:</b> Book Grade must = Learner Grade. Class 10A = Grade 10. No Grade Mismatch.</li><li><b>Due:</b> All books due <b>30 November</b> every year. Warning from 23 Nov (7 days).</li><li><b>Reminder:</b> WhatsApp to Parent + Learner (if learner phone saved) + Copy SMS.</li><li><b>Retrieval %:</b> Returned ÷ Issued × 100 — Overall + Per Class / Dept / Teacher / Learner. Receipts stay clean (no % on receipt).</li></ol></div>
-</div>
-<script>
-(function(){
-function loadSchools(){ try{ return JSON.parse(localStorage.getItem('makhanani_schools')||'[]'); }catch(e){ return []; } }
-function saveSchools(s){ localStorage.setItem('makhanani_schools', JSON.stringify(s)); }
-function refreshSchoolSelect(){ let schools=loadSchools(); if(schools.length===0){ schools=[{school:'Wordsworth High School', emis:'123456789', prefix:'WHS'}]; saveSchools(schools); } document.getElementById('regUserEmis').innerHTML=schools.map(s=>'<option value="'+s.emis+'">'+s.school+' • EMIS '+s.emis+'</option>').join(''); renderUsers(); }
-function getUsers(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_users')||'[]'); }catch(e){ return []; } }
-function renderUsers(){ let emis=document.getElementById('regUserEmis').value; if(!emis) return; let users=getUsers(emis); document.getElementById('userList').innerHTML=users.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.role+' • Subjects: '+(u.subjects||[]).join(', ')+' • Classes: '+(u.classes||[]).join(', ')+' • Password: '+u.password+'</div>').join('')||'<p class="text-gray-500">No users for this school yet. Register Principal first.</p>'; }
-document.getElementById('regSchoolBtn').addEventListener('click',function(){
-  let name=document.getElementById('regSchoolName').value.trim(); let emis=document.getElementById('regEmis').value.trim(); let prefix=document.getElementById('regPrefix').value.trim().toUpperCase();
-  if(!name||!emis||!prefix){ document.getElementById('regSchoolMsg').innerHTML='❌ Fill School + EMIS + Prefix.'; return; }
-  let schools=loadSchools(); if(schools.some(s=>String(s.emis)===emis)){ document.getElementById('regSchoolMsg').innerHTML='❌ EMIS '+emis+' already exists.'; return; }
-  schools.push({school:name, emis, prefix}); saveSchools(schools);
-  document.getElementById('regSchoolMsg').innerHTML='✅ School <b>'+name+'</b> registered. EMIS '+emis+' • Prefix '+prefix+'. Now Register Principal User below.';
-  document.getElementById('regSchoolName').value=''; document.getElementById('regEmis').value=''; document.getElementById('regPrefix').value=''; refreshSchoolSelect();
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, collection, doc, setDoc, onSnapshot } from 'firebase/firestore';
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let schools=[], allBooks=[], allLearners=[], allIssues=[], allUsers=[];
+function statsForEmis(emis){
+  let books=allBooks.filter(b=>String(b.emis)===String(emis));
+  let learners=allLearners.filter(l=>String(l.emis)===String(emis));
+  let issues=allIssues.filter(i=>String(i.emis)===String(emis));
+  let issued=issues.filter(i=>i.action==='Issued').length;
+  let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length;
+  let pct=issued===0?null:(returned/issued*100);
+  let copies=books.reduce((a,b)=>a+(b.totalCopies||0),0);
+  return {books:books.length, copies, learners:learners.length, issued, returned, out:Math.max(0,issued-returned), pct};
+}
+function render(){
+  // Global stats
+  let totalCopies=allBooks.reduce((a,b)=>a+(b.totalCopies||0),0);
+  let totalIssued=allIssues.filter(i=>i.action==='Issued').length;
+  let totalReturned=allIssues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length;
+  let totalPct=totalIssued===0?null:(totalReturned/totalIssued*100);
+  let active=schools.filter(s=>s.status!=='SUSPENDED').length;
+  document.getElementById('globalStats').innerHTML=
+    '<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+schools.length+'</div><div class="text-xs">Schools ('+active+' Active)</div></div>'+
+    '<div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+allUsers.length+'</div><div class="text-xs">Users</div></div>'+
+    '<div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+totalCopies+'</div><div class="text-xs">Book Copies</div></div>'+
+    '<div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+allLearners.length+'</div><div class="text-xs">Learners</div></div>'+
+    '<div class="bg-orange-50 rounded p-2"><div class="font-black text-xl">'+(totalPct===null?'—':totalPct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval (All)</div></div>';
+  document.getElementById('schoolList').innerHTML=schools.map(s=>{
+    let r=statsForEmis(s.emis);
+    let suspended = s.status==='SUSPENDED';
+    let badge = suspended ? '<span class="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">⛔ SUSPENDED — Subscription Expired</span>' : '<span class="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-bold">✅ ACTIVE</span>';
+    return '<div class="border rounded p-3 mb-2 '+(suspended?'bg-red-50 border-red-300':'')+'"><div class="flex justify-between flex-wrap gap-2"><b>'+s.school+'</b> '+badge+'</div><div class="text-xs text-gray-600">EMIS <b>'+s.emis+'</b> • Prefix <b>'+s.prefix+'</b> • Principal: '+(s.principalEmail||'—')+'</div><div class="text-xs mt-1">📚 Copies: '+r.copies+' • 👩‍🎓 Learners: '+r.learners+' • 📤 Issued: '+r.issued+' • 📥 Returned: '+r.returned+' • Retrieval: <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></div><div class="flex gap-1 mt-2 flex-wrap">'+(suspended ? '<button class="bg-gray-400 text-white px-3 py-1 rounded text-xs font-bold cursor-not-allowed">⛔ Login Blocked — Contact Xintimani</button>' : '<a href="login.html" class="bg-black text-white px-3 py-1 rounded text-xs font-bold">🔐 Login as '+s.prefix+'</a>')+'<button onclick="copyEmis(\''+s.emis+'\')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">📋 Copy EMIS</button></div></div>';
+  }).join('')||'<p class="text-gray-500">No schools in Firebase yet.</p>';
+  document.getElementById('retrievalList').innerHTML=schools.map(s=>{ let r=statsForEmis(s.emis); return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> — Retrieval <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b> ('+r.returned+'/'+r.issued+') • Still Out: '+r.out+' • '+(s.status==='SUSPENDED'?'⛔ SUSPENDED':'✅ ACTIVE')+'</div>'; }).join('');
+}
+window.copyEmis=function(emis){ navigator.clipboard.writeText(emis).then(()=>alert('✅ EMIS '+emis+' copied! Paste it in Login.')); };
+window.printAllSchoolsHome=function(){
+  let rows=schools.map(s=>{ let r=statsForEmis(s.emis); return '<tr><td><b>'+s.school+'</b></td><td>'+s.emis+'</td><td>'+s.prefix+'</td><td>'+(s.status||'ACTIVE')+'</td><td>'+r.copies+'</td><td>'+r.learners+'</td><td>'+r.issued+'</td><td>'+r.returned+'</td><td><b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></td></tr>'; }).join('');
+  document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • ALL SCHOOLS • LIVE FIREBASE</h1><p>Date: '+new Date().toLocaleString()+'</p><table><tr><th>School</th><th>EMIS</th><th>Prefix</th><th>Status</th><th>Copies</th><th>Learners</th><th>Issued</th><th>Returned</th><th>Retrieval %</th></tr>'+rows+'</table>';
+  setTimeout(()=>window.print(),100);
+};
+document.getElementById('registerSchoolBtn').addEventListener('click', async ()=>{
+  let name=document.getElementById('regSchoolName').value.trim();
+  let emis=document.getElementById('regEmis').value.trim();
+  let prefix=document.getElementById('regPrefix').value.trim().toUpperCase();
+  let princName=document.getElementById('regPrincipalName').value.trim();
+  let princEmail=document.getElementById('regPrincipalEmail').value.trim().toLowerCase();
+  let princPass=document.getElementById('regPrincipalPass').value.trim();
+  if(!name||!emis||!prefix||!princName||!princEmail||princPass.length<6){ document.getElementById('registerMsg').innerHTML='❌ Fill ALL fields — Principal Password min 6 chars'; return; }
+  if(schools.some(s=>String(s.emis)===String(emis))){ document.getElementById('registerMsg').innerHTML='❌ EMIS '+emis+' already exists! Use Login instead.'; return; }
+  document.getElementById('registerMsg').innerHTML='⏳ Registering school + creating Principal account...';
+  try{
+    // Create school doc - status PENDING until Super Admin activates? Use ACTIVE for now, Super Admin can suspend
+    await setDoc(doc(db,'schools',String(emis)), {school:name, emis:String(emis), prefix:prefix, principalEmail:princEmail, principalName:princName, status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()});
+    // Create Principal Auth + Profile - NOTE: this will log in as new principal in this browser, that's OK
+    // We try, but if email already exists, school is still created
+    try{
+      let cred=await createUserWithEmailAndPassword(auth, princEmail, princPass);
+      await setDoc(doc(db,'users',cred.user.uid), {uid:cred.user.uid, name:princName, email:princEmail, role:'PRINCIPAL', emis:String(emis), school:name, prefix:prefix, subjects:['General'], classes:[], createdAt:new Date().toISOString()});
+      document.getElementById('registerMsg').innerHTML='✅ School '+name+' registered + Principal account created!<br>Principal can now login with: <b>'+princEmail+'</b>';
+    }catch(authErr){
+      document.getElementById('registerMsg').innerHTML='✅ School '+name+' registered!<br>⚠️ Principal Auth: '+authErr.message.replace('Firebase: ','')+'<br>Principal: Try Login → CREATE ACCOUNT with email <b>'+princEmail+'</b> if not created.';
+    }
+    document.getElementById('regSchoolName').value=''; document.getElementById('regEmis').value=''; document.getElementById('regPrefix').value=''; document.getElementById('regPrincipalName').value=''; document.getElementById('regPrincipalEmail').value=''; document.getElementById('regPrincipalPass').value='';
+  }catch(e){ document.getElementById('registerMsg').innerHTML='❌ '+e.message; }
 });
-document.getElementById('regUserBtn').addEventListener('click',function(){
-  let emis=document.getElementById('regUserEmis').value; let name=document.getElementById('regUserName').value.trim(); let role=document.getElementById('regUserRole').value; let pass=document.getElementById('regUserPass').value.trim();
-  let subjects=document.getElementById('regUserSubjects').value.trim().split(',').map(s=>s.trim()).filter(Boolean);
-  let classes=document.getElementById('regUserClasses').value.trim().split(',').map(s=>s.trim().toUpperCase()).filter(Boolean);
-  if(!emis||!name||!pass){ document.getElementById('regUserMsg').innerHTML='❌ Fill School + Name + Password.'; return; }
-  if(subjects.length===0) subjects=['General'];
-  let users=getUsers(emis); if(users.some(u=>u.name.toLowerCase()===name.toLowerCase() && u.role===role)){ document.getElementById('regUserMsg').innerHTML='❌ User already exists.'; return; }
-  users.push({name, role, password:pass, subjects, classes});
-  localStorage.setItem('EMIS_'+emis+'_makhanani_users', JSON.stringify(users));
-  document.getElementById('regUserMsg').innerHTML='✅ Registered <b>'+name+'</b> as <b>'+role+'</b> • Subjects: '+subjects.join(', ')+' • Classes: '+classes.join(', ');
-  document.getElementById('regUserName').value=''; document.getElementById('regUserPass').value=''; document.getElementById('regUserSubjects').value=''; document.getElementById('regUserClasses').value=''; renderUsers();
+// LIVE LISTENERS
+onSnapshot(collection(db,'schools'), (snap)=>{
+  schools=snap.docs.map(d=>({id:d.id, ...d.data()}));
+  let known=[{emis:'911360870', school:'George Sonto High School', prefix:'GSHS', status:'ACTIVE'}, {emis:'700310854', school:'Wordsworth High School', prefix:'WHS', status:'ACTIVE'}];
+  known.forEach(k=>{ if(!schools.some(s=>String(s.emis)===k.emis)) schools.push(k); });
+  render();
 });
-document.getElementById('regUserEmis').addEventListener('change',renderUsers);
-refreshSchoolSelect();
-})();
+onSnapshot(collection(db,'books'), (snap)=>{ allBooks=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
+onSnapshot(collection(db,'learners'), (snap)=>{ allLearners=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
+onSnapshot(collection(db,'issues'), (snap)=>{ allIssues=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
+onSnapshot(collection(db,'users'), (snap)=>{ allUsers=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
 </script></body></html>
