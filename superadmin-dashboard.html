@@ -4,17 +4,19 @@
 <body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
 <div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • <span class="text-red-400">SUPER ADMIN</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
 <div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-red-500"><h1 class="font-black text-2xl">👑 Super Admin Dashboard</h1><p class="text-xs text-gray-500">All Schools • All Users • Subscription • Retrieval • Due 30 November</p><div id="stats" class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3 text-center"></div></div>
+<div class="bg-white rounded-2xl p-4 border-4 border-red-500"><h1 class="font-black text-2xl">👑 Super Admin Dashboard</h1><p class="text-xs text-gray-500">All Schools • Impersonate Any User • Subscription • Retrieval • Due 30 November</p><div id="stats" class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3 text-center"></div></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500"><h2 class="font-black">🏫 Add New School</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="newSchoolName" placeholder="School Name e.g. Thabazimbi High" class="border-2 rounded-lg px-3 py-2"><input id="newEmis" placeholder="EMIS e.g. 911360871" class="border-2 rounded-lg px-3 py-2"><input id="newPrefix" placeholder="Prefix e.g. THS" class="border-2 rounded-lg px-3 py-2 uppercase"><input id="newPrincipalEmail" placeholder="Principal Email" class="border-2 rounded-lg px-3 py-2"></div><button id="addSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-2">🏫 Add School to Firebase</button><p id="addSchoolMsg" class="text-sm font-bold mt-1"></p><p class="text-[11px] text-gray-500">Known: George Sonto 911360870 GSHS • Wordsworth 700310854 WHS — already in system, don't add again.</p></div>
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-4 mt-4"><h2 class="font-black">👤 Impersonate — Login As Any User (No Password Needed)</h2><p class="text-xs text-gray-600">Pick a school + user below, tap <b>👤 Login As</b>. You will see EXACTLY what they see. A red <b>🔙 Return to Super Admin</b> banner will show at top. Tap it to come back here.</p><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="impSchool" class="border-2 rounded-lg px-3 py-2"></select><select id="impUser" class="border-2 rounded-lg px-3 py-2"></select><button id="impBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black">👤 Login As This User →</button></div><p id="impMsg" class="text-sm font-bold mt-1"></p></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🏫 All Schools</h2><div class="flex gap-2 mt-2 flex-wrap"><button onclick="printAllSchools()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">🖨️ Print All Schools</button><button id="refreshBtn" class="bg-black text-white px-3 py-1 rounded text-xs font-bold">🔄 Refresh</button></div><div id="schoolList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500"><h2 class="font-black">🏫 Add New School</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="newSchoolName" placeholder="School Name e.g. Thabazimbi High" class="border-2 rounded-lg px-3 py-2"><input id="newEmis" placeholder="EMIS e.g. 911360871" class="border-2 rounded-lg px-3 py-2"><input id="newPrefix" placeholder="Prefix e.g. THS" class="border-2 rounded-lg px-3 py-2 uppercase"><input id="newPrincipalEmail" placeholder="Principal Email" class="border-2 rounded-lg px-3 py-2"></div><button id="addSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-2">🏫 Add School to Firebase</button><p id="addSchoolMsg" class="text-sm font-bold mt-1"></p></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 All Users (Firebase)</h2><input id="userSearch" placeholder="🔍 Search name / email / school..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="userList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🏫 All Schools — Quick Impersonate Principal</h2><div class="flex gap-2 mt-2 flex-wrap"><button onclick="printAllSchools()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">🖨️ Print All Schools</button><button id="refreshBtn" class="bg-black text-white px-3 py-1 rounded text-xs font-bold">🔄 Refresh</button></div><div id="schoolList" class="mt-2 text-sm"></div></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500"><h2 class="font-black">💳 Subscription Control</h2><p class="text-xs text-gray-500">Super Admin can Activate / Suspend a school. Suspended school sees “Subscription Expired” on login.</p><div id="subList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 All Users (Firebase) — Tap 👤 Login As</h2><input id="userSearch" placeholder="🔍 Search name / email / school..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="userList" class="mt-2 text-sm"></div></div>
 
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 Retrieval — By School (from Local Data)</h2><p class="text-xs text-gray-500">This reads localStorage data per EMIS (until Books move to Firebase). Firebase users above are live.</p><div id="retrievalList" class="mt-2 text-sm"></div><button onclick="printRetrievalAll()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mt-2">🖨️ Print Retrieval All Schools</button></div>
+<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500"><h2 class="font-black">💳 Subscription Control</h2><div id="subList" class="mt-2 text-sm"></div></div>
+
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 Retrieval — By School</h2><div id="retrievalList" class="mt-2 text-sm"></div><button onclick="printRetrievalAll()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mt-2">🖨️ Print Retrieval All Schools</button></div>
 </div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
@@ -33,9 +35,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-let cur=null, schools=[], users=[];
-function getDueDate(s){ let d=s?new Date(s+'T00:00:00'):new Date(); let due=new Date(d.getFullYear(),10,30); if(d>due) due=new Date(d.getFullYear()+1,10,30); return due.toISOString().slice(0,10); }
-function formatDue(due){ return new Date(due+'T00:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}); }
+let cur=null, schools=[], users=[], superAdminProfile=null;
 function retrievalForEmis(emis){
   try{
     let issues=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_issues')||'[]');
@@ -50,23 +50,70 @@ function retrievalForEmis(emis){
   }catch(e){ return {issued:0, returned:0, out:0, pct:null, learners:0, books:0}; }
 }
 async function loadAll(){
-  // Schools from Firestore + fallback to known
-  try{
-    let snap=await getDocs(collection(db,'schools'));
-    schools=snap.docs.map(d=>({id:d.id, ...d.data()}));
-  }catch(e){ schools=[]; }
+  try{ let snap=await getDocs(collection(db,'schools')); schools=snap.docs.map(d=>({id:d.id, ...d.data()})); }catch(e){ schools=[]; }
   let known=[{emis:'911360870', school:'George Sonto High School', prefix:'GSHS'}, {emis:'700310854', school:'Wordsworth High School', prefix:'WHS'}];
   known.forEach(k=>{ if(!schools.some(s=>String(s.emis)===k.emis)) schools.push(k); });
-  try{
-    let snap=await getDocs(collection(db,'users'));
-    users=snap.docs.map(d=>({id:d.id, ...d.data()}));
-  }catch(e){ users=[]; }
+  try{ let snap=await getDocs(collection(db,'users')); users=snap.docs.map(d=>({id:d.id, ...d.data()})); }catch(e){ users=[]; }
   render();
 }
+function destForRole(role){
+  role=String(role||'').toUpperCase();
+  if(role==='PRINCIPAL') return 'principal-dashboard.html';
+  if(role==='HOD') return 'hod-dashboard.html';
+  if(role==='TEACHER') return 'teacher-dashboard.html';
+  if(role==='LIBRARIAN') return 'librarian.html';
+  return 'principal-dashboard.html';
+}
+// ===== IMPERSONATE CORE =====
+function impersonateUser(u){
+  if(!u) return;
+  // Save Super Admin to return to
+  let superSession = localStorage.getItem('makhanani_session');
+  try{
+    let parsed = JSON.parse(superSession||'{}');
+    // Only save if current is Super Admin, don't overwrite nested impersonation
+    if(parsed.role==='SUPER_ADMIN'){
+      localStorage.setItem('makhanani_superadmin_session', superSession);
+    }
+  }catch(e){}
+  // Create impersonated session
+  let impersonated = {
+    school: u.school, emis: String(u.emis), prefix: u.prefix||'',
+    name: u.name, role: String(u.role||'PRINCIPAL').toUpperCase(),
+    subjects: u.subjects||['General'], classes: u.classes||[],
+    email: u.email||'', uid: u.id||u.uid||'',
+    impersonatedBy: superAdminProfile ? superAdminProfile.email : 'superadmin@xintimani.co.za',
+    isImpersonating: true
+  };
+  localStorage.setItem('makhanani_session', JSON.stringify(impersonated));
+  localStorage.setItem('makhanani_impersonating', 'true');
+  let dest = destForRole(u.role);
+  if(confirm('👤 Login as '+u.name+' ('+u.role+') — '+u.school+'?\n\nYou will see exactly what they see.\nTap 🔙 Return to Super Admin at top to come back.')){
+    location.href = dest;
+  }
+}
+window.impersonateUser = function(uid){
+  let u = users.find(x=>x.id===uid);
+  if(u) impersonateUser(u);
+};
+window.impersonatePrincipalForSchool = function(emis){
+  let principals = users.filter(u=>String(u.emis)===String(emis) && String(u.role).toUpperCase()==='PRINCIPAL');
+  if(principals.length===0){
+    // No principal in Firebase yet - create a virtual principal session for that school
+    let s = schools.find(x=>String(x.emis)===String(emis));
+    if(!s){ alert('School not found'); return; }
+    if(!confirm('No Principal found in Firebase for '+s.school+'.\n\nCreate a temporary Principal view for this school?\nName will be: Principal ('+s.school+')')) return;
+    let virtual = {id:'virtual-'+emis, name:'Principal ('+s.school+')', email:'principal@'+(s.prefix||'school').toLowerCase()+'.co.za', role:'PRINCIPAL', emis:String(emis), school:s.school, prefix:s.prefix, subjects:['General'], classes:[]};
+    impersonateUser(virtual);
+    return;
+  }
+  if(principals.length===1){ impersonateUser(principals[0]); return; }
+  // Multiple principals - pick first, user can pick in dropdown
+  impersonateUser(principals[0]);
+};
 function render(){
   document.getElementById('topStatus').textContent=(cur?cur.name+' • '+cur.email:'')+' • ALL SCHOOLS';
-  let totalUsers=users.length;
-  let totalSchools=schools.length;
+  let totalUsers=users.length, totalSchools=schools.length;
   let activeSchools=schools.filter(s=>s.status!=='SUSPENDED').length;
   let principals=users.filter(u=>u.role==='PRINCIPAL').length;
   let teachers=users.filter(u=>u.role==='TEACHER'||u.role==='HOD'||u.role==='LIBRARIAN').length;
@@ -76,15 +123,21 @@ function render(){
     '<div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+totalUsers+'</div><div class="text-xs">Firebase Users</div></div>'+
     '<div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+principals+'</div><div class="text-xs">Principals</div></div>'+
     '<div class="bg-orange-50 rounded p-2"><div class="font-black text-xl">'+teachers+'</div><div class="text-xs">HOD/Teacher/Librarian</div></div>';
+  // Impersonate dropdowns
+  document.getElementById('impSchool').innerHTML='<option value="">— Select School —</option>'+schools.map(s=>'<option value="'+s.emis+'">'+s.school+' • '+s.emis+'</option>').join('');
+  let impEmis=document.getElementById('impSchool').value;
+  let impUsers = impEmis ? users.filter(u=>String(u.emis)===String(impEmis)) : users;
+  document.getElementById('impUser').innerHTML='<option value="">— Select User —</option>'+impUsers.map(u=>'<option value="'+u.id+'">'+u.name+' • '+u.role+' • '+u.school+'</option>').join('') + (impEmis && impUsers.length===0 ? '<option value="virtual-'+impEmis+'">Principal (Virtual) • PRINCIPAL • '+schools.find(s=>String(s.emis)===String(impEmis))?.school+'</option>' : '');
   document.getElementById('schoolList').innerHTML=schools.map(s=>{
     let r=retrievalForEmis(s.emis);
-    return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS <b>'+s.emis+'</b> • Prefix <b>'+s.prefix+'</b> • Status <b>'+(s.status||'ACTIVE')+'</b><br>Books: '+r.books+' • Learners: '+r.learners+' • Issued: '+r.issued+' • Returned: '+r.returned+' • Retrieval: <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b> • Due: <b>30 November</b><div class="flex gap-1 mt-1"><button onclick="viewSchoolUsers(\''+s.emis+'\')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">👥 View Users</button><button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">'+(s.status==='SUSPENDED'?'✅ Activate':'⛔ Suspend')+'</button></div></div>';
+    let princ=users.find(u=>String(u.emis)===String(s.emis) && String(u.role).toUpperCase()==='PRINCIPAL');
+    return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS <b>'+s.emis+'</b> • Prefix <b>'+s.prefix+'</b> • Status <b>'+(s.status||'ACTIVE')+'</b><br>Principal: '+(princ?princ.name+' ('+princ.email+')':'— No Principal in Firebase')+'<br>Books: '+r.books+' • Learners: '+r.learners+' • Issued: '+r.issued+' • Retrieval: <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b><div class="flex gap-1 mt-1 flex-wrap"><button onclick="impersonatePrincipalForSchool(\''+s.emis+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">👤 Login As Principal</button><button onclick="viewSchoolUsers(\''+s.emis+'\')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">👥 View Users</button><button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold">'+(s.status==='SUSPENDED'?'✅ Activate':'⛔ Suspend')+'</button></div></div>';
   }).join('');
-  document.getElementById('subList').innerHTML=schools.map(s=>'<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS '+s.emis+' • Subscription: <b>'+(s.status||'ACTIVE')+'</b> • Plan: '+(s.plan||'Standard')+' • Expires: '+(s.expires||'—')+' <button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold ml-2">Toggle</button></div>').join('');
+  document.getElementById('subList').innerHTML=schools.map(s=>'<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS '+s.emis+' • Subscription: <b>'+(s.status||'ACTIVE')+'</b> <button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold ml-2">Toggle</button></div>').join('');
   let q=(document.getElementById('userSearch').value||'').toLowerCase();
   let filtered=users.filter(u=>!q || (u.name+' '+u.email+' '+u.school+' '+u.role).toLowerCase().includes(q));
-  document.getElementById('userList').innerHTML=filtered.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.email+' • Role <b>'+u.role+'</b> • School <b>'+u.school+' ('+u.emis+')</b> • Subjects: '+(u.subjects||[]).join(', ')+' • Classes: '+(u.classes||[]).join(', ')+'<div class="flex gap-1 mt-1"><button onclick="resetUserRole(\''+u.id+'\')" class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">🔄 Change Role</button><button onclick="deleteUser(\''+u.id+'\',\''+u.name+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">🗑️ Delete User</button></div></div>').join('')||'<p class="text-gray-500">No Firebase users yet. Create accounts via Login → CREATE ACCOUNT.</p>';
-  document.getElementById('retrievalList').innerHTML=schools.map(s=>{ let r=retrievalForEmis(s.emis); return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> — Retrieval <b>'+(r.pct===null?'— No books yet':r.pct.toFixed(1)+'%')+'</b> ('+r.returned+'/'+r.issued+') • Still Out: '+r.out+'</div>'; }).join('');
+  document.getElementById('userList').innerHTML=filtered.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.email+' • Role <b>'+u.role+'</b> • School <b>'+u.school+' ('+u.emis+')</b><br>Subjects: '+(u.subjects||[]).join(', ')+' • Classes: '+(u.classes||[]).join(', ')+'<div class="flex gap-1 mt-1 flex-wrap"><button onclick="impersonateUser(\''+u.id+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">👤 Login As '+u.name+'</button><button onclick="resetUserRole(\''+u.id+'\')" class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">🔄 Change Role</button><button onclick="deleteUser(\''+u.id+'\',\''+u.name+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold">🗑️ Delete</button></div></div>').join('')||'<p class="text-gray-500">No Firebase users yet. Create accounts via Login → CREATE ACCOUNT.</p>';
+  document.getElementById('retrievalList').innerHTML=schools.map(s=>{ let r=retrievalForEmis(s.emis); return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> — Retrieval <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b> ('+r.returned+'/'+r.issued+') • Still Out: '+r.out+'</div>'; }).join('');
 }
 window.viewSchoolUsers=function(emis){ document.getElementById('userSearch').value=emis; render(); document.getElementById('userSearch').scrollIntoView({behavior:'smooth'}); };
 window.toggleSchool=async function(emis, current){
@@ -98,7 +151,7 @@ window.resetUserRole=async function(uid){
   try{ await updateDoc(doc(db,'users',uid), {role:newRole.trim().toUpperCase()}); alert('✅ Role updated'); loadAll(); }catch(e){ alert('❌ '+e.message); }
 };
 window.deleteUser=async function(uid, name){
-  if(!confirm('Delete user '+name+' from Firestore? This does NOT delete their Firebase Auth login, only profile.')) return;
+  if(!confirm('Delete user '+name+' from Firestore?')) return;
   try{ await deleteDoc(doc(db,'users',uid)); alert('✅ Deleted'); loadAll(); }catch(e){ alert('❌ '+e.message); }
 };
 window.printAllSchools=function(){
@@ -111,6 +164,17 @@ window.printRetrievalAll=function(){
   document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • RETRIEVAL ALL SCHOOLS • Due 30 November</h1><table><tr><th>School</th><th>Issued</th><th>Returned</th><th>Still Out</th><th>Retrieval %</th></tr>'+rows+'</table>';
   setTimeout(()=>window.print(),100);
 };
+document.getElementById('impSchool').addEventListener('change', render);
+document.getElementById('impBtn').addEventListener('click', ()=>{
+  let uid=document.getElementById('impUser').value;
+  if(!uid){ document.getElementById('impMsg').innerHTML='❌ Select School + User first'; return; }
+  if(uid.startsWith('virtual-')){
+    let emis=uid.replace('virtual-','');
+    impersonatePrincipalForSchool(emis);
+    return;
+  }
+  impersonateUser(uid);
+});
 document.getElementById('addSchoolBtn').addEventListener('click', async ()=>{
   let name=document.getElementById('newSchoolName').value.trim();
   let emis=document.getElementById('newEmis').value.trim();
@@ -126,14 +190,18 @@ document.getElementById('addSchoolBtn').addEventListener('click', async ()=>{
 });
 document.getElementById('refreshBtn').addEventListener('click', loadAll);
 document.getElementById('userSearch').addEventListener('input', render);
-document.getElementById('logoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; });
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); localStorage.removeItem('makhanani_superadmin_session'); location.href='superadmin-login.html'; });
 onAuthStateChanged(auth, async (user)=>{
-  if(!user){ location.href='superadmin-login.html'; return; }
+  if(!user){ 
+    // Allow impersonated return? If impersonating, we are still authed as Super Admin, so this should not happen
+    location.href='superadmin-login.html'; return; 
+  }
   try{
     let snap=await getDoc(doc(db,'users',user.uid));
     let profile=snap.exists()?snap.data():null;
     if(!profile || profile.role!=='SUPER_ADMIN'){ alert('Not Super Admin'); location.href='login.html'; return; }
     cur={name:profile.name, email:profile.email};
+    superAdminProfile=profile;
     loadAll();
   }catch(e){ location.href='superadmin-login.html'; }
 });
