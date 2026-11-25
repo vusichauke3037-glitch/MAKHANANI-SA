@@ -1,62 +1,83 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian — Makhanani LTSM LIVE</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
 <style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
 <body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
 <div id="impBanner" style="display:none; background:#dc2626; color:white; text-align:center; padding:10px; font-weight:900; font-size:13px; position:sticky; top:0; z-index:9999;">👀 SUPER ADMIN VIEWING AS <span id="impName"></span> — <button onclick="returnToSuperAdmin()" style="background:white; color:#dc2626; padding:4px 12px; border-radius:999px; font-weight:900; margin-left:8px;">🔙 RETURN TO SUPER ADMIN</button></div>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LIBRARIAN</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LIBRARIAN • <span class="text-green-400">LIVE FIREBASE</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
 <div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-purple-500"><h1 class="font-black text-2xl">📚 Librarian Dashboard</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"></div></div>
+<div class="bg-white rounded-2xl p-4 border-4 border-purple-500"><h1 class="font-black text-2xl">📚 Librarian Dashboard — LIVE</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"></div><button id="migrateBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black mt-2 text-sm">🔄 MIGRATE OLD localStorage Data → Firebase (Tap ONCE)</button><p id="migrateMsg" class="text-sm font-bold mt-1"></p></div>
 <div class="grid md:grid-cols-3 gap-2 mt-4"><a href="issue.html" class="bg-orange-500 text-white p-4 rounded-2xl font-black text-center">📥 Issue / Return →</a><button onclick="printBooks()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black">🖨️ Print Book List</button><button onclick="printLearners()" class="bg-blue-600 text-white p-4 rounded-2xl font-black">🖨️ Print Learner List</button></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">➕ Add Book</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="bookTitle" placeholder="Book Title" class="border-2 rounded-lg px-3 py-2"><input id="bookSubject" placeholder="Subject" class="border-2 rounded-lg px-3 py-2"><input id="bookGrade" placeholder="Grade e.g. 10" class="border-2 rounded-lg px-3 py-2"><input id="bookCopies" type="number" placeholder="Copies e.g. 30" class="border-2 rounded-lg px-3 py-2"></div><button id="addBookBtn" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-black mt-2">➕ Add Book</button><p id="addBookMsg" class="text-sm font-bold mt-1"></p></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">➕ Add Learner</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><input id="learnerName" placeholder="Learner Name" class="border-2 rounded-lg px-3 py-2"><input id="learnerClass" placeholder="Class e.g. 10A" class="border-2 rounded-lg px-3 py-2"><input id="learnerId" placeholder="Learner ID / Admission No." class="border-2 rounded-lg px-3 py-2"></div><button id="addLearnerBtn" class="bg-green-600 text-white px-6 py-2 rounded-lg font-black mt-2">➕ Add Learner</button><p id="addLearnerMsg" class="text-sm font-bold mt-1"></p></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Books in This School</h2><input id="bookSearch" placeholder="🔍 Search book..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="bookList" class="mt-2 text-sm"></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Learners</h2><input id="learnerSearch" placeholder="🔍 Search learner..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="learnerList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">➕ Add Book (Live)</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="bookTitle" placeholder="Book Title" class="border-2 rounded-lg px-3 py-2"><input id="bookSubject" placeholder="Subject" class="border-2 rounded-lg px-3 py-2"><input id="bookGrade" placeholder="Grade e.g. 10" class="border-2 rounded-lg px-3 py-2"><input id="bookCopies" type="number" placeholder="Copies e.g. 30" class="border-2 rounded-lg px-3 py-2"></div><button id="addBookBtn" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-black mt-2">➕ Add Book to Firebase</button><p id="addBookMsg" class="text-sm font-bold mt-1"></p></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">➕ Add Learner (Live)</h2><div class="grid md:grid-cols-3 gap-2 mt-2"><input id="learnerName" placeholder="Learner Name" class="border-2 rounded-lg px-3 py-2"><input id="learnerClass" placeholder="Class e.g. 10A" class="border-2 rounded-lg px-3 py-2"><input id="learnerId" placeholder="Admission No." class="border-2 rounded-lg px-3 py-2"></div><button id="addLearnerBtn" class="bg-green-600 text-white px-6 py-2 rounded-lg font-black mt-2">➕ Add Learner to Firebase</button><p id="addLearnerMsg" class="text-sm font-bold mt-1"></p></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Books — LIVE (Auto-updates)</h2><input id="bookSearch" placeholder="🔍 Search book..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="bookList" class="mt-2 text-sm">Loading...</div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👩‍🎓 Learners — LIVE</h2><input id="learnerSearch" placeholder="🔍 Search learner..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="learnerList" class="mt-2 text-sm">Loading...</div></div>
 </div>
 <script>(function(){ try{ let s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); if(s && s.isImpersonating){ document.getElementById('impBanner').style.display='block'; document.getElementById('impName').textContent=s.name+' ('+s.role+') • '+s.school; } }catch(e){} window.returnToSuperAdmin=function(){ let sup=localStorage.getItem('makhanani_superadmin_session'); if(sup){ localStorage.setItem('makhanani_session',sup); localStorage.removeItem('makhanani_superadmin_session'); localStorage.removeItem('makhanani_impersonating'); location.href='superadmin-dashboard.html'; } else { localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; } }; })();</script>
 <script type="module">
-import { initializeApp } from 'firebase/app'; import { getAuth, signOut } from 'firebase/auth';
+import { initializeApp } from 'firebase/app'; import { getAuth, signOut } from 'firebase/auth'; import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, onSnapshot } from 'firebase/firestore';
 const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-const app=initializeApp(firebaseConfig); const auth=getAuth(app);
+const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
 let sess=null; try{ sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
 if(!sess){ location.href='login.html'; }
-document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis;
+document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis+' • LIVE';
 document.getElementById('schoolLine').textContent=sess.school+' • EMIS '+sess.emis+' • '+sess.prefix;
-function getBooks(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_ltsm')||'[]'); }catch(e){ return []; } }
-function setBooks(v){ localStorage.setItem('EMIS_'+sess.emis+'_makhanani_ltsm', JSON.stringify(v)); }
-function getLearners(){ try{ return JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_learners')||'[]'); }catch(e){ return []; } }
-function setLearners(v){ localStorage.setItem('EMIS_'+sess.emis+'_makhanani_learners', JSON.stringify(v)); }
-function render(){
-  let books=getBooks(); let learners=getLearners();
-  let issues=[]; try{ issues=JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_issues')||'[]'); }catch(e){}
-  let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let pct=issued===0?null:(returned/issued*100);
-  let copies=books.reduce((a,b)=>a+(b.copies||[]).length,0);
+let books=[], learners=[], issues=[];
+async function refreshStats(){
+  let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let pct=issued===0?null:(returned/issued*100); let copies=books.reduce((a,b)=>a+(b.totalCopies||0),0);
   document.getElementById('stats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+books.length+'</div><div class="text-xs">Titles</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+copies+'</div><div class="text-xs">Copies</div></div><div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+learners.length+'</div><div class="text-xs">Learners</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+(pct===null?'—':pct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval</div></div>';
+}
+function renderBooks(){
   let q=(document.getElementById('bookSearch').value||'').toLowerCase();
   let fb=books.filter(b=>!q || (b.title+' '+b.subject).toLowerCase().includes(q));
-  document.getElementById('bookList').innerHTML=fb.map((b,idx)=>'<div class="border rounded p-2 mb-1"><b>'+b.title+'</b> • '+b.subject+' • Grade '+b.grade+' • Copies: '+(b.copies||[]).length+' <button onclick="deleteBook('+idx+')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold ml-2">🗑️</button></div>').join('')||'<p class="text-gray-500">No books yet.</p>';
-  let lq=(document.getElementById('learnerSearch').value||'').toLowerCase();
-  let fl=learners.filter(l=>!lq || (l.name+' '+l.class).toLowerCase().includes(lq));
-  document.getElementById('learnerList').innerHTML=fl.map((l,idx)=>'<div class="border rounded p-2 mb-1"><b>'+l.name+'</b> • Class '+l.class+' • ID: '+(l.id||l.admission||'')+' <button onclick="deleteLearner('+idx+')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold ml-2">🗑️</button></div>').join('')||'<p class="text-gray-500">No learners yet.</p>';
+  document.getElementById('bookList').innerHTML=fb.map(b=>'<div class="border rounded p-2 mb-1"><b>'+b.title+'</b> • '+b.subject+' • Grade '+b.grade+' • Copies: '+(b.totalCopies||0)+' <button onclick="deleteBook(\''+b.id+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold ml-2">🗑️</button></div>').join('')||'<p class="text-gray-500">No books in Firebase for this school yet.</p>';
 }
-window.deleteBook=function(idx){ if(!confirm('Delete this book?')) return; let b=getBooks(); b.splice(idx,1); setBooks(b); render(); };
-window.deleteLearner=function(idx){ if(!confirm('Delete this learner?')) return; let l=getLearners(); l.splice(idx,1); setLearners(l); render(); };
-window.printBooks=function(){ let b=getBooks(); let rows=b.map(x=>'<tr><td>'+x.title+'</td><td>'+x.subject+'</td><td>'+x.grade+'</td><td>'+(x.copies||[]).length+'</td></tr>').join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • BOOK LIST • '+sess.school+'</h1><p>EMIS '+sess.emis+' • By: '+sess.name+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>Title</th><th>Subject</th><th>Grade</th><th>Copies</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
-window.printLearners=function(){ let l=getLearners(); let rows=l.map(x=>'<tr><td>'+x.name+'</td><td>'+x.class+'</td><td>'+(x.id||'')+'</td></tr>').join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • LEARNER LIST • '+sess.school+'</h1><p>EMIS '+sess.emis+' • By: '+sess.name+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>Name</th><th>Class</th><th>ID</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
-document.getElementById('addBookBtn').addEventListener('click', ()=>{
+function renderLearners(){
+  let q=(document.getElementById('learnerSearch').value||'').toLowerCase();
+  let fl=learners.filter(l=>!q || (l.name+' '+l.class).toLowerCase().includes(q));
+  document.getElementById('learnerList').innerHTML=fl.map(l=>'<div class="border rounded p-2 mb-1"><b>'+l.name+'</b> • Class '+l.class+' • ID: '+(l.admissionId||'')+' <button onclick="deleteLearner(\''+l.id+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold ml-2">🗑️</button></div>').join('')||'<p class="text-gray-500">No learners in Firebase yet.</p>';
+}
+window.deleteBook=async function(id){ if(!confirm('Delete this book from Firebase?')) return; await deleteDoc(doc(db,'books',id)); };
+window.deleteLearner=async function(id){ if(!confirm('Delete this learner from Firebase?')) return; await deleteDoc(doc(db,'learners',id)); };
+window.printBooks=function(){ let rows=books.map(x=>'<tr><td>'+x.title+'</td><td>'+x.subject+'</td><td>'+x.grade+'</td><td>'+(x.totalCopies||0)+'</td></tr>').join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • BOOK LIST • '+sess.school+' • LIVE FIREBASE</h1><p>EMIS '+sess.emis+' • By: '+sess.name+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>Title</th><th>Subject</th><th>Grade</th><th>Copies</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
+window.printLearners=function(){ let rows=learners.map(x=>'<tr><td>'+x.name+'</td><td>'+x.class+'</td><td>'+(x.admissionId||'')+'</td></tr>').join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • LEARNER LIST • '+sess.school+'</h1><p>EMIS '+sess.emis+' • By: '+sess.name+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>Name</th><th>Class</th><th>ID</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
+document.getElementById('addBookBtn').addEventListener('click', async ()=>{
   let title=document.getElementById('bookTitle').value.trim(); let subject=document.getElementById('bookSubject').value.trim(); let grade=document.getElementById('bookGrade').value.trim(); let copiesN=parseInt(document.getElementById('bookCopies').value||'1');
   if(!title){ document.getElementById('addBookMsg').innerHTML='❌ Title needed'; return; }
-  let books=getBooks(); let copies=[]; for(let i=0;i<copiesN;i++){ copies.push({id:Date.now()+'-'+i, status:'Available'}); }
-  books.push({title, subject, grade, copies, createdAt:new Date().toISOString()}); setBooks(books);
-  document.getElementById('addBookMsg').innerHTML='✅ Added '+title+' ('+copiesN+' copies)'; document.getElementById('bookTitle').value=''; document.getElementById('bookCopies').value=''; render();
+  try{ await addDoc(collection(db,'books'), {emis:String(sess.emis), title, subject, grade, totalCopies:copiesN, createdAt:new Date().toISOString(), createdBy:sess.name}); document.getElementById('addBookMsg').innerHTML='✅ Added '+title+' ('+copiesN+' copies) to Firebase — visible on all phones!'; document.getElementById('bookTitle').value=''; document.getElementById('bookCopies').value=''; }catch(e){ document.getElementById('addBookMsg').innerHTML='❌ '+e.message; }
 });
-document.getElementById('addLearnerBtn').addEventListener('click', ()=>{
+document.getElementById('addLearnerBtn').addEventListener('click', async ()=>{
   let name=document.getElementById('learnerName').value.trim(); let cls=document.getElementById('learnerClass').value.trim().toUpperCase(); let id=document.getElementById('learnerId').value.trim();
   if(!name||!cls){ document.getElementById('addLearnerMsg').innerHTML='❌ Name + Class needed'; return; }
-  let learners=getLearners(); learners.push({name, class:cls, id:id||Date.now().toString().slice(-6), createdAt:new Date().toISOString()}); setLearners(learners);
-  document.getElementById('addLearnerMsg').innerHTML='✅ Added '+name+' • '+cls; document.getElementById('learnerName').value=''; document.getElementById('learnerId').value=''; render();
+  try{ await addDoc(collection(db,'learners'), {emis:String(sess.emis), name, class:cls, admissionId:id||'', createdAt:new Date().toISOString()}); document.getElementById('addLearnerMsg').innerHTML='✅ Added '+name+' • '+cls+' to Firebase'; document.getElementById('learnerName').value=''; document.getElementById('learnerId').value=''; }catch(e){ document.getElementById('addLearnerMsg').innerHTML='❌ '+e.message; }
 });
-document.getElementById('bookSearch').addEventListener('input', render);
-document.getElementById('learnerSearch').addEventListener('input', render);
+document.getElementById('migrateBtn').addEventListener('click', async ()=>{
+  if(!confirm('Migrate OLD localStorage books/learners/issues for EMIS '+sess.emis+' to Firebase?\n\nTap OK ONCE. If data already in Firebase, it will NOT duplicate.')) return;
+  document.getElementById('migrateMsg').innerHTML='⏳ Migrating...';
+  try{
+    let res={books:0, learners:0, issues:0};
+    let existingBooks=await getDocs(query(collection(db,'books'), where('emis','==',String(sess.emis))));
+    if(existingBooks.empty){
+      let lb=[]; try{ lb=JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_ltsm')||'[]'); }catch(e){}
+      for(let b of lb){ await addDoc(collection(db,'books'), {emis:String(sess.emis), title:b.title||'', subject:b.subject||'', grade:String(b.grade||''), totalCopies:(b.copies||[]).length||1, createdAt:new Date().toISOString()}); res.books++; }
+    }
+    let existingLearners=await getDocs(query(collection(db,'learners'), where('emis','==',String(sess.emis))));
+    if(existingLearners.empty){
+      let ll=[]; try{ ll=JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_learners')||'[]'); }catch(e){}
+      for(let l of ll){ await addDoc(collection(db,'learners'), {emis:String(sess.emis), name:l.name||'', class:String(l.class||''), admissionId:l.id||'', createdAt:new Date().toISOString()}); res.learners++; }
+    }
+    let existingIssues=await getDocs(query(collection(db,'issues'), where('emis','==',String(sess.emis))));
+    if(existingIssues.empty){
+      let li=[]; try{ li=JSON.parse(localStorage.getItem('EMIS_'+sess.emis+'_makhanani_issues')||'[]'); }catch(e){}
+      for(let iss of li){ await addDoc(collection(db,'issues'), {emis:String(sess.emis), learnerName:iss.learnerName||'', learnerClass:iss.learnerClass||'', bookTitle:iss.bookTitle||'', subject:iss.subject||'', action:iss.action||'Issued', date:iss.date||new Date().toISOString().slice(0,10), by:sess.name, createdAt:new Date().toISOString()}); res.issues++; }
+    }
+    document.getElementById('migrateMsg').innerHTML='✅ Migrated: Books '+res.books+' • Learners '+res.learners+' • Issues '+res.issues+' (If 0, data was already in Firebase)';
+  }catch(e){ document.getElementById('migrateMsg').innerHTML='❌ '+e.message; }
+});
+document.getElementById('bookSearch').addEventListener('input', renderBooks);
+document.getElementById('learnerSearch').addEventListener('input', renderLearners);
 document.getElementById('logoutBtn').addEventListener('click', async()=>{ if(sess && sess.isImpersonating){ window.returnToSuperAdmin(); return; } await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-render();
+// LIVE LISTENERS - auto-update when anyone adds data
+onSnapshot(query(collection(db,'books'), where('emis','==',String(sess.emis))), (snap)=>{ books=snap.docs.map(d=>({id:d.id, ...d.data()})); renderBooks(); refreshStats(); });
+onSnapshot(query(collection(db,'learners'), where('emis','==',String(sess.emis))), (snap)=>{ learners=snap.docs.map(d=>({id:d.id, ...d.data()})); renderLearners(); refreshStats(); });
+onSnapshot(query(collection(db,'issues'), where('emis','==',String(sess.emis))), (snap)=>{ issues=snap.docs.map(d=>({id:d.id, ...d.data()})); refreshStats(); });
 </script></body></html>
