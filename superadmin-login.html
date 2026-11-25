@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Super Admin Login — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
+<body class="bg-black min-h-screen flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border-4 border-yellow-400">
+<div class="text-center"><img src="logo.png" class="h-20 w-20 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-2xl mt-2">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="font-black text-red-600">🔐 SUPER ADMIN ONLY</p><p class="text-xs text-gray-500">Makhanani LTSM • All Schools • All Users</p></div>
+<div class="mt-4"><label class="text-xs font-bold">SUPER ADMIN EMAIL</label><input id="emailInput" type="email" placeholder="superadmin@xintimani.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
+<div class="mt-2"><label class="text-xs font-bold">PASSWORD</label><input id="passInput" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
+<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-4">🔐 LOGIN AS SUPER ADMIN</button>
+<button id="createBtn" class="bg-red-600 text-white w-full py-2 rounded-lg font-bold mt-2 text-sm">✨ FIRST TIME? CREATE SUPER ADMIN ACCOUNT</button>
+<p id="msg" class="text-sm font-bold mt-2 text-center"></p>
+<div class="bg-yellow-50 border rounded-lg p-3 mt-3 text-xs"><b>Who is Super Admin?</b><br>Only you (Xintimani Group owner). NOT Principal / HOD / Teacher / Librarian.<br><br><b>Test:</b> Email <b>superadmin@xintimani.co.za</b> / Pass <b>123456</b> → CREATE first, then LOGIN.</div>
+<div class="flex gap-2 mt-3"><a href="index.html" class="flex-1 text-center bg-yellow-500 text-black py-2 rounded-lg font-bold text-sm">🏠 Home</a><a href="login.html" class="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg font-bold text-sm">👤 Normal Login</a></div>
+</div>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+function show(m){ document.getElementById('msg').innerHTML=m; }
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  let email=document.getElementById('emailInput').value.trim().toLowerCase();
+  let pass=document.getElementById('passInput').value.trim();
+  if(!email||!pass){ show('❌ Fill Email + Password'); return; }
+  show('⏳ Checking Super Admin...');
+  try{
+    let cred=await signInWithEmailAndPassword(auth,email,pass);
+    let snap=await getDoc(doc(db,'users',cred.user.uid));
+    let profile=snap.exists()?snap.data():null;
+    if(!profile || profile.role!=='SUPER_ADMIN'){
+      show('❌ This account is NOT Super Admin. Use Normal Login.'); return;
+    }
+    localStorage.setItem('makhanani_session', JSON.stringify({school:'ALL SCHOOLS', emis:'ALL', prefix:'XINTIMANI', name:profile.name||email, role:'SUPER_ADMIN', subjects:['General'], classes:[], email:email, uid:cred.user.uid}));
+    show('✅ Welcome Super Admin '+profile.name);
+    setTimeout(()=>location.href='superadmin-dashboard.html',800);
+  }catch(e){ show('❌ '+e.message.replace('Firebase: ','')+'<br>First time? Tap CREATE SUPER ADMIN.'); }
+});
+document.getElementById('createBtn').addEventListener('click', async ()=>{
+  let email=document.getElementById('emailInput').value.trim().toLowerCase();
+  let pass=document.getElementById('passInput').value.trim();
+  if(!email||pass.length<6){ show('❌ Email + Password min 6 chars'); return; }
+  let name=prompt('Super Admin Name:','Xintimani Admin')||'Xintimani Admin';
+  let secret=prompt('Super Admin Secret Code (to prevent anyone creating Super Admin):','XINTIMANI2026');
+  if(secret!=='XINTIMANI2026'){ show('❌ Wrong Secret Code.'); return; }
+  show('⏳ Creating Super Admin...');
+  try{
+    let cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await setDoc(doc(db,'users',cred.user.uid),{uid:cred.user.uid, name:name, email:email, role:'SUPER_ADMIN', emis:'ALL', school:'ALL SCHOOLS', prefix:'XINTIMANI', subjects:['General'], classes:[], createdAt:new Date().toISOString()});
+    show('✅ Super Admin Created! Now tap LOGIN.');
+  }catch(e){ show('❌ '+e.message.replace('Firebase: ','')); }
+});
+</script></body></html>
