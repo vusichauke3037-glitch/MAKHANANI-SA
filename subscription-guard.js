@@ -1,67 +1,34 @@
-// subscription-guard.js - MAKHANANI LTSM - Locks school if Expired / Unpaid / No Sub
-// Premium Yearly = 12 MONTHS ONLY - EMIS = School ID
+// Makhanani LTSM — Subscription Guard
+// If no subscription system yet, this file just shows banner and never blocks.
+// To add real subscription later, replace checkSubscription logic with your API.
 (function(){
-  window.MAKHANANI_PACKAGES = [
-    {name:'Demo',price:0,setup:0,billing:'demo', maxBooks:50, maxLearners:30, allowBarcodes:false, allowFinance:false, allowReports:false, allowManuals:false},
-    {name:'Starter',price:500,setup:3500,billing:'monthly', yearly:5000, maxBooks:200, maxLearners:100, allowBarcodes:false, allowFinance:false, allowReports:false, allowManuals:false},
-    {name:'Standard',price:700,setup:4500,billing:'monthly', yearly:7000, maxBooks:999999, maxLearners:999999, allowBarcodes:true, allowFinance:false, allowReports:true, allowManuals:false},
-    {name:'Premium',price:900,setup:5500,billing:'monthly', yearly:9000, maxBooks:999999, maxLearners:999999, allowBarcodes:true, allowFinance:true, allowReports:true, allowManuals:true, allowSupport:true}
-  ];
-  function getSubs(){ try{ return JSON.parse(localStorage.getItem('makhanani_subscriptions')||'[]'); }catch(e){ return []; } }
-  function getPackages(){ try{ let p=JSON.parse(localStorage.getItem('makhanani_packages')||'[]'); if(p.length) return p; }catch(e){} return window.MAKHANANI_PACKAGES; }
-  window.getSubscriptionFor = function(schoolName, emis){
-    let subs=getSubs();
-    if(emis){ let f=subs.find(s=>s.emis===emis); if(f) return f; }
-    if(schoolName){ let f=subs.find(s=>s.school===schoolName); if(f) return f; }
-    return null;
-  };
-  window.checkSubscription = function(schoolName, emis, opts){
-    opts = opts || {}; let isSuper = false;
-    try{ let sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); if(sess && (sess.role==='SUPER_ADMIN'||sess.role==='ADMIN')) isSuper=true; }catch(e){}
-    let sub = getSubscriptionFor(schoolName, emis);
-    let now = new Date(); now.setHours(0,0,0,0);
-    let result = {locked:false, reason:'', sub:sub, package:null, daysLeft:null};
-    if(!sub){ result.locked = true; result.reason = 'NO_SUBSCRIPTION'; result.message = '🔒 This school has NO subscription. Contact Super Admin to subscribe.'; }
-    else {
-      let pkgs=getPackages(); let pkg = pkgs.find(p=>p.name===sub.package) || window.MAKHANANI_PACKAGES.find(p=>p.name===sub.package) || {name:sub.package, maxBooks:999999, maxLearners:999999, allowBarcodes:true, allowFinance:true};
-      result.package = pkg;
-      if(sub.status==='Cancelled'){ result.locked=true; result.reason='CANCELLED'; result.message='🔒 Subscription CANCELLED for '+schoolName+'. Contact Super Admin.'; }
-      else if(sub.status==='Unpaid'){ result.locked=true; result.reason='UNPAID'; result.message='🔒 Subscription UNPAID for '+schoolName+' — R'+(sub.amount||0)+' due. Pay to unlock.'; }
-      else if(sub.end){ let end=new Date(sub.end); end.setHours(0,0,0,0); let diff=Math.ceil((end-now)/(1000*60*60*24)); result.daysLeft=diff; if(diff<0){ result.locked=true; result.reason='EXPIRED'; result.message='🔒 Subscription EXPIRED on '+sub.end+' — 12 Months Ended. Renew to unlock.'; } else if(diff<=30){ result.warning='⚠️ Subscription expires in '+diff+' days ('+sub.end+') — 12 Months Only — Renew soon.'; } }
-      else if(sub.status==='Expired'){ result.locked=true; result.reason='EXPIRED'; result.message='🔒 Subscription EXPIRED for '+schoolName+'. Renew to unlock.'; }
-      if(!result.locked && pkg){
-        try{
-          let books=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); let totalBooks=0; books.forEach(b=> totalBooks+=(b.copies||[]).length);
-          let learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]');
-          if(totalBooks >= (pkg.maxBooks||999999)) { result.limitReached='BOOKS'; result.warning='⚠️ Package limit reached: '+totalBooks+' / '+pkg.maxBooks+' books on '+pkg.name+'.'; }
-          if(learners.length >= (pkg.maxLearners||999999)) { result.limitReached='LEARNERS'; result.warning='⚠️ Package limit reached: '+learners.length+' / '+pkg.maxLearners+' learners on '+pkg.name+'.'; }
-        }catch(e){}
+  window.checkSubscription=function(school, emis, opts){
+    // opts: {block:true}
+    // Return {locked:false, adminBypass:false} = allow all
+    // To lock a school later, set localStorage: makhanani_sub_<EMIS> = {"locked":true, "until":"2027-01-31"}
+    try{
+      let raw=localStorage.getItem('makhanani_sub_'+emis);
+      if(!raw) return {locked:false, adminBypass:false};
+      let sub=JSON.parse(raw);
+      if(sub && sub.locked){
+        if(opts && opts.block){
+          let el=document.getElementById('subBanner');
+          if(el){ el.classList.remove('hidden'); el.innerHTML='🔒 Subscription expired for '+school+' — Contact Xintimani Group to renew. Showing read-only view.'; }
+        }
+        return {locked:true, adminBypass:false};
       }
-    }
-    if(isSuper && result.locked){ result.lockedForAdmin=false; result.adminBypass=true; }
-    if(opts.block && result.locked && !isSuper){
-      let overlay=document.getElementById('subLockOverlay');
-      if(!overlay){
-        overlay=document.createElement('div'); overlay.id='subLockOverlay';
-        overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
-        overlay.innerHTML='<div style="background:white;border-radius:16px;padding:24px;max-width:480px;width:100%;text-align:center;"><img src="logo.png" style="height:64px;width:64px;object-fit:contain;background:white;border-radius:50%;border:2px solid #eab308;padding:4px;"><div style="font-size:32px;">🔒</div><h2 style="font-weight:900;font-size:22px;margin:8px 0;">School Locked</h2><p id="subLockMsg" style="font-size:14px;color:#333;"></p><p style="font-size:12px;color:#666;margin-top:8px;">School: <b id="subLockSchool"></b><br>Package: <b id="subLockPkg"></b> • Status: <b id="subLockStatus"></b></p><div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap;"><a href="finance-dashboard.html" style="background:#16a34a;color:white;padding:10px 16px;border-radius:8px;font-weight:900;text-decoration:none;">💳 Pay / Renew →</a><a href="super-admin-dashboard.html" style="background:#7c3aed;color:white;padding:10px 16px;border-radius:8px;font-weight:900;text-decoration:none;">👑 Contact Super Admin</a><a href="index.html" style="background:#e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;color:black;">🏠 Home</a></div></div>';
-        document.body.appendChild(overlay);
-      }
-      document.getElementById('subLockMsg').textContent=result.message;
-      document.getElementById('subLockSchool').textContent=schoolName;
-      document.getElementById('subLockPkg').textContent=sub?sub.package:'None';
-      document.getElementById('subLockStatus').textContent=sub?sub.status:'No Subscription';
-      overlay.style.display='flex';
-    }
-    return result;
+      return {locked:false, adminBypass:false};
+    }catch(e){ return {locked:false, adminBypass:false}; }
   };
-  window.showSubBanner = function(elId, schoolName, emis){
-    let el=document.getElementById(elId); if(!el) return null;
-    let r=window.checkSubscription(schoolName, emis, {block:false});
-    if(r.locked && r.adminBypass){ el.innerHTML='⚠️ <b>ADMIN VIEW:</b> '+r.message+' — You are SUPER_ADMIN, so you can still view / fix. Other users are LOCKED out.'; el.style.display='block'; }
-    else if(r.locked){ el.innerHTML=r.message; el.style.display='block'; }
-    else if(r.warning){ el.innerHTML=r.warning+' • Package: '+(r.sub?r.sub.package:'')+' • Status: '+(r.sub?r.sub.status:''); el.style.display='block'; }
-    else if(r.sub){ el.innerHTML='✅ Subscribed: <b>'+r.sub.package+'</b> • '+r.sub.status+' • R'+(r.sub.amount||0)+' • '+r.sub.start+' to '+r.sub.end+' (12 Months Only)'+(r.daysLeft!==null?' • '+r.daysLeft+' days left':''); el.style.display='block'; }
-    return r;
+  window.showSubBanner=function(elId, school, emis){
+    try{
+      let el=document.getElementById(elId); if(!el) return;
+      let raw=localStorage.getItem('makhanani_sub_'+emis);
+      if(!raw){ el.classList.add('hidden'); return; }
+      let sub=JSON.parse(raw);
+      if(sub && sub.until){ el.classList.remove('hidden'); el.innerHTML='✅ Subscription active for '+school+' until '+sub.until+' • Makhanani LTSM'; }
+      else if(sub && sub.locked){ el.classList.remove('hidden'); el.innerHTML='🔒 Subscription expired — Contact Xintimani Group.'; }
+      else el.classList.add('hidden');
+    }catch(e){}
   };
 })();
