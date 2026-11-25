@@ -1,6 +1,5 @@
-// subscription-guard.js - MAKHANANI LTSM - Locks school if subscription expired / unpaid / no sub
-// Premium Yearly = 12 MONTHS ONLY - Paid + End Passed = LOCKED
-// EMIS is School ID - No Duplicate EMIS
+// subscription-guard.js - MAKHANANI LTSM - Locks school if Expired / Unpaid / No Sub
+// Premium Yearly = 12 MONTHS ONLY - EMIS = School ID
 (function(){
   window.MAKHANANI_PACKAGES = [
     {name:'Demo',price:0,setup:0,billing:'demo', maxBooks:50, maxLearners:30, allowBarcodes:false, allowFinance:false, allowReports:false, allowManuals:false},
@@ -14,8 +13,6 @@
     let subs=getSubs();
     if(emis){ let f=subs.find(s=>s.emis===emis); if(f) return f; }
     if(schoolName){ let f=subs.find(s=>s.school===schoolName); if(f) return f; }
-    if(schoolName && schoolName.includes('Wordsworth')){ let f=subs.find(s=>s.school && s.school.includes('Wordsworth')); if(f) return f; }
-    if(schoolName && schoolName.includes('George')){ let f=subs.find(s=>s.school && s.school.includes('George')); if(f) return f; }
     return null;
   };
   window.checkSubscription = function(schoolName, emis, opts){
@@ -24,22 +21,20 @@
     let sub = getSubscriptionFor(schoolName, emis);
     let now = new Date(); now.setHours(0,0,0,0);
     let result = {locked:false, reason:'', sub:sub, package:null, daysLeft:null};
-    if(!sub){
-      result.locked = true; result.reason = 'NO_SUBSCRIPTION';
-      result.message = '🔒 This school has NO subscription. Contact Super Admin to subscribe.';
-    } else {
+    if(!sub){ result.locked = true; result.reason = 'NO_SUBSCRIPTION'; result.message = '🔒 This school has NO subscription. Contact Super Admin to subscribe.'; }
+    else {
       let pkgs=getPackages(); let pkg = pkgs.find(p=>p.name===sub.package) || window.MAKHANANI_PACKAGES.find(p=>p.name===sub.package) || {name:sub.package, maxBooks:999999, maxLearners:999999, allowBarcodes:true, allowFinance:true};
       result.package = pkg;
       if(sub.status==='Cancelled'){ result.locked=true; result.reason='CANCELLED'; result.message='🔒 Subscription CANCELLED for '+schoolName+'. Contact Super Admin.'; }
       else if(sub.status==='Unpaid'){ result.locked=true; result.reason='UNPAID'; result.message='🔒 Subscription UNPAID for '+schoolName+' — R'+(sub.amount||0)+' due. Pay to unlock.'; }
-      else if(sub.end){ let end=new Date(sub.end); end.setHours(0,0,0,0); let diff=Math.ceil((end-now)/(1000*60*60*24)); result.daysLeft=diff; if(diff<0){ result.locked=true; result.reason='EXPIRED'; result.message='🔒 Subscription EXPIRED on '+sub.end+' — 12 Months Ended. Renew to unlock.'; } else if(diff<=30){ result.warning='⚠️ Subscription expires in '+diff+' days ('+sub.end+') — 12 Months Only — Renew soon.'; } else if(diff<=7){ result.warning='⚠️ Subscription expires in '+diff+' days ('+sub.end+') — Renew now.'; } }
+      else if(sub.end){ let end=new Date(sub.end); end.setHours(0,0,0,0); let diff=Math.ceil((end-now)/(1000*60*60*24)); result.daysLeft=diff; if(diff<0){ result.locked=true; result.reason='EXPIRED'; result.message='🔒 Subscription EXPIRED on '+sub.end+' — 12 Months Ended. Renew to unlock.'; } else if(diff<=30){ result.warning='⚠️ Subscription expires in '+diff+' days ('+sub.end+') — 12 Months Only — Renew soon.'; } }
       else if(sub.status==='Expired'){ result.locked=true; result.reason='EXPIRED'; result.message='🔒 Subscription EXPIRED for '+schoolName+'. Renew to unlock.'; }
       if(!result.locked && pkg){
         try{
           let books=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_ltsm')||'[]'); let totalBooks=0; books.forEach(b=> totalBooks+=(b.copies||[]).length);
           let learners=JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_learners')||'[]');
-          if(totalBooks >= (pkg.maxBooks||999999)) { result.limitReached='BOOKS'; result.warning='⚠️ Package limit reached: '+totalBooks+' / '+pkg.maxBooks+' books on '+pkg.name+'. Upgrade to add more.'; }
-          if(learners.length >= (pkg.maxLearners||999999)) { result.limitReached='LEARNERS'; result.warning='⚠️ Package limit reached: '+learners.length+' / '+pkg.maxLearners+' learners on '+pkg.name+'. Upgrade to add more.'; }
+          if(totalBooks >= (pkg.maxBooks||999999)) { result.limitReached='BOOKS'; result.warning='⚠️ Package limit reached: '+totalBooks+' / '+pkg.maxBooks+' books on '+pkg.name+'.'; }
+          if(learners.length >= (pkg.maxLearners||999999)) { result.limitReached='LEARNERS'; result.warning='⚠️ Package limit reached: '+learners.length+' / '+pkg.maxLearners+' learners on '+pkg.name+'.'; }
         }catch(e){}
       }
     }
@@ -49,7 +44,7 @@
       if(!overlay){
         overlay=document.createElement('div'); overlay.id='subLockOverlay';
         overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
-        overlay.innerHTML='<div style="background:white;border-radius:16px;padding:24px;max-width:480px;width:100%;text-align:center;"><div style="font-size:48px;">🔒</div><h2 style="font-weight:900;font-size:22px;margin:8px 0;">School Locked</h2><p id="subLockMsg" style="font-size:14px;color:#333;"></p><p style="font-size:12px;color:#666;margin-top:8px;">School: <b id="subLockSchool"></b><br>Package: <b id="subLockPkg"></b> • Status: <b id="subLockStatus"></b></p><div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap;"><a href="finance-dashboard.html" style="background:#16a34a;color:white;padding:10px 16px;border-radius:8px;font-weight:900;text-decoration:none;">💳 Pay / Renew →</a><a href="super-admin-dashboard.html" style="background:#7c3aed;color:white;padding:10px 16px;border-radius:8px;font-weight:900;text-decoration:none;">👑 Contact Super Admin</a><a href="index.html" style="background:#e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;color:black;">🏠 Home</a></div><p style="font-size:11px;color:#999;margin-top:12px;">Super Admin can still view this page to fix subscription. If you are Super Admin, this lock is bypassed — check banner at top.</p></div>';
+        overlay.innerHTML='<div style="background:white;border-radius:16px;padding:24px;max-width:480px;width:100%;text-align:center;"><img src="logo.png" style="height:64px;width:64px;object-fit:contain;background:white;border-radius:50%;border:2px solid #eab308;padding:4px;"><div style="font-size:32px;">🔒</div><h2 style="font-weight:900;font-size:22px;margin:8px 0;">School Locked</h2><p id="subLockMsg" style="font-size:14px;color:#333;"></p><p style="font-size:12px;color:#666;margin-top:8px;">School: <b id="subLockSchool"></b><br>Package: <b id="subLockPkg"></b> • Status: <b id="subLockStatus"></b></p><div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap;"><a href="finance-dashboard.html" style="background:#16a34a;color:white;padding:10px 16px;border-radius:8px;font-weight:900;text-decoration:none;">💳 Pay / Renew →</a><a href="super-admin-dashboard.html" style="background:#7c3aed;color:white;padding:10px 16px;border-radius:8px;font-weight:900;text-decoration:none;">👑 Contact Super Admin</a><a href="index.html" style="background:#e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;color:black;">🏠 Home</a></div></div>';
         document.body.appendChild(overlay);
       }
       document.getElementById('subLockMsg').textContent=result.message;
