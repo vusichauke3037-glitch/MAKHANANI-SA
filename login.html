@@ -1,22 +1,62 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-<div class="text-center"><img src="logo.png" class="h-20 w-20 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-2xl mt-2">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="font-bold">MAKHANANI LTSM</p><p class="text-xs text-gray-500">Wordsworth High School • EMIS System • All books due 30 November</p></div>
+<div class="text-center"><img src="logo.png" class="h-20 w-20 rounded-full mx-auto bg-white border-4 border-yellow-400 p-1"><h1 class="font-black text-2xl mt-2">XINTIMANI <span class="text-yellow-500">GROUP</span></h1><p class="font-bold">MAKHANANI LTSM</p><p class="text-xs text-gray-500">George Sonto • Wordsworth • All books due 30 November</p></div>
 <div class="mt-4"><label class="text-xs font-bold">SCHOOL / EMIS</label><select id="schoolSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></select></div>
 <div class="mt-2"><label class="text-xs font-bold">ROLE</label><select id="roleSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="PRINCIPAL">Principal</option><option value="HOD">HOD</option><option value="TEACHER">Teacher</option><option value="LIBRARIAN">Librarian</option></select></div>
 <div class="mt-2"><label class="text-xs font-bold">NAME (as registered)</label><input id="nameInput" placeholder="e.g. Naledi Dube / Mr Mokoena" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
 <div class="mt-2"><label class="text-xs font-bold">PASSWORD / PIN</label><input id="passInput" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></div>
 <button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-4">🔐 LOGIN</button>
 <p id="loginMsg" class="text-sm font-bold mt-2 text-center"></p>
-<div class="bg-yellow-50 border rounded-lg p-3 mt-4 text-xs"><b>First Time / New School?</b><br>Principal: Use <b>Register New School</b> below to create your school, EMIS, prefix, and Principal account.<br>Teacher / HOD / Librarian: Ask Principal / Librarian to add you in <b>Register User</b> on Home page.</div>
+<div class="bg-red-50 border border-red-300 rounded-lg p-3 mt-3 text-xs"><b>⚠️ EMIS was swapped before?</b><br>If you created George Sonto users/books while EMIS was 700310854, tap below ONCE to move them to correct EMIS 911360870.<br><button id="moveBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold mt-1">↪️ Move George Sonto Data 700310854 → 911360870</button><p id="moveMsg" class="font-bold mt-1"></p></div>
 <div class="flex gap-2 mt-3"><a href="index.html" class="flex-1 text-center bg-yellow-500 text-black py-2 rounded-lg font-bold text-sm">🏠 Home</a><a href="index.html#registerSchool" class="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg font-bold text-sm">🏫 Register New School</a></div>
-<p class="text-[11px] text-center text-gray-500 mt-3">Makhanani LTSM • Xintimani Group • Retrieval % • Due 30 November • WhatsApp Parent + Learner (Optional)</p>
 </div>
 <script>
 (function(){
 let schools=[];
-function loadSchools(){ try{ schools=JSON.parse(localStorage.getItem('makhanani_schools')||'[]'); }catch(e){ schools=[]; } if(schools.length===0){ schools=[{school:'Wordsworth High School', emis:'123456789', prefix:'WHS'}]; localStorage.setItem('makhanani_schools', JSON.stringify(schools)); } let sel=document.getElementById('schoolSelect'); sel.innerHTML=schools.map(s=>'<option value="'+s.emis+'">'+s.school+' • EMIS '+s.emis+' • '+s.prefix+'</option>').join(''); }
+const CORRECT = [
+  {school:'George Sonto High School', name:'George Sonto High School', schoolName:'George Sonto High School', emis:'911360870', EMIS:'911360870', prefix:'GSHS'},
+  {school:'Wordsworth High School', name:'Wordsworth High School', schoolName:'Wordsworth High School', emis:'700310854', EMIS:'700310854', prefix:'WHS'}
+];
+function loadSchools(){
+  try{ schools=JSON.parse(localStorage.getItem('makhanani_schools')||'[]'); }catch(e){ schools=[]; }
+  if(!Array.isArray(schools)) schools=[];
+  // Force correct EMIS by PREFIX - this fixes the swap
+  schools = schools.map(s=>{
+    let p=String(s.prefix||s.code||'').toUpperCase();
+    let found=CORRECT.find(c=>c.prefix===p);
+    if(found) return {...found};
+    let name=s.school||s.name||s.schoolName||'Unknown School';
+    let emis=s.emis||s.EMIS||'';
+    return {school:name, name:name, schoolName:name, emis:String(emis), EMIS:String(emis), prefix:p};
+  });
+  // Ensure both correct schools exist
+  CORRECT.forEach(c=>{ if(!schools.some(s=>s.prefix===c.prefix)) schools.push({...c}); });
+  // Remove duplicates by prefix
+  let seen={}; schools=schools.filter(s=>{ if(seen[s.prefix]) return false; seen[s.prefix]=true; return true; });
+  localStorage.setItem('makhanani_schools', JSON.stringify(schools));
+  document.getElementById('schoolSelect').innerHTML=schools.map(s=>'<option value="'+s.emis+'">'+s.school+' • EMIS '+s.emis+' • '+s.prefix+'</option>').join('');
+}
 function getUsers(emis){ try{ return JSON.parse(localStorage.getItem('EMIS_'+emis+'_makhanani_users')||'[]'); }catch(e){ return []; } }
+document.getElementById('moveBtn').addEventListener('click',function(){
+  if(!confirm('Move ALL George Sonto data from OLD wrong EMIS 700310854 to CORRECT 911360870?\n\nThis copies Users, Books, Learners, Issues, Requests.\n\nTap OK ONLY if your George Sonto data was created under 700310854.\nIf your 700310854 data is actually Wordsworth data, tap CANCEL.')) return;
+  let keys=['makhanani_users','makhanani_ltsm','makhanani_learners','makhanani_issues','makhanani_requests'];
+  let moved=[];
+  keys.forEach(k=>{
+    let oldKey='EMIS_700310854_'+k;
+    let newKey='EMIS_911360870_'+k;
+    let oldVal=localStorage.getItem(oldKey);
+    let newVal=localStorage.getItem(newKey);
+    if(oldVal && !newVal){
+      localStorage.setItem(newKey, oldVal);
+      moved.push(k+' ('+JSON.parse(oldVal).length+' items)');
+    } else if(oldVal && newVal){
+      moved.push(k+' — already exists in 911360870, NOT overwritten');
+    }
+  });
+  document.getElementById('moveMsg').innerHTML='✅ Moved: '+(moved.length?moved.join(', '):'Nothing found in 700310854')+'<br>Now login with George Sonto • EMIS 911360870';
+  alert('✅ Done. Now login as George Sonto • 911360870');
+});
 document.getElementById('loginBtn').addEventListener('click',function(){
   let emis=document.getElementById('schoolSelect').value;
   let role=document.getElementById('roleSelect').value;
@@ -25,18 +65,15 @@ document.getElementById('loginBtn').addEventListener('click',function(){
   if(!name||!pass){ document.getElementById('loginMsg').innerHTML='❌ Fill Name + Password.'; return; }
   let school=schools.find(s=>String(s.emis)===String(emis));
   let users=getUsers(emis);
-  // Default Admin / Demo - if no users yet, allow Principal login with 1234
   if(users.length===0 && role==='PRINCIPAL' && pass==='1234'){
-    let cur={school:school.school, emis:emis, prefix:school.prefix, name:name, role:'PRINCIPAL', subjects:['General'], classes:[]};
-    localStorage.setItem('makhanani_session', JSON.stringify(cur));
-    document.getElementById('loginMsg').innerHTML='✅ Welcome Principal '+name+' (First Login — Change password in Home → Register User)';
+    localStorage.setItem('makhanani_session', JSON.stringify({school:school.school, emis:emis, prefix:school.prefix, name:name, role:'PRINCIPAL', subjects:['General'], classes:[]}));
+    document.getElementById('loginMsg').innerHTML='✅ Welcome Principal '+name;
     setTimeout(()=>location.href='principal-dashboard.html',800); return;
   }
   let u=users.find(x=>x.name.toLowerCase()===name.toLowerCase() && String(x.role).toUpperCase()===role && String(x.password)===String(pass));
-  if(!u){ document.getElementById('loginMsg').innerHTML='❌ Wrong Name / Role / Password for this school. Ask Principal to check Register User list.'; return; }
-  let cur={school:school.school, emis:emis, prefix:school.prefix||'WHS', name:u.name, role:u.role.toUpperCase(), subjects:u.subjects||[], classes:u.classes||[], email:u.email||''};
-  localStorage.setItem('makhanani_session', JSON.stringify(cur));
-  document.getElementById('loginMsg').innerHTML='✅ Welcome '+u.name+' ('+u.role+')';
+  if(!u){ document.getElementById('loginMsg').innerHTML='❌ Wrong Name / Role / Password for '+school.school+' (EMIS '+emis+').'; return; }
+  localStorage.setItem('makhanani_session', JSON.stringify({school:school.school, emis:emis, prefix:school.prefix, name:u.name, role:u.role.toUpperCase(), subjects:u.subjects||[], classes:u.classes||[]}));
+  document.getElementById('loginMsg').innerHTML='✅ Welcome '+u.name+' ('+u.role+') — '+school.school;
   let dest=u.role.toUpperCase()==='PRINCIPAL'?'principal-dashboard.html':u.role.toUpperCase()==='HOD'?'hod-dashboard.html':u.role.toUpperCase()==='TEACHER'?'teacher-dashboard.html':'librarian.html';
   setTimeout(()=>location.href=dest,800);
 });
