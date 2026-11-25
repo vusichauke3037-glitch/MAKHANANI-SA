@@ -1,72 +1,267 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Xintimani Group</title><script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MAKHANANI LTSM — Xintimani • LIVE</title><script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
-<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
-<div class="bg-black text-white py-3 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-12 w-12 rounded-full bg-white border-4 border-yellow-400 p-1"><div><div class="font-black text-lg leading-tight">XINTIMANI <span class="text-yellow-500">GROUP</span></div><div class="text-[11px] text-gray-300">MAKHANANI LTSM • <span class="text-green-400 font-bold">● LIVE FIREBASE</span></div></div><div class="ml-auto flex gap-2 flex-wrap"><a href="librarian-dashboard.html" class="bg-yellow-400 text-black px-3 py-1 rounded font-bold text-xs">📚 Librarian Dashboard</a><a href="dashboard.html" class="bg-white text-black px-3 py-1 rounded font-bold text-xs">📊 Dashboard</a><a href="login.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">👤 Login</a><a href="superadmin-login.html" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">👑 Super Admin</a></div></div>
-<div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-5 border-4 border-yellow-400 text-center"><h1 class="font-black text-3xl">MAKHANANI <span class="text-yellow-500">LTSM</span></h1><p class="font-bold text-gray-700">Textbook Tracking • Retrieval • Due 30 November</p><div id="globalStats" class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-4 text-center"><p class="col-span-5 text-sm text-gray-500">Loading LIVE stats...</p></div><div class="flex gap-2 justify-center mt-4 flex-wrap"><a href="librarian-dashboard.html" class="bg-yellow-400 text-black px-6 py-3 rounded-lg font-black">📚 LIBRARIAN DASHBOARD</a><a href="login.html" class="bg-black text-white px-6 py-3 rounded-lg font-black">🔐 LOGIN</a><a href="superadmin-login.html" class="bg-red-600 text-white px-6 py-3 rounded-lg font-black">👑 SUPER ADMIN</a><button onclick="printAllSchoolsHome()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-black">🖨️ Print All Schools</button></div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-xl">🏫 Schools — LIVE <span class="text-green-600 text-sm">● Auto-updates</span></h2><p class="text-xs text-gray-500">Tap Login to login as that school. Suspended schools show ⛔ and cannot login.</p><div id="schoolList" class="mt-3 text-sm">Loading schools from Firebase...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500" id="registerSchool"><h2 class="font-black text-xl">🏫 Register New School</h2><p class="text-xs text-gray-500">New school? Fill here — it goes to Firebase and Super Admin will see it instantly.</p><div class="grid md:grid-cols-2 gap-2 mt-3"><input id="regSchoolName" placeholder="School Name e.g. Thabazimbi High" class="border-2 rounded-lg px-3 py-2"><input id="regEmis" placeholder="EMIS e.g. 911360871" class="border-2 rounded-lg px-3 py-2"><input id="regPrefix" placeholder="Prefix e.g. THS" class="border-2 rounded-lg px-3 py-2 uppercase"><input id="regPrincipalName" placeholder="Principal Full Name" class="border-2 rounded-lg px-3 py-2"><input id="regPrincipalEmail" placeholder="Principal Email (for Login)" class="border-2 rounded-lg px-3 py-2"><input id="regPrincipalPass" type="password" placeholder="Principal Password (min 6)" class="border-2 rounded-lg px-3 py-2"></div><button id="registerSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-3">🏫 Register School in Firebase</button><p id="registerMsg" class="text-sm font-bold mt-2"></p><p class="text-[11px] text-gray-500 mt-1">Already registered: <b>George Sonto 911360870 GSHS</b> • <b>Wordsworth 700310854 WHS</b> • <b>SHIRILELE 911360825 SHS</b> — do NOT register them again.</p></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black text-xl">📥 Retrieval — All Schools — LIVE</h2><div id="retrievalList" class="mt-2 text-sm">Loading...</div></div>
-<div class="text-center text-xs text-gray-500 mt-4 pb-6">© 2026 Xintimani Group • Makhanani LTSM • All books due 30 November • LIVE Firebase</div>
+<style>@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}.liveDot{animation:pulseDot 1.5s infinite}</style></head>
+<body class="bg-gray-100 pb-20"><div class="max-w-4xl mx-auto p-3">
+
+<!-- HEADER -->
+<div class="bg-black text-white rounded-2xl p-5 text-center">
+<p class="text-[11px] font-black tracking-[0.3em] text-yellow-400">MAKHANANI LTSM</p>
+<h1 class="font-black text-3xl mt-1">📚 XINTIMANI</h1>
+<p class="text-xs text-gray-300 mt-1">Library Textbook Management System • Bushbuckridge • Mpumalanga</p>
+<p class="text-[11px] mt-2"><span class="liveDot inline-block w-2 h-2 bg-green-400 rounded-full"></span> <span class="text-green-400 font-bold">● LIVE FIREBASE</span> • Last update: <span id="lastUpdate" class="text-yellow-300 font-bold">—</span></p>
+<p id="who" class="text-xs text-yellow-300 font-bold mt-2">Not logged in — login below or register a school</p>
+<div class="flex gap-2 justify-center mt-3 flex-wrap">
+<a href="dashboard.html" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-black text-sm">📊 DASHBOARD</a>
+<a href="librarian-dashboard.html" class="bg-white text-black px-4 py-2 rounded-lg font-black text-sm">📚 LIBRARIAN DASHBOARD <span class="text-green-600 text-[10px]">● LIVE</span></a>
+<a href="fix-profile.html" class="bg-gray-700 text-white px-4 py-2 rounded-lg font-black text-sm">🔧 FIX PROFILE</a>
+<button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black text-sm hidden">LOGOUT</button>
+</div>
+</div>
+
+<!-- LIVE GLOBAL STATS -->
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<h2 class="font-black">📊 LIVE Stats — All Schools</h2>
+<div id="globalStats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-center">
+<div class="bg-blue-50 rounded-xl p-3"><p class="text-2xl font-black" id="gSchools">—</p><p class="text-xs text-gray-500">Schools</p></div>
+<div class="bg-yellow-50 rounded-xl p-3"><p class="text-2xl font-black" id="gBooks">—</p><p class="text-xs text-gray-500">Book Titles</p></div>
+<div class="bg-green-50 rounded-xl p-3"><p class="text-2xl font-black" id="gCopies">—</p><p class="text-xs text-gray-500">Total Copies</p></div>
+<div class="bg-purple-50 rounded-xl p-3"><p class="text-2xl font-black" id="gLearners">—</p><p class="text-xs text-gray-500">Learners</p></div>
+<div class="bg-orange-50 rounded-xl p-3"><p class="text-2xl font-black" id="gUsers">—</p><p class="text-xs text-gray-500">Users</p></div>
+<div class="bg-red-50 rounded-xl p-3"><p class="text-2xl font-black" id="gIssues">—</p><p class="text-xs text-gray-500">Issues</p></div>
+<div class="bg-teal-50 rounded-xl p-3"><p class="text-2xl font-black" id="gReturns">—</p><p class="text-xs text-gray-500">Returns</p></div>
+<div class="bg-gray-50 rounded-xl p-3"><p class="text-2xl font-black" id="gOut">—</p><p class="text-xs text-gray-500">Still Out</p></div>
+</div>
+</div>
+
+<!-- LOGIN / REGISTER TABS -->
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<div class="flex gap-2">
+<button id="tabLogin" class="flex-1 bg-black text-white py-2 rounded-lg font-black text-sm">🔐 LOGIN</button>
+<button id="tabRegister" class="flex-1 bg-white border-2 py-2 rounded-lg font-black text-sm">🏫 REGISTER SCHOOL</button>
+</div>
+
+<!-- LOGIN -->
+<div id="panelLogin" class="mt-3">
+<input id="email" type="email" placeholder="Email — e.g. librarian@wordsworth.co.za" class="border-2 rounded-lg px-3 py-2 w-full">
+<input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<button id="loginBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">LOGIN</button>
+<p id="loginMsg" class="text-sm font-bold mt-2"></p>
+<p class="text-xs text-gray-500 mt-2">Test: Wordsworth Librarian — use your registered email. If profile is missing, use <a href="fix-profile.html" class="text-blue-600 font-bold underline">Fix Profile</a></p>
+</div>
+
+<!-- REGISTER -->
+<div id="panelRegister" class="hidden mt-3">
+<p class="text-xs font-bold text-gray-600">Register a NEW school + Principal account. You will be SUPER ADMIN / PRINCIPAL for that school.</p>
+<input id="rSchool" placeholder="School Name — e.g. Wordsworth High School" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<input id="rEmis" placeholder="EMIS Number — e.g. 700310854" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<input id="rName" placeholder="Principal Full Name" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<input id="rEmail" type="email" placeholder="Principal Email" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<input id="rPass" type="password" placeholder="Create Password (min 6 chars)" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<button id="registerBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">✅ REGISTER SCHOOL</button>
+<p id="registerMsg" class="text-sm font-bold mt-2"></p>
+<p class="text-xs text-gray-500 mt-1">Prefix is auto-created: First letter of each word. Wordsworth High School → WHS. George Sonto High School → GSHS.</p>
+</div>
+</div>
+
+<!-- MY SCHOOL - AFTER LOGIN -->
+<div id="mySchoolCard" class="hidden bg-white rounded-2xl p-4 mt-3 shadow">
+<h2 class="font-black">🏫 My School — LIVE</h2>
+<p id="mySchoolName" class="text-sm font-bold text-gray-600"></p>
+<div class="grid grid-cols-3 gap-2 mt-3 text-center">
+<div class="bg-blue-50 rounded-xl p-3"><p class="text-2xl font-black" id="myBooks">—</p><p class="text-xs text-gray-500">Titles</p></div>
+<div class="bg-yellow-50 rounded-xl p-3"><p class="text-2xl font-black" id="myCopies">—</p><p class="text-xs text-gray-500">Copies</p></div>
+<div class="bg-purple-50 rounded-xl p-3"><p class="text-2xl font-black" id="myLearners">—</p><p class="text-xs text-gray-500">Learners</p></div>
+</div>
+<div class="flex gap-2 mt-3">
+<a href="dashboard.html" class="bg-black text-white flex-1 text-center py-2 rounded-lg font-black text-sm">📊 OPEN DASHBOARD</a>
+<a href="librarian-dashboard.html" class="bg-yellow-400 text-black flex-1 text-center py-2 rounded-lg font-black text-sm">📚 OPEN LIBRARIAN</a>
+</div>
+</div>
+
+<!-- ALL SCHOOLS - LIVE -->
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<div class="flex justify-between items-center flex-wrap gap-2">
+<h2 class="font-black">🏫 All Schools — LIVE</h2>
+<input id="schoolSearch" placeholder="🔍 Search school / EMIS..." class="border-2 rounded-lg px-3 py-1 text-sm flex-1 min-w-[160px]">
+</div>
+<p class="text-xs text-gray-500 mt-1">Tap a school to see its prefix. Suspended schools show ⛔ and cannot login.</p>
+<div id="schoolsList" class="mt-2 space-y-2">Loading LIVE schools...</div>
+</div>
+
+<!-- SUPER ADMIN - LIVE -->
+<div id="superCard" class="hidden bg-red-50 border-2 border-red-300 rounded-2xl p-4 mt-3">
+<h2 class="font-black text-red-700">👑 SUPER ADMIN — LIVE</h2>
+<p class="text-xs text-gray-600">Suspend / Unsuspend any school. Suspended school cannot login.</p>
+<div id="superList" class="mt-2 space-y-2"></div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<h2 class="font-black">❓ How Book Numbers Work</h2>
+<p class="text-sm mt-1">Format: <b>Prefix + 6 digits</b> — Prefix = First letter of each word in school name.</p>
+<ul class="text-sm mt-2 space-y-1 list-disc pl-5">
+<li><b>Wordsworth High School</b> → WHS + 000001 = <b>WHS000001</b></li>
+<li><b>George Sonto High School</b> → GSHS + 000001 = <b>GSHS000001</b></li>
+<li>Accounting: G10 Learners <b>WHS000001-70</b> • G10 Workbook <b>WHS000071 (Qty 1)</b> • G11 Learners 72-131 • G11 Workbook <b>WHS000132 (Qty 1)</b> • G12 Learners 133-212 • G12 Workbook <b>WHS000213 (Qty 1)</b></li>
+<li>Workbook Qty is always <b>1</b>. Learners get the rest. No duplicates, no skipping.</li>
+<li>Assign Numbers: In Librarian Dashboard → Yellow panel → Choose <b>START</b> for each already-added book → Preview → Apply.</li>
+</ul>
+</div>
+
 </div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, onSnapshot } from 'firebase/firestore';
-const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot, query, where } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-let schools=[], allBooks=[], allLearners=[], allIssues=[], allUsers=[];
-function normalizeSchool(s){
-  let schoolName = s.school || s.schoolName || s.name || s.title || s.school_name || '';
-  let emis = s.emis || s.EMIS || s.emisNumber || s.id || '';
-  let prefix = s.prefix || s.schoolPrefix || s.code || s.shortName || '';
-  if(!schoolName) schoolName = 'School ' + emis;
-  if(!prefix || prefix==='undefined' || prefix.length===1){ prefix = schoolName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,4); if(!prefix||prefix==='S') prefix='SCH'; }
-  return {...s, school: schoolName, emis: String(emis), prefix: prefix, status: s.status || 'ACTIVE'};
-}
-function statsForEmis(emis){
-  let books=allBooks.filter(b=>String(b.emis)===String(emis)); let learners=allLearners.filter(l=>String(l.emis)===String(emis)); let issues=allIssues.filter(i=>String(i.emis)===String(emis));
-  let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let pct=issued===0?null:(returned/issued*100); let copies=books.reduce((a,b)=>a+(b.totalCopies||0),0);
-  return {books:books.length, copies, learners:learners.length, issued, returned, out:Math.max(0,issued-returned), pct};
+const DEFAULT_SCHOOLS=[
+{emis:'911360870', school:'George Sonto High School', prefix:'GSHS', status:'ACTIVE'},
+{emis:'700310854', school:'Wordsworth High School', prefix:'WHS', status:'ACTIVE'},
+{emis:'911360825', school:'SHIRILELE HIGH SCHOOL', prefix:'SHS', status:'ACTIVE'},
+{emis:'200101061', school:'1 STEP AHEAD ACADEMY', prefix:'ISA', status:'ACTIVE'},
+{emis:'200201086', school:'2MOROS LEADERS PRIMARY', prefix:'MLP', status:'ACTIVE'},
+{emis:'700401012', school:'3D CHRISTIAN ACADEMY', prefix:'CA', status:'ACTIVE'},
+{emis:'200300001', school:'A B SIWENDU SENIOR PRIMARY', prefix:'ABSSP', status:'ACTIVE'},
+];
+let myUser=null, myEmis='';
+let allSchools=[], allBooks=[], allLearners=[], allUsers=[], allTx=[], allBookCopies=[];
+let unsubs=[];
+function touchLive(){ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(); }
+function schoolPrefix(name){ if(!name) return 'SCH'; let w=String(name).trim().split(/\s+/).filter(x=>x.length); let stop=new Set(['OF','THE','AND','&']); return w.filter(x=>!stop.has(x.toUpperCase())).map(x=>x[0].toUpperCase()).join('')||'SCH'; }
+function startLive(){
+  unsubs.forEach(u=>{ try{ if(u) u(); }catch(e){} }); unsubs=[];
+  // Schools LIVE
+  unsubs.push(onSnapshot(collection(db,'schools'), (snap)=>{
+    let map=new Map(); DEFAULT_SCHOOLS.forEach(s=>map.set(String(s.emis), {...s}));
+    snap.docs.forEach(d=>{ let s=d.data(); if(s.emis) map.set(String(s.emis), {emis:String(s.emis), school:s.school||s.schoolName||s.name||'School '+s.emis, prefix:s.prefix||schoolPrefix(s.school||s.schoolName||''), status:s.status||'ACTIVE', principalEmail:s.principalEmail||'', createdAt:s.createdAt||''}); });
+    allSchools=[...map.values()].sort((a,b)=>(a.school||'').localeCompare(b.school||'')); touchLive(); render(); renderSchools(); renderSuper();
+  }));
+  // Books LIVE - ALL schools for global stats
+  unsubs.push(onSnapshot(collection(db,'books'), (snap)=>{ allBooks=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
+  // BookCopies LIVE
+  unsubs.push(onSnapshot(collection(db,'bookCopies'), (snap)=>{ allBookCopies=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
+  // Learners LIVE
+  unsubs.push(onSnapshot(collection(db,'learners'), (snap)=>{ allLearners=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
+  // Users LIVE
+  unsubs.push(onSnapshot(collection(db,'users'), (snap)=>{ allUsers=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); renderSuper(); }));
+  // Transactions LIVE
+  unsubs.push(onSnapshot(collection(db,'transactions'), (snap)=>{ allTx=snap.docs.map(d=>({id:d.id,...d.data()})); touchLive(); render(); }));
 }
 function render(){
-  let totalCopies=allBooks.reduce((a,b)=>a+(b.totalCopies||0),0); let totalIssued=allIssues.filter(i=>i.action==='Issued').length; let totalReturned=allIssues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let totalPct=totalIssued===0?null:(totalReturned/totalIssued*100); let active=schools.filter(s=>s.status!=='SUSPENDED').length;
-  document.getElementById('globalStats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+schools.length+'</div><div class="text-xs">Schools ('+active+' Active)</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+allUsers.length+'</div><div class="text-xs">Users</div></div><div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+totalCopies+'</div><div class="text-xs">Book Copies</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+allLearners.length+'</div><div class="text-xs">Learners</div></div><div class="bg-orange-50 rounded p-2"><div class="font-black text-xl">'+(totalPct===null?'—':totalPct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval (All)</div></div>';
-  document.getElementById('schoolList').innerHTML=schools.map(s=>{
-    let r=statsForEmis(s.emis); let suspended=s.status==='SUSPENDED';
-    let badge=suspended?'<span class="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">⛔ SUSPENDED — Subscription Expired</span>':'<span class="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-bold">✅ ACTIVE</span>';
-    return '<div class="border rounded p-3 mb-2 '+(suspended?'bg-red-50 border-red-300':'')+'"><div class="flex justify-between flex-wrap gap-2"><b>'+s.school+'</b> '+badge+'</div><div class="text-xs text-gray-600">EMIS <b>'+s.emis+'</b> • Prefix <b>'+s.prefix+'</b> • Principal: '+(s.principalEmail||'—')+'</div><div class="text-xs mt-1">📚 Copies: '+r.copies+' • 👩‍🎓 Learners: '+r.learners+' • 📤 Issued: '+r.issued+' • 📥 Returned: '+r.returned+' • Retrieval: <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></div><div class="flex gap-1 mt-2 flex-wrap">'+(suspended?'<button class="bg-gray-400 text-white px-3 py-1 rounded text-xs font-bold cursor-not-allowed">⛔ Login Blocked — Contact Xintimani</button>':'<a href="login.html" class="bg-black text-white px-3 py-1 rounded text-xs font-bold">🔐 Login as '+s.prefix+'</a>')+'<button onclick="copyEmis(\''+s.emis+'\')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">📋 Copy EMIS</button></div></div>';
-  }).join('')||'<p class="text-gray-500">No schools in Firebase yet.</p>';
-  document.getElementById('retrievalList').innerHTML=schools.map(s=>{ let r=statsForEmis(s.emis); return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> — Retrieval <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b> ('+r.returned+'/'+r.issued+') • Still Out: '+r.out+' • '+(s.status==='SUSPENDED'?'⛔ SUSPENDED':'✅ ACTIVE')+'</div>'; }).join('');
+  // Global
+  let copies=allBooks.reduce((a,b)=>a+Number(b.quantity??b.stock??b.copies??b.totalCopies??0),0);
+  let issued=allTx.filter(t=>t.type==='ISSUE').length;
+  let returned=allTx.filter(t=>t.type==='RETURN').length;
+  document.getElementById('gSchools').textContent=allSchools.length;
+  document.getElementById('gBooks').textContent=allBooks.length;
+  document.getElementById('gCopies').textContent=copies;
+  document.getElementById('gLearners').textContent=allLearners.length;
+  document.getElementById('gUsers').textContent=allUsers.length;
+  document.getElementById('gIssues').textContent=issued;
+  document.getElementById('gReturns').textContent=returned;
+  document.getElementById('gOut').textContent=Math.max(0, issued-returned);
+  // My school
+  if(myUser && myEmis){
+    let mine=allBooks.filter(b=>String(b.emis)===String(myEmis));
+    let myCopies=mine.reduce((a,b)=>a+Number(b.quantity??b.stock??b.copies??0),0);
+    let myLearners=allLearners.filter(l=>String(l.emis)===String(myEmis));
+    document.getElementById('mySchoolCard').classList.remove('hidden');
+    let s=allSchools.find(x=>String(x.emis)===String(myEmis));
+    document.getElementById('mySchoolName').textContent=(s?.school||myUser.school||'')+' • EMIS '+myEmis+' • Prefix '+(s?.prefix||'')+' • Role '+myUser.role;
+    document.getElementById('myBooks').textContent=mine.length;
+    document.getElementById('myCopies').textContent=myCopies;
+    document.getElementById('myLearners').textContent=myLearners.length;
+  }
 }
-window.copyEmis=function(emis){ navigator.clipboard.writeText(emis).then(()=>alert('✅ EMIS '+emis+' copied! Paste it in Login.')); };
-window.printAllSchoolsHome=function(){ let rows=schools.map(s=>{ let r=statsForEmis(s.emis); return '<tr><td><b>'+s.school+'</b></td><td>'+s.emis+'</td><td>'+s.prefix+'</td><td>'+(s.status||'ACTIVE')+'</td><td>'+r.copies+'</td><td>'+r.learners+'</td><td>'+r.issued+'</td><td>'+r.returned+'</td><td><b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></td></tr>'; }).join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • ALL SCHOOLS • LIVE FIREBASE</h1><p>Date: '+new Date().toLocaleString()+'</p><table><tr><th>School</th><th>EMIS</th><th>Prefix</th><th>Status</th><th>Copies</th><th>Learners</th><th>Issued</th><th>Returned</th><th>Retrieval %</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
-document.getElementById('registerSchoolBtn').addEventListener('click', async ()=>{
-  let name=document.getElementById('regSchoolName').value.trim(); let emis=document.getElementById('regEmis').value.trim(); let prefix=document.getElementById('regPrefix').value.trim().toUpperCase(); let princName=document.getElementById('regPrincipalName').value.trim(); let princEmail=document.getElementById('regPrincipalEmail').value.trim().toLowerCase(); let princPass=document.getElementById('regPrincipalPass').value.trim();
-  if(!name||!emis||!prefix||!princName||!princEmail||princPass.length<6){ document.getElementById('registerMsg').innerHTML='❌ Fill ALL fields — Principal Password min 6 chars'; return; }
-  if(schools.some(s=>String(s.emis)===String(emis))){ document.getElementById('registerMsg').innerHTML='❌ EMIS '+emis+' already exists! Use Login instead.'; return; }
-  document.getElementById('registerMsg').innerHTML='⏳ Registering school + creating Principal account...';
+function renderSchools(){
+  let q=document.getElementById('schoolSearch').value.trim().toLowerCase();
+  let list=allSchools.filter(s=>!q || (s.school||'').toLowerCase().includes(q) || String(s.emis).includes(q) || (s.prefix||'').toLowerCase().includes(q));
+  let el=document.getElementById('schoolsList');
+  if(!list.length){ el.innerHTML='<p class="text-gray-500 text-sm">No schools found.</p>'; return; }
+  el.innerHTML=list.map(s=>{
+    let books=allBooks.filter(b=>String(b.emis)===String(s.emis)).length;
+    let suspended=s.status==='SUSPENDED';
+    return `<div class="border rounded-xl p-3 flex justify-between items-center ${suspended?'bg-red-50 border-red-300':''}"><div><p class="font-black">${s.school} ${suspended?'⛔ SUSPENDED':''}</p><p class="text-xs text-gray-500">EMIS ${s.emis} • Prefix <b>${s.prefix}</b> • First Book: <b>${s.prefix}000001</b> • Titles: ${books} ${s.principalEmail?'• Principal: '+s.principalEmail:''}</p></div><a href="librarian-dashboard.html" class="bg-black text-white px-3 py-1 rounded-lg font-black text-xs shrink-0">OPEN →</a></div>`;
+  }).join('');
+}
+function renderSuper(){
+  let isSuper = myUser && ['SUPER_ADMIN','SUPERADMIN','ADMIN'].includes(String(myUser.role||'').toUpperCase());
+  let card=document.getElementById('superCard');
+  if(!isSuper){ card.classList.add('hidden'); return; }
+  card.classList.remove('hidden');
+  document.getElementById('superList').innerHTML=allSchools.map(s=>{
+    let suspended=s.status==='SUSPENDED';
+    return `<div class="bg-white rounded-xl p-3 flex justify-between items-center"><div><p class="font-black text-sm">${s.school}</p><p class="text-xs text-gray-500">EMIS ${s.emis} • ${s.prefix} • ${suspended?'⛔ SUSPENDED':'✅ ACTIVE'}</p></div><button data-emis="${s.emis}" data-action="${suspended?'UNSUSPEND':'SUSPEND'}" class="superToggle ${suspended?'bg-green-600':'bg-red-600'} text-white px-3 py-1 rounded-lg font-black text-xs">${suspended?'✅ UNSUSPEND':'⛔ SUSPEND'}</button></div>`;
+  }).join('');
+  document.querySelectorAll('.superToggle').forEach(btn=>{
+    btn.onclick=async()=>{
+      let emis=btn.dataset.emis; let action=btn.dataset.action;
+      // Find school doc - schools collection doc id may be EMIS or auto-id, search by emis
+      let snap=await import('firebase/firestore').then(m=>null);
+      // Use query already imported? We use getDocs via dynamic - simpler: update by doc id = emis if exists, else find in allSchools
+      // Try doc(db,'schools',emis) first
+      try{
+        let ref=doc(db,'schools',emis);
+        let s=await getDoc(ref);
+        if(s.exists()){ await updateDoc(ref,{status: action==='SUSPEND'?'SUSPENDED':'ACTIVE', updatedAt:new Date().toISOString()}); }
+        else {
+          // Find doc with this emis via collection scan - use allSchools? Need query - we already have onSnapshot, but for update we need doc id.
+          // Fallback: create doc with emis as id
+          await setDoc(ref,{emis:emis, school: allSchools.find(x=>String(x.emis)===String(emis))?.school||'', prefix: allSchools.find(x=>String(x.emis)===String(emis))?.prefix||'', status: action==='SUSPEND'?'SUSPENDED':'ACTIVE', updatedAt:new Date().toISOString()}, {merge:true});
+        }
+        alert('✅ '+action+'ED school '+emis+' — LIVE update sent');
+      }catch(e){ alert('❌ '+e.message); }
+    };
+  });
+}
+document.getElementById('schoolSearch').addEventListener('input', renderSchools);
+document.getElementById('tabLogin').addEventListener('click', ()=>{
+  document.getElementById('panelLogin').classList.remove('hidden'); document.getElementById('panelRegister').classList.add('hidden');
+  document.getElementById('tabLogin').className='flex-1 bg-black text-white py-2 rounded-lg font-black text-sm'; document.getElementById('tabRegister').className='flex-1 bg-white border-2 py-2 rounded-lg font-black text-sm';
+});
+document.getElementById('tabRegister').addEventListener('click', ()=>{
+  document.getElementById('panelLogin').classList.add('hidden'); document.getElementById('panelRegister').classList.remove('hidden');
+  document.getElementById('tabRegister').className='flex-1 bg-black text-white py-2 rounded-lg font-black text-sm'; document.getElementById('tabLogin').className='flex-1 bg-white border-2 py-2 rounded-lg font-black text-sm';
+});
+document.getElementById('loginBtn').addEventListener('click', async()=>{
+  let email=document.getElementById('email').value.trim().toLowerCase(); let pass=document.getElementById('password').value.trim();
   try{
-    await setDoc(doc(db,'schools',String(emis)), {school:name, schoolName:name, name:name, emis:String(emis), prefix:prefix, principalEmail:princEmail, principalName:princName, status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()});
-    try{
-      let cred=await createUserWithEmailAndPassword(auth, princEmail, princPass);
-      await setDoc(doc(db,'users',cred.user.uid), {uid:cred.user.uid, name:princName, email:princEmail, role:'PRINCIPAL', emis:String(emis), school:name, prefix:prefix, subjects:['General'], classes:[], createdAt:new Date().toISOString()});
-      document.getElementById('registerMsg').innerHTML='✅ School '+name+' registered + Principal account created!<br>Principal can now login with: <b>'+princEmail+'</b>';
-    }catch(authErr){ document.getElementById('registerMsg').innerHTML='✅ School '+name+' registered!<br>⚠️ Principal Auth: '+authErr.message.replace('Firebase: ','')+'<br>Principal: Try Login → CREATE ACCOUNT with email <b>'+princEmail+'</b> if not created.'; }
-    document.getElementById('regSchoolName').value=''; document.getElementById('regEmis').value=''; document.getElementById('regPrefix').value=''; document.getElementById('regPrincipalName').value=''; document.getElementById('regPrincipalEmail').value=''; document.getElementById('regPrincipalPass').value='';
-  }catch(e){ document.getElementById('registerMsg').innerHTML='❌ '+e.message; }
+    let cred=await signInWithEmailAndPassword(auth, email, pass);
+    let s=await getDoc(doc(db,'users',cred.user.uid));
+    if(!s.exists()){ document.getElementById('loginMsg').innerHTML='❌ No profile — use <a href="fix-profile.html" class="underline text-blue-600">Fix Profile</a>'; return; }
+    myUser=s.data(); myEmis=myUser.emis;
+    // Check suspended
+    let sch=allSchools.find(x=>String(x.emis)===String(myEmis));
+    if(sch && sch.status==='SUSPENDED'){ document.getElementById('loginMsg').innerHTML='⛔ School SUSPENDED — contact Super Admin'; await signOut(auth); return; }
+    afterLogin();
+  }catch(e){ document.getElementById('loginMsg').innerHTML='❌ '+e.message.replace('Firebase: ',''); }
 });
-onSnapshot(collection(db,'schools'), (snap)=>{
-  let map=new Map();
-  [{emis:'911360870', school:'George Sonto High School', prefix:'GSHS', status:'ACTIVE'}, {emis:'700310854', school:'Wordsworth High School', prefix:'WHS', status:'ACTIVE'}, {emis:'911360825', school:'SHIRILELE HIGH SCHOOL', prefix:'SHS', status:'ACTIVE'}].forEach(k=>map.set(String(k.emis), k));
-  snap.docs.map(d=>({id:d.id, ...d.data()})).map(normalizeSchool).forEach(s=>{ if(s.emis) map.set(String(s.emis), s); });
-  schools=[...map.values()];
-  schools.sort((a,b)=>(a.school||'').localeCompare(b.school||''));
-  render();
+document.getElementById('registerBtn').addEventListener('click', async()=>{
+  let school=document.getElementById('rSchool').value.trim(); let emis=document.getElementById('rEmis').value.trim(); let name=document.getElementById('rName').value.trim(); let email=document.getElementById('rEmail').value.trim().toLowerCase(); let pass=document.getElementById('rPass').value.trim();
+  if(!school||!emis||!name||!email||!pass){ document.getElementById('registerMsg').innerHTML='❌ Fill all fields'; return; }
+  if(pass.length<6){ document.getElementById('registerMsg').innerHTML='❌ Password must be 6+ chars'; return; }
+  try{
+    let cred=await createUserWithEmailAndPassword(auth, email, pass);
+    let prefix=schoolPrefix(school);
+    await setDoc(doc(db,'schools',emis), {emis:emis, school:school, schoolName:school, prefix:prefix, principalEmail:email, principalName:name, status:'ACTIVE', createdAt:new Date().toISOString()});
+    await setDoc(doc(db,'users',cred.user.uid), {name:name, email:email, emis:emis, school:school, role:'PRINCIPAL', createdAt:new Date().toISOString()});
+    // Init counter at 0
+    await setDoc(doc(db,'counters',emis+'_BOOK'), {seq:0, emis:emis, type:'BOOK', prefix:prefix, updatedAt:new Date().toISOString()});
+    myUser={name:name,email:email,emis:emis,school:school,role:'PRINCIPAL'}; myEmis=emis;
+    document.getElementById('registerMsg').innerHTML='✅ School registered! Prefix: <b>'+prefix+'</b> • First book will be '+prefix+'000001 • Redirecting to Dashboard...';
+    setTimeout(()=>{ window.location.href='dashboard.html'; }, 1200);
+  }catch(e){ document.getElementById('registerMsg').innerHTML='❌ '+e.message.replace('Firebase: ',''); }
 });
-onSnapshot(collection(db,'books'), (snap)=>{ allBooks=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(collection(db,'learners'), (snap)=>{ allLearners=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(collection(db,'issues'), (snap)=>{ allIssues=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(collection(db,'users'), (snap)=>{ allUsers=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
+document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); location.reload(); });
+function afterLogin(){
+  document.getElementById('who').innerHTML='✅ '+myUser.name+' • '+myUser.role+' • '+(myUser.school||'')+' ('+myEmis+')';
+  document.getElementById('logoutBtn').classList.remove('hidden');
+  render(); renderSuper();
+}
+onAuthStateChanged(auth, async(u)=>{
+  startLive();
+  if(u && !myUser){ let s=await getDoc(doc(db,'users',u.uid)); if(s.exists()){ myUser=s.data(); myEmis=myUser.emis; afterLogin(); } }
+});
+startLive();
 </script></body></html>
