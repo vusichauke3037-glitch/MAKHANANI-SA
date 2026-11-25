@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Principal Dashboard — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script></head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1" alt="Makhanani LTSM Logo"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • PRINCIPAL</div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2 flex-wrap"><a href="super-admin-dashboard.html" class="bg-purple-600 text-white px-3 py-1 rounded font-bold text-xs">👑 Super Admin</a><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
+<div class="max-w-6xl mx-auto p-4">
+<div class="bg-white rounded-2xl p-4 flex flex-wrap gap-2 justify-between items-center"><div><h1 class="font-black text-2xl">👨‍💼 Principal Dashboard</h1><p class="text-xs text-gray-500" id="schoolLine">Loading...</p></div><div class="flex gap-2 flex-wrap"><a href="dashboard.html" class="bg-black text-white px-3 py-2 rounded-lg font-bold text-sm">📊 Dashboard →</a><a href="manual-principal.html" class="bg-yellow-500 text-black px-3 py-2 rounded-lg font-bold text-sm">📖 Manual →</a></div></div>
+<div id="subBanner" class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-3 mt-4 text-sm font-bold hidden"></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4"><div class="bg-white rounded-2xl p-4 text-center border-2 border-blue-200"><div class="text-3xl font-black" id="stTitles">0</div><div class="text-xs font-bold text-gray-500">📚 TITLES</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-green-200"><div class="text-3xl font-black" id="stCopies">0</div><div class="text-xs font-bold text-gray-500">📖 COPIES</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-yellow-300"><div class="text-3xl font-black" id="stLearners">0</div><div class="text-xs font-bold text-gray-500">🎓 LEARNERS</div></div><div class="bg-white rounded-2xl p-4 text-center border-2 border-red-200"><div class="text-3xl font-black" id="stOut">0</div><div class="text-xs font-bold text-gray-500">📦 OUT NOW</div></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📊 Stock By Subject — View Only (Cannot Edit)</h2><div id="bySubject" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📦 Books By Grade</h2><div id="byGrade" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📋 Teacher Requests — Approve / Reject</h2><div id="reqList" class="mt-2 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">💰 Subscription — This School</h2><div id="subInfo" class="mt-2 text-sm"></div></div>
+</div>
+<script>
+(function(){
+let cur=null, books=[], requests=[];
+function render(){
+  try{ cur=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){ cur=null; }
+  if(!cur){ document.getElementById('schoolLine').innerHTML='❌ NOT LOGGED IN — <a href="login.html" class="underline text-blue-600 font-black">Go to login</a>'; return; }
+  let sc=window.checkSubscription?window.checkSubscription(cur.school, cur.emis, {block:true}):null; if(sc && sc.locked && !sc.adminBypass) return;
+  document.getElementById('topStatus').textContent=cur.name+' • '+cur.role+' • '+cur.school+' • EMIS '+cur.emis;
+  document.getElementById('schoolLine').innerHTML='School: <b>'+cur.school+'</b> • EMIS: <b>'+cur.emis+'</b> • Role: <b>'+cur.role+'</b> • View Only — Librarian edits books';
+  if(window.showSubBanner) window.showSubBanner('subBanner', cur.school, cur.emis);
+  try{ books=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_ltsm')||'[]'); }catch(e){ books=[]; }
+  try{ requests=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_requests')||'[]'); }catch(e){ requests=[]; }
+  let learners=[]; try{ learners=JSON.parse(localStorage.getItem('EMIS_'+cur.emis+'_makhanani_learners')||'[]'); }catch(e){}
+  let copies=0,out=0; books.forEach(b=>{ (b.copies||[]).forEach(c=>{ copies++; if(c.status==='Issued') out++; }); });
+  document.getElementById('stTitles').textContent=books.length; document.getElementById('stCopies').textContent=copies; document.getElementById('stLearners').textContent=learners.length; document.getElementById('stOut').textContent=out;
+  let bySub={}; books.forEach(b=>{ let k=b.subject||'No Subject'; if(!bySub[k]) bySub[k]={total:0, avail:0}; (b.copies||[]).forEach(c=>{ bySub[k].total++; if(c.status==='Available') bySub[k].avail++; }); });
+  document.getElementById('bySubject').innerHTML=Object.keys(bySub).length?'<table class="w-full border-collapse border"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">Subject</th><th class="border p-2">Total</th><th class="border p-2">Available</th></tr></thead><tbody>'+Object.keys(bySub).sort().map(k=>'<tr><td class="border p-2 font-bold">'+k+'</td><td class="border p-2 text-center">'+bySub[k].total+'</td><td class="border p-2 text-center">'+bySub[k].avail+'</td></tr>').join('')+'</tbody></table>':'<p class="text-gray-500">No books yet.</p>';
+  let byGrade={}; books.forEach(b=>{ let k='Grade '+(b.grade||'—'); if(!byGrade[k]) byGrade[k]=0; byGrade[k]+=(b.copies||[]).length; });
+  document.getElementById('byGrade').innerHTML=Object.keys(byGrade).length?'<table class="w-full border-collapse border"><thead><tr class="bg-gray-100"><th class="border p-2 text-left">Grade</th><th class="border p-2">Copies</th></tr></thead><tbody>'+Object.keys(byGrade).sort().map(k=>'<tr><td class="border p-2 font-bold">'+k+'</td><td class="border p-2 text-center">'+byGrade[k]+'</td></tr>').join('')+'</tbody></table>':'<p class="text-gray-500">No books yet.</p>';
+  document.getElementById('reqList').innerHTML=requests.map((r,i)=>'<div class="border rounded p-2 mb-1 flex justify-between gap-2 flex-wrap"><div><b>'+r.title+'</b> • By '+r.by+' • Grade '+r.grade+' • Qty '+r.qty+' • <b>'+r.status+'</b></div><div class="flex gap-1"><button data-approve="'+i+'" class="approve-btn bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">✅ Approve</button><button data-reject="'+i+'" class="reject-btn bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">❌ Reject</button></div></div>').join('')||'<p class="text-gray-500">No requests.</p>';
+  document.querySelectorAll('.approve-btn').forEach(b=>b.addEventListener('click',function(){ let i=parseInt(this.getAttribute('data-approve')); requests[i].status='Approved'; localStorage.setItem('EMIS_'+cur.emis+'_makhanani_requests', JSON.stringify(requests)); render(); }));
+  document.querySelectorAll('.reject-btn').forEach(b=>b.addEventListener('click',function(){ let i=parseInt(this.getAttribute('data-reject')); requests[i].status='Rejected'; localStorage.setItem('EMIS_'+cur.emis+'_makhanani_requests', JSON.stringify(requests)); render(); }));
+  let subs=[]; try{ subs=JSON.parse(localStorage.getItem('makhanani_subscriptions')||'[]'); }catch(e){}
+  let sub=subs.find(x=>x.emis===cur.emis);
+  document.getElementById('subInfo').innerHTML=sub?'<b>'+sub.package+'</b> • '+sub.status+' • R'+sub.amount+' / '+sub.billing+' • '+sub.start+' → '+sub.end+' (12 Months Only) • Setup R'+sub.setupFee+' ('+sub.setupPaid+')':'<p class="text-gray-500">No subscription for this EMIS. Contact Super Admin.</p>';
+}
+render();
+})();
+</script>
+<script type="module">
+import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+onAuthStateChanged(auth, async (user)=>{ if(!user) return; try{ let snap=await getDoc(doc(db,'users',user.uid)); let prof=snap.exists()?snap.data():{name:user.email,role:'SUPER_ADMIN'}; let fresh={uid:user.uid,name:prof.name||user.email,email:user.email,role:prof.role||'SUPER_ADMIN',subjects:prof.subjects||[prof.subject||'General'],classes:prof.classes||(prof.class?[prof.class]:[]),grades:prof.grades||'',school:prof.school||'',emis:prof.emis||'700310854',prefix:prof.prefix||'WHS'}; let old=localStorage.getItem('makhanani_session'); if(old!==JSON.stringify(fresh)){ localStorage.setItem('makhanani_session',JSON.stringify(fresh)); location.reload(); } }catch(e){} });
+</script>
+</body></html>
