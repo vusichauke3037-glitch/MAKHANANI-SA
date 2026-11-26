@@ -1,398 +1,360 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Librarian Dashboard • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Librarian — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}.liveDot{animation:pulseDot 1.5s infinite}.tabBtn.active{background:#000;color:#fff}.printSheet{display:none}@media print{body{background:white!important}.no-print{display:none!important}.printSheet{display:block!important}.screenOnly{display:none!important}}</style></head>
-<body class="bg-gray-100 pb-24"><div class="max-w-6xl mx-auto p-3">
-<div class="no-print bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-12 h-12 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • 2026/934898/07 • MAKHANANI LTSM</p><h1 class="font-black text-xl">📚 Makhanani LTSM</h1><p id="who" class="text-xs text-gray-300">Not logged in — Guest View</p><p class="text-[11px] mt-1"><span class="liveDot inline-block w-2 h-2 bg-green-400 rounded-full"></span> <span class="text-green-400 font-bold">● LIVE</span> • <span id="lastUpdate" class="text-yellow-300 font-bold">—</span></p></div></div><div class="flex gap-1 flex-wrap justify-end"><a href="index.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a><a href="dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📊 DASHBOARD</a><a href="login.html" class="bg-blue-600 text-white px-2 py-1 rounded-lg font-black text-xs">🔐 LOGIN</a><a href="manuals.html" class="bg-blue-600 text-white px-2 py-1 rounded-lg font-black text-xs">📖 MANUALS</a><a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a><button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs hidden">LOGOUT</button></div></div>
-<div class="no-print bg-white rounded-2xl p-3 mt-3 shadow flex gap-2 flex-wrap items-center"><label class="text-xs font-black">SCHOOL:</label><select id="schoolSel" class="border-2 rounded-lg px-2 py-2 text-sm font-bold"><option value="700310854">Wordsworth High School — 700310854 — WHS</option><option value="911360870">George Sonto High School — 911360870 — GSH</option><option value="911360825">SHIRILELE HIGH SCHOOL — 911360825</option></select><span id="schoolBadge" class="bg-yellow-100 px-2 py-1 rounded text-xs font-bold">WHS • WHS000001</span><span id="roleBadge" class="bg-black text-white px-2 py-1 rounded text-xs font-bold">ROLE: GUEST</span><a id="myManualLink" href="manuals.html" class="bg-blue-600 text-white px-3 py-1 rounded-lg font-black text-xs">📖 MY MANUAL</a><input id="globalSearch" placeholder="🔍 Search book / barcode / learner..." class="border-2 rounded-lg px-3 py-2 flex-1 text-sm"></div>
-<div class="no-print grid grid-cols-2 md:grid-cols-5 gap-2 mt-3"><div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cBooks">0</p><p class="text-xs text-gray-500">📚 Books (Copies)</p></div><div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cLearners">0</p><p class="text-xs text-gray-500">👩‍🎓 Learners</p></div><div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cAvail">0</p><p class="text-xs text-gray-500">✅ Available</p></div><div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-blue-700" id="cIssued">0</p><p class="text-xs text-gray-500">📤 Issued</p></div><div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cPacked">0</p><p class="text-xs text-gray-500">📦 Packed</p></div></div>
-<div class="no-print bg-white rounded-2xl p-2 mt-3 shadow flex gap-1 flex-wrap sticky top-[76px] z-40" id="tabs">
-<button data-tab="stock" class="tabBtn active bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📦 STOCK</button>
-<button data-tab="request" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📝 REQUEST</button>
-<button data-tab="hod" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">✅ HOD APPROVAL</button>
-<button data-tab="package" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📦 PACKAGE</button>
-<button data-tab="teacherIssue" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📤 TEACHER ISSUE</button>
-<button data-tab="hodIssue" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">👔 HOD ISSUE</button>
-<button data-tab="libIssue" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">🏫 LIBRARIAN ISSUE</button>
-<button data-tab="retrieve" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">🔁 RETRIEVE</button>
-<button data-tab="print" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">🖨️ PRINT 3×5</button>
-<button data-tab="learners" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">👩‍🎓 LEARNERS</button>
-<button data-tab="records" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📄 RECORDS</button>
-</div>
-<div id="tab-stock" class="tabPanel bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black text-xl">📦 Stock — Dept → Grade → Subject → Title</h2><p class="text-xs text-gray-500">Librarian can ADD + EDIT + RESTORE + RENUMBER stock. Tick books to renumber only those. Teacher / HOD cannot edit stock.</p>
-<div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-3 mt-2"><p class="font-black">🔢 Renumber Selected Items</p><p class="text-xs text-gray-600 mt-1">1. Tick ☑️ books below &nbsp; 2. Set Start No. &nbsp; 3. Tap RENUMBER SELECTED — only ticked books change. Unticked books stay untouched.</p><div class="flex gap-2 mt-2 flex-wrap items-center"><label class="text-xs font-black">START No.:</label><input id="renumberStart" type="number" min="1" value="1" class="border-2 rounded-lg px-2 py-2 w-24 font-bold"><button id="renumberSelectedBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER SELECTED (<span id="selCount">0</span>)</button><button id="selectAllStockBtn" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-sm">Select All Shown</button><button id="clearSelStockBtn" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-sm">Clear Selection</button><button id="renumberAllBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER ALL 000001 →</button></div><p id="renumberMsg" class="text-sm font-bold mt-1"></p><p class="text-xs text-gray-500 mt-1">Example: Tick Tourism + History, Start = 133 → Tourism gets 133..., History gets next numbers after Tourism. Order: Grade → Learners → Workbook → Title A-Z.</p></div>
-<div class="flex gap-2 mt-2 flex-wrap"><button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">🔄 RESTORE PREVIOUS QUANTITIES</button><button id="restoreReportBtn" class="bg-yellow-400 px-4 py-2 rounded-lg font-black text-sm">📊 CHECK MISSING COPIES</button></div><p id="restoreMsg" class="text-sm font-bold mt-1"></p>
-<div id="editBox" class="hidden border-2 border-blue-500 bg-blue-50 rounded-xl p-3 mt-3"><p class="font-black">✏️ EDIT BOOK — Reassign Correct Department + Quantity</p><p id="editBookLabel" class="text-xs text-gray-600 mt-1"></p><input id="eTitle" placeholder="Title" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="eAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="eDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="eGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><input id="eSubject" placeholder="Subject" class="border-2 rounded-lg px-2 py-2"><select id="eCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="eQty" type="number" min="1" placeholder="Quantity — e.g. 70 (original qty)" class="border-2 rounded-lg px-2 py-2 col-span-2"></div><div class="flex gap-2 mt-2"><button id="saveEditBtn" class="bg-blue-600 text-white flex-1 py-2 rounded-lg font-black">💾 SAVE CHANGES</button><button id="cancelEditBtn" class="bg-gray-200 flex-1 py-2 rounded-lg font-bold">Cancel</button></div><p id="editMsg" class="text-sm font-bold mt-1"></p></div>
-<div class="grid md:grid-cols-2 gap-2 mt-3"><div class="border rounded-xl p-3 bg-yellow-50"><p class="font-black">➕ Add Single Book</p><input id="bTitle" placeholder="Title — e.g. Maths Grade 10 Learners Book" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="bAuthor" placeholder="Author (optional)" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="bDept" class="border-2 rounded-lg px-2 py-2"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="bGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><input id="bSubject" placeholder="Subject — e.g. Mathematics" class="border-2 rounded-lg px-2 py-2"><select id="bCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="bQty" type="number" min="1" value="1" placeholder="Qty" class="border-2 rounded-lg px-2 py-2"><input id="bStart" type="number" placeholder="Start No. — e.g. 1 (Assign Numbers)" class="border-2 rounded-lg px-2 py-2"></div><button id="addBookBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD BOOK(S)</button><p id="addBookMsg" class="text-sm font-bold mt-1"></p><div class="flex gap-2 mt-2"><button id="assignBtn" class="bg-yellow-400 flex-1 py-2 rounded-lg font-black text-sm">⚡ ASSIGN NUMBERS 1,71,132,213</button><button onclick="document.getElementById('bulkBox').classList.toggle('hidden')" class="bg-gray-100 flex-1 py-2 rounded-lg font-bold text-sm">📥 Bulk Upload</button></div><div id="bulkBox" class="hidden mt-2"><p class="text-xs font-bold">CSV: title,author,grade,quantity,category,department,subject — one per line</p><textarea id="bulkCsv" rows="4" placeholder="Maths Grade 10 Learners,John,10,70,Learners Book,Mathematics,Mathematics" class="border-2 rounded-lg px-2 py-2 w-full mt-1"></textarea><button id="bulkBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-1">📥 BULK ADD</button><p id="bulkMsg" class="text-xs font-bold mt-1"></p></div></div>
-<div class="border rounded-xl p-3"><p class="font-black">🔍 Filter Stock</p><div class="grid grid-cols-2 gap-2 mt-2"><select id="fDept" class="border-2 rounded-lg px-2 py-2"><option value="">All Dept</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="fGrade" class="border-2 rounded-lg px-2 py-2"><option value="">All Grades</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fCat" class="border-2 rounded-lg px-2 py-2"><option value="">All Categories</option><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option value="AVAILABLE">Available</option><option value="PACKED">Packed</option><option value="ISSUED">Issued</option><option value="LOW">Low Stock (≤5)</option></select></div><label class="flex items-center gap-2 mt-2 text-sm font-bold"><input type="checkbox" id="fLowOnly"> Show Low Stock Only</label></div></div>
-<div id="stockList" class="space-y-2 mt-3 text-sm"></div>
-</div>
-<div id="tab-request" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">📝 Teacher Request — Own Class Only</h2><p class="text-xs text-gray-500">Teacher: pick book → your class → qty → SEND TO HOD. HOD of that Dept approves. <a href="manuals.html#teacher" class="text-blue-600 font-bold">Teacher Manual →</a></p><div class="grid md:grid-cols-2 gap-2 mt-3"><select id="rBook" class="border-2 rounded-lg px-3 py-2"></select><select id="rClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="rQty" type="number" min="1" value="10" class="border-2 rounded-lg px-3 py-2" placeholder="Qty"><input id="rTeacher" placeholder="Your Name" class="border-2 rounded-lg px-3 py-2"></div><button id="reqBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">📝 SEND TO HOD →</button><p id="reqMsg" class="text-sm font-bold mt-2"></p><div id="myReqList" class="space-y-2 mt-3 text-sm"></div></div>
-<div id="tab-hod" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">✅ HOD Approval — Own Dept Only</h2><p class="text-xs text-gray-500">HOD sees only own Department. Set Approved Qty → Approve / Reject. <a href="manuals.html#hod" class="text-blue-600 font-bold">HOD Manual →</a></p><div class="flex gap-2 mt-2"><select id="hodDeptFilter" class="border-2 rounded-lg px-2 py-2"><option value="">All Dept (Librarian / Principal)</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><button id="hodRefresh" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">↻ REFRESH</button></div><div id="hodList" class="space-y-2 mt-3 text-sm"></div></div>
-<div id="tab-package" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">📦 Librarian Package — After HOD Approves</h2><p class="text-xs text-gray-500">Librarian packs from Available only. Packed = ready for Teacher to Issue. <a href="manuals.html#librarian" class="text-blue-600 font-bold">Librarian Manual →</a></p><div id="packageList" class="space-y-2 mt-3 text-sm"></div></div>
-<div id="tab-teacherIssue" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">📤 Teacher Issue — Own Packed + Own Class Only</h2><p class="text-xs text-gray-500">Rules: Must be PACKED • Must be YOUR class • 1 Learner 1 Title • Grade must match book Grade • No Packed = Blocked. <a href="manuals.html#teacher" class="text-blue-600 font-bold">Teacher Manual →</a></p><div class="grid md:grid-cols-2 gap-2 mt-3"><input id="tiBarcode" placeholder="Scan / Type Packed Barcode — e.g. WHS000001" class="border-2 rounded-lg px-3 py-2"><select id="tiLearner" class="border-2 rounded-lg px-3 py-2"></select><select id="tiClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="tiTeacher" placeholder="Your Name (Teacher)" class="border-2 rounded-lg px-3 py-2"></div><button id="tiBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">📤 ISSUE TO LEARNER</button><p id="tiMsg" class="text-sm font-bold mt-2"></p><div class="bg-yellow-50 border rounded-xl p-3 mt-3"><p class="font-black text-sm">📦 My Packed Books — Ready To Issue</p><div id="myPackedList" class="text-sm mt-1"></div></div></div>
-<div id="tab-hodIssue" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">👔 HOD Issue — Any Class In Own Dept</h2><p class="text-xs text-gray-500">HOD can issue any class in own Dept, but book must be PACKED and Dept must match.</p><div class="grid md:grid-cols-2 gap-2 mt-3"><input id="hiBarcode" placeholder="Scan Packed Barcode" class="border-2 rounded-lg px-3 py-2"><select id="hiLearner" class="border-2 rounded-lg px-3 py-2"></select><select id="hiClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="hiHod" placeholder="HOD Name" class="border-2 rounded-lg px-3 py-2"></div><button id="hiBtn" class="bg-purple-600 text-white w-full py-2 rounded-lg font-black mt-2">👔 ISSUE AS HOD</button><p id="hiMsg" class="text-sm font-bold mt-2"></p></div>
-<div id="tab-libIssue" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">🏫 Librarian Issue — Any Learner, Any Class</h2><p class="text-xs text-gray-500">Librarian can issue any book, any learner.</p><div class="grid md:grid-cols-2 gap-2 mt-3"><input id="liBarcode" placeholder="Scan Barcode — e.g. WHS000001" class="border-2 rounded-lg px-3 py-2"><select id="liLearner" class="border-2 rounded-lg px-3 py-2"></select><select id="liClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="liLib" placeholder="Librarian Name" class="border-2 rounded-lg px-3 py-2"></div><button id="liBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg font-black mt-2">🏫 ISSUE AS LIBRARIAN</button><p id="liMsg" class="text-sm font-bold mt-2"></p></div>
-<div id="tab-retrieve" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">🔁 Retrieve — Any Teacher Can Retrieve Any Book</h2><p class="text-xs text-gray-500">Scan barcode → Retrieve back to library. Book becomes AVAILABLE again. Any Teacher / HOD / Librarian can retrieve.</p><div class="grid md:grid-cols-2 gap-2 mt-3"><input id="retBarcode" placeholder="Scan Barcode To Retrieve" class="border-2 rounded-lg px-3 py-2"><input id="retBy" placeholder="Your Name (Retriever)" class="border-2 rounded-lg px-3 py-2"></div><button id="retBtn" class="bg-orange-600 text-white w-full py-2 rounded-lg font-black mt-2">🔁 RETRIEVE BOOK → LIBRARY</button><p id="retMsg" class="text-sm font-bold mt-2"></p><div id="issuedList" class="space-y-2 mt-3 text-sm"></div></div>
-<div id="tab-print" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">🖨️ Print 3×5 — A4 = 15 Labels</h2><p class="text-xs text-gray-500">Tick books / learners → Print. Book: WHS000001 • Learner: 10A001. <a href="manuals.html#print" class="text-blue-600 font-bold">Print Manual →</a></p><div class="flex gap-2 mt-2 flex-wrap"><button id="printBooksBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT SELECTED BOOKS</button><button id="printLearnersBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT LEARNER LABELS</button><button id="selectAllPrint" class="bg-gray-100 px-4 py-2 rounded-lg font-bold text-sm">Select All</button></div><div id="printList" class="space-y-1 mt-3 text-sm max-h-[400px] overflow-y-auto"></div></div>
-<div id="tab-learners" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">👩‍🎓 Learners — 10A001 →</h2><p class="text-xs text-gray-500">Learner ID = Grade + Class + 001. Example: 10A001, 10A002...</p><div class="grid md:grid-cols-3 gap-2 mt-3"><input id="lName" placeholder="Learner Name" class="border-2 rounded-lg px-3 py-2"><select id="lGrade" class="border-2 rounded-lg px-3 py-2"><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><select id="lClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="lParent" placeholder="Parent Name / Phone (optional)" class="border-2 rounded-lg px-3 py-2"><input id="lId" placeholder="Learner ID — Auto if blank — e.g. 10A001" class="border-2 rounded-lg px-3 py-2"></div><button id="addLearnerBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD LEARNER</button><p id="lMsg" class="text-sm font-bold mt-2"></p><div id="learnerList" class="space-y-2 mt-3 text-sm"></div></div>
-<div id="tab-records" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">📄 Records — Issue Record Per Class + Loan Form</h2><div class="flex gap-2 mt-2 flex-wrap"><select id="recClass" class="border-2 rounded-lg px-2 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><button id="printRecordBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT ISSUE RECORD — <span id="recClassLabel">10A</span></button><button id="printLoanBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-black text-sm">📄 PRINT LOAN FORM</button></div><div id="recordList" class="space-y-2 mt-3 text-sm"></div></div>
-<div class="no-print text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • 293 Smit Street, Hillbrow • Directors: Vusi Chauke • Hloniphani Success Masia • Makhanani LTSM — Joy. Cherished. Mercy.</div>
-</div>
-<div class="printSheet" id="printSheet"></div>
+<style>.tabBtn.active{background:#000;color:#fff}.tabBtn{white-space:nowrap}@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%}}</style></head>
+<body class="bg-gray-100 pb-24"><div class="max-w-7xl mx-auto p-3">
+<!-- HEADER -->
+<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • MAKHANANI LTSM</p><h1 class="font-black text-xl">📚 Librarian Dashboard</h1><p id="who" class="text-xs text-gray-300">Librarian</p></div></div><div class="flex gap-1 flex-wrap justify-end">
+<a href="xintimani.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">✨ XINTIMANI</a>
+<a href="index.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
+<a href="dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📊 DASHBOARD</a>
+<a href="superadmin-dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">👑 SUPER ADMIN</a>
+<a href="subscriptions.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💳 SUBS</a>
+<a href="pricing.html" class="bg-purple-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 PRICING</a>
+<a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a>
+<button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs">LOGOUT</button></div></div>
+
+<!-- STATS -->
+<div class="grid grid-cols-3 md:grid-cols-6 gap-2 mt-3">
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cTotal">0</p><p class="text-xs text-gray-500">📚 Total Books</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cAvail">0</p><p class="text-xs text-gray-500">✅ Available</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-yellow-700" id="cPacked">0</p><p class="text-xs text-gray-500">📦 Packed</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-blue-700" id="cIssued">0</p><p class="text-xs text-gray-500">📤 Issued</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-purple-700" id="cLearners">0</p><p class="text-xs text-gray-500">👧🏾 Learners</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cRequests">0</p><p class="text-xs text-gray-500">📝 Requests</p></div></div>
+
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-3 text-sm"><b>📌 Workflow — Follow This Order:</b> <span class="font-bold">1. Teacher Requests → 2. HOD Approves → 3. Librarian Packs → 4. Teacher Issues → 5. Retrieve → 6. Print</span><br><span class="text-gray-600">⛔ No HOD = No Pack. ⛔ No Pack = No Issue. ⛔ Wrong Class / Wrong Grade / Already Has Title = Blocked. ✅ Any Teacher Can Retrieve Any Book.</span><br><span id="subBanner" class="font-bold"></span></div>
+
+<!-- CONTROLS -->
+<div class="bg-white rounded-2xl p-3 mt-3 shadow flex gap-2 flex-wrap items-center">
+<label class="text-xs font-black">SCHOOL EMIS:</label><select id="emisSel" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="700310854">Wordsworth — 700310854</option><option value="911360870">George Sonto — 911360870</option><option value="911360825">SHIRILELE — 911360825</option></select>
+<label class="text-xs font-black">MY CLASS:</label><select id="myClass" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="">All Classes</option><option>8A</option><option>8B</option><option>8C</option><option>9A</option><option>9B</option><option>9C</option><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>11C</option><option>12A</option><option>12B</option><option>12C</option></select>
+<label class="text-xs font-black">MY DEPT:</label><select id="myDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="">All Depts</option><option>Mathematics</option><option>English</option><option>Afrikaans</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>Technology</option><option>EMS</option><option>Life Orientation</option></select>
+<label class="text-xs font-black">SEARCH:</label><input id="searchBox" placeholder="Search title / barcode / learner..." class="border-2 rounded-lg px-2 py-2 w-48">
+<button onclick="window._exportCSV()" class="bg-green-600 text-white px-3 py-2 rounded-lg font-black text-xs">⬇️ EXPORT CSV</button>
+<button onclick="window._seedDemo()" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-black text-xs">🌱 SEED DEMO DATA</button></div>
+
+<!-- TABS -->
+<div class="flex gap-1 overflow-x-auto mt-3 pb-1" id="tabs">
+<button data-tab="stock" class="tabBtn active bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📦 STOCK</button>
+<button data-tab="request" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📝 REQUEST</button>
+<button data-tab="hod" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">✅ HOD</button>
+<button data-tab="package" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📦 PACKAGE</button>
+<button data-tab="teacherIssue" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📤 ISSUE</button>
+<button data-tab="retrieve" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">🔁 RETRIEVE</button>
+<button data-tab="print" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">🖨️ PRINT</button>
+<button data-tab="learners" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">👧🏾 LEARNERS</button>
+<button data-tab="records" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📋 RECORDS</button>
+<button data-tab="loan" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📄 LOAN FORM</button></div>
+
+<!-- STOCK -->
+<div id="tab-stock" class="tabPage bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📦 Stock — Add / Manage Books</h2><p class="text-xs text-gray-500">Barcode = School Prefix + Number. Example Wordsworth: WHS000001. Renumber fixes gaps after deletes.</p>
+<div class="grid md:grid-cols-4 gap-2 mt-3">
+<input id="bTitle" placeholder="Title — e.g. Mathematics Grade 10" class="border-2 rounded-lg px-3 py-2">
+<input id="bAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2">
+<input id="bGrade" placeholder="Grade — e.g. 10" class="border-2 rounded-lg px-3 py-2">
+<select id="bDept" class="border-2 rounded-lg px-3 py-2"><option>Mathematics</option><option>English</option><option>Afrikaans</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>Technology</option><option>EMS</option><option>Life Orientation</option></select>
+<input id="bQty" type="number" value="1" placeholder="Qty" class="border-2 rounded-lg px-3 py-2">
+<input id="bPrefix" placeholder="Prefix — e.g. WHS" value="WHS" class="border-2 rounded-lg px-3 py-2">
+<input id="bStartNo" type="number" value="1" placeholder="Start No" class="border-2 rounded-lg px-3 py-2">
+<button id="addBookBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD BOOK(S)</button></div><p id="bookMsg" class="text-sm font-bold mt-1"></p>
+<!-- RENUMBER BAR -->
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3 mt-3">
+<p class="font-black">🔢 Renumber Books</p><p class="text-xs text-gray-600">Tick books below → set Start No. → Renumber Selected. Or Renumber ALL to close gaps. Example: WHS000001, WHS000002, WHS000003...</p>
+<div class="flex gap-2 flex-wrap items-center mt-2">
+<label class="text-xs font-black">START NO:</label><input id="renumStart" type="number" value="1" class="border-2 rounded-lg px-2 py-2 w-24 font-bold">
+<label class="text-xs font-black">PREFIX:</label><input id="renumPrefix" value="WHS" class="border-2 rounded-lg px-2 py-2 w-24 font-bold">
+<button id="renumSelectedBtn" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER SELECTED (Ticked)</button>
+<button id="renumAllBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER ALL</button>
+<span id="renumMsg" class="text-sm font-bold"></span></div></div>
+<div class="flex gap-2 mt-3 flex-wrap"><select id="stockFilter" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option>AVAILABLE</option><option>PACKED</option><option>ISSUED</option></select><button onclick="window._selectAllStock()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">☑️ Select All</button><button onclick="window._clearStockSel()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">Clear Selection</button><button onclick="window._deleteSelected()" class="bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold text-xs">🗑️ Delete Selected</button></div>
+<div id="stockList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- REQUEST -->
+<div id="tab-request" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📝 Teacher Request</h2><p class="text-xs text-gray-500">Teacher can ONLY request for OWN class. Pick a book → Qty → SEND TO HOD.</p>
+<div class="grid md:grid-cols-3 gap-2 mt-3">
+<select id="reqBook" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick Book —</option></select>
+<select id="reqClass" class="border-2 rounded-lg px-3 py-2"><option>8A</option><option>8B</option><option>8C</option><option>9A</option><option>9B</option><option>9C</option><option selected>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>11C</option><option>12A</option><option>12B</option><option>12C</option></select>
+<input id="reqQty" type="number" value="10" class="border-2 rounded-lg px-3 py-2"></div>
+<button id="reqBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg font-black mt-2">📝 SEND REQUEST TO HOD →</button><p id="reqMsg" class="text-sm font-bold mt-1"></p>
+<div id="reqList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- HOD -->
+<div id="tab-hod" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">✅ HOD Approval</h2><p class="text-xs text-gray-500">HOD sees ONLY own Department. Set Approved Qty → APPROVE or REJECT. No HOD = No Package.</p>
+<div id="hodList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- PACKAGE -->
+<div id="tab-package" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📦 Package — Librarian Only</h2><p class="text-xs text-gray-500">Librarian packs from AVAILABLE only, up to Approved Qty. Packed books move to ISSUE tab.</p>
+<div id="packageList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- ISSUE -->
+<div id="tab-teacherIssue" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📤 Teacher Issue</h2><p class="text-xs text-gray-500">Scan / Pick PACKED barcode → Pick Learner in SAME class → ISSUE. 1 Learner = 1 Title. Blocked if: Not Packed / Wrong Class / Wrong Grade / Already Has Title.</p>
+<div class="grid md:grid-cols-3 gap-2 mt-3">
+<select id="issueBook" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick PACKED Book —</option></select>
+<input id="issueScan" placeholder="OR Scan / Type Barcode — e.g. WHS000001" class="border-2 rounded-lg px-3 py-2">
+<select id="issueLearner" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick Learner —</option></select></div>
+<button id="issueBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">📤 ISSUE BOOK →</button><p id="issueMsg" class="text-sm font-bold mt-1"></p>
+<div id="issueList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- RETRIEVE -->
+<div id="tab-retrieve" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">🔁 Retrieve — Bring Book Back</h2><p class="text-xs text-gray-500">ANY Teacher can retrieve ANY book. Scan / Pick ISSUED book → RETRIEVE → Book becomes AVAILABLE again.</p>
+<div class="grid md:grid-cols-2 gap-2 mt-3">
+<select id="retBook" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick ISSUED Book —</option></select>
+<input id="retScan" placeholder="OR Scan / Type Barcode" class="border-2 rounded-lg px-3 py-2"></div>
+<button id="retBtn" class="bg-orange-600 text-white w-full py-2 rounded-lg font-black mt-2">🔁 RETRIEVE BOOK →</button><p id="retMsg" class="text-sm font-bold mt-1"></p>
+<div id="retList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- PRINT -->
+<div id="tab-print" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">🖨️ Print Labels — 3×5 on A4 (15 Labels)</h2><p class="text-xs text-gray-500">Tick books / learners → PRINT. Book label: WHS000001 + Title. Learner label: 10A001 + Name.</p>
+<div class="flex gap-2 flex-wrap mt-2"><button onclick="window._printBooks()" class="bg-pink-600 text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT TICKED BOOKS</button><button onclick="window._printLearners()" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT ALL LEARNERS (Current Class)</button><button onclick="window.print()" class="bg-gray-100 px-4 py-2 rounded-lg font-bold text-sm">🖨️ PRINT PAGE</button></div>
+<div id="printArea" class="mt-3"></div>
+<div class="grid md:grid-cols-2 gap-3 mt-3"><div><h3 class="font-black">📚 Books To Print</h3><div id="printBooksList" class="space-y-1 text-sm mt-1 max-h-64 overflow-auto"></div></div><div><h3 class="font-black">👧🏾 Learners To Print</h3><div id="printLearnersList" class="space-y-1 text-sm mt-1 max-h-64 overflow-auto"></div></div></div></div>
+
+<!-- LEARNERS -->
+<div id="tab-learners" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">👧🏾 Learners</h2><p class="text-xs text-gray-500">Learner ID = Class + Number. Example 10A001 = 10A, learner 1. Auto-generated.</p>
+<div class="grid md:grid-cols-4 gap-2 mt-3">
+<input id="lName" placeholder="Learner Name" class="border-2 rounded-lg px-3 py-2">
+<select id="lClass" class="border-2 rounded-lg px-3 py-2"><option>8A</option><option>8B</option><option>8C</option><option>9A</option><option>9B</option><option>9C</option><option selected>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>11C</option><option>12A</option><option>12B</option><option>12C</option></select>
+<input id="lGrade" placeholder="Grade — e.g. 10" value="10" class="border-2 rounded-lg px-3 py-2">
+<button id="addLearnerBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD LEARNER</button></div><p id="learnerMsg" class="text-sm font-bold mt-1"></p>
+<div id="learnerList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- RECORDS -->
+<div id="tab-records" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📋 Records — Who Has What</h2><p class="text-xs text-gray-500">Every Issue / Retrieve is logged here. Use Search to find a learner or book.</p>
+<div id="recordsList" class="space-y-2 mt-3 text-sm"></div></div>
+
+<!-- LOAN FORM -->
+<div id="tab-loan" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📄 Loan Form</h2><p class="text-xs text-gray-500">Print this form, learner signs when they take a book, signs again when they return it.</p>
+<div class="border-2 p-4 mt-3 text-sm" id="loanForm">
+<p class="font-black text-center text-lg">MAKHANANI LTSM — BOOK LOAN FORM</p><p class="text-center text-xs">Xintimani Group • Joy. Cherished. Mercy.</p>
+<table class="w-full border mt-3 text-sm"><tr><td class="border px-2 py-2">School: __________________</td><td class="border px-2 py-2">EMIS: __________________</td></tr><tr><td class="border px-2 py-2">Learner Name: __________________</td><td class="border px-2 py-2">Learner ID: __________________</td></tr><tr><td class="border px-2 py-2">Class: __________________</td><td class="border px-2 py-2">Grade: __________________</td></tr><tr><td class="border px-2 py-2">Book Title: __________________</td><td class="border px-2 py-2">Barcode: __________________</td></tr><tr><td class="border px-2 py-2">Date Issued: __________________</td><td class="border px-2 py-2">Due Date: __________________</td></tr></table>
+<p class="mt-3">I promise to return this book in good condition. If I lose it or damage it, my parent / guardian will pay for it.</p>
+<div class="grid grid-cols-2 gap-4 mt-4"><p>Learner Signature: __________________<br>Date: __________</p><p>Teacher / Librarian Signature: __________________<br>Date: __________</p></div>
+<div class="grid grid-cols-2 gap-4 mt-4"><p>Returned Date: __________________</p><p>Condition: ☐ Good ☐ Damaged ☐ Lost</p></div></div>
+<button onclick="window.print()" class="bg-black text-white w-full py-2 rounded-lg font-black mt-3">🖨️ PRINT LOAN FORM</button></div>
+
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM — Joy. Cherished. Mercy.</div></div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-let allBooks=[], allCopies=[], allLearners=[], allReq=[], allTx=[];
 let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-let emis=session?.emis||'700310854'; let myRole=String(session?.role||'GUEST').toUpperCase();
-let prefix=()=> emis==='700310854'?'WHS':emis==='911360870'?'GSH':'SCH';
+let myRole=String(session?.role||'GUEST').toUpperCase();
 const S=(v,fb='')=> (v===undefined||v===null)? String(fb) : String(v);
 const N=(v,fb=0)=>{ let n=Number(v); return isNaN(n)? fb : n; };
-const cleanGrade=(g)=> String(g||'').replace(/grade\s*/gi,'').trim() || '12';
-const inferDept=(b)=>{
-  let d = S(b.department||b.dept||b.Department||'').trim();
-  if(d && d!=='Mathematics') return d;
-  let t = S(b.title,'').toLowerCase();
-  if(t.includes('tourism')||t.includes('history')||t.includes('geography')||t.includes('dramatic')) return 'Humanities';
-  if(t.includes('english')||t.includes('afrikaans')||t.includes('xhosa')||t.includes('zulu')||t.includes('sotho')||t.includes('in context')||t.includes('sepedi')||t.includes('tswana')) return 'Languages';
-  if(t.includes('life sciences')||t.includes('physical sciences')||t.includes('natural sciences')||t.includes('physics')||t.includes('chemistry')||t.includes('biology')) return 'Sciences';
-  if(t.includes('accounting')||t.includes('business')||t.includes('economics')||t.includes('ems')) return 'Commerce';
-  if(t.includes('computer')||t.includes('technology')||t.includes('technical')) return 'Technology';
-  if(t.includes('life orientation')) return 'Life Orientation';
-  if(t.includes('mathematical literacy')||t.includes('maths')||t.includes('mathematics')) return 'Mathematics';
-  return 'Mathematics';
-};
-let editingBookId=null; let selectedBookIds=new Set();
-function touch(){ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(); }
-function can(roles){ if(myRole==='SUPER_ADMIN'||myRole==='ADMIN') return true; return roles.includes(myRole); }
-function applyRoleUI(){
-  document.getElementById('who').textContent= session? session.name+' • '+myRole+' • '+(session.school||'')+' • EMIS '+emis : 'Not logged in — Guest View (Login to use roles)';
-  document.getElementById('roleBadge').textContent='ROLE: '+myRole+(session?.department?' • DEPT: '+session.department:'')+(session?.classes?.length?' • CLASSES: '+session.classes.join(', '):'');
-  document.getElementById('schoolSel').value=emis; document.getElementById('schoolBadge').textContent=prefix()+' • '+prefix()+'000001';
-  let map={SUPER_ADMIN:'manuals.html#superadmin',ADMIN:'manuals.html#superadmin',PRINCIPAL:'manuals.html#principal',LIBRARIAN:'manuals.html#librarian',HOD:'manuals.html#hod',TEACHER:'manuals.html#teacher',PARENT:'manuals.html#parent'}; document.getElementById('myManualLink').href=map[myRole]||'manuals.html';
-  if(session) document.getElementById('logoutBtn').classList.remove('hidden');
-  if(myRole==='TEACHER'){ document.getElementById('addBookBtn').disabled=true; document.getElementById('addBookBtn').textContent='⛔ Teachers Cannot Add Stock — Librarian Only'; }
+let emis=S(session?.emis||'700310854');
+document.getElementById('emisSel').value=emis;
+document.getElementById('who').textContent=(session?.name||'Guest')+' • '+myRole+' • EMIS '+emis;
+if(session) { if(session.classes?.length) document.getElementById('myClass').value=session.classes[0]; if(session.department) document.getElementById('myDept').value=session.department; }
+document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
+let books=[], learners=[], requests=[], records=[];
+let stockSel=new Set(), printBookSel=new Set();
+let currentTab='stock';
+function showTab(t){ currentTab=t; document.querySelectorAll('.tabPage').forEach(p=>p.classList.add('hidden')); let el=document.getElementById('tab-'+t); if(el) el.classList.remove('hidden'); document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===t)); }
+document.querySelectorAll('.tabBtn').forEach(b=>b.addEventListener('click', ()=>showTab(b.dataset.tab)));
+if(location.hash){ let h=location.hash.replace('#',''); if(['stock','request','hod','package','teacherIssue','retrieve','print','learners','records','loan'].includes(h)) showTab(h); }
+// EMIS change
+document.getElementById('emisSel').addEventListener('change', (e)=>{ emis=e.target.value; if(session){ session.emis=emis; localStorage.setItem('makhanani_session', JSON.stringify(session)); } document.getElementById('who').textContent=(session?.name||'Guest')+' • '+myRole+' • EMIS '+emis; });
+// Filters
+['myClass','myDept','searchBox','stockFilter'].forEach(id=>document.getElementById(id).addEventListener('input', renderAll));
+function pad(n){ return String(n).padStart(6,'0'); }
+function filteredBooks(){ let q=S(document.getElementById('searchBox').value).toLowerCase(); let f=document.getElementById('stockFilter').value; return books.filter(b=> String(b.emis)===String(emis) && (!f||b.status===f) && (!q|| (S(b.title).toLowerCase().includes(q)||S(b.barcode).toLowerCase().includes(q))) ); }
+function filteredLearners(){ let q=S(document.getElementById('searchBox').value).toLowerCase(); let cls=document.getElementById('myClass').value; return learners.filter(l=> String(l.emis)===String(emis) && (!cls||l.class===cls) && (!q|| (S(l.name).toLowerCase().includes(q)||S(l.learnerId).toLowerCase().includes(q))) ); }
+function renderAll(){ renderStock(); renderRequests(); renderHod(); renderPackage(); renderIssue(); renderRetrieve(); renderPrint(); renderLearners(); renderRecords(); updateStats(); updateDropdowns(); }
+function updateStats(){ let b=books.filter(x=>String(x.emis)===String(emis)); document.getElementById('cTotal').textContent=b.length; document.getElementById('cAvail').textContent=b.filter(x=>x.status==='AVAILABLE').length; document.getElementById('cPacked').textContent=b.filter(x=>x.status==='PACKED').length; document.getElementById('cIssued').textContent=b.filter(x=>x.status==='ISSUED').length; document.getElementById('cLearners').textContent=learners.filter(x=>String(x.emis)===String(emis)).length; document.getElementById('cRequests').textContent=requests.filter(x=>String(x.emis)===String(emis) && x.status!=='REJECTED').length; }
+function updateDropdowns(){
+  let reqSel=document.getElementById('reqBook'); let cur=reqSel.value; reqSel.innerHTML='<option value="">— Pick Book —</option>'+books.filter(b=>String(b.emis)===String(emis)).map(b=>`<option value="${b.id}">${S(b.title)} — ${S(b.barcode)} (${S(b.status)})</option>`).join(''); reqSel.value=cur;
+  let issSel=document.getElementById('issueBook'); let cur2=issSel.value; issSel.innerHTML='<option value="">— Pick PACKED Book —</option>'+books.filter(b=>String(b.emis)===String(emis)&&b.status==='PACKED').map(b=>`<option value="${b.id}">${S(b.barcode)} — ${S(b.title)} — Packed for ${S(b.packedForClass||'')}</option>`).join(''); issSel.value=cur2;
+  let retSel=document.getElementById('retBook'); let cur3=retSel.value; retSel.innerHTML='<option value="">— Pick ISSUED Book —</option>'+books.filter(b=>String(b.emis)===String(emis)&&b.status==='ISSUED').map(b=>`<option value="${b.id}">${S(b.barcode)} — ${S(b.title)} — To ${S(b.issuedToName||'')} (${S(b.issuedTo||'')})</option>`).join(''); retSel.value=cur3;
+  let learnSel=document.getElementById('issueLearner'); let cur4=learnSel.value; let cls=document.getElementById('myClass').value; learnSel.innerHTML='<option value="">— Pick Learner —</option>'+learners.filter(l=>String(l.emis)===String(emis)&&(!cls||l.class===cls)).map(l=>`<option value="${l.id}">${S(l.learnerId)} — ${S(l.name)} — ${S(l.class)}</option>`).join(''); learnSel.value=cur4;
 }
-document.getElementById('schoolSel').addEventListener('change', (e)=>{ emis=e.target.value; document.getElementById('schoolBadge').textContent=prefix()+' • '+prefix()+'000001'; renderAll(); });
-document.querySelectorAll('.tabBtn').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.tabBtn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); document.querySelectorAll('.tabPanel').forEach(p=>p.classList.add('hidden')); document.getElementById('tab-'+b.dataset.tab).classList.remove('hidden'); }));
-if(location.hash){ let h=location.hash.replace('#',''); let btn=document.querySelector('[data-tab="'+h+'"]'); if(btn) btn.click(); }
-document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.reload(); });
-function renderAll(){ renderStock(); renderReq(); renderHod(); renderPackage(); renderLearners(); renderRecords(); renderCounts(); renderPrint(); renderMyPacked(); }
-function renderCounts(){
-  let copies=allCopies.filter(c=>String(c.emis)===String(emis)); let learners=allLearners.filter(l=>String(l.emis)===String(emis));
-  let avail=copies.filter(c=>c.status==='AVAILABLE').length; let issued=copies.filter(c=>c.status==='ISSUED').length; let packed=copies.filter(c=>c.status==='PACKED').length;
-  document.getElementById('cBooks').textContent=copies.length; document.getElementById('cLearners').textContent=learners.length; document.getElementById('cAvail').textContent=avail; document.getElementById('cIssued').textContent=issued; document.getElementById('cPacked').textContent=packed;
-}
-function updateSelCount(){ let el=document.getElementById('selCount'); if(el) el.textContent=selectedBookIds.size; }
 function renderStock(){
-  let fD=document.getElementById('fDept').value, fG=document.getElementById('fGrade').value, fC=document.getElementById('fCat').value, fS=document.getElementById('fStatus').value, q=(document.getElementById('globalSearch').value||'').toLowerCase();
-  let books=allBooks.filter(b=>String(b.emis)===String(emis) && (!fD||inferDept(b)===fD) && (!fG||cleanGrade(b.grade)===String(fG)) && (!fC||S(b.category)===fC));
-  if(q) books=books.filter(b=>S(b.title).toLowerCase().includes(q)||S(b.barcode).toLowerCase().includes(q));
-  let el=document.getElementById('stockList');
-  if(!books.length){ el.innerHTML='<p class="text-gray-500">No books yet for this school — Add one above.</p>'; return; }
-  el.innerHTML=books.map(b=>{
-    let copies=allCopies.filter(c=>c.bookId===b.id); let avail=copies.filter(c=>c.status==='AVAILABLE').length; let packed=copies.filter(c=>c.status==='PACKED').length; let issued=copies.filter(c=>c.status==='ISSUED').length;
-    let target=N(b.quantity, copies.length); let missing=Math.max(0, target - copies.length);
-    let low = avail<=5 ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ LOW STOCK</span>' : '';
-    let missBadge = missing>0 ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ MISSING '+missing+'</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">✅ Full Qty</span>';
-    let show = fS==='AVAILABLE'? avail>0 : fS==='PACKED'? packed>0 : fS==='ISSUED'? issued>0 : fS==='LOW'? avail<=5 : true; if(!show) return '';
-    let sortedBarcodes=[...copies].sort((a,c)=>S(a.barcode).localeCompare(S(c.barcode))).map(c=>S(c.barcode)).slice(0,3).join(', ');
-    let checked=selectedBookIds.has(b.id)?'checked':'';
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2 ${checked?'bg-purple-50 border-purple-300':''}"><div class="flex gap-2"><input type="checkbox" class="selBookChk w-5 h-5 mt-1 shrink-0" data-id="${b.id}" ${checked} onchange="window._toggleSel('${b.id}',this.checked)"><div><b>${S(b.title)}</b> • ${inferDept(b)} • Grade ${cleanGrade(b.grade)} • ${S(b.subject||inferDept(b))} • ${S(b.category)} ${low} ${missBadge}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Range: ${sortedBarcodes}${copies.length>3?' ...':''} • Author: ${S(b.author,'-')} • Qty: ${target} • Now: ${copies.length} • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._editBook('${b.id}')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._restoreOne('${b.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">🔄 RESTORE</button><button onclick="window._renumberOne('${b.id}')" class="bg-purple-600 text-white px-3 py-1 rounded font-bold text-xs">🔢 RENUMBER</button><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
-  }).join('');
-  let sel=document.getElementById('rBook'); sel.innerHTML=books.map(b=>`<option value="${b.id}">${S(b.title)} — Grade ${cleanGrade(b.grade)} — ${inferDept(b)}</option>`).join('');
-  updateSelCount();
+  let el=document.getElementById('stockList'); let list=filteredBooks();
+  el.innerHTML=list.length? list.map(b=>{
+    let badge=b.status==='AVAILABLE'?'bg-green-100 text-green-700':b.status==='PACKED'?'bg-yellow-100 text-yellow-700':'bg-blue-100 text-blue-700';
+    let extra=b.status==='ISSUED'?` • To: ${S(b.issuedToName)} (${S(b.issuedTo)}) • Class ${S(b.issuedToClass)}` : b.status==='PACKED'?` • Packed for ${S(b.packedForClass)} • Req ${S(b.requestId||'').slice(0,6)}`:'';
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><label class="flex gap-2"><input type="checkbox" ${stockSel.has(b.id)?'checked':''} onchange="window._toggleStock('${b.id}',this.checked)"> <span><b>${S(b.title)}</b> • ${S(b.barcode)}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${S(b.status)}</span> • Grade ${S(b.grade)} • ${S(b.department)} • ${S(b.author)}${extra}</span></span></label></div><div class="flex gap-1 shrink-0 flex-wrap"><button onclick="window._renumberOne('${b.id}')" class="bg-yellow-100 px-2 py-1 rounded font-bold text-xs">🔢 RENUMBER</button><button onclick="window._editBook('${b.id}')" class="bg-gray-100 px-2 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._restoreBook('${b.id}')" class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold text-xs">♻️ RESTORE</button><button onclick="window._deleteBook('${b.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">🗑️ DELETE</button></div></div>`;
+  }).join('') : '<p class="text-gray-500">No books yet — Add one above or Seed Demo Data.</p>';
 }
-window._toggleSel=(id,checked)=>{ if(checked) selectedBookIds.add(id); else selectedBookIds.delete(id); updateSelCount(); renderStock(); };
-document.getElementById('selectAllStockBtn').addEventListener('click', ()=>{
-  document.querySelectorAll('.selBookChk').forEach(c=>{ selectedBookIds.add(c.dataset.id); c.checked=true; });
-  updateSelCount(); renderStock();
+window._toggleStock=(id,checked)=>{ if(checked) stockSel.add(id); else stockSel.delete(id); renderStock(); };
+window._selectAllStock=()=>{ filteredBooks().forEach(b=>stockSel.add(b.id)); renderStock(); };
+window._clearStockSel=()=>{ stockSel.clear(); renderStock(); };
+window._deleteSelected=async()=>{ if(!stockSel.size) return alert('Tick books first'); if(!confirm('Delete '+stockSel.size+' ticked books?')) return; for(let id of [...stockSel]){ await deleteDoc(doc(db,'books',id)); } stockSel.clear(); };
+window._deleteBook=async(id)=>{ if(!confirm('Delete this book?')) return; await deleteDoc(doc(db,'books',id)); };
+window._restoreBook=async(id)=>{ let b=books.find(x=>x.id===id); if(!b) return; await updateDoc(doc(db,'books',id), {status:'AVAILABLE', issuedTo:'', issuedToName:'', issuedToClass:'', packedForClass:'', requestId:''}); alert('♻️ Restored '+S(b.barcode)+' to AVAILABLE'); };
+window._editBook=async(id)=>{ let b=books.find(x=>x.id===id); if(!b) return; let t=prompt('Title', b.title); if(t===null) return; let a=prompt('Author', b.author||''); let g=prompt('Grade', b.grade||''); await updateDoc(doc(db,'books',id), {title:t, author:a||b.author, grade:g||b.grade}); };
+window._renumberOne=async(id)=>{ let start=N(document.getElementById('renumStart').value,1); let prefix=S(document.getElementById('renumPrefix').value||'WHS'); let b=books.find(x=>x.id===id); if(!b) return; let newCode=prefix+pad(start); if(!confirm('Renumber '+S(b.barcode)+' → '+newCode+' ?\n\nRemember to REPRINT label!')) return; await updateDoc(doc(db,'books',id), {barcode:newCode}); document.getElementById('renumMsg').innerHTML='✅ Renumbered to '+newCode+' — Reprint label!'; };
+document.getElementById('renumSelectedBtn').addEventListener('click', async()=>{
+  if(!stockSel.size) return alert('☑️ Tick books first in STOCK list');
+  let start=N(document.getElementById('renumStart').value,1); let prefix=S(document.getElementById('renumPrefix').value||'WHS');
+  if(!confirm('Renumber '+stockSel.size+' SELECTED books starting at '+prefix+pad(start)+' ?')) return;
+  let sorted=[...stockSel].map(id=>books.find(b=>b.id===id)).filter(Boolean).sort((a,b)=>S(a.barcode).localeCompare(S(b.barcode)));
+  let n=start; for(let b of sorted){ await updateDoc(doc(db,'books',b.id), {barcode:prefix+pad(n)}); n++; }
+  document.getElementById('renumMsg').innerHTML='✅ Renumbered '+sorted.length+' books: '+prefix+pad(start)+' → '+prefix+pad(n-1)+' — Reprint labels!'; stockSel.clear();
 });
-document.getElementById('clearSelStockBtn').addEventListener('click', ()=>{ selectedBookIds.clear(); updateSelCount(); renderStock(); });
-// RENUMBER - SELECTED / ALL / ONE
-function catOrder(cat){ let c=S(cat,''); if(c==='Learners Book') return 1; if(c==='Workbook') return 2; if(c==='Study Guide') return 3; return 4; }
-function sortBooksForRenumber(list){ return [...list].sort((a,b)=>{ let ga=N(cleanGrade(a.grade),99), gb=N(cleanGrade(b.grade),99); if(ga!==gb) return ga-gb; let ca=catOrder(a.category), cb=catOrder(b.category); if(ca!==cb) return ca-cb; return S(a.title).localeCompare(S(b.title)); }); }
-async function renumberCopies(copiesInOrder, startNum){
-  let n=startNum;
-  for(let c of copiesInOrder){
-    let newBc=prefix()+String(n).padStart(6,'0');
-    if(S(c.barcode)!==newBc){ await updateDoc(doc(db,'bookCopies',c.id), {barcode:newBc, oldBarcode:S(c.barcode), renumberedAt:new Date().toISOString()}); }
-    n++;
-  }
-  return n;
-}
-async function renumberBooksList(books, startNum){
-  let n=startNum; let total=0;
-  for(let b of books){
-    let copies=[...allCopies.filter(c=>c.bookId===b.id)].sort((a,c)=> S(a.barcode).localeCompare(S(c.barcode)));
-    if(!copies.length) continue;
-    let firstBc=prefix()+String(n).padStart(6,'0');
-    n=await renumberCopies(copies, n); total+=copies.length;
-    await updateDoc(doc(db,'books',b.id), {barcode:firstBc, renumberedAt:new Date().toISOString()});
-  }
-  return {total, end:n-1};
-}
-document.getElementById('renumberSelectedBtn').addEventListener('click', async()=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
-  if(selectedBookIds.size===0){ alert('☑️ Tick at least 1 book first — tap the checkbox next to the book(s) you want to renumber.'); return; }
-  let start=N(document.getElementById('renumberStart').value,1); if(start<1) start=1;
-  let books=sortBooksForRenumber([...selectedBookIds].map(id=>allBooks.find(b=>b.id===id)).filter(Boolean));
-  let totalCopies=books.reduce((s,b)=> s + allCopies.filter(c=>c.bookId===b.id).length, 0);
-  let end=start+totalCopies-1;
-  // Collision warning: check if new range overlaps unticked books
-  let untickedBarcodes=new Set(allCopies.filter(c=>String(c.emis)===String(emis) && !selectedBookIds.has(c.bookId)).map(c=>N(String(c.barcode||'').replace(prefix(),''),0)));
-  let collisions=[]; for(let i=start;i<=end;i++){ if(untickedBarcodes.has(i)) collisions.push(prefix()+String(i).padStart(6,'0')); }
-  let warn=collisions.length? '\n\n⚠️ WARNING: '+collisions.length+' new numbers already exist on UNticked books (e.g. '+collisions.slice(0,3).join(', ')+').\nThose unticked books will keep their old numbers and you will have DUPLICATES.\n\nPick a FREE Start No. (e.g. after the last used number) or tick those books too.\n\nStill continue?' : '';
-  if(!confirm('🔢 RENUMBER SELECTED — '+books.length+' titles • '+totalCopies+' copies\n\nStart: '+prefix()+String(start).padStart(6,'0')+' → End: '+prefix()+String(end).padStart(6,'0')+'\n\n'+books.map(b=> S(b.title)+' — '+allCopies.filter(c=>c.bookId===b.id).length+' copies').join('\n')+'\n\n⚠️ Old stickers for THESE books will be WRONG — reprint them.'+warn)) return;
-  document.getElementById('renumberMsg').innerHTML='⏳ Renumbering '+totalCopies+' selected copies — please wait...';
-  let res=await renumberBooksList(books, start);
-  document.getElementById('renumberMsg').innerHTML='✅ Renumbered SELECTED '+res.total+' copies — '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(res.end).padStart(6,'0')+' — Now PRINT new labels for ticked books in 🖨️ PRINT 3×5';
-  selectedBookIds.clear(); updateSelCount();
-  alert('✅ Renumber Selected Done!\n\n'+res.total+' copies\n'+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(res.end).padStart(6,'0')+'\n\nNow go to PRINT 3×5 → print labels for those books only.');
+document.getElementById('renumAllBtn').addEventListener('click', async()=>{
+  let start=N(document.getElementById('renumStart').value,1); let prefix=S(document.getElementById('renumPrefix').value||'WHS');
+  let list=books.filter(b=>String(b.emis)===String(emis)).sort((a,b)=>S(a.barcode).localeCompare(S(b.barcode)));
+  if(!list.length) return alert('No books for this EMIS');
+  if(!confirm('Renumber ALL '+list.length+' books for EMIS '+emis+' starting at '+prefix+pad(start)+' ?\n\nThis closes gaps after deletes.')) return;
+  let n=start; for(let b of list){ await updateDoc(doc(db,'books',b.id), {barcode:prefix+pad(n)}); n++; }
+  document.getElementById('renumMsg').innerHTML='✅ Renumbered ALL '+list.length+' books: '+prefix+pad(start)+' → '+prefix+pad(n-1)+' — Reprint labels!';
 });
-document.getElementById('renumberAllBtn').addEventListener('click', async()=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
-  let books=sortBooksForRenumber(allBooks.filter(b=>String(b.emis)===String(emis))); let total=allCopies.filter(c=>String(c.emis)===String(emis)).length;
-  if(total===0){ alert('No copies to renumber'); return; }
-  if(!confirm('🔢 RENUMBER ALL '+total+' copies?\n\nOrder: Grade 8→12, Learners → Workbook → Study Guide, Title A-Z\nStart: '+prefix()+'000001 → '+prefix()+String(total).padStart(6,'0')+'\n\n⚠️ Old barcode stickers will be WRONG — you must PRINT new labels after.\n\nContinue?')) return;
-  document.getElementById('renumberMsg').innerHTML='⏳ Renumbering '+total+' copies — please wait, do not close...';
-  let res=await renumberBooksList(books, 1);
-  document.getElementById('renumberMsg').innerHTML='✅ Renumbered ALL '+res.total+' copies — '+prefix()+'000001 → '+prefix()+String(res.end).padStart(6,'0')+' — Now PRINT new labels in 🖨️ PRINT 3×5';
-  alert('✅ Renumber Done!\n\n'+res.total+' copies renumbered\n'+prefix()+'000001 → '+prefix()+String(res.end).padStart(6,'0')+'\n\nNow go to PRINT 3×5 → Select All → PRINT SELECTED BOOKS');
-});
-window._renumberOne=async(id)=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
-  let b=allBooks.find(x=>x.id===id); if(!b) return;
-  let copies=[...allCopies.filter(c=>c.bookId===id)].sort((a,c)=> S(a.barcode).localeCompare(S(c.barcode)));
-  if(!copies.length){ alert('No copies for this book'); return; }
-  let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let num=N(String(c.barcode||'').replace(prefix(),''),0); if(num>max) max=num; });
-  let start=max+1;
-  if(!confirm('🔢 Renumber '+S(b.title)+' ('+copies.length+' copies)?\n\nNew range: '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(start+copies.length-1).padStart(6,'0')+'\n\nOld stickers for this title will be wrong — reprint them.\n\nContinue?')) return;
-  let res=await renumberCopies(copies, start);
-  await updateDoc(doc(db,'books',id), {barcode:prefix()+String(start).padStart(6,'0')});
-  alert('✅ Renumbered '+S(b.title)+'\nNew: '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(start+copies.length-1).padStart(6,'0'));
-};
-async function restoreBookCopies(b){
-  let copies=allCopies.filter(c=>c.bookId===b.id);
-  let target=N(b.quantity, copies.length);
-  let missing=Math.max(0, target - copies.length);
-  if(missing===0) return 0;
-  let dept=inferDept(b); let grade=cleanGrade(b.grade); let subj=S(b.subject||dept,dept); let cat=S(b.category,'Learners Book');
-  let used=new Set(allCopies.filter(c=>String(c.emis)===String(emis)).map(c=>N(String(c.barcode||'').replace(prefix(),''),0)));
-  let max=Math.max(0,...used);
-  for(let i=0;i<missing;i++){
-    max++;
-    while(used.has(max)) max++;
-    used.add(max);
-    let bc=prefix()+String(max).padStart(6,'0');
-    await addDoc(collection(db,'bookCopies'), {bookId:b.id, emis:String(emis), barcode:bc, title:S(b.title), department:dept, grade:grade, subject:subj, category:cat, status:'AVAILABLE', restored:true, restoredAt:new Date().toISOString(), createdAt:new Date().toISOString()});
-  }
-  return missing;
-}
-window._restoreOne=async(id)=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
-  let b=allBooks.find(x=>x.id===id); if(!b) return;
-  let copies=allCopies.filter(c=>c.bookId===id); let target=N(b.quantity, copies.length); let missing=Math.max(0, target-copies.length);
-  if(missing===0){ alert('✅ '+S(b.title)+' is already full — '+copies.length+' / '+target); return; }
-  if(!confirm('Restore '+S(b.title)+'\nNow: '+copies.length+' • Original: '+target+' • Missing: '+missing+'\n\nCreate '+missing+' missing copies?')) return;
-  let done=await restoreBookCopies(b);
-  alert('✅ Restored '+done+' copies for '+S(b.title)+' — Now '+ (copies.length+done)+' / '+target);
-};
-document.getElementById('restoreAllBtn').addEventListener('click', async()=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
-  let books=allBooks.filter(b=>String(b.emis)===String(emis));
-  let totalMissing=books.reduce((sum,b)=> sum + Math.max(0, N(b.quantity, allCopies.filter(c=>c.bookId===b.id).length) - allCopies.filter(c=>c.bookId===b.id).length), 0);
-  if(totalMissing===0){ document.getElementById('restoreMsg').innerHTML='✅ All books already at full quantity — nothing to restore'; return; }
-  if(!confirm('Restore ALL books?\nTotal missing copies: '+totalMissing+'\n\nThis will recreate missing copies for every book. Continue?')) return;
-  document.getElementById('restoreMsg').innerHTML='⏳ Restoring '+totalMissing+' copies — please wait...';
-  let restored=0; let details=[];
-  for(let b of books){ let d=await restoreBookCopies(b); if(d>0){ restored+=d; details.push(S(b.title)+' +'+d); } }
-  document.getElementById('restoreMsg').innerHTML='✅ Restored '+restored+' copies: '+details.join(' • ');
-});
-document.getElementById('restoreReportBtn').addEventListener('click', ()=>{
-  let books=allBooks.filter(b=>String(b.emis)===String(emis));
-  let lines=books.map(b=>{ let copies=allCopies.filter(c=>c.bookId===b.id); let target=N(b.quantity, copies.length); let missing=Math.max(0,target-copies.length); return S(b.title)+' — Now '+copies.length+' / Original '+target+(missing? ' • MISSING '+missing : ' • ✅ Full'); });
-  alert('📊 STOCK CHECK — '+prefix()+'\n\n'+lines.join('\n'));
-});
-window._editBook=(id)=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only — Teachers cannot edit stock'); return; }
-  let b=allBooks.find(x=>x.id===id); if(!b){ alert('Book not found'); return; }
-  editingBookId=id;
-  document.getElementById('editBox').classList.remove('hidden');
-  document.getElementById('editBookLabel').textContent='Editing: '+S(b.title)+' • Barcode '+S(b.barcode)+' • Copies: '+allCopies.filter(c=>c.bookId===id).length+' • Original Qty: '+N(b.quantity, allCopies.filter(c=>c.bookId===id).length);
-  document.getElementById('eTitle').value=S(b.title);
-  document.getElementById('eAuthor').value=S(b.author,'');
-  document.getElementById('eDept').value=inferDept(b);
-  document.getElementById('eGrade').value=cleanGrade(b.grade);
-  document.getElementById('eSubject').value=S(b.subject||inferDept(b));
-  document.getElementById('eCategory').value=S(b.category,'Learners Book');
-  document.getElementById('eQty').value=N(b.quantity, allCopies.filter(c=>c.bookId===id).length);
-  document.getElementById('editMsg').textContent='';
-  document.getElementById('editBox').scrollIntoView({behavior:'smooth'});
-};
-document.getElementById('cancelEditBtn').addEventListener('click', ()=>{ editingBookId=null; document.getElementById('editBox').classList.add('hidden'); });
-document.getElementById('saveEditBtn').addEventListener('click', async()=>{
-  if(!editingBookId){ alert('No book selected to edit'); return; }
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
-  let title=S(document.getElementById('eTitle').value.trim()); if(!title){ document.getElementById('editMsg').innerHTML='❌ Enter Title'; return; }
-  let dept=S(document.getElementById('eDept').value,'Mathematics');
-  let grade=cleanGrade(document.getElementById('eGrade').value);
-  let subj=S(document.getElementById('eSubject').value.trim(),dept);
-  let cat=S(document.getElementById('eCategory').value,'Learners Book');
-  let author=S(document.getElementById('eAuthor').value.trim(),'');
-  let qty=N(document.getElementById('eQty').value, allCopies.filter(c=>c.bookId===editingBookId).length);
-  try{
-    await updateDoc(doc(db,'books',editingBookId), {title:title, author:author, department:dept, grade:grade, subject:subj, category:cat, quantity:qty, updatedAt:new Date().toISOString(), updatedBy:S(session?.name,'Librarian')});
-    let copies=allCopies.filter(c=>c.bookId===editingBookId);
-    for(let c of copies){ await updateDoc(doc(db,'bookCopies',c.id), {title:title, department:dept, grade:grade, subject:subj, category:cat}); }
-    let b=allBooks.find(x=>x.id===editingBookId); if(b) b.quantity=qty;
-    let missing=Math.max(0, qty - copies.length);
-    if(missing>0){ let done=await restoreBookCopies({...b, quantity:qty, title, department:dept, grade, subject:subj, category:cat}); document.getElementById('editMsg').innerHTML='✅ Saved + Restored '+done+' missing copies — '+title+' → Dept: '+dept+' • Grade '+grade+' • Qty '+qty; }
-    else document.getElementById('editMsg').innerHTML='✅ Saved — '+title+' → Dept: '+dept+' • Grade '+grade+' • Qty '+qty+' • '+copies.length+' copies updated';
-    setTimeout(()=>{ document.getElementById('editBox').classList.add('hidden'); editingBookId=null; }, 1500);
-  }catch(e){ document.getElementById('editMsg').innerHTML='❌ '+e.message; }
-});
-window._reqBook=(id)=>{ document.getElementById('rBook').value=id; document.querySelector('[data-tab="request"]').click(); };
-window._delBook=async(id)=>{ if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; } if(!confirm('Delete this book + its copies? This will LOWER the quantity permanently. Use Restore to bring them back if deleted by mistake.')) return; await deleteDoc(doc(db,'books',id)); allCopies.filter(c=>c.bookId===id).forEach(async c=>{ await deleteDoc(doc(db,'bookCopies',c.id)); }); };
 document.getElementById('addBookBtn').addEventListener('click', async()=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only — Teachers cannot add stock'); return; }
-  let title=S(document.getElementById('bTitle').value.trim()); if(!title){ document.getElementById('addBookMsg').innerHTML='❌ Enter Title'; return; }
-  let qty=N(document.getElementById('bQty').value,1); let cat=S(document.getElementById('bCategory').value,'Learners Book'); if(cat==='Workbook') qty=1;
-  let dept=S(document.getElementById('bDept').value,'Mathematics'); let grade=cleanGrade(document.getElementById('bGrade').value); let subj=S(document.getElementById('bSubject').value.trim(),dept); let author=S(document.getElementById('bAuthor').value.trim(),'');
-  let start=N(document.getElementById('bStart').value,0); if(!start){ let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let n=Number(String(c.barcode||'').replace(prefix(),''))||0; if(n>max) max=n; }); start=max+1; }
-  try{
-    let ref=await addDoc(collection(db,'books'), {emis:String(emis), school:S(emis==='700310854'?'Wordsworth High School':'George Sonto High School'), title:title, author:author, department:dept, grade:grade, subject:subj, category:cat, quantity:qty, barcode:prefix()+String(start).padStart(6,'0'), createdAt:new Date().toISOString(), by:S(session?.name,'Librarian')});
-    for(let i=0;i<qty;i++){ let n=start+i; await addDoc(collection(db,'bookCopies'), {bookId:ref.id, emis:String(emis), barcode:prefix()+String(n).padStart(6,'0'), title:title, department:dept, grade:grade, subject:subj, category:cat, status:'AVAILABLE', createdAt:new Date().toISOString()}); }
-    document.getElementById('addBookMsg').innerHTML='✅ Added '+title+' — '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(start+qty-1).padStart(6,'0');
-    document.getElementById('bTitle').value=''; document.getElementById('bStart').value='';
-  }catch(e){ document.getElementById('addBookMsg').innerHTML='❌ '+e.message; }
+  let title=S(document.getElementById('bTitle').value.trim()); let author=S(document.getElementById('bAuthor').value.trim()); let grade=S(document.getElementById('bGrade').value.trim()||'10'); let dept=S(document.getElementById('bDept').value); let qty=N(document.getElementById('bQty').value,1); let prefix=S(document.getElementById('bPrefix').value||'WHS'); let startNo=N(document.getElementById('bStartNo').value,1);
+  if(!title){ document.getElementById('bookMsg').innerHTML='❌ Enter Title'; return; }
+  if(!['LIBRARIAN','PRINCIPAL','SUPER_ADMIN','ADMIN'].includes(myRole) && session){ document.getElementById('bookMsg').innerHTML='⛔ Only Librarian / Principal / Super Admin can add stock'; return; }
+  let existing=books.filter(b=>String(b.emis)===String(emis)).map(b=>N(String(b.barcode).replace(prefix,''),0));
+  let next = startNo; while(existing.includes(next)) next++;
+  try{ for(let i=0;i<qty;i++){ let code=prefix+pad(next+i); await addDoc(collection(db,'books'), {emis:String(emis), title, author, grade, department:dept, barcode:code, status:'AVAILABLE', createdAt:new Date().toISOString(), by:S(session?.name,'')}); } document.getElementById('bookMsg').innerHTML='✅ Added '+qty+' × '+title+' — '+prefix+pad(next)+' to '+prefix+pad(next+qty-1); document.getElementById('bTitle').value=''; }catch(e){ document.getElementById('bookMsg').innerHTML='❌ '+e.message; }
 });
-document.getElementById('assignBtn').addEventListener('click', ()=>{ alert('Assign Numbers:\nG10 Learners 1 • G10 Workbook 71\nG11 Learners 72 • G11 Workbook 132\nG12 Learners 133 • G12 Workbook 213\n\nUse Start No. when adding books. Workbook Qty = 1.'); });
-document.getElementById('bulkBtn').addEventListener('click', async()=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian only'); return; }
-  let lines=document.getElementById('bulkCsv').value.trim().split('\n').filter(Boolean); let done=0;
-  for(let line of lines){ let parts=line.split(',').map(s=>S((s||'').trim())); let [title,author,grade,qty,cat,dept,subj]=parts; if(!title) continue; qty=N(qty,1); if(cat==='Workbook') qty=1; cat=S(cat,'Learners Book'); dept=S(dept,'Mathematics'); grade=cleanGrade(grade); subj=S(subj,dept); author=S(author,''); let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let n=Number(String(c.barcode||'').replace(prefix(),''))||0; if(n>max) max=n; }); let start=max+1+done*100; let ref=await addDoc(collection(db,'books'), {emis:String(emis), title, author, grade, quantity:qty, category:cat, department:dept, subject:subj, barcode:prefix()+String(start).padStart(6,'0'), createdAt:new Date().toISOString(), by:S(session?.name,'Bulk')}); for(let i=0;i<qty;i++){ await addDoc(collection(db,'bookCopies'), {bookId:ref.id, emis:String(emis), barcode:prefix()+String(start+i).padStart(6,'0'), title, department:dept, grade, category:cat, subject:subj, status:'AVAILABLE', createdAt:new Date().toISOString()}); } done++; }
-  document.getElementById('bulkMsg').innerHTML='✅ Bulk added '+done+' titles';
-});
-document.getElementById('globalSearch').addEventListener('input', renderStock); ['fDept','fGrade','fCat','fStatus','fLowOnly'].forEach(id=>document.getElementById(id).addEventListener('change', renderStock));
-function renderReq(){
-  let list=allReq.filter(r=>String(r.emis)===String(emis));
-  if(myRole==='TEACHER' && session?.classes?.length) list=list.filter(r=>session.classes.includes(r.className));
-  if(myRole==='HOD' && session?.department) list=list.filter(r=>S(r.department)===session.department);
-  let el=document.getElementById('myReqList'); el.innerHTML=list.length? list.map(r=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(r.bookTitle)}</b> • Class ${S(r.className)} • Qty ${N(r.qty)} • By ${S(r.teacher)} • ${S(r.status)}</div><span class="text-xs">${r.createdAt?new Date(r.createdAt).toLocaleString():''}</span></div>`).join('') : '<p class="text-gray-500">No requests yet.</p>';
+function renderRequests(){
+  let el=document.getElementById('reqList'); let list=requests.filter(r=>String(r.emis)===String(emis));
+  el.innerHTML=list.length? list.map(r=>`<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(r.title)}</b> • ${S(r.class)} • Qty ${S(r.qty)} • Approved ${S(r.approvedQty??'—')}<br><span class="text-xs">By ${S(r.by)} • Dept ${S(r.department)} • <b>${S(r.status)}</b> ${r.reason? '• '+S(r.reason):''}</span></div><div class="text-xs">${S(r.createdAt||'').slice(0,10)}</div></div>`).join('') : '<p class="text-gray-500">No requests yet.</p>';
 }
 document.getElementById('reqBtn').addEventListener('click', async()=>{
-  let bookId=document.getElementById('rBook').value; let book=allBooks.find(b=>b.id===bookId); if(!book){ document.getElementById('reqMsg').innerHTML='❌ Pick a book'; return; }
-  let className=S(document.getElementById('rClass').value); let qty=N(document.getElementById('rQty').value,1);
-  if(myRole==='TEACHER' && session?.classes?.length && !session.classes.includes(className)){ document.getElementById('reqMsg').innerHTML='⛔ Teacher — You can only request for YOUR classes: '+session.classes.join(', '); return; }
-  let safeDept = inferDept(book);
-  let safeGrade = cleanGrade(book.grade || book.Grade);
-  let safeTitle = S(book.title, 'Untitled Book');
-  let safeSubject = S(book.subject || safeDept, safeDept);
-  try{ await addDoc(collection(db,'requests'), {emis:String(emis), bookId:String(bookId||''), bookTitle:String(safeTitle), department:String(safeDept), grade:String(safeGrade), subject:String(safeSubject), className:String(className||''), qty:qty, approvedQty:0, teacher:String(document.getElementById('rTeacher').value.trim()||session?.name||'Teacher'), teacherUid:String(auth.currentUser?.uid||''), status:'PENDING', createdAt:new Date().toISOString()}); document.getElementById('reqMsg').innerHTML='✅ Request sent to HOD — '+safeTitle+' • '+className+' • Qty '+qty; }catch(e){ document.getElementById('reqMsg').innerHTML='❌ '+e.message; }
+  let bookId=document.getElementById('reqBook').value; let cls=document.getElementById('reqClass').value; let qty=N(document.getElementById('reqQty').value,1);
+  if(!bookId){ document.getElementById('reqMsg').innerHTML='❌ Pick a Book'; return; }
+  let myCls=document.getElementById('myClass').value; if(myCls && myCls!==cls){ document.getElementById('reqMsg').innerHTML='⛔ You can ONLY request for YOUR class ('+myCls+')'; return; }
+  let b=books.find(x=>x.id===bookId); if(!b) return;
+  await addDoc(collection(db,'requests'), {emis:String(emis), bookId, title:b.title, department:b.department, class:cls, qty, approvedQty:0, status:'PENDING', by:S(session?.name,'Teacher'), byRole:myRole, createdAt:new Date().toISOString()});
+  document.getElementById('reqMsg').innerHTML='✅ Request sent to HOD: '+qty+' × '+S(b.title)+' for '+cls;
 });
 function renderHod(){
-  let list=allReq.filter(r=>String(r.emis)===String(emis) && r.status==='PENDING');
-  if(myRole==='HOD' && session?.department) list=list.filter(r=>S(r.department)===session.department);
-  let deptFilter=document.getElementById('hodDeptFilter').value; if(deptFilter) list=list.filter(r=>S(r.department)===deptFilter);
-  let el=document.getElementById('hodList'); el.innerHTML=list.length? list.map(r=>`<div class="border rounded-xl p-3"><b>${S(r.bookTitle)}</b> • ${S(r.department,'Mathematics')} • Grade ${cleanGrade(r.grade)} • Class ${S(r.className)} • Requested ${N(r.qty)} • By ${S(r.teacher)}<br><div class="flex gap-2 mt-2"><input id="ap-${r.id}" type="number" value="${N(r.qty)}" min="1" max="${N(r.qty)}" class="border-2 rounded px-2 py-1 w-24"><button onclick="window._approve('${r.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">✅ APPROVE</button><button onclick="window._reject('${r.id}')" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">❌ REJECT</button></div></div>`).join('') : '<p class="text-gray-500">No pending requests for your Dept.</p>';
+  let el=document.getElementById('hodList'); let dept=document.getElementById('myDept').value; let list=requests.filter(r=>String(r.emis)===String(emis) && (!dept||r.department===dept));
+  el.innerHTML=list.length? list.map(r=>`<div class="border rounded-xl p-3"><div class="flex justify-between gap-2"><div><b>${S(r.title)}</b> • ${S(r.class)} • Requested ${S(r.qty)} • Approved ${S(r.approvedQty??'—')}<br><span class="text-xs">By ${S(r.by)} • Dept ${S(r.department)} • <b>${S(r.status)}</b></span></div><div class="flex gap-1 shrink-0"><input id="hodQty-${r.id}" type="number" value="${r.approvedQty||r.qty}" class="border-2 rounded px-2 py-1 w-20"><button onclick="window._hodApprove('${r.id}')" class="bg-green-600 text-white px-2 py-1 rounded font-bold text-xs">✅ APPROVE</button><button onclick="window._hodReject('${r.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">❌ REJECT</button></div></div></div>`).join('') : '<p class="text-gray-500">No requests for your Department. Set MY DEPT above.</p>';
 }
-window._approve=async(id)=>{ if(!can(['HOD','PRINCIPAL','LIBRARIAN','SUPER_ADMIN'])){ alert('⛔ HOD / Principal only'); return; } let r=allReq.find(x=>x.id===id); if(myRole==='HOD' && session?.department && S(r.department)!==session.department){ alert('⛔ HOD — You can only approve YOUR Dept: '+session.department); return; } let q=N(document.getElementById('ap-'+id).value, N(r.qty,1)); await updateDoc(doc(db,'requests',id), {status:'APPROVED', approvedQty:q, approvedBy:S(session?.name,'HOD'), approvedAt:new Date().toISOString()}); };
-window._reject=async(id)=>{ if(!can(['HOD','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ HOD only'); return; } await updateDoc(doc(db,'requests',id), {status:'REJECTED', approvedBy:S(session?.name,'HOD')}); };
-document.getElementById('hodRefresh').addEventListener('click', renderHod); document.getElementById('hodDeptFilter').addEventListener('change', renderHod);
+window._hodApprove=async(id)=>{ let r=requests.find(x=>x.id===id); if(!r) return; let qty=N(document.getElementById('hodQty-'+id).value, r.qty); if(qty<0||qty>r.qty) return alert('Approved qty must be 0 to '+r.qty); await updateDoc(doc(db,'requests',id), {status:'APPROVED', approvedQty:qty, approvedBy:S(session?.name,''), approvedAt:new Date().toISOString()}); };
+window._hodReject=async(id)=>{ let reason=prompt('Reason for rejection?','Not enough books'); if(reason===null) return; await updateDoc(doc(db,'requests',id), {status:'REJECTED', reason, rejectedBy:S(session?.name,'')}); };
 function renderPackage(){
-  let list=allReq.filter(r=>String(r.emis)===String(emis) && r.status==='APPROVED');
-  let el=document.getElementById('packageList'); el.innerHTML=list.length? list.map(r=>{ let avail=allCopies.filter(c=>c.bookId===r.bookId && c.status==='AVAILABLE').length; return `<div class="border rounded-xl p-3 flex justify-between"><div><b>${S(r.bookTitle)}</b> • Class ${S(r.className)} • Approved ${N(r.approvedQty||r.qty)} • Avail ${avail} • By ${S(r.teacher)} • HOD ${S(r.approvedBy)}</div><button onclick="window._package('${r.id}')" class="bg-yellow-500 text-black px-3 py-1 rounded font-black text-xs shrink-0">📦 PACKAGE</button></div>`; }).join('') : '<p class="text-gray-500">No approved requests to package — HOD must approve first.</p>';
+  let el=document.getElementById('packageList'); let list=requests.filter(r=>String(r.emis)===String(emis)&&r.status==='APPROVED');
+  el.innerHTML=list.length? list.map(r=>{
+    let packed=books.filter(b=>String(b.emis)===String(emis)&&b.requestId===r.id).length;
+    let avail=books.filter(b=>String(b.emis)===String(emis)&&b.title===r.title&&b.status==='AVAILABLE').length;
+    return `<div class="border rounded-xl p-3"><div class="flex justify-between gap-2"><div><b>${S(r.title)}</b> • ${S(r.class)} • Approved ${S(r.approvedQty)} • Packed ${packed}/${S(r.approvedQty)} • Available ${avail}<br><span class="text-xs">By ${S(r.by)} • Dept ${S(r.department)}</span></div><div class="flex gap-1 shrink-0"><input id="packQty-${r.id}" type="number" value="${Math.min(r.approvedQty-packed, avail)}" class="border-2 rounded px-2 py-1 w-20"><button onclick="window._pack('${r.id}')" class="bg-yellow-400 text-black px-3 py-1 rounded font-bold text-xs">📦 PACK</button></div></div></div>`;
+  }).join('') : '<p class="text-gray-500">No APPROVED requests to pack. HOD must approve first.</p>';
 }
-window._package=async(id)=>{
-  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian only — HOD / Teacher cannot package'); return; }
-  let r=allReq.find(x=>x.id===id); let need=N(r.approvedQty||r.qty,1); let avail=allCopies.filter(c=>c.bookId===r.bookId && c.status==='AVAILABLE').slice(0,need);
-  if(avail.length<need){ alert('⚠️ Only '+avail.length+' available, need '+need); }
-  for(let c of avail){ await updateDoc(doc(db,'bookCopies',c.id), {status:'PACKED', packedFor:S(r.className), packedForTeacher:S(r.teacher), requestId:S(r.id), packedAt:new Date().toISOString()}); }
-  await updateDoc(doc(db,'requests',id), {status:'PACKED', packedQty:avail.length});
-  alert('✅ Packaged '+avail.length+' copies for '+S(r.className)+' • '+S(r.teacher));
+window._pack=async(reqId)=>{
+  let r=requests.find(x=>x.id===reqId); if(!r) return;
+  if(!['LIBRARIAN','PRINCIPAL','SUPER_ADMIN','ADMIN'].includes(myRole) && session) return alert('⛔ Only Librarian can pack');
+  let qty=N(document.getElementById('packQty-'+reqId).value,1); if(qty<=0) return alert('Enter qty > 0');
+  let packed=books.filter(b=>String(b.emis)===String(emis)&&b.requestId===reqId).length;
+  if(packed+qty>r.approvedQty) return alert('⛔ Cannot pack more than Approved ('+r.approvedQty+'). Already packed '+packed);
+  let avail=books.filter(b=>String(b.emis)===String(emis)&&b.title===r.title&&b.status==='AVAILABLE').sort((a,b)=>S(a.barcode).localeCompare(S(b.barcode))).slice(0,qty);
+  if(avail.length<qty) return alert('⛔ Only '+avail.length+' AVAILABLE for '+r.title);
+  for(let b of avail){ await updateDoc(doc(db,'books',b.id), {status:'PACKED', packedForClass:r.class, requestId:reqId, packedBy:S(session?.name,''), packedAt:new Date().toISOString()}); }
+  alert('✅ Packed '+qty+' × '+S(r.title)+' for '+r.class);
 };
-async function doIssue(barcode, learnerId, className, by, mode){
-  let copy=allCopies.find(c=>String(c.emis)===String(emis) && c.barcode===barcode);
-  if(!copy){ return '❌ Barcode not found: '+barcode; }
-  let learner=allLearners.find(l=>l.id===learnerId || l.learnerId===learnerId); if(!learner) return '❌ Learner not found';
-  if(mode==='TEACHER'){
-    if(copy.status!=='PACKED') return '⛔ Teacher Issue Blocked — Book is '+copy.status+', not PACKED. Librarian must PACKAGE first.';
-    if(myRole==='TEACHER' && session?.classes?.length && !session.classes.includes(className)) return '⛔ Teacher — You can only issue for YOUR classes: '+session.classes.join(', ');
-    if(copy.packedFor && copy.packedFor!==className) return '⛔ Packed for '+copy.packedFor+', not '+className;
-  }
-  if(mode==='HOD'){
-    if(copy.status!=='PACKED') return '⛔ HOD Issue Blocked — Book must be PACKED';
-    if(myRole==='HOD' && session?.department && S(copy.department)!==session.department) return '⛔ HOD — Book Dept '+S(copy.department)+' ≠ Your Dept '+session.department;
-  }
-  let gradeOfLearner=String(learner.grade||learner.className||'').replace(/\D/g,''); let gradeOfBook=String(cleanGrade(copy.grade||'')).replace(/\D/g,''); if(gradeOfLearner && gradeOfBook && gradeOfLearner!==gradeOfBook) return '⛔ Grade Mismatch — Learner Grade '+gradeOfLearner+' ≠ Book Grade '+gradeOfBook;
-  let already=allTx.find(t=>t.copyId===copy.id && t.type==='ISSUE' && !t.returned && String(t.emis)===String(emis)); if(already) return '⛔ Already ISSUED to '+S(already.learnerName);
-  let dup=allTx.find(t=>t.learnerId===learner.id && t.bookId===copy.bookId && t.type==='ISSUE' && !t.returned); if(dup) return '⛔ 1 Learner 1 Title — Learner already has this title';
-  await updateDoc(doc(db,'bookCopies',copy.id), {status:'ISSUED', issuedTo:learner.id, issuedToName:S(learner.name), issuedClass:S(className)});
-  await addDoc(collection(db,'transactions'), {emis:String(emis), type:'ISSUE', copyId:S(copy.id), bookId:S(copy.bookId), barcode:S(copy.barcode), title:S(copy.title), learnerId:S(learner.id), learnerName:S(learner.name), className:S(className), by:S(by), mode:S(mode), returned:false, createdAt:new Date().toISOString()});
-  return '✅ Issued '+S(copy.barcode)+' — '+S(copy.title)+' → '+S(learner.name)+' ('+S(className)+') by '+S(by);
+function renderIssue(){
+  let el=document.getElementById('issueList'); let list=books.filter(b=>String(b.emis)===String(emis)&&b.status==='PACKED');
+  el.innerHTML=list.length? list.map(b=>`<div class="border rounded-xl p-3"><b>${S(b.barcode)}</b> — ${S(b.title)} • Packed for ${S(b.packedForClass)} • Grade ${S(b.grade)}</div>`).join('') : '<p class="text-gray-500">No PACKED books to issue. Librarian must pack first.</p>';
 }
-document.getElementById('tiBtn').addEventListener('click', async()=>{ let msg=await doIssue(S(document.getElementById('tiBarcode').value.trim().toUpperCase()), document.getElementById('tiLearner').value, document.getElementById('tiClass').value, S(document.getElementById('tiTeacher').value.trim()||session?.name||'Teacher'), 'TEACHER'); document.getElementById('tiMsg').innerHTML=msg; });
-document.getElementById('hiBtn').addEventListener('click', async()=>{ let msg=await doIssue(S(document.getElementById('hiBarcode').value.trim().toUpperCase()), document.getElementById('hiLearner').value, document.getElementById('hiClass').value, S(document.getElementById('hiHod').value.trim()||session?.name||'HOD'), 'HOD'); document.getElementById('hiMsg').innerHTML=msg; });
-document.getElementById('liBtn').addEventListener('click', async()=>{ let msg=await doIssue(S(document.getElementById('liBarcode').value.trim().toUpperCase()), document.getElementById('liLearner').value, document.getElementById('liClass').value, S(document.getElementById('liLib').value.trim()||session?.name||'Librarian'), 'LIBRARIAN'); document.getElementById('liMsg').innerHTML=msg; });
-function renderMyPacked(){
-  let list=allCopies.filter(c=>String(c.emis)===String(emis) && c.status==='PACKED');
-  if(myRole==='TEACHER' && session?.classes?.length) list=list.filter(c=>session.classes.includes(c.packedFor));
-  document.getElementById('myPackedList').innerHTML=list.length? list.map(c=>`<div>📦 ${S(c.barcode)} — ${S(c.title)} • Packed for ${S(c.packedFor)} • ${S(c.packedForTeacher)} <button onclick="document.getElementById('tiBarcode').value='${S(c.barcode)}';document.querySelector('[data-tab=teacherIssue]').click()" class="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-bold">Issue This →</button></div>`).join('') : 'No Packed books for your class yet.';
+document.getElementById('issueBtn').addEventListener('click', async()=>{
+  let bookId=document.getElementById('issueBook').value; let scan=S(document.getElementById('issueScan').value.trim()); let learnerId=document.getElementById('issueLearner').value;
+  let b = scan? books.find(x=>String(x.emis)===String(emis)&&S(x.barcode).toUpperCase()===scan.toUpperCase()) : books.find(x=>x.id===bookId);
+  if(!b){ document.getElementById('issueMsg').innerHTML='❌ Pick / Scan a PACKED book'; return; }
+  if(b.status!=='PACKED'){ document.getElementById('issueMsg').innerHTML='⛔ BLOCKED: '+S(b.barcode)+' is '+S(b.status)+' — NOT PACKED. Librarian must pack first.'; return; }
+  if(!learnerId){ document.getElementById('issueMsg').innerHTML='❌ Pick a Learner'; return; }
+  let l=learners.find(x=>x.id===learnerId); if(!l) return;
+  if(b.packedForClass && l.class!==b.packedForClass){ document.getElementById('issueMsg').innerHTML='⛔ BLOCKED: Packed for '+b.packedForClass+', learner is in '+l.class; return; }
+  if(String(b.grade)!==String(l.grade)){ document.getElementById('issueMsg').innerHTML='⛔ BLOCKED: Book Grade '+b.grade+', Learner Grade '+l.grade+' — Must match'; return; }
+  let already=books.find(x=>String(x.emis)===String(emis)&&x.status==='ISSUED'&&x.issuedTo===l.learnerId&&x.title===b.title);
+  if(already){ document.getElementById('issueMsg').innerHTML='⛔ BLOCKED: '+S(l.name)+' already has '+S(b.title)+' ('+S(already.barcode)+') — 1 Learner = 1 Title'; return; }
+  await updateDoc(doc(db,'books',b.id), {status:'ISSUED', issuedTo:l.learnerId, issuedToName:l.name, issuedToClass:l.class, issuedBy:S(session?.name,''), issuedAt:new Date().toISOString()});
+  await addDoc(collection(db,'records'), {emis:String(emis), type:'ISSUE', barcode:b.barcode, title:b.title, learnerId:l.learnerId, learnerName:l.name, class:l.class, by:S(session?.name,''), createdAt:new Date().toISOString()});
+  document.getElementById('issueMsg').innerHTML='✅ Issued '+S(b.barcode)+' — '+S(b.title)+' → '+S(l.name)+' ('+S(l.learnerId)+')'; document.getElementById('issueScan').value='';
+});
+function renderRetrieve(){
+  let el=document.getElementById('retList'); let list=books.filter(b=>String(b.emis)===String(emis)&&b.status==='ISSUED');
+  el.innerHTML=list.length? list.map(b=>`<div class="border rounded-xl p-3"><b>${S(b.barcode)}</b> — ${S(b.title)} • To ${S(b.issuedToName)} (${S(b.issuedTo)}) • Class ${S(b.issuedToClass)}</div>`).join('') : '<p class="text-gray-500">No ISSUED books to retrieve.</p>';
 }
 document.getElementById('retBtn').addEventListener('click', async()=>{
-  let bc=S(document.getElementById('retBarcode').value.trim().toUpperCase()); let copy=allCopies.find(c=>String(c.emis)===String(emis) && c.barcode===bc);
-  if(!copy){ document.getElementById('retMsg').innerHTML='❌ Barcode not found'; return; }
-  if(copy.status!=='ISSUED'){ document.getElementById('retMsg').innerHTML='⛔ Not ISSUED — Status: '+copy.status; return; }
-  let tx=allTx.find(t=>t.copyId===copy.id && t.type==='ISSUE' && !t.returned);
-  await updateDoc(doc(db,'bookCopies',copy.id), {status:'AVAILABLE', issuedTo:'', issuedToName:''});
-  if(tx) await updateDoc(doc(db,'transactions',tx.id), {returned:true, returnedAt:new Date().toISOString(), returnedBy:S(document.getElementById('retBy').value.trim()||session?.name||'Teacher')});
-  await addDoc(collection(db,'transactions'), {emis:String(emis), type:'RETRIEVE', copyId:S(copy.id), bookId:S(copy.bookId), barcode:S(copy.barcode), title:S(copy.title), learnerId:S(tx?.learnerId,''), learnerName:S(tx?.learnerName,''), className:S(tx?.className,''), by:S(document.getElementById('retBy').value.trim()||session?.name||'Teacher'), returned:true, createdAt:new Date().toISOString()});
-  document.getElementById('retMsg').innerHTML='✅ Retrieved '+bc+' → Library — Now AVAILABLE';
+  let bookId=document.getElementById('retBook').value; let scan=S(document.getElementById('retScan').value.trim());
+  let b = scan? books.find(x=>String(x.emis)===String(emis)&&S(x.barcode).toUpperCase()===scan.toUpperCase()) : books.find(x=>x.id===bookId);
+  if(!b){ document.getElementById('retMsg').innerHTML='❌ Pick / Scan an ISSUED book'; return; }
+  if(b.status!=='ISSUED'){ document.getElementById('retMsg').innerHTML='⛔ '+S(b.barcode)+' is '+S(b.status)+' — not ISSUED'; return; }
+  await updateDoc(doc(db,'books',b.id), {status:'AVAILABLE', issuedTo:'', issuedToName:'', issuedToClass:'', packedForClass:'', requestId:''});
+  await addDoc(collection(db,'records'), {emis:String(emis), type:'RETRIEVE', barcode:b.barcode, title:b.title, learnerId:b.issuedTo, learnerName:b.issuedToName, class:b.issuedToClass, by:S(session?.name,''), createdAt:new Date().toISOString()});
+  document.getElementById('retMsg').innerHTML='✅ Retrieved '+S(b.barcode)+' from '+S(b.issuedToName)+' — Now AVAILABLE'; document.getElementById('retScan').value='';
 });
 function renderPrint(){
-  let copies=allCopies.filter(c=>String(c.emis)===String(emis));
-  let el=document.getElementById('printList'); el.innerHTML=copies.slice(0,500).map(c=>`<label class="flex gap-2 items-center border-b py-1"><input type="checkbox" class="printChk" value="${S(c.barcode)}"> ${S(c.barcode)} — ${S(c.title)} • ${S(c.status)}</label>`).join('') || '<p>No books to print</p>';
+  let pb=document.getElementById('printBooksList'); let list=filteredBooks().slice(0,100);
+  pb.innerHTML=list.map(b=>`<label class="flex gap-2 border rounded px-2 py-1"><input type="checkbox" onchange="window._togglePrintBook('${b.id}',this.checked)" ${printBookSel.has(b.id)?'checked':''}> ${S(b.barcode)} — ${S(b.title)}</label>`).join('');
+  let pl=document.getElementById('printLearnersList'); let ll=filteredLearners().slice(0,100);
+  pl.innerHTML=ll.map(l=>`<div class="border rounded px-2 py-1">${S(l.learnerId)} — ${S(l.name)} — ${S(l.class)}</div>`).join('') || '<p class="text-gray-500">No learners for this class.</p>';
 }
-document.getElementById('selectAllPrint').addEventListener('click', ()=>{ document.querySelectorAll('.printChk').forEach(c=>c.checked=true); });
-function doPrintLabels(items, title){
-  let html='<div style="font-family:sans-serif"><h2 style="text-align:center">'+title+'</h2><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
-  items.forEach(it=>{ html+='<div style="border:2px solid #000;padding:10px;text-align:center;border-radius:8px"><div style="font-weight:900;font-size:18px">'+it.code+'</div><div style="font-size:12px">'+it.label+'</div><div style="font-size:11px">'+it.sub+'</div></div>'; });
-  html+='</div><p style="text-align:center;font-size:11px">Makhanani LTSM • Xintimani Group • '+prefix()+'</p></div>';
-  document.getElementById('printSheet').innerHTML=html; window.print();
-}
-document.getElementById('printBooksBtn').addEventListener('click', ()=>{ let sel=[...document.querySelectorAll('.printChk:checked')].map(c=>c.value); if(!sel.length){ alert('Tick at least 1 book'); return; } let items=sel.map(bc=>{ let c=allCopies.find(x=>x.barcode===bc); return {code:bc, label:S(c?.title), sub:inferDept(c||{})+' • Grade '+cleanGrade(c?.grade)}; }); doPrintLabels(items, '📚 Book Barcodes — '+prefix()); });
-document.getElementById('printLearnersBtn').addEventListener('click', ()=>{ let learners=allLearners.filter(l=>String(l.emis)===String(emis)); if(!learners.length){ alert('No learners'); return; } let items=learners.slice(0,45).map(l=>({code:S(l.learnerId||l.id), label:S(l.name), sub:S(l.className)})); doPrintLabels(items, '👩‍🎓 Learner IDs — '+prefix()); });
-document.getElementById('addLearnerBtn').addEventListener('click', async()=>{
-  let name=S(document.getElementById('lName').value.trim()); if(!name){ document.getElementById('lMsg').innerHTML='❌ Enter Learner Name'; return; }
-  let className=S(document.getElementById('lClass').value); let grade=cleanGrade(document.getElementById('lGrade').value); let custom=S(document.getElementById('lId').value.trim().toUpperCase());
-  let learnerId=custom; if(!learnerId){ let same=allLearners.filter(l=>String(l.emis)===String(emis) && l.className===className); let n=same.length+1; learnerId=className+String(n).padStart(3,'0'); }
-  if(allLearners.find(l=>String(l.emis)===String(emis) && l.learnerId===learnerId)){ document.getElementById('lMsg').innerHTML='⛔ Duplicate Learner ID '+learnerId; return; }
-  try{ await addDoc(collection(db,'learners'), {emis:String(emis), learnerId:String(learnerId), name:String(name), grade:String(grade), className:String(className), parent:String(document.getElementById('lParent').value.trim()||''), createdAt:new Date().toISOString(), by:String(session?.name||'Librarian')}); document.getElementById('lMsg').innerHTML='✅ Added '+name+' — '+learnerId; document.getElementById('lName').value=''; document.getElementById('lId').value=''; }catch(e){ document.getElementById('lMsg').innerHTML='❌ '+e.message; }
-});
+window._togglePrintBook=(id,checked)=>{ if(checked) printBookSel.add(id); else printBookSel.delete(id); };
+window._printBooks=()=>{
+  let list=[...printBookSel].map(id=>books.find(b=>b.id===id)).filter(Boolean);
+  if(!list.length) return alert('Tick books to print');
+  let html=list.map(b=>`<div style="border:2px solid #000;padding:8px;text-align:center;width:30%;display:inline-block;margin:4px;vertical-align:top"><b style="font-size:18px">${S(b.barcode)}</b><br>${S(b.title)}<br><span style="font-size:11px">Grade ${S(b.grade)} • ${S(b.department)} • EMIS ${emis}</span></div>`).join('');
+  document.getElementById('printArea').innerHTML='<h3 class="font-black">📚 Book Labels — 3×5</h3><div>'+html+'</div>';
+  window.print();
+};
+window._printLearners=()=>{
+  let list=filteredLearners(); if(!list.length) return alert('No learners for this class');
+  let html=list.map(l=>`<div style="border:2px solid #000;padding:8px;text-align:center;width:30%;display:inline-block;margin:4px;vertical-align:top"><b style="font-size:18px">${S(l.learnerId)}</b><br>${S(l.name)}<br><span style="font-size:11px">Class ${S(l.class)} • Grade ${S(l.grade)} • EMIS ${emis}</span></div>`).join('');
+  document.getElementById('printArea').innerHTML='<h3 class="font-black">👧🏾 Learner Labels — 3×5</h3><div>'+html+'</div>';
+  window.print();
+};
 function renderLearners(){
-  let list=allLearners.filter(l=>String(l.emis)===String(emis));
-  let el=document.getElementById('learnerList'); el.innerHTML=list.length? list.map(l=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(l.learnerId)}</b> — ${S(l.name)} • Grade ${cleanGrade(l.grade)} • ${S(l.className)} ${l.parent?'• Parent: '+S(l.parent):''}</div><span class="text-xs">${l.createdAt?new Date(l.createdAt).toLocaleDateString():''}</span></div>`).join('') : '<p class="text-gray-500">No learners yet.</p>';
-  let opts=list.map(l=>`<option value="${l.id}">${S(l.learnerId)} — ${S(l.name)} • ${S(l.className)}</option>`).join('');
-  ['tiLearner','hiLearner','liLearner'].forEach(id=>{ document.getElementById(id).innerHTML=opts; });
+  let el=document.getElementById('learnerList'); let list=filteredLearners();
+  el.innerHTML=list.length? list.map(l=>{
+    let has=books.filter(b=>String(b.emis)===String(emis)&&b.status==='ISSUED'&&b.issuedTo===l.learnerId).map(b=>S(b.barcode)).join(', ')||'None';
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(l.learnerId)}</b> — ${S(l.name)} • ${S(l.class)} • Grade ${S(l.grade)}<br><span class="text-xs">Has: ${has}</span></div><div><button onclick="window._deleteLearner('${l.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">🗑️ DELETE</button></div></div>`;
+  }).join('') : '<p class="text-gray-500">No learners yet — Add one above.</p>';
 }
+window._deleteLearner=async(id)=>{ if(!confirm('Delete this learner?')) return; await deleteDoc(doc(db,'learners',id)); };
+document.getElementById('addLearnerBtn').addEventListener('click', async()=>{
+  let name=S(document.getElementById('lName').value.trim()); let cls=document.getElementById('lClass').value; let grade=S(document.getElementById('lGrade').value.trim()||'10');
+  if(!name){ document.getElementById('learnerMsg').innerHTML='❌ Enter Learner Name'; return; }
+  let sameClass=learners.filter(l=>String(l.emis)===String(emis)&&l.class===cls);
+  let next=sameClass.length+1; let lid=cls+String(next).padStart(3,'0');
+  while(learners.some(l=>l.learnerId===lid)){ next++; lid=cls+String(next).padStart(3,'0'); }
+  await addDoc(collection(db,'learners'), {emis:String(emis), name, class:cls, grade, learnerId:lid, createdAt:new Date().toISOString(), by:S(session?.name,'')});
+  document.getElementById('learnerMsg').innerHTML='✅ Added '+name+' — ID '+lid; document.getElementById('lName').value='';
+});
 function renderRecords(){
-  let cls=S(document.getElementById('recClass').value); document.getElementById('recClassLabel').textContent=cls;
-  let list=allTx.filter(t=>String(t.emis)===String(emis) && t.className===cls && t.type==='ISSUE');
-  let el=document.getElementById('recordList'); el.innerHTML=list.length? list.map(t=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(t.barcode)}</b> — ${S(t.title)} → ${S(t.learnerName)} • ${S(t.className)} • By ${S(t.by)} ${t.returned?'• ✅ Returned':''}</div><span class="text-xs">${t.createdAt?new Date(t.createdAt).toLocaleString():''}</span></div>`).join('') : '<p class="text-gray-500">No Issue Record for '+cls+' yet.</p>';
+  let el=document.getElementById('recordsList'); let q=S(document.getElementById('searchBox').value).toLowerCase();
+  let list=records.filter(r=>String(r.emis)===String(emis) && (!q|| (S(r.learnerName).toLowerCase().includes(q)||S(r.barcode).toLowerCase().includes(q)||S(r.title).toLowerCase().includes(q)))).slice(0,200);
+  el.innerHTML=list.length? list.map(r=>`<div class="border rounded-xl p-3"><b>${S(r.type)}</b> • ${S(r.barcode)} — ${S(r.title)} • ${S(r.learnerName)} (${S(r.learnerId)}) • ${S(r.class)}<br><span class="text-xs">By ${S(r.by)} • ${S(r.createdAt||'').slice(0,16).replace('T',' ')}</span></div>`).join('') : '<p class="text-gray-500">No records yet.</p>';
 }
-document.getElementById('recClass').addEventListener('change', renderRecords);
-document.getElementById('printRecordBtn').addEventListener('click', ()=>{ let cls=S(document.getElementById('recClass').value); let list=allTx.filter(t=>String(t.emis)===String(emis) && t.className===cls && t.type==='ISSUE'); let html='<h2 style="text-align:center">📄 Issue Record — Class '+cls+' — '+prefix()+'</h2><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th style="border:1px solid #000;padding:6px">Barcode</th><th style="border:1px solid #000;padding:6px">Title</th><th style="border:1px solid #000;padding:6px">Learner</th><th style="border:1px solid #000;padding:6px">By</th><th style="border:1px solid #000;padding:6px">Returned</th></tr>'+list.map(t=>'<tr><td style="border:1px solid #000;padding:6px">'+S(t.barcode)+'</td><td style="border:1px solid #000;padding:6px">'+S(t.title)+'</td><td style="border:1px solid #000;padding:6px">'+S(t.learnerName)+'</td><td style="border:1px solid #000;padding:6px">'+S(t.by)+'</td><td style="border:1px solid #000;padding:6px">'+(t.returned?'Yes':'No')+'</td></tr>').join('')+'</table><p style="margin-top:20px">Teacher Signature: ___________________ &nbsp; Date: __________ &nbsp; Librarian: ___________________</p>'; document.getElementById('printSheet').innerHTML=html; window.print(); });
-document.getElementById('printLoanBtn').addEventListener('click', ()=>{ let html='<h2 style="text-align:center">📄 Loan Form For Parents — Makhanani LTSM</h2><p>School: '+(emis==='700310854'?'Wordsworth High School':'George Sonto High School')+' ('+emis+')</p><p>Learner Name: ___________________ &nbsp; Learner ID: ___________________ &nbsp; Class: __________</p><p>Book Title: ___________________ &nbsp; Barcode: ___________________</p><p>I, the parent / guardian, confirm my child received this book and will return it in good condition. If lost / damaged, I will report to the school.</p><br><p>Parent Signature: ___________________ &nbsp; Date: __________ &nbsp; Phone: ___________________</p><p>Teacher Signature: ___________________ &nbsp; Date: __________</p><p style="font-size:11px">Xintimani Group • Makhanani LTSM — Joy. Cherished. Mercy.</p>'; document.getElementById('printSheet').innerHTML=html; window.print(); });
-onSnapshot(collection(db,'books'), (s)=>{ allBooks=s.docs.map(d=>({id:d.id,...d.data()})); touch(); renderAll(); });
-onSnapshot(collection(db,'bookCopies'), (s)=>{ allCopies=s.docs.map(d=>({id:d.id,...d.data()})); touch(); renderAll(); });
-onSnapshot(collection(db,'learners'), (s)=>{ allLearners=s.docs.map(d=>({id:d.id,...d.data()})); touch(); renderAll(); });
-onSnapshot(query(collection(db,'requests'), orderBy('createdAt','desc')), (s)=>{ allReq=s.docs.map(d=>({id:d.id,...d.data()})); touch(); renderAll(); });
-onSnapshot(query(collection(db,'transactions'), orderBy('createdAt','desc')), (s)=>{ allTx=s.docs.map(d=>({id:d.id,...d.data()})); touch(); renderAll(); let issued=allTx.filter(t=>String(t.emis)===String(emis) && t.type==='ISSUE' && !t.returned); document.getElementById('issuedList').innerHTML=issued.length? issued.map(t=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(t.barcode)}</b> — ${S(t.title)} → ${S(t.learnerName)} • ${S(t.className)}</div><button onclick="document.getElementById('retBarcode').value='${S(t.barcode)}';document.getElementById('retBtn').click()" class="bg-orange-600 text-white px-2 py-1 rounded text-xs font-bold">🔁 Retrieve</button></div>`).join('') : '<p class="text-gray-500">No books currently ISSUED.</p>'; });
-applyRoleUI(); renderAll();
-onAuthStateChanged(auth, async(u)=>{ if(u && !session){ let s=await getDoc(doc(db,'users',u.uid)); if(s.exists()){ let d=s.data(); session={uid:u.uid, name:d.name||u.email, email:u.email, role:String(d.role||'TEACHER'), emis:String(d.emis||emis), school:d.school||'', department:d.department||'', classes:d.classes||[]}; myRole=String(session.role).toUpperCase(); emis=session.emis; localStorage.setItem('makhanani_session', JSON.stringify(session)); applyRoleUI(); renderAll(); } } });
+window._exportCSV=()=>{
+  let rows=[['Barcode','Title','Author','Grade','Dept','Status','IssuedTo','IssuedToName','Class']];
+  books.filter(b=>String(b.emis)===String(emis)).forEach(b=>rows.push([b.barcode,b.title,b.author||'',b.grade||'',b.department||'',b.status||'',b.issuedTo||'',b.issuedToName||'',b.issuedToClass||'']));
+  let csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='makhanani-stock-'+emis+'.csv'; a.click();
+};
+window._seedDemo=async()=>{
+  if(!confirm('Seed demo data for EMIS '+emis+'? Adds 5 books + 5 learners + 1 request.')) return;
+  let titles=[['Mathematics Grade 10','Mr. Dube','10','Mathematics'],['English Grade 10','Ms. Smith','10','English'],['Physical Sciences Grade 10','Dr. Nkosi','10','Physical Sciences'],['Life Sciences Grade 10','Ms. Khumalo','10','Life Sciences'],['Social Sciences Grade 9','Mr. Moyo','9','Social Sciences']];
+  let prefix=S(document.getElementById('bPrefix').value||'WHS');
+  for(let i=0;i<titles.length;i++){ let code=prefix+pad(i+1); if(books.some(b=>b.barcode===code)) continue; await addDoc(collection(db,'books'), {emis:String(emis), title:titles[i][0], author:titles[i][1], grade:titles[i][2], department:titles[i][3], barcode:code, status:'AVAILABLE', createdAt:new Date().toISOString()}); }
+  for(let i=0;i<5;i++){ let lid='10A'+String(i+1).padStart(3,'0'); if(learners.some(l=>l.learnerId===lid)) continue; await addDoc(collection(db,'learners'), {emis:String(emis), name:['Lerato Mokoena','Thabo Nkosi','Naledi Dube','Sipho Khumalo','Anele Smith'][i], class:'10A', grade:'10', learnerId:lid, createdAt:new Date().toISOString()}); }
+  alert('✅ Demo data seeded — Check STOCK + LEARNERS');
+};
+// Live listeners
+onSnapshot(collection(db,'books'), (s)=>{ books=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'learners'), (s)=>{ learners=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'requests'), (s)=>{ requests=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))); renderAll(); });
+onSnapshot(query(collection(db,'records'), orderBy('createdAt','desc')), (s)=>{ records=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'subscriptions'), (s)=>{
+  let subs=s.docs.map(d=>({id:d.id,...d.data()})); let sub=subs.find(x=>String(x.emis)===String(emis));
+  let b=document.getElementById('subBanner');
+  if(sub){ b.textContent='💳 Subscription: '+sub.status+' • '+sub.plan+' • Expires '+(sub.expiresAt||'-')+(sub.isDonation==='YES'?' • 🎁 PREMIUM DONATION 12 MONTHS • Donor: '+(sub.donor||'Anonymous')+' • School Pays R0':''); if(sub.status==='EXPIRED'||sub.status==='CANCELLED'){ b.textContent+=' • ⛔ EXPIRED — Contact Super Admin to renew'; } }
+  else b.textContent='💳 No subscription found for EMIS '+emis+' — Ask Super Admin to activate DEMO (FREE).';
+});
+onAuthStateChanged(auth, async(u)=>{ if(u && !session){ let snap=await getDoc(doc(db,'users',u.uid)); if(snap.exists()){ let d=snap.data(); session={uid:u.uid, name:d.name||u.email, email:u.email, role:String(d.role||'TEACHER'), emis:String(d.emis||'700310854'), department:String(d.department||''), classes:Array.isArray(d.classes)?d.classes:[]}; localStorage.setItem('makhanani_session', JSON.stringify(session)); location.reload(); } } });
+renderAll();
 </script></body></html>
