@@ -1,139 +1,67 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Super Admin — Xintimani Group LIVE</title><script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Super Admin — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
-<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • <span class="text-red-400">SUPER ADMIN</span> • <span class="text-green-400">LIVE</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a></div></div>
-<div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-red-500"><h1 class="font-black text-2xl">👑 Super Admin Dashboard — LIVE Firebase</h1><p class="text-xs text-gray-500">All Schools • Impersonate Any User • Subscription • Retrieval • Due 30 November</p><p class="text-[11px] text-green-600 font-bold mt-1">● LIVE — Stats update automatically when any school adds / issues / returns books</p><div id="stats" class="grid grid-cols-2 md:grid-cols-6 gap-2 mt-3 text-center"><p class="col-span-6 text-sm text-gray-500">Loading LIVE stats...</p></div></div>
-<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-4 mt-4"><h2 class="font-black">👤 Impersonate — Login As Any User (No Password Needed)</h2><p class="text-xs text-gray-600">Pick a school + user below, tap <b>👤 Login As</b>. Red <b>🔙 Return to Super Admin</b> banner will show at top.</p><div class="grid md:grid-cols-3 gap-2 mt-2"><select id="impSchool" class="border-2 rounded-lg px-3 py-2"></select><select id="impUser" class="border-2 rounded-lg px-3 py-2"></select><button id="impBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black">👤 Login As This User →</button></div><p id="impMsg" class="text-sm font-bold mt-1"></p></div>
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-blue-500"><h2 class="font-black">🏫 Add New School (Firebase)</h2><div class="grid md:grid-cols-4 gap-2 mt-2"><input id="newSchoolName" placeholder="School Name e.g. Thabazimbi High" class="border-2 rounded-lg px-3 py-2"><input id="newEmis" placeholder="EMIS e.g. 911360871" class="border-2 rounded-lg px-3 py-2"><input id="newPrefix" placeholder="Prefix e.g. THS" class="border-2 rounded-lg px-3 py-2 uppercase"><input id="newPrincipalEmail" placeholder="Principal Email" class="border-2 rounded-lg px-3 py-2"></div><button id="addSchoolBtn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-black mt-2">🏫 Add School to Firebase</button><p id="addSchoolMsg" class="text-sm font-bold mt-1"></p>
-<div class="border-t-2 border-red-200 mt-3 pt-3"><h3 class="font-black text-red-600">🧹 Fix Schools — Delete Junk + Repair Names</h3><p class="text-xs text-gray-600">Deletes test schools (EMIS 9966..., 200100001, 9999...) and repairs George Sonto / Wordsworth / SHIRILELE names + prefixes. Tap ONCE.</p><button id="fixSchoolsBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black mt-2">🧹 FIX SCHOOLS — Delete Junk + Repair Names (Tap ONCE)</button><p id="fixSchoolsMsg" class="text-sm font-bold mt-1"></p></div>
-</div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">🏫 All Schools — LIVE Stats + Quick Impersonate Principal</h2><div class="flex gap-2 mt-2 flex-wrap"><button onclick="printAllSchools()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold">🖨️ Print All Schools</button><button id="refreshBtn" class="bg-black text-white px-3 py-1 rounded text-xs font-bold">🔄 Refresh</button></div><div id="schoolList" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 All Users (Firebase LIVE) — Tap 👤 Login As</h2><input id="userSearch" placeholder="🔍 Search name / email / school..." class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div id="userList" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4 border-2 border-green-500"><h2 class="font-black">💳 Subscription Control — LIVE</h2><div id="subList" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 Retrieval — By School — LIVE Firebase</h2><div id="retrievalList" class="mt-2 text-sm">Loading...</div><button onclick="printRetrievalAll()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold mt-2">🖨️ Print Retrieval All Schools</button></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Recent Activity — LIVE (Last 20 Issues)</h2><div id="activityList" class="mt-2 text-sm">Loading...</div></div>
-</div>
+<style>.tabBtn.active{background:#000;color:#fff}</style></head>
+<body class="bg-gray-100 pb-24"><div class="max-w-6xl mx-auto p-3">
+<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • SUPER ADMIN</p><h1 class="font-black text-xl">👑 Super Admin Dashboard</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div><div class="flex gap-1 flex-wrap justify-end">
+<a href="index.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
+<a href="dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📊 DASHBOARD</a>
+<a href="librarian-dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📚 LIBRARIAN</a>
+<a href="subscriptions.html" class="bg-green-500 text-white px-3 py-1 rounded-lg font-black text-xs">💳 SUBSCRIPTIONS →</a>
+<a href="pricing.html" class="bg-purple-600 text-white px-3 py-1 rounded-lg font-black text-xs">💰 PRICING →</a>
+<a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a>
+<a href="manuals.html" class="bg-blue-600 text-white px-2 py-1 rounded-lg font-black text-xs">📖 MANUALS</a>
+<button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs">LOGOUT</button></div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cSchools">0</p><p class="text-xs text-gray-500">🏫 Schools</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cActive">0</p><p class="text-xs text-gray-500">✅ Active Subs</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cTrial">0</p><p class="text-xs text-gray-500">🆓 Trial</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-red-700" id="cExpired">0</p><p class="text-xs text-gray-500">⛔ Expired</p></div></div>
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<div class="flex gap-2 flex-wrap items-center justify-between"><h2 class="font-black text-xl">🏫 Schools + Subscriptions</h2><div class="flex gap-2"><a href="subscriptions.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">💳 MANAGE SUBSCRIPTIONS →</a><a href="pricing.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm">💰 VIEW PRICING →</a></div></div>
+<p class="text-xs text-gray-500 mt-1">Super Admin only. Status comes from <b>subscriptions</b> collection — same data as subscriptions.html. Setup fee = ONCE in lifetime.</p>
+<div class="grid md:grid-cols-3 gap-2 mt-3"><input id="sName" placeholder="School Name" class="border-2 rounded-lg px-3 py-2"><input id="sEmis" placeholder="EMIS — e.g. 700310854" class="border-2 rounded-lg px-3 py-2"><select id="sPlan" class="border-2 rounded-lg px-3 py-2"><option>Demo</option><option>Starter</option><option selected>Standard</option><option>Premium</option></select></div>
+<button id="addSchoolBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD SCHOOL + START FREE DEMO</button><p id="sMsg" class="text-sm font-bold mt-1"></p>
+<div id="schoolList" class="space-y-2 mt-3 text-sm"></div></div>
+<div class="bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">💳 Quick Subscription Actions</h2><div class="grid md:grid-cols-3 gap-2 mt-3">
+<a href="subscriptions.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💳</p><b>Subscriptions</b><p class="text-xs text-gray-500">Activate / Renew / Cancel<br>per school</p></a>
+<a href="pricing.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Pricing</b><p class="text-xs text-gray-500">Demo FREE • Starter R3,500 + R500/mo<br>Standard R4,500 + R700/mo • Premium R5,500 + R900/mo</p></a>
+<a href="finance.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Finance</b><p class="text-xs text-gray-500">Payments + Revenue<br>from subscriptions</p></a></div></div>
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM</div></div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
-import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, getDocs, doc, setDoc, getDoc, updateDoc, deleteDoc, query, where, onSnapshot } from 'firebase/firestore';
-const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc, addDoc, onSnapshot } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-let cur=null, schools=[], users=[], allBooks=[], allLearners=[], allIssues=[], superAdminProfile=null;
-function normalizeSchool(s){
-  let schoolName = s.school || s.schoolName || s.name || s.title || s.school_name || '';
-  let emis = s.emis || s.EMIS || s.emisNumber || s.id || '';
-  let prefix = s.prefix || s.schoolPrefix || s.code || s.shortName || '';
-  if(!schoolName) schoolName = 'School ' + emis;
-  if(!prefix || prefix==='undefined' || prefix.length===1){ prefix = schoolName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,4); if(!prefix||prefix==='S') prefix='SCH'; }
-  return {...s, school: schoolName, emis: String(emis), prefix: prefix, status: s.status || 'ACTIVE'};
-}
-function statsForEmis(emis){
-  let books=allBooks.filter(b=>String(b.emis)===String(emis)); let learners=allLearners.filter(l=>String(l.emis)===String(emis)); let issues=allIssues.filter(i=>String(i.emis)===String(emis));
-  let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let out=Math.max(0,issued-returned); let pct=issued===0?null:(returned/issued*100); let copies=books.reduce((a,b)=>a+(b.totalCopies||0),0);
-  return {books:books.length, copies, learners:learners.length, issued, returned, out, pct, issues};
-}
-function destForRole(role){ role=String(role||'').toUpperCase(); if(role==='PRINCIPAL') return 'principal-dashboard.html'; if(role==='HOD') return 'hod-dashboard.html'; if(role==='TEACHER') return 'teacher-dashboard.html'; if(role==='LIBRARIAN') return 'librarian.html'; return 'principal-dashboard.html'; }
-function impersonateUser(u){
-  if(!u) return;
-  let superSession=localStorage.getItem('makhanani_session');
-  try{ let parsed=JSON.parse(superSession||'{}'); if(parsed.role==='SUPER_ADMIN'){ localStorage.setItem('makhanani_superadmin_session', superSession); } }catch(e){}
-  let impersonated={school:u.school, emis:String(u.emis), prefix:u.prefix||'', name:u.name, role:String(u.role||'PRINCIPAL').toUpperCase(), subjects:u.subjects||['General'], classes:u.classes||[], email:u.email||'', uid:u.id||u.uid||'', impersonatedBy:superAdminProfile?superAdminProfile.email:'superadmin@xintimani.co.za', isImpersonating:true};
-  localStorage.setItem('makhanani_session', JSON.stringify(impersonated)); localStorage.setItem('makhanani_impersonating','true');
-  let dest=destForRole(u.role);
-  if(confirm('👤 Login as '+u.name+' ('+u.role+') — '+u.school+'?\n\nYou will see exactly what they see (LIVE Firebase).\nTap 🔙 Return to Super Admin at top to come back.')){ location.href=dest; }
-}
-window.impersonateUser=function(uid){ let u=users.find(x=>x.id===uid); if(u) impersonateUser(u); };
-window.impersonatePrincipalForSchool=function(emis){
-  let principals=users.filter(u=>String(u.emis)===String(emis) && String(u.role).toUpperCase()==='PRINCIPAL');
-  if(principals.length===0){
-    let s=schools.find(x=>String(x.emis)===String(emis));
-    if(!s){ alert('School not found'); return; }
-    if(!confirm('No Principal found in Firebase for '+s.school+'.\n\nCreate a temporary Principal view for this school?')) return;
-    let virtual={id:'virtual-'+emis, name:'Principal ('+s.school+')', email:'principal@'+(s.prefix||'school').toLowerCase()+'.co.za', role:'PRINCIPAL', emis:String(emis), school:s.school, prefix:s.prefix, subjects:['General'], classes:[]};
-    impersonateUser(virtual); return;
-  }
-  impersonateUser(principals[0]);
-};
+let allSchools=[], allSubs=[];
+let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
+if(session?.role && !['SUPER_ADMIN','ADMIN'].includes(String(session.role).toUpperCase())){ alert('⛔ Super Admin only'); location.href='dashboard.html'; }
+document.getElementById('who').textContent=(session?.name||'Super Admin')+' • SUPER_ADMIN • '+(session?.email||'');
+document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
+function subFor(emis){ return allSubs.find(s=>String(s.emis)===String(emis))||null; }
 function render(){
-  document.getElementById('topStatus').textContent=(cur?cur.name+' • '+cur.email:'')+' • ALL SCHOOLS • LIVE';
-  let totalBooks=allBooks.reduce((a,b)=>a+(b.totalCopies||0),0); let totalIssued=allIssues.filter(i=>i.action==='Issued').length; let totalReturned=allIssues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let totalPct=totalIssued===0?null:(totalReturned/totalIssued*100); let activeSchools=schools.filter(s=>s.status!=='SUSPENDED').length;
-  document.getElementById('stats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+schools.length+'</div><div class="text-xs">Schools ('+activeSchools+' Active)</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+users.length+'</div><div class="text-xs">Firebase Users</div></div><div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+totalBooks+'</div><div class="text-xs">Book Copies</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+allLearners.length+'</div><div class="text-xs">Learners (All)</div></div><div class="bg-orange-50 rounded p-2"><div class="font-black text-xl">'+totalIssued+'</div><div class="text-xs">Issued (All)</div></div><div class="bg-pink-50 rounded p-2"><div class="font-black text-xl">'+(totalPct===null?'—':totalPct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval (All)</div></div>';
-  let prevImpSchool=document.getElementById('impSchool').value;
-  document.getElementById('impSchool').innerHTML='<option value="">— Select School —</option>'+schools.map(s=>'<option value="'+s.emis+'" '+(String(s.emis)===String(prevImpSchool)?'selected':'')+'>'+s.school+' • '+s.emis+'</option>').join('');
-  let impEmis=document.getElementById('impSchool').value; let impUsers=impEmis?users.filter(u=>String(u.emis)===String(impEmis)):users;
-  document.getElementById('impUser').innerHTML='<option value="">— Select User —</option>'+impUsers.map(u=>'<option value="'+u.id+'">'+u.name+' • '+u.role+' • '+u.school+'</option>').join('')+(impEmis && impUsers.length===0?'<option value="virtual-'+impEmis+'">Principal (Virtual) • PRINCIPAL • '+(schools.find(s=>String(s.emis)===String(impEmis))?.school||'')+'</option>':'');
-  document.getElementById('schoolList').innerHTML=schools.map(s=>{
-    let r=statsForEmis(s.emis); let princ=users.find(u=>String(u.emis)===String(s.emis) && String(u.role).toUpperCase()==='PRINCIPAL');
-    return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS <b>'+s.emis+'</b> • Prefix <b>'+s.prefix+'</b> • Status <b>'+(s.status||'ACTIVE')+'</b><br>Principal: '+(princ?princ.name+' ('+princ.email+')':'— No Principal in Firebase')+'<br>📚 Titles: '+r.books+' • Copies: '+r.copies+' • 👩‍🎓 Learners: '+r.learners+' • 📤 Issued: '+r.issued+' • 📥 Returned: '+r.returned+' • Still Out: '+r.out+' • Retrieval: <b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b> • Due: <b>30 November</b><div class="flex gap-1 mt-1 flex-wrap"><button onclick="impersonatePrincipalForSchool(\''+s.emis+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">👤 Login As Principal</button><button onclick="viewSchoolUsers(\''+s.emis+'\')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">👥 View Users</button><button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold">'+(s.status==='SUSPENDED'?'✅ Activate':'⛔ Suspend')+'</button><button onclick="deleteSchool(\''+s.emis+'\',\''+s.school.replace(/'/g,"")+'\')" class="bg-gray-500 text-white px-2 py-1 rounded text-xs font-bold">🗑️ Delete School</button></div></div>';
-  }).join('');
-  document.getElementById('subList').innerHTML=schools.map(s=>'<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> • EMIS '+s.emis+' • Subscription: <b>'+(s.status||'ACTIVE')+'</b> • Plan: '+(s.plan||'Standard')+' <button onclick="toggleSchool(\''+s.emis+'\',\''+(s.status||'ACTIVE')+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold ml-2">Toggle</button></div>').join('');
-  let q=(document.getElementById('userSearch').value||'').toLowerCase();
-  let filtered=users.filter(u=>!q || (u.name+' '+u.email+' '+u.school+' '+u.role).toLowerCase().includes(q));
-  document.getElementById('userList').innerHTML=filtered.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.email+' • Role <b>'+u.role+'</b> • School <b>'+u.school+' ('+u.emis+')</b><br>Subjects: '+(u.subjects||[]).join(', ')+' • Classes: '+(u.classes||[]).join(', ')+'<div class="flex gap-1 mt-1 flex-wrap"><button onclick="impersonateUser(\''+u.id+'\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">👤 Login As '+u.name+'</button><button onclick="resetUserRole(\''+u.id+'\')" class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">🔄 Change Role</button><button onclick="deleteUser(\''+u.id+'\',\''+u.name+'\')" class="bg-black text-white px-2 py-1 rounded text-xs font-bold">🗑️ Delete</button></div></div>').join('')||'<p class="text-gray-500">No Firebase users yet.</p>';
-  document.getElementById('retrievalList').innerHTML=schools.map(s=>{ let r=statsForEmis(s.emis); return '<div class="border rounded p-2 mb-1"><b>'+s.school+'</b> — Retrieval <b>'+(r.pct===null?'— No books yet':r.pct.toFixed(1)+'%')+'</b> ('+r.returned+'/'+r.issued+') • Still Out: '+r.out+' • Copies: '+r.copies+' • Learners: '+r.learners+'</div>'; }).join('');
-  let recent=[...allIssues].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,20);
-  document.getElementById('activityList').innerHTML=recent.map(i=>{ let schoolName=schools.find(s=>String(s.emis)===String(i.emis))?.school||i.emis; return '<div class="border rounded p-2 mb-1"><b>'+i.learnerName+'</b> ('+i.learnerClass+') • '+i.bookTitle+' • <b>'+i.action+'</b> • '+i.date+' • School: '+schoolName+' • By: '+(i.by||'')+'</div>'; }).join('')||'<p class="text-gray-500">No issues in Firebase yet.</p>';
+  document.getElementById('cSchools').textContent=allSchools.length;
+  document.getElementById('cActive').textContent=allSubs.filter(s=>s.status==='ACTIVE').length;
+  document.getElementById('cTrial').textContent=allSubs.filter(s=>s.status==='TRIAL'||s.status==='DEMO').length;
+  document.getElementById('cExpired').textContent=allSubs.filter(s=>s.status==='EXPIRED'||s.status==='CANCELLED').length;
+  let el=document.getElementById('schoolList');
+  el.innerHTML=allSchools.length? allSchools.map(s=>{
+    let sub=subFor(s.emis); let st=sub?.status||'NO SUB'; let plan=sub?.plan||s.plan||'Standard';
+    let badge=st==='ACTIVE'?'bg-green-100 text-green-700':(st==='TRIAL'||st==='DEMO')?'bg-yellow-100 text-yellow-700':st==='NO SUB'?'bg-gray-100':'bg-red-100 text-red-700';
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${s.name||s.school||'School'}</b> • EMIS ${s.emis}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${st} • ${plan}</span> ${sub? '• Expires: '+(sub.expiresAt||sub.endDate||'-')+' • R'+(sub.amount||sub.price||'-')+(sub.setupPaid==='YES'?' • ✅ Setup Paid':' • Setup Not Paid') : '• No subscription yet'}</span></div><div class="flex gap-1 shrink-0 flex-wrap"><a href="subscriptions.html?emis=${s.emis}" class="bg-green-600 text-white px-2 py-1 rounded font-bold text-xs">💳 MANAGE →</a><a href="pricing.html?emis=${s.emis}" class="bg-purple-600 text-white px-2 py-1 rounded font-bold text-xs">💰 PRICING →</a><a href="librarian-dashboard.html" class="bg-black text-white px-2 py-1 rounded font-bold text-xs">📚 OPEN →</a></div></div>`;
+  }).join('') : '<p class="text-gray-500">No schools yet — add one above.</p>';
 }
-window.viewSchoolUsers=function(emis){ document.getElementById('userSearch').value=emis; render(); document.getElementById('userSearch').scrollIntoView({behavior:'smooth'}); };
-window.toggleSchool=async function(emis, current){ let newStatus=current==='SUSPENDED'?'ACTIVE':'SUSPENDED'; if(!confirm('Set school '+emis+' to '+newStatus+'?')) return; try{ await setDoc(doc(db,'schools',String(emis)), {status:newStatus}, {merge:true}); alert('✅ School '+emis+' → '+newStatus); }catch(e){ alert('❌ '+e.message); } };
-window.deleteSchool=async function(emis, schoolName){ if(!confirm('DELETE school '+schoolName+' (EMIS '+emis+') from Firestore?\n\nThis does NOT delete its books/learners/users — only the school doc.\nUse this for junk test schools.')) return; try{ await deleteDoc(doc(db,'schools',String(emis))); alert('✅ Deleted '+schoolName); }catch(e){ alert('❌ '+e.message); } };
-window.resetUserRole=async function(uid){ let newRole=prompt('New Role (SUPER_ADMIN / PRINCIPAL / HOD / TEACHER / LIBRARIAN):','TEACHER'); if(!newRole) return; try{ await updateDoc(doc(db,'users',uid), {role:newRole.trim().toUpperCase()}); alert('✅ Role updated'); }catch(e){ alert('❌ '+e.message); } };
-window.deleteUser=async function(uid, name){ if(!confirm('Delete user '+name+' from Firestore?')) return; try{ await deleteDoc(doc(db,'users',uid)); alert('✅ Deleted'); }catch(e){ alert('❌ '+e.message); } };
-window.printAllSchools=function(){ let rows=schools.map(s=>{ let r=statsForEmis(s.emis); return '<tr><td><b>'+s.school+'</b></td><td>'+s.emis+'</td><td>'+s.prefix+'</td><td>'+(s.status||'ACTIVE')+'</td><td>'+r.copies+'</td><td>'+r.learners+'</td><td>'+r.issued+'</td><td>'+r.returned+'</td><td><b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></td></tr>'; }).join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • SUPER ADMIN • ALL SCHOOLS • LIVE FIREBASE</h1><p>By: '+(cur?cur.name:'')+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>School</th><th>EMIS</th><th>Prefix</th><th>Status</th><th>Copies</th><th>Learners</th><th>Issued</th><th>Returned</th><th>Retrieval %</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
-window.printRetrievalAll=function(){ let rows=schools.map(s=>{ let r=statsForEmis(s.emis); return '<tr><td><b>'+s.school+'</b></td><td>'+r.issued+'</td><td>'+r.returned+'</td><td>'+r.out+'</td><td><b>'+(r.pct===null?'—':r.pct.toFixed(1)+'%')+'</b></td></tr>'; }).join(''); document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • RETRIEVAL ALL SCHOOLS • Due 30 November • LIVE FIREBASE</h1><table><tr><th>School</th><th>Issued</th><th>Returned</th><th>Still Out</th><th>Retrieval %</th></tr>'+rows+'</table>'; setTimeout(()=>window.print(),100); };
-document.getElementById('impSchool').addEventListener('change', render);
-document.getElementById('impBtn').addEventListener('click', ()=>{ let uid=document.getElementById('impUser').value; if(!uid){ document.getElementById('impMsg').innerHTML='❌ Select School + User first'; return; } if(uid.startsWith('virtual-')){ impersonatePrincipalForSchool(uid.replace('virtual-','')); return; } impersonateUser(uid); });
-document.getElementById('addSchoolBtn').addEventListener('click', async ()=>{
-  let name=document.getElementById('newSchoolName').value.trim(); let emis=document.getElementById('newEmis').value.trim(); let prefix=document.getElementById('newPrefix').value.trim().toUpperCase(); let principalEmail=document.getElementById('newPrincipalEmail').value.trim().toLowerCase();
-  if(!name||!emis||!prefix){ document.getElementById('addSchoolMsg').innerHTML='❌ Fill School + EMIS + Prefix'; return; }
-  try{ await setDoc(doc(db,'schools',emis), {school:name, schoolName:name, name:name, emis:emis, prefix:prefix, principalEmail:principalEmail||'', status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString(), createdBy:cur?cur.email:''}); document.getElementById('addSchoolMsg').innerHTML='✅ Added '+name+' • EMIS '+emis+' • '+prefix+' — LIVE!'; document.getElementById('newSchoolName').value=''; document.getElementById('newEmis').value=''; document.getElementById('newPrefix').value=''; document.getElementById('newPrincipalEmail').value=''; }catch(e){ document.getElementById('addSchoolMsg').innerHTML='❌ '+e.message; }
-});
-document.getElementById('fixSchoolsBtn').addEventListener('click', async ()=>{
-  if(!confirm('This will:\n1. DELETE test schools (EMIS 9966..., 200100001, 9999...)\n2. FIX George Sonto (911360870) → George Sonto High School / GSHS\n3. FIX Wordsworth (700310854) → Wordsworth High School / WHS\n4. FIX SHIRILELE (911360825) → SHIRILELE HIGH SCHOOL / SHS\n\nContinue?')) return;
-  document.getElementById('fixSchoolsMsg').innerHTML='⏳ Fixing...';
+document.getElementById('addSchoolBtn').addEventListener('click', async()=>{
+  let name=document.getElementById('sName').value.trim(); let emis=document.getElementById('sEmis').value.trim(); let plan=document.getElementById('sPlan').value;
+  if(!name||!emis){ document.getElementById('sMsg').innerHTML='❌ Enter School Name + EMIS'; return; }
   try{
-    let snap=await getDocs(collection(db,'schools')); let deleted=0, fixed=0;
-    for(let d of snap.docs){
-      let data=d.data(); let emis=String(data.emis||data.EMIS||d.id);
-      if(emis.startsWith('9966')||emis==='200100001'||emis.startsWith('9999')){ await deleteDoc(doc(db,'schools', d.id)); deleted++; continue; }
-      if(emis==='911360870'){ await setDoc(doc(db,'schools', d.id), {school:'George Sonto High School', schoolName:'George Sonto High School', name:'George Sonto High School', emis:'911360870', prefix:'GSHS', status:data.status||'ACTIVE'}, {merge:true}); fixed++; }
-      if(emis==='700310854'){ await setDoc(doc(db,'schools', d.id), {school:'Wordsworth High School', schoolName:'Wordsworth High School', name:'Wordsworth High School', emis:'700310854', prefix:'WHS', status:data.status||'ACTIVE'}, {merge:true}); fixed++; }
-      if(emis==='911360825'){ await setDoc(doc(db,'schools', d.id), {school:'SHIRILELE HIGH SCHOOL', schoolName:'SHIRILELE HIGH SCHOOL', name:'SHIRILELE HIGH SCHOOL', emis:'911360825', prefix:'SHS', status:data.status||'ACTIVE'}, {merge:true}); fixed++; }
-    }
-    let allEmis=snap.docs.map(d=>String(d.data().emis||d.id));
-    if(!allEmis.includes('911360870')){ await setDoc(doc(db,'schools','911360870'), {school:'George Sonto High School', schoolName:'George Sonto High School', name:'George Sonto High School', emis:'911360870', prefix:'GSHS', status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()}); fixed++; }
-    if(!allEmis.includes('700310854')){ await setDoc(doc(db,'schools','700310854'), {school:'Wordsworth High School', schoolName:'Wordsworth High School', name:'Wordsworth High School', emis:'700310854', prefix:'WHS', status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()}); fixed++; }
-    if(!allEmis.includes('911360825')){ await setDoc(doc(db,'schools','911360825'), {school:'SHIRILELE HIGH SCHOOL', schoolName:'SHIRILELE HIGH SCHOOL', name:'SHIRILELE HIGH SCHOOL', emis:'911360825', prefix:'SHS', status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()}); fixed++; }
-    document.getElementById('fixSchoolsMsg').innerHTML='✅ Done! Deleted junk: '+deleted+' • Fixed/Created: '+fixed+' • Reloading...';
-    setTimeout(()=>location.reload(), 1500);
-  }catch(e){ document.getElementById('fixSchoolsMsg').innerHTML='❌ '+e.message; }
+    await addDoc(collection(db,'schools'), {name, emis:String(emis), plan, createdAt:new Date().toISOString(), by:session?.name||'Super Admin'});
+    let exp=new Date(); exp.setDate(exp.getDate()+30);
+    await addDoc(collection(db,'subscriptions'), {emis:String(emis), school:name, plan, status:'DEMO', amount:0, setupFee:0, setupPaid:'YES', billing:'year', startDate:new Date().toISOString().slice(0,10), expiresAt:exp.toISOString().slice(0,10), createdAt:new Date().toISOString()});
+    document.getElementById('sMsg').innerHTML='✅ Added '+name+' — 30-day FREE DEMO started — <a href="subscriptions.html?emis='+emis+'" class="text-green-700 underline">Manage in Subscriptions →</a>';
+  }catch(e){ document.getElementById('sMsg').innerHTML='❌ '+e.message; }
 });
-document.getElementById('refreshBtn').addEventListener('click', ()=>{ render(); });
-document.getElementById('userSearch').addEventListener('input', render);
-document.getElementById('logoutBtn').addEventListener('click', async ()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); localStorage.removeItem('makhanani_superadmin_session'); location.href='superadmin-login.html'; });
-function startLiveListeners(){
-  onSnapshot(collection(db,'schools'), (snap)=>{
-    schools=snap.docs.map(d=>({id:d.id, ...d.data()})).map(normalizeSchool);
-    let seen=new Set(); schools=schools.filter(s=>{ if(seen.has(s.emis)) return false; seen.add(s.emis); return true; });
-    let known=[{emis:'911360870', school:'George Sonto High School', prefix:'GSHS'}, {emis:'700310854', school:'Wordsworth High School', prefix:'WHS'}, {emis:'911360825', school:'SHIRILELE HIGH SCHOOL', prefix:'SHS'}];
-    known.forEach(k=>{ if(!schools.some(s=>String(s.emis)===k.emis)) schools.push(k); });
-    schools.sort((a,b)=>(a.school||'').localeCompare(b.school||''));
-    render();
-  });
-  onSnapshot(collection(db,'users'), (snap)=>{ users=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-  onSnapshot(collection(db,'books'), (snap)=>{ allBooks=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-  onSnapshot(collection(db,'learners'), (snap)=>{ allLearners=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-  onSnapshot(collection(db,'issues'), (snap)=>{ allIssues=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-}
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){ location.href='superadmin-login.html'; return; }
-  try{
-    let snap=await getDoc(doc(db,'users',user.uid)); let profile=snap.exists()?snap.data():null;
-    if(!profile || profile.role!=='SUPER_ADMIN'){ alert('Not Super Admin'); location.href='login.html'; return; }
-    cur={name:profile.name, email:profile.email}; superAdminProfile=profile; startLiveListeners();
-  }catch(e){ location.href='superadmin-login.html'; }
-});
+onSnapshot(collection(db,'schools'), (s)=>{ allSchools=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
+onSnapshot(collection(db,'subscriptions'), (s)=>{ allSubs=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
+onAuthStateChanged(auth, async(u)=>{ if(u && !session){ let snap=await getDoc(doc(db,'users',u.uid)); if(snap.exists()){ let d=snap.data(); if(!['SUPER_ADMIN','ADMIN'].includes(String(d.role||'').toUpperCase())){ location.href='dashboard.html'; } } } });
 </script></body></html>
