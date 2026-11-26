@@ -19,11 +19,11 @@
 <button data-tab="records" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📄 RECORDS</button>
 </div>
 <div id="tab-stock" class="tabPanel bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black text-xl">📦 Stock — Dept → Grade → Subject → Title</h2><p class="text-xs text-gray-500">Librarian can ADD + EDIT stock. Teacher / HOD cannot edit stock. Use ✏️ EDIT to reassign correct Department. Assign Numbers: G10 Learners 1 • G10 Workbook 71 • G11 Learners 72 • G11 Workbook 132 • G12 Learners 133 • G12 Workbook 213</p>
-<!-- EDIT PANEL - NEW -->
-<div id="editBox" class="hidden border-2 border-blue-500 bg-blue-50 rounded-xl p-3 mt-3"><p class="font-black">✏️ EDIT BOOK — Reassign Correct Department</p><p id="editBookLabel" class="text-xs text-gray-600 mt-1"></p><input id="eTitle" placeholder="Title" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="eAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="eDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="eGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><input id="eSubject" placeholder="Subject" class="border-2 rounded-lg px-2 py-2"><select id="eCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select></div><div class="flex gap-2 mt-2"><button id="saveEditBtn" class="bg-blue-600 text-white flex-1 py-2 rounded-lg font-black">💾 SAVE CHANGES</button><button id="cancelEditBtn" class="bg-gray-200 flex-1 py-2 rounded-lg font-bold">Cancel</button></div><p id="editMsg" class="text-sm font-bold mt-1"></p><p class="text-xs text-gray-500 mt-1">Saving updates the Book + ALL its copies (barcode, dept, grade, subject) — so HOD Approval + Issue will use the correct Dept.</p></div>
+<h2 class="font-black text-xl">📦 Stock — Dept → Grade → Subject → Title</h2><p class="text-xs text-gray-500">Librarian can ADD + EDIT + RESTORE stock. Teacher / HOD cannot edit stock. Assign Numbers: G10 Learners 1 • G10 Workbook 71 • G11 Learners 72 • G11 Workbook 132 • G12 Learners 133 • G12 Workbook 213</p>
+<div class="flex gap-2 mt-2 flex-wrap"><button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">🔄 RESTORE PREVIOUS QUANTITIES — ALL BOOKS</button><button id="restoreReportBtn" class="bg-yellow-400 px-4 py-2 rounded-lg font-black text-sm">📊 CHECK MISSING COPIES</button></div><p id="restoreMsg" class="text-sm font-bold mt-1"></p>
+<div id="editBox" class="hidden border-2 border-blue-500 bg-blue-50 rounded-xl p-3 mt-3"><p class="font-black">✏️ EDIT BOOK — Reassign Correct Department + Quantity</p><p id="editBookLabel" class="text-xs text-gray-600 mt-1"></p><input id="eTitle" placeholder="Title" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="eAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="eDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="eGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><input id="eSubject" placeholder="Subject" class="border-2 rounded-lg px-2 py-2"><select id="eCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="eQty" type="number" min="1" placeholder="Quantity — e.g. 70 (original qty)" class="border-2 rounded-lg px-2 py-2 col-span-2"></div><div class="flex gap-2 mt-2"><button id="saveEditBtn" class="bg-blue-600 text-white flex-1 py-2 rounded-lg font-black">💾 SAVE CHANGES</button><button id="cancelEditBtn" class="bg-gray-200 flex-1 py-2 rounded-lg font-bold">Cancel</button></div><p id="editMsg" class="text-sm font-bold mt-1"></p><p class="text-xs text-gray-500 mt-1">Saving updates Book + ALL its copies. If you increase Qty, missing copies are auto-created. If you lower Qty, no copies are deleted — use Restore to bring back missing ones.</p></div>
 <div class="grid md:grid-cols-2 gap-2 mt-3"><div class="border rounded-xl p-3 bg-yellow-50"><p class="font-black">➕ Add Single Book</p><input id="bTitle" placeholder="Title — e.g. Maths Grade 10 Learners Book" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="bAuthor" placeholder="Author (optional)" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="bDept" class="border-2 rounded-lg px-2 py-2"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="bGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><input id="bSubject" placeholder="Subject — e.g. Mathematics" class="border-2 rounded-lg px-2 py-2"><select id="bCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="bQty" type="number" min="1" value="1" placeholder="Qty" class="border-2 rounded-lg px-2 py-2"><input id="bStart" type="number" placeholder="Start No. — e.g. 1 (Assign Numbers)" class="border-2 rounded-lg px-2 py-2"></div><button id="addBookBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD BOOK(S)</button><p id="addBookMsg" class="text-sm font-bold mt-1"></p><div class="flex gap-2 mt-2"><button id="assignBtn" class="bg-yellow-400 flex-1 py-2 rounded-lg font-black text-sm">⚡ ASSIGN NUMBERS 1,71,132,213</button><button onclick="document.getElementById('bulkBox').classList.toggle('hidden')" class="bg-gray-100 flex-1 py-2 rounded-lg font-bold text-sm">📥 Bulk Upload</button></div><div id="bulkBox" class="hidden mt-2"><p class="text-xs font-bold">CSV: title,author,grade,quantity,category,department,subject — one per line</p><textarea id="bulkCsv" rows="4" placeholder="Maths Grade 10 Learners,John,10,70,Learners Book,Mathematics,Mathematics" class="border-2 rounded-lg px-2 py-2 w-full mt-1"></textarea><button id="bulkBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-1">📥 BULK ADD</button><p id="bulkMsg" class="text-xs font-bold mt-1"></p></div></div>
-<div class="border rounded-xl p-3"><p class="font-black">🔍 Filter Stock</p><div class="grid grid-cols-2 gap-2 mt-2"><select id="fDept" class="border-2 rounded-lg px-2 py-2"><option value="">All Dept</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="fGrade" class="border-2 rounded-lg px-2 py-2"><option value="">All Grades</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fCat" class="border-2 rounded-lg px-2 py-2"><option value="">All Categories</option><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option value="AVAILABLE">Available</option><option value="PACKED">Packed</option><option value="ISSUED">Issued</option><option value="LOW">Low Stock (≤5)</option></select></div><label class="flex items-center gap-2 mt-2 text-sm font-bold"><input type="checkbox" id="fLowOnly"> Show Low Stock Only</label><div class="bg-blue-50 border rounded-xl p-2 mt-2 text-xs"><b>✏️ How to Reassign Dept:</b><br>1. Find book → Tap <b>✏️ EDIT</b><br>2. Change Department to correct one → <b>SAVE CHANGES</b><br>3. Book + all copies update instantly — HOD will now see it in correct Dept.</div></div></div>
+<div class="border rounded-xl p-3"><p class="font-black">🔍 Filter Stock</p><div class="grid grid-cols-2 gap-2 mt-2"><select id="fDept" class="border-2 rounded-lg px-2 py-2"><option value="">All Dept</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="fGrade" class="border-2 rounded-lg px-2 py-2"><option value="">All Grades</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fCat" class="border-2 rounded-lg px-2 py-2"><option value="">All Categories</option><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option value="AVAILABLE">Available</option><option value="PACKED">Packed</option><option value="ISSUED">Issued</option><option value="LOW">Low Stock (≤5)</option></select></div><label class="flex items-center gap-2 mt-2 text-sm font-bold"><input type="checkbox" id="fLowOnly"> Show Low Stock Only</label><div class="bg-green-50 border rounded-xl p-2 mt-2 text-xs"><b>🔄 Restore Previous Quantities:</b><br>Each book remembers its original Qty (e.g. 70). If copies were deleted / lost, tap <b>🔄 RESTORE</b> on that book, or <b>RESTORE ALL</b> at top — missing copies are recreated with new barcodes, no duplicates.</div></div></div>
 <div id="stockList" class="space-y-2 mt-3 text-sm"></div>
 </div>
 <div id="tab-request" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">📝 Teacher Request — Own Class Only</h2><p class="text-xs text-gray-500">Teacher: pick book → your class → qty → SEND TO HOD. HOD of that Dept approves. <a href="manuals.html#teacher" class="text-blue-600 font-bold">Teacher Manual →</a></p><div class="grid md:grid-cols-2 gap-2 mt-3"><select id="rBook" class="border-2 rounded-lg px-3 py-2"></select><select id="rClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="rQty" type="number" min="1" value="10" class="border-2 rounded-lg px-3 py-2" placeholder="Qty"><input id="rTeacher" placeholder="Your Name" class="border-2 rounded-lg px-3 py-2"></div><button id="reqBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">📝 SEND TO HOD →</button><p id="reqMsg" class="text-sm font-bold mt-2"></p><div id="myReqList" class="space-y-2 mt-3 text-sm"></div></div>
@@ -94,25 +94,70 @@ function renderStock(){
   if(!books.length){ el.innerHTML='<p class="text-gray-500">No books yet for this school — Add one above.</p>'; return; }
   el.innerHTML=books.map(b=>{
     let copies=allCopies.filter(c=>c.bookId===b.id); let avail=copies.filter(c=>c.status==='AVAILABLE').length; let packed=copies.filter(c=>c.status==='PACKED').length; let issued=copies.filter(c=>c.status==='ISSUED').length;
+    let target=N(b.quantity, copies.length); let missing=Math.max(0, target - copies.length);
     let low = avail<=5 ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ LOW STOCK</span>' : '';
+    let missBadge = missing>0 ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ MISSING '+missing+' — Tap Restore</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">✅ Full Qty</span>';
     let show = fS==='AVAILABLE'? avail>0 : fS==='PACKED'? packed>0 : fS==='ISSUED'? issued>0 : fS==='LOW'? avail<=5 : true; if(!show) return '';
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(b.title)}</b> • ${inferDept(b)} • Grade ${cleanGrade(b.grade)} • ${S(b.subject||inferDept(b))} • ${S(b.category)} ${low}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Author: ${S(b.author,'-')} • Total Copies: ${copies.length} • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._editBook('${b.id}')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(b.title)}</b> • ${inferDept(b)} • Grade ${cleanGrade(b.grade)} • ${S(b.subject||inferDept(b))} • ${S(b.category)} ${low} ${missBadge}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Author: ${S(b.author,'-')} • Original Qty: ${target} • Now: ${copies.length} copies • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._editBook('${b.id}')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._restoreOne('${b.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">🔄 RESTORE</button><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
   }).join('');
   let sel=document.getElementById('rBook'); sel.innerHTML=books.map(b=>`<option value="${b.id}">${S(b.title)} — Grade ${cleanGrade(b.grade)} — ${inferDept(b)}</option>`).join('');
 }
-// EDIT STOCK - NEW
+// RESTORE PREVIOUS QUANTITIES - NEW
+async function restoreBookCopies(b){
+  let copies=allCopies.filter(c=>c.bookId===b.id);
+  let target=N(b.quantity, copies.length);
+  let missing=Math.max(0, target - copies.length);
+  if(missing===0) return 0;
+  let dept=inferDept(b); let grade=cleanGrade(b.grade); let subj=S(b.subject||dept,dept); let cat=S(b.category,'Learners Book');
+  let used=new Set(allCopies.filter(c=>String(c.emis)===String(emis)).map(c=>N(String(c.barcode||'').replace(prefix(),''),0)));
+  let max=Math.max(0,...used);
+  for(let i=0;i<missing;i++){
+    max++;
+    while(used.has(max)) max++;
+    used.add(max);
+    let bc=prefix()+String(max).padStart(6,'0');
+    await addDoc(collection(db,'bookCopies'), {bookId:b.id, emis:String(emis), barcode:bc, title:S(b.title), department:dept, grade:grade, subject:subj, category:cat, status:'AVAILABLE', restored:true, restoredAt:new Date().toISOString(), createdAt:new Date().toISOString()});
+  }
+  return missing;
+}
+window._restoreOne=async(id)=>{
+  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
+  let b=allBooks.find(x=>x.id===id); if(!b) return;
+  let copies=allCopies.filter(c=>c.bookId===id); let target=N(b.quantity, copies.length); let missing=Math.max(0, target-copies.length);
+  if(missing===0){ alert('✅ '+S(b.title)+' is already full — '+copies.length+' / '+target); return; }
+  if(!confirm('Restore '+S(b.title)+'\nNow: '+copies.length+' • Original: '+target+' • Missing: '+missing+'\n\nCreate '+missing+' missing copies?')) return;
+  let done=await restoreBookCopies(b);
+  alert('✅ Restored '+done+' copies for '+S(b.title)+' — Now '+ (copies.length+done)+' / '+target);
+};
+document.getElementById('restoreAllBtn').addEventListener('click', async()=>{
+  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
+  let books=allBooks.filter(b=>String(b.emis)===String(emis));
+  let totalMissing=books.reduce((sum,b)=> sum + Math.max(0, N(b.quantity, allCopies.filter(c=>c.bookId===b.id).length) - allCopies.filter(c=>c.bookId===b.id).length), 0);
+  if(totalMissing===0){ document.getElementById('restoreMsg').innerHTML='✅ All books already at full quantity — nothing to restore'; return; }
+  if(!confirm('Restore ALL books?\nTotal missing copies: '+totalMissing+'\n\nThis will recreate missing copies for every book. Continue?')) return;
+  document.getElementById('restoreMsg').innerHTML='⏳ Restoring '+totalMissing+' copies — please wait...';
+  let restored=0; let details=[];
+  for(let b of books){ let d=await restoreBookCopies(b); if(d>0){ restored+=d; details.push(S(b.title)+' +'+d); } }
+  document.getElementById('restoreMsg').innerHTML='✅ Restored '+restored+' copies: '+details.join(' • ');
+});
+document.getElementById('restoreReportBtn').addEventListener('click', ()=>{
+  let books=allBooks.filter(b=>String(b.emis)===String(emis));
+  let lines=books.map(b=>{ let copies=allCopies.filter(c=>c.bookId===b.id); let target=N(b.quantity, copies.length); let missing=Math.max(0,target-copies.length); return S(b.title)+' — Now '+copies.length+' / Original '+target+(missing? ' • MISSING '+missing : ' • ✅ Full'); });
+  alert('📊 STOCK CHECK — '+prefix()+'\n\n'+lines.join('\n'));
+});
 window._editBook=(id)=>{
   if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only — Teachers cannot edit stock'); return; }
   let b=allBooks.find(x=>x.id===id); if(!b){ alert('Book not found'); return; }
   editingBookId=id;
   document.getElementById('editBox').classList.remove('hidden');
-  document.getElementById('editBookLabel').textContent='Editing: '+S(b.title)+' • Barcode '+S(b.barcode)+' • Copies: '+allCopies.filter(c=>c.bookId===id).length;
+  document.getElementById('editBookLabel').textContent='Editing: '+S(b.title)+' • Barcode '+S(b.barcode)+' • Copies: '+allCopies.filter(c=>c.bookId===id).length+' • Original Qty: '+N(b.quantity, allCopies.filter(c=>c.bookId===id).length);
   document.getElementById('eTitle').value=S(b.title);
   document.getElementById('eAuthor').value=S(b.author,'');
   document.getElementById('eDept').value=inferDept(b);
   document.getElementById('eGrade').value=cleanGrade(b.grade);
   document.getElementById('eSubject').value=S(b.subject||inferDept(b));
   document.getElementById('eCategory').value=S(b.category,'Learners Book');
+  document.getElementById('eQty').value=N(b.quantity, allCopies.filter(c=>c.bookId===id).length);
   document.getElementById('editMsg').textContent='';
   document.getElementById('editBox').scrollIntoView({behavior:'smooth'});
 };
@@ -126,16 +171,20 @@ document.getElementById('saveEditBtn').addEventListener('click', async()=>{
   let subj=S(document.getElementById('eSubject').value.trim(),dept);
   let cat=S(document.getElementById('eCategory').value,'Learners Book');
   let author=S(document.getElementById('eAuthor').value.trim(),'');
+  let qty=N(document.getElementById('eQty').value, allCopies.filter(c=>c.bookId===editingBookId).length);
   try{
-    await updateDoc(doc(db,'books',editingBookId), {title:title, author:author, department:dept, grade:grade, subject:subj, category:cat, updatedAt:new Date().toISOString(), updatedBy:S(session?.name,'Librarian')});
+    await updateDoc(doc(db,'books',editingBookId), {title:title, author:author, department:dept, grade:grade, subject:subj, category:cat, quantity:qty, updatedAt:new Date().toISOString(), updatedBy:S(session?.name,'Librarian')});
     let copies=allCopies.filter(c=>c.bookId===editingBookId);
     for(let c of copies){ await updateDoc(doc(db,'bookCopies',c.id), {title:title, department:dept, grade:grade, subject:subj, category:cat}); }
-    document.getElementById('editMsg').innerHTML='✅ Saved — '+title+' → Dept: '+dept+' • Grade '+grade+' • '+copies.length+' copies updated';
-    setTimeout(()=>{ document.getElementById('editBox').classList.add('hidden'); editingBookId=null; }, 1200);
+    let b=allBooks.find(x=>x.id===editingBookId); if(b) b.quantity=qty;
+    let missing=Math.max(0, qty - copies.length);
+    if(missing>0){ let done=await restoreBookCopies({...b, quantity:qty, title, department:dept, grade, subject:subj, category:cat}); document.getElementById('editMsg').innerHTML='✅ Saved + Restored '+done+' missing copies — '+title+' → Dept: '+dept+' • Grade '+grade+' • Qty '+qty; }
+    else document.getElementById('editMsg').innerHTML='✅ Saved — '+title+' → Dept: '+dept+' • Grade '+grade+' • Qty '+qty+' • '+copies.length+' copies updated';
+    setTimeout(()=>{ document.getElementById('editBox').classList.add('hidden'); editingBookId=null; }, 1500);
   }catch(e){ document.getElementById('editMsg').innerHTML='❌ '+e.message; }
 });
 window._reqBook=(id)=>{ document.getElementById('rBook').value=id; document.querySelector('[data-tab="request"]').click(); };
-window._delBook=async(id)=>{ if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; } if(!confirm('Delete this book + its copies?')) return; await deleteDoc(doc(db,'books',id)); allCopies.filter(c=>c.bookId===id).forEach(async c=>{ await deleteDoc(doc(db,'bookCopies',c.id)); }); };
+window._delBook=async(id)=>{ if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; } if(!confirm('Delete this book + its copies? This will LOWER the quantity permanently. Use Restore to bring them back if deleted by mistake.')) return; await deleteDoc(doc(db,'books',id)); allCopies.filter(c=>c.bookId===id).forEach(async c=>{ await deleteDoc(doc(db,'bookCopies',c.id)); }); };
 document.getElementById('addBookBtn').addEventListener('click', async()=>{
   if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only — Teachers cannot add stock'); return; }
   let title=S(document.getElementById('bTitle').value.trim()); if(!title){ document.getElementById('addBookMsg').innerHTML='❌ Enter Title'; return; }
