@@ -1,70 +1,241 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Super Admin — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
-<body class="bg-gray-100 pb-24"><div class="max-w-6xl mx-auto p-3">
-<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • SUPER ADMIN</p><h1 class="font-black text-xl">👑 Super Admin Dashboard</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div></div><div class="flex gap-1 flex-wrap justify-end">
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
+<style>.tabBtn.active{background:#000;color:#fff}.tabBtn{white-space:nowrap}</style></head>
+<body class="bg-gray-100 pb-24"><div class="max-w-7xl mx-auto p-3">
+<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • MAKHANANI LTSM</p><h1 class="font-black text-xl">👑 Super Admin Dashboard</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div></div><div class="flex gap-1 flex-wrap justify-end">
 <a href="xintimani.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">✨ XINTIMANI</a>
 <a href="index.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
 <a href="dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📊 DASHBOARD</a>
 <a href="librarian-dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📚 LIBRARIAN</a>
-<a href="subscriptions.html" class="bg-green-500 text-white px-3 py-1 rounded-lg font-black text-xs">💳 SUBSCRIPTIONS →</a>
-<a href="pricing.html" class="bg-purple-600 text-white px-3 py-1 rounded-lg font-black text-xs">💰 PRICING →</a>
+<a href="subscriptions.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💳 SUBS</a>
+<a href="pricing.html" class="bg-purple-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 PRICING</a>
 <a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a>
 <button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs">LOGOUT</button></div></div>
-<div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 mt-3">
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cSchools">0</p><p class="text-xs text-gray-500">🏫 Schools</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cUsers">0</p><p class="text-xs text-gray-500">👥 Users</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cActive">0</p><p class="text-xs text-gray-500">✅ Active Subs</p></div>
-<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cTrial">0</p><p class="text-xs text-gray-500">🆓 Demo / Trial</p></div>
-<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-red-700" id="cExpired">0</p><p class="text-xs text-gray-500">⛔ Expired</p></div>
-<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-pink-600" id="cDonations">0</p><p class="text-xs text-gray-500">🎁 Donations</p></div></div>
-<div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<div class="flex gap-2 flex-wrap items-center justify-between"><h2 class="font-black text-xl">🏫 Schools + Subscriptions</h2><div class="flex gap-2"><a href="subscriptions.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">💳 MANAGE SUBSCRIPTIONS →</a><a href="pricing.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm">💰 VIEW PRICING →</a><a href="pricing.html#donate" class="bg-pink-600 text-white px-4 py-2 rounded-lg font-black text-sm">🎁 DONATE PREMIUM →</a></div></div>
-<p class="text-xs text-gray-500 mt-1">Super Admin only. Status comes from <b>subscriptions</b> collection — same data as subscriptions.html. Setup fee = ONCE in lifetime. Donation = Premium FREE 12 months.</p>
-<div class="grid md:grid-cols-3 gap-2 mt-3"><input id="sName" placeholder="School Name" class="border-2 rounded-lg px-3 py-2"><input id="sEmis" placeholder="EMIS — e.g. 700310854" class="border-2 rounded-lg px-3 py-2"><select id="sPlan" class="border-2 rounded-lg px-3 py-2"><option>Demo</option><option>Starter</option><option selected>Standard</option><option>Premium</option></select></div>
-<button id="addSchoolBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD SCHOOL + START FREE DEMO</button><p id="sMsg" class="text-sm font-bold mt-1"></p>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-yellow-700" id="cDonations">0</p><p class="text-xs text-gray-500">🎁 Donations</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-purple-700" id="cRevenue">R0</p><p class="text-xs text-gray-500">💰 Revenue (Setup + Subs)</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow border-2 border-green-300"><p class="text-2xl font-black text-green-700" id="cRetrievalPctAll">—</p><p class="text-xs text-gray-500">📊 Retrieval % (All Schools)</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cBooks">0</p><p class="text-xs text-gray-500">📚 Total Books</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-blue-700" id="cIssued">0</p><p class="text-xs text-gray-500">📤 Issued</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cOverdue">0</p><p class="text-xs text-gray-500">⏰ Overdue (14+ Days)</p></div></div>
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-3 text-sm"><b>📌 Super Admin Rules:</b> Only you can <b>CREATE / EDIT / DELETE Subscriptions, Donations, Users, Schools, Pricing</b>. Librarian / Teacher CANNOT change Subs — Firestore Rules block them.<br><b>Pricing:</b> Setup ONCE + Monthly / Yearly. <b>Donation:</b> Premium 12 Months, School Pays R0, Donor Pays R14,500.</div>
+<div class="bg-white rounded-2xl p-3 mt-3 shadow flex gap-2 flex-wrap items-center">
+<label class="text-xs font-black">SEARCH:</label><input id="searchBox" placeholder="Search school / user / EMIS..." class="border-2 rounded-lg px-2 py-2 w-56">
+<label class="text-xs font-black">FILTER EMIS:</label><select id="emisFilter" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="">All EMIS</option><option value="700310854">Wordsworth — 700310854</option><option value="911360870">George Sonto — 911360870</option><option value="911360825">SHIRILELE — 911360825</option></select>
+<button onclick="window._exportCSV()" class="bg-green-600 text-white px-3 py-2 rounded-lg font-black text-xs">⬇️ EXPORT USERS CSV</button>
+<button onclick="window._seedDemo()" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-black text-xs">🌱 SEED DEMO SCHOOL</button></div>
+<div class="flex gap-1 overflow-x-auto mt-3 pb-1" id="tabs">
+<button data-tab="overview" class="tabBtn active bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📊 OVERVIEW</button>
+<button data-tab="subs" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">💳 SUBSCRIPTIONS</button>
+<button data-tab="donations" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">🎁 DONATIONS</button>
+<button data-tab="users" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">👥 USERS</button>
+<button data-tab="schools" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">🏫 SCHOOLS</button>
+<button data-tab="pricing" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">💰 PRICING</button>
+<button data-tab="retrieval" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📊 RETRIEVAL %</button>
+<button data-tab="books" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📚 ALL BOOKS</button></div>
+<!-- OVERVIEW -->
+<div id="tab-overview" class="tabPage bg-white rounded-2xl p-4 mt-2 shadow"><h2 class="font-black text-xl">📊 Overview — All Schools</h2><div id="overviewList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- SUBS -->
+<div id="tab-subs" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">💳 Subscriptions — Create / Edit</h2><p class="text-xs text-gray-500">Setup is ONCE. Then Monthly or Yearly. Demo = FREE. Donation = Premium 12 Months, School Pays R0.</p>
+<div class="grid md:grid-cols-4 gap-2 mt-3">
+<select id="sEmis" class="border-2 rounded-lg px-3 py-2"><option value="700310854">Wordsworth — 700310854</option><option value="911360870">George Sonto — 911360870</option><option value="911360825">SHIRILELE — 911360825</option></select>
+<input id="sEmisCustom" placeholder="OR type other EMIS" class="border-2 rounded-lg px-3 py-2">
+<input id="sSchool" placeholder="School Name" class="border-2 rounded-lg px-3 py-2">
+<select id="sPlan" class="border-2 rounded-lg px-3 py-2"><option>DEMO (FREE)</option><option>MONTHLY</option><option>YEARLY</option><option>PREMIUM DONATION 12 MONTHS</option></select>
+<select id="sStatus" class="border-2 rounded-lg px-3 py-2"><option>ACTIVE</option><option>TRIAL</option><option>EXPIRED</option><option>CANCELLED</option><option>PENDING</option></select>
+<input id="sSetup" type="number" value="2500" placeholder="Setup Fee R — ONCE" class="border-2 rounded-lg px-3 py-2">
+<input id="sMonthly" type="number" value="500" placeholder="Monthly R" class="border-2 rounded-lg px-3 py-2">
+<input id="sYearly" type="number" value="5000" placeholder="Yearly R" class="border-2 rounded-lg px-3 py-2">
+<input id="sExpires" type="date" class="border-2 rounded-lg px-3 py-2">
+<select id="sDonation" class="border-2 rounded-lg px-3 py-2"><option value="NO">Is Donation? NO</option><option value="YES">Is Donation? YES</option></select>
+<input id="sDonor" placeholder="Donor Name — if Donation" class="border-2 rounded-lg px-3 py-2">
+<button id="addSubBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ SAVE SUBSCRIPTION</button></div><p id="subMsg" class="text-sm font-bold mt-1"></p>
+<div id="subList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- DONATIONS -->
+<div id="tab-donations" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">🎁 Premium Donations — 12 Months</h2><p class="text-xs text-gray-500">Donor pays R14,500. School pays R0. School gets PREMIUM for 12 months. Donor gets CSI / Tax certificate mention.</p>
+<div class="grid md:grid-cols-4 gap-2 mt-3">
+<input id="dDonor" placeholder="Donor Name / Company *" class="border-2 rounded-lg px-3 py-2">
+<input id="dEmail" placeholder="Donor Email" class="border-2 rounded-lg px-3 py-2">
+<input id="dAmount" type="number" value="14500" placeholder="Amount R" class="border-2 rounded-lg px-3 py-2">
+<select id="dEmis" class="border-2 rounded-lg px-3 py-2"><option value="700310854">Wordsworth — 700310854</option><option value="911360870">George Sonto — 911360870</option><option value="911360825">SHIRILELE — 911360825</option></select>
+<input id="dSchool" placeholder="School Name" class="border-2 rounded-lg px-3 py-2">
+<input id="dExpires" type="date" class="border-2 rounded-lg px-3 py-2">
+<button id="addDonationBtn" class="bg-yellow-400 text-black py-2 rounded-lg font-black">🎁 CREATE DONATION + ACTIVATE PREMIUM</button></div><p id="donMsg" class="text-sm font-bold mt-1"></p>
+<div id="donList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- USERS -->
+<div id="tab-users" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">👥 Users — Change Role / EMIS / Dept / Class</h2><p class="text-xs text-gray-500">If a Teacher registered as wrong role, fix it here. No need to delete and re-register.</p>
+<div id="userList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- SCHOOLS -->
+<div id="tab-schools" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">🏫 Schools</h2><p class="text-xs text-gray-500">Schools are created from Subscriptions + Users. Add a new school by creating a Subscription for its EMIS.</p>
 <div id="schoolList" class="space-y-2 mt-3 text-sm"></div></div>
-<div class="bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">💳 Quick Actions</h2><div class="grid md:grid-cols-4 gap-2 mt-3">
-<a href="subscriptions.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💳</p><b>Subscriptions</b><p class="text-xs text-gray-500">Activate / Renew / Cancel</p></a>
-<a href="pricing.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Pricing</b><p class="text-xs text-gray-500">Demo FREE • Starter R3,500 + R500/mo<br>Standard R4,500 + R700/mo • Premium R5,500 + R900/mo</p></a>
-<a href="pricing.html#donate" class="border-2 border-pink-400 rounded-xl p-3 text-center bg-pink-50"><p class="text-2xl">🎁</p><b>Premium Donation</b><p class="text-xs text-gray-500">Donate Premium 12 Months<br>R14,500 — School gets FREE</p></a>
-<a href="finance.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Finance</b><p class="text-xs text-gray-500">Payments + Revenue</p></a></div></div>
-<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM</div></div>
+<!-- PRICING -->
+<div id="tab-pricing" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">💰 Pricing — Edit Live Prices</h2><p class="text-xs text-gray-500">These prices show on pricing.html. Change here, pricing page updates.</p>
+<div class="grid md:grid-cols-3 gap-2 mt-3">
+<label class="text-xs font-black">SETUP FEE (ONCE) R<input id="pSetup" type="number" value="2500" class="border-2 rounded-lg px-3 py-2 w-full"></label>
+<label class="text-xs font-black">MONTHLY R<input id="pMonthly" type="number" value="500" class="border-2 rounded-lg px-3 py-2 w-full"></label>
+<label class="text-xs font-black">YEARLY R<input id="pYearly" type="number" value="5000" class="border-2 rounded-lg px-3 py-2 w-full"></label>
+<label class="text-xs font-black">DONATION PREMIUM 12M R<input id="pDonation" type="number" value="14500" class="border-2 rounded-lg px-3 py-2 w-full"></label>
+<label class="text-xs font-black">DEMO DAYS<input id="pDemoDays" type="number" value="30" class="border-2 rounded-lg px-3 py-2 w-full"></label>
+<button id="savePricingBtn" class="bg-black text-white py-2 rounded-lg font-black">💾 SAVE PRICING</button></div><p id="pricingMsg" class="text-sm font-bold mt-1"></p>
+<div id="pricingList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- RETRIEVAL -->
+<div id="tab-retrieval" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📊 Retrieval % — All Schools</h2><p class="text-xs text-gray-500">Retrieval % = Retrieved ÷ Issued × 100. Low % = Books lost.</p>
+<div id="retrievalList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- BOOKS -->
+<div id="tab-books" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">📚 All Books — All Schools</h2><p class="text-xs text-gray-500">Super Admin can view all, but editing should be done in Librarian Dashboard per school.</p>
+<div id="bookList" class="space-y-2 mt-3 text-sm max-h-96 overflow-auto"></div></div>
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM — Joy. Cherished. Mercy.</div></div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, addDoc, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-let allSchools=[], allSubs=[];
 let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-if(session?.role && !['SUPER_ADMIN','ADMIN'].includes(String(session.role).toUpperCase())){ alert('⛔ Super Admin only'); location.href='dashboard.html'; }
-document.getElementById('who').textContent=(session?.name||'Super Admin')+' • SUPER_ADMIN • '+(session?.email||'');
-document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-function subFor(emis){ return allSubs.find(s=>String(s.emis)===String(emis))||null; }
-function render(){
-  document.getElementById('cSchools').textContent=allSchools.length;
-  document.getElementById('cActive').textContent=allSubs.filter(s=>s.status==='ACTIVE').length;
-  document.getElementById('cTrial').textContent=allSubs.filter(s=>s.status==='TRIAL'||s.status==='DEMO').length;
-  document.getElementById('cExpired').textContent=allSubs.filter(s=>s.status==='EXPIRED'||s.status==='CANCELLED').length;
-  document.getElementById('cDonations').textContent=allSubs.filter(s=>s.isDonation==='YES').length;
-  let el=document.getElementById('schoolList');
-  el.innerHTML=allSchools.length? allSchools.map(s=>{
-    let sub=subFor(s.emis); let st=sub?.status||'NO SUB'; let plan=sub?.plan||s.plan||'Standard';
-    let badge=st==='ACTIVE'?'bg-green-100 text-green-700':(st==='TRIAL'||st==='DEMO')?'bg-yellow-100 text-yellow-700':st==='NO SUB'?'bg-gray-100':'bg-red-100 text-red-700';
-    let donateBadge=sub?.isDonation==='YES'?' <span class="bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-bold text-xs">🎁 PREMIUM DONATION 12 MONTHS • Donor: '+(sub.donor||'Anonymous')+'</span>':'';
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${s.name||s.school||'School'}</b> • EMIS ${s.emis}${donateBadge}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${st} • ${plan}</span> ${sub? '• Expires: '+(sub.expiresAt||sub.endDate||'-')+' • R'+(sub.amount||sub.price||'-')+(sub.setupPaid==='YES'?' • ✅ Setup Paid':' • Setup Not Paid') : '• No subscription yet'}</span></div><div class="flex gap-1 shrink-0 flex-wrap"><a href="subscriptions.html?emis=${s.emis}" class="bg-green-600 text-white px-2 py-1 rounded font-bold text-xs">💳 MANAGE →</a><a href="pricing.html?emis=${s.emis}" class="bg-purple-600 text-white px-2 py-1 rounded font-bold text-xs">💰 PRICING →</a><a href="librarian-dashboard.html" class="bg-black text-white px-2 py-1 rounded font-bold text-xs">📚 OPEN →</a></div></div>`;
-  }).join('') : '<p class="text-gray-500">No schools yet — add one above.</p>';
+let myRole=String(session?.role||'GUEST').toUpperCase();
+document.getElementById('who').textContent=(session?.name||'Guest')+' • '+myRole+' • '+(session?.email||'');
+if(myRole!=='SUPER_ADMIN' && myRole!=='ADMIN'){ document.body.innerHTML='<div style="padding:20px;text-align:center;font-family:sans-serif"><h1>⛔ BLOCKED</h1><p>Only SUPER_ADMIN can view this page.<br>Your role: '+myRole+'</p><a href="superadmin-login.html" style="background:#000;color:#fff;padding:10px 20px;border-radius:10px;display:inline-block;margin-top:10px">👑 Go to Super Admin Login →</a><br><br><a href="login.html">🔐 Normal Login</a></div>'; throw new Error('Blocked'); }
+document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; });
+const S=(v,fb='')=> (v===undefined||v===null)? String(fb) : String(v);
+const N=(v,fb=0)=>{ let n=Number(v); return isNaN(n)? fb : n; };
+let users=[], subs=[], donations=[], books=[], records=[], pricing=[];
+let currentTab='overview';
+function showTab(t){ currentTab=t; document.querySelectorAll('.tabPage').forEach(p=>p.classList.add('hidden')); let el=document.getElementById('tab-'+t); if(el) el.classList.remove('hidden'); document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===t)); }
+document.querySelectorAll('.tabBtn').forEach(b=>b.addEventListener('click', ()=>showTab(b.dataset.tab)));
+if(location.hash){ let h=location.hash.replace('#',''); if(['overview','subs','donations','users','schools','pricing','retrieval','books'].includes(h)) showTab(h); }
+['searchBox','emisFilter'].forEach(id=>document.getElementById(id).addEventListener('input', renderAll));
+function renderAll(){ renderOverview(); renderSubs(); renderDonations(); renderUsers(); renderSchools(); renderPricing(); renderRetrieval(); renderBooks(); updateStats(); }
+function updateStats(){
+  let emis=document.getElementById('emisFilter').value;
+  let fBooks=books.filter(b=>!emis||String(b.emis)===emis);
+  let fUsers=users.filter(u=>!emis||String(u.emis)===emis);
+  let fSubs=subs.filter(s=>!emis||String(s.emis)===emis);
+  let fDon=donations.filter(d=>!emis||String(d.emis)===emis);
+  let allEmis=new Set([...users.map(u=>u.emis), ...subs.map(s=>s.emis)]); if(emis) allEmis=new Set([emis]);
+  document.getElementById('cSchools').textContent=allEmis.size;
+  document.getElementById('cUsers').textContent=fUsers.length;
+  document.getElementById('cActive').textContent=fSubs.filter(s=>s.status==='ACTIVE'||s.status==='TRIAL').length;
+  document.getElementById('cDonations').textContent=fDon.length;
+  let rev=fSubs.reduce((sum,s)=>sum+N(s.setupFee,0)+N(s.monthlyFee,0)+N(s.yearlyFee,0),0) + fDon.reduce((sum,d)=>sum+N(d.amount,0),0);
+  document.getElementById('cRevenue').textContent='R'+rev.toLocaleString();
+  document.getElementById('cBooks').textContent=fBooks.length;
+  document.getElementById('cIssued').textContent=fBooks.filter(b=>b.status==='ISSUED').length;
+  // Overdue = Issued 14+ days ago
+  let now=Date.now(); let overdue=fBooks.filter(b=>{ if(b.status!=='ISSUED'||!b.issuedAt) return false; let d=new Date(b.issuedAt).getTime(); return !isNaN(d) && (now-d) > 14*24*60*60*1000; }).length;
+  document.getElementById('cOverdue').textContent=overdue;
+  let fRecs=records.filter(r=>!emis||String(r.emis)===emis);
+  let issued=fRecs.filter(r=>r.type==='ISSUE').length; let retrieved=fRecs.filter(r=>r.type==='RETRIEVE').length;
+  let pct=issued? Math.round((retrieved/issued)*100):0;
+  document.getElementById('cRetrievalPctAll').textContent=issued? pct+'% ('+retrieved+'/'+issued+')' : '—';
 }
-document.getElementById('addSchoolBtn').addEventListener('click', async()=>{
-  let name=document.getElementById('sName').value.trim(); let emis=document.getElementById('sEmis').value.trim(); let plan=document.getElementById('sPlan').value;
-  if(!name||!emis){ document.getElementById('sMsg').innerHTML='❌ Enter School Name + EMIS'; return; }
-  try{
-    await addDoc(collection(db,'schools'), {name, emis:String(emis), plan, createdAt:new Date().toISOString(), by:session?.name||'Super Admin'});
-    let exp=new Date(); exp.setDate(exp.getDate()+30);
-    await addDoc(collection(db,'subscriptions'), {emis:String(emis), school:name, plan, status:'DEMO', amount:0, setupFee:0, setupPaid:'YES', billing:'year', isDonation:'NO', startDate:new Date().toISOString().slice(0,10), expiresAt:exp.toISOString().slice(0,10), createdAt:new Date().toISOString()});
-    document.getElementById('sMsg').innerHTML='✅ Added '+name+' — 30-day FREE DEMO started — <a href="subscriptions.html?emis='+emis+'" class="text-green-700 underline">Manage in Subscriptions →</a>';
-  }catch(e){ document.getElementById('sMsg').innerHTML='❌ '+e.message; }
+function renderOverview(){
+  let el=document.getElementById('overviewList');
+  let emisMap={};
+  subs.forEach(s=>{ if(!emisMap[s.emis]) emisMap[s.emis]={emis:s.emis, school:s.school||'', subs:0, users:0, books:0, issued:0, donations:0, status:'', plan:''}; emisMap[s.emis].subs++; emisMap[s.emis].status=s.status; emisMap[s.emis].plan=s.plan; });
+  users.forEach(u=>{ if(!emisMap[u.emis]) emisMap[u.emis]={emis:u.emis, school:u.school||'', subs:0, users:0, books:0, issued:0, donations:0, status:'NO SUB', plan:''}; emisMap[u.emis].users++; if(!emisMap[u.emis].school) emisMap[u.emis].school=u.school||''; });
+  books.forEach(b=>{ if(!emisMap[b.emis]) emisMap[b.emis]={emis:b.emis, school:'', subs:0, users:0, books:0, issued:0, donations:0, status:'NO SUB', plan:''}; emisMap[b.emis].books++; if(b.status==='ISSUED') emisMap[b.emis].issued++; });
+  donations.forEach(d=>{ if(!emisMap[d.emis]) emisMap[d.emis]={emis:d.emis, school:d.school||'', subs:0, users:0, books:0, issued:0, donations:0, status:'', plan:''}; emisMap[d.emis].donations++; });
+  let q=S(document.getElementById('searchBox').value).toLowerCase();
+  let list=Object.values(emisMap).filter(x=>!q||(S(x.school).toLowerCase().includes(q)||S(x.emis).includes(q)));
+  el.innerHTML=list.length? list.map(x=>`<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(x.school||'School')}</b> • EMIS ${S(x.emis)}<br><span class="text-xs">Users ${x.users} • Books ${x.books} • Issued ${x.issued} • Donations ${x.donations} • <b>${S(x.status)} • ${S(x.plan)}</b></span></div><div class="flex gap-1 shrink-0"><button onclick="window._viewSchool('${x.emis}')" class="bg-gray-100 px-2 py-1 rounded font-bold text-xs">👁️ VIEW</button><button onclick="window._quickSub('${x.emis}')" class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold text-xs">💳 + SUB</button></div></div>`).join('') : '<p class="text-gray-500">No schools yet — Create a Subscription below.</p>';
+}
+window._viewSchool=(emis)=>{ document.getElementById('emisFilter').value=emis; showTab('subs'); renderAll(); };
+window._quickSub=(emis)=>{ document.getElementById('sEmis').value=emis; document.getElementById('sEmisCustom').value=emis; showTab('subs'); };
+function renderSubs(){
+  let el=document.getElementById('subList'); let q=S(document.getElementById('searchBox').value).toLowerCase(); let emis=document.getElementById('emisFilter').value;
+  let list=subs.filter(s=>(!emis||String(s.emis)===emis) && (!q||(S(s.school).toLowerCase().includes(q)||S(s.emis).includes(q)))).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  el.innerHTML=list.length? list.map(s=>`<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(s.school||'School')}</b> • EMIS ${S(s.emis)} • <b>${S(s.plan)}</b> • <b>${S(s.status)}</b><br><span class="text-xs">Setup R${S(s.setupFee)} • Monthly R${S(s.monthlyFee)} • Yearly R${S(s.yearlyFee)} • Expires ${S(s.expiresAt||s.expires||'—')} ${s.isDonation==='YES'?'• 🎁 DONATION by '+S(s.donor||''):''}</span></div><div class="flex gap-1 shrink-0 flex-wrap"><button onclick="window._editSub('${s.id}')" class="bg-gray-100 px-2 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._renewSub('${s.id}')" class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold text-xs">🔁 RENEW 12M</button><button onclick="window._deleteSub('${s.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">🗑️ DELETE</button></div></div>`).join('') : '<p class="text-gray-500">No subscriptions yet.</p>';
+}
+document.getElementById('addSubBtn').addEventListener('click', async()=>{
+  let emis=S(document.getElementById('sEmisCustom').value.trim()||document.getElementById('sEmis').value);
+  let school=S(document.getElementById('sSchool').value.trim()); let plan=S(document.getElementById('sPlan').value); let status=S(document.getElementById('sStatus').value);
+  let setup=N(document.getElementById('sSetup').value,0); let monthly=N(document.getElementById('sMonthly').value,0); let yearly=N(document.getElementById('sYearly').value,0);
+  let expires=S(document.getElementById('sExpires').value); let isDonation=S(document.getElementById('sDonation').value); let donor=S(document.getElementById('sDonor').value.trim());
+  if(!emis){ document.getElementById('subMsg').innerHTML='❌ Enter EMIS'; return; }
+  let existing=subs.find(s=>String(s.emis)===String(emis));
+  let data={emis:String(emis), school, plan, status, setupFee:setup, monthlyFee:monthly, yearlyFee:yearly, expiresAt:expires, expires, isDonation, donor, updatedAt:new Date().toISOString(), by:S(session?.name,'')};
+  if(existing){ await updateDoc(doc(db,'subscriptions',existing.id), data); document.getElementById('subMsg').innerHTML='✅ Updated Subscription for EMIS '+emis; }
+  else { await addDoc(collection(db,'subscriptions'), {...data, createdAt:new Date().toISOString()}); document.getElementById('subMsg').innerHTML='✅ Created Subscription for EMIS '+emis; }
 });
-onSnapshot(collection(db,'schools'), (s)=>{ allSchools=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
-onSnapshot(collection(db,'subscriptions'), (s)=>{ allSubs=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
-onAuthStateChanged(auth, async(u)=>{ if(u && !session){ let snap=await getDoc(doc(db,'users',u.uid)); if(snap.exists()){ let d=snap.data(); if(!['SUPER_ADMIN','ADMIN'].includes(String(d.role||'').toUpperCase())){ location.href='dashboard.html'; } } } });
+window._editSub=async(id)=>{ let s=subs.find(x=>x.id===id); if(!s) return; document.getElementById('sEmis').value=s.emis; document.getElementById('sEmisCustom').value=s.emis; document.getElementById('sSchool').value=s.school||''; document.getElementById('sPlan').value=s.plan||'DEMO (FREE)'; document.getElementById('sStatus').value=s.status||'ACTIVE'; document.getElementById('sSetup').value=s.setupFee||0; document.getElementById('sMonthly').value=s.monthlyFee||0; document.getElementById('sYearly').value=s.yearlyFee||0; document.getElementById('sExpires').value=(s.expiresAt||s.expires||'').slice(0,10); document.getElementById('sDonation').value=s.isDonation||'NO'; document.getElementById('sDonor').value=s.donor||''; showTab('subs'); window.scrollTo(0,0); alert('✏️ Loaded — Edit fields above, then SAVE'); };
+window._renewSub=async(id)=>{ let s=subs.find(x=>x.id===id); if(!s) return; let d=new Date(); d.setFullYear(d.getFullYear()+1); let exp=d.toISOString().slice(0,10); if(!confirm('Renew '+S(s.school)+' to '+exp+'?')) return; await updateDoc(doc(db,'subscriptions',id), {status:'ACTIVE', expiresAt:exp, expires:exp}); alert('✅ Renewed to '+exp); };
+window._deleteSub=async(id)=>{ if(!confirm('Delete this subscription? School will lose access.')) return; await deleteDoc(doc(db,'subscriptions',id)); };
+function renderDonations(){
+  let el=document.getElementById('donList'); let q=S(document.getElementById('searchBox').value).toLowerCase(); let emis=document.getElementById('emisFilter').value;
+  let list=donations.filter(d=>(!emis||String(d.emis)===emis) && (!q||(S(d.donor).toLowerCase().includes(q)||S(d.school).toLowerCase().includes(q)))).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  el.innerHTML=list.length? list.map(d=>`<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>🎁 ${S(d.donor)}</b> → ${S(d.school)} • EMIS ${S(d.emis)} • <b>R${S(d.amount)}</b> • Expires ${S(d.expiresAt||'—')}<br><span class="text-xs">Email ${S(d.email||'—')} • ${S(d.createdAt||'').slice(0,10)}</span></div><div><button onclick="window._deleteDonation('${d.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">🗑️ DELETE</button></div></div>`).join('') : '<p class="text-gray-500">No donations yet.</p>';
+}
+document.getElementById('addDonationBtn').addEventListener('click', async()=>{
+  let donor=S(document.getElementById('dDonor').value.trim()); let email=S(document.getElementById('dEmail').value.trim()); let amount=N(document.getElementById('dAmount').value,14500); let emis=S(document.getElementById('dEmis').value); let school=S(document.getElementById('dSchool').value.trim()); let expires=S(document.getElementById('dExpires').value);
+  if(!donor){ document.getElementById('donMsg').innerHTML='❌ Enter Donor Name'; return; }
+  if(!expires){ let d=new Date(); d.setFullYear(d.getFullYear()+1); expires=d.toISOString().slice(0,10); }
+  await addDoc(collection(db,'donations'), {donor, email, amount, emis:String(emis), school, expiresAt:expires, createdAt:new Date().toISOString(), by:S(session?.name,'')});
+  // Also activate Premium Subscription for school
+  let existing=subs.find(s=>String(s.emis)===String(emis));
+  let subData={emis:String(emis), school, plan:'PREMIUM DONATION 12 MONTHS', status:'ACTIVE', setupFee:0, monthlyFee:0, yearlyFee:0, expiresAt:expires, expires, isDonation:'YES', donor, updatedAt:new Date().toISOString()};
+  if(existing) await updateDoc(doc(db,'subscriptions',existing.id), subData); else await addDoc(collection(db,'subscriptions'), {...subData, createdAt:new Date().toISOString()});
+  document.getElementById('donMsg').innerHTML='✅ Donation created: '+donor+' → '+school+' — PREMIUM activated until '+expires+' — School Pays R0';
+});
+window._deleteDonation=async(id)=>{ if(!confirm('Delete this donation record? Subscription will NOT be auto-cancelled — delete it in Subs tab if needed.')) return; await deleteDoc(doc(db,'donations',id)); };
+function renderUsers(){
+  let el=document.getElementById('userList'); let q=S(document.getElementById('searchBox').value).toLowerCase(); let emis=document.getElementById('emisFilter').value;
+  let list=users.filter(u=>(!emis||String(u.emis)===emis) && (!q||(S(u.name).toLowerCase().includes(q)||S(u.email).toLowerCase().includes(q)||S(u.emis).includes(q))));
+  el.innerHTML=list.length? list.map(u=>`<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(u.name)}</b> • ${S(u.email)} • <b>${S(u.role)}</b> • EMIS ${S(u.emis)} • ${S(u.school||'')} • Dept ${S(u.department||'—')} • Class ${(u.classes||[]).join(', ')||'—'}<br><span class="text-xs">UID ${S(u.id).slice(0,8)}...</span></div><div class="flex gap-1 shrink-0 flex-wrap"><button onclick="window._editUser('${u.id}')" class="bg-gray-100 px-2 py-1 rounded font-bold text-xs">✏️ EDIT ROLE</button><button onclick="window._deleteUser('${u.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">🗑️ DELETE</button></div></div>`).join('') : '<p class="text-gray-500">No users yet.</p>';
+}
+window._editUser=async(id)=>{ let u=users.find(x=>x.id===id); if(!u) return; let role=prompt('Role (SUPER_ADMIN / ADMIN / PRINCIPAL / LIBRARIAN / HOD / TEACHER / PARENT)', u.role); if(role===null) return; let emis=prompt('EMIS', u.emis); if(emis===null) return; let dept=prompt('Department', u.department||''); if(dept===null) return; let cls=prompt('Classes (comma, e.g. 10A,10B)', (u.classes||[]).join(',')); if(cls===null) return; await updateDoc(doc(db,'users',id), {role:role.trim().toUpperCase(), emis:emis.trim(), department:dept.trim(), classes:cls.split(',').map(s=>s.trim()).filter(Boolean)}); alert('✅ Updated '+S(u.name)); };
+window._deleteUser=async(id)=>{ let u=users.find(x=>x.id===id); if(!u) return; if(u.id===session?.uid) return alert('⛔ Cannot delete yourself'); if(!confirm('Delete user '+S(u.name)+' ('+S(u.email)+')? They will not be able to login — Auth account must also be deleted in Firebase Console → Authentication.')) return; await deleteDoc(doc(db,'users',id)); };
+function renderSchools(){
+  let el=document.getElementById('schoolList'); let q=S(document.getElementById('searchBox').value).toLowerCase();
+  let map={}; users.forEach(u=>{ if(!map[u.emis]) map[u.emis]={emis:u.emis, school:u.school||'', users:0, books:0}; map[u.emis].users++; }); books.forEach(b=>{ if(!map[b.emis]) map[b.emis]={emis:b.emis, school:'', users:0, books:0}; map[b.emis].books++; });
+  let list=Object.values(map).filter(x=>!q||(S(x.school).toLowerCase().includes(q)||S(x.emis).includes(q)));
+  el.innerHTML=list.length? list.map(x=>{ let s=subs.find(s=>String(s.emis)===String(x.emis)); return `<div class="border rounded-xl p-3"><b>${S(x.school||'School')}</b> • EMIS ${S(x.emis)} • Users ${x.users} • Books ${x.books}<br><span class="text-xs">Sub: ${s? S(s.plan)+' • '+S(s.status)+' • Expires '+S(s.expiresAt||'—') : 'NO SUBSCRIPTION — Create one in Subs tab'}</span></div>`; }).join('') : '<p class="text-gray-500">No schools yet.</p>';
+}
+function renderPricing(){
+  let el=document.getElementById('pricingList'); el.innerHTML=pricing.length? pricing.map(p=>`<div class="border rounded-xl p-3"><b>Pricing</b> • Setup R${S(p.setup)} • Monthly R${S(p.monthly)} • Yearly R${S(p.yearly)} • Donation R${S(p.donation)} • Demo ${S(p.demoDays)} days • Updated ${S(p.updatedAt||'').slice(0,10)}</div>`).join('') : '<p class="text-gray-500">No pricing saved yet — Save above.</p>';
+}
+document.getElementById('savePricingBtn').addEventListener('click', async()=>{
+  let data={setup:N(document.getElementById('pSetup').value,2500), monthly:N(document.getElementById('pMonthly').value,500), yearly:N(document.getElementById('pYearly').value,5000), donation:N(document.getElementById('pDonation').value,14500), demoDays:N(document.getElementById('pDemoDays').value,30), updatedAt:new Date().toISOString(), by:S(session?.name,'')};
+  if(pricing.length) await updateDoc(doc(db,'pricing',pricing[0].id), data); else await addDoc(collection(db,'pricing'), {...data, createdAt:new Date().toISOString()});
+  document.getElementById('pricingMsg').innerHTML='✅ Pricing saved — pricing.html will show new prices';
+});
+function renderRetrieval(){
+  let el=document.getElementById('retrievalList'); let emis=document.getElementById('emisFilter').value;
+  let byEmis={}; records.forEach(r=>{ if(!byEmis[r.emis]) byEmis[r.emis]={issued:0,retrieved:0}; if(r.type==='ISSUE') byEmis[r.emis].issued++; if(r.type==='RETRIEVE') byEmis[r.emis].retrieved++; });
+  let keys=Object.keys(byEmis).filter(e=>!emis||String(e)===emis);
+  el.innerHTML=keys.length? keys.map(e=>{ let d=byEmis[e]; let p=d.issued? Math.round((d.retrieved/d.issued)*100):0; let color=p>=90?'bg-green-600':p>=75?'bg-yellow-500':'bg-red-500'; let s=subs.find(x=>String(x.emis)===String(e)); return `<div><div class="flex justify-between"><b>EMIS ${e} • ${S(s?.school||'')}</b><span>Issued ${d.issued} • Retrieved ${d.retrieved} • Outstanding ${Math.max(0,d.issued-d.retrieved)} • <b>${p}%</b></span></div><div class="w-full bg-gray-200 rounded-full h-3 mt-1"><div class="${color} h-3 rounded-full" style="width:${p}%"></div></div></div>`; }).join('') : '<p class="text-gray-500">No issue / retrieve records yet.</p>';
+}
+function renderBooks(){
+  let el=document.getElementById('bookList'); let q=S(document.getElementById('searchBox').value).toLowerCase(); let emis=document.getElementById('emisFilter').value;
+  let list=books.filter(b=>(!emis||String(b.emis)===emis) && (!q||(S(b.title).toLowerCase().includes(q)||S(b.barcode).toLowerCase().includes(q)))).slice(0,200);
+  el.innerHTML=list.length? list.map(b=>`<div class="border rounded px-2 py-1"><b>${S(b.barcode)}</b> — ${S(b.title)} • ${S(b.status)} • EMIS ${S(b.emis)} • ${S(b.department)} ${b.status==='ISSUED'? '• To '+S(b.issuedToName)+' ('+S(b.issuedTo)+')':''}</div>`).join('') : '<p class="text-gray-500">No books yet.</p>';
+}
+window._exportCSV=()=>{
+  let rows=[['Name','Email','Role','EMIS','School','Department','Classes']];
+  users.forEach(u=>rows.push([u.name||'',u.email||'',u.role||'',u.emis||'',u.school||'',u.department||'',(u.classes||[]).join(' ')]));
+  let csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='makhanani-users.csv'; a.click();
+};
+window._seedDemo=async()=>{
+  if(!confirm('Seed Demo School: Wordsworth 700310854 — DEMO Subscription + 1 Librarian user doc?')) return;
+  if(!subs.some(s=>String(s.emis)==='700310854')) await addDoc(collection(db,'subscriptions'), {emis:'700310854', school:'Wordsworth High School', plan:'DEMO (FREE)', status:'TRIAL', setupFee:0, monthlyFee:0, yearlyFee:0, expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString().slice(0,10), isDonation:'NO', donor:'', createdAt:new Date().toISOString()});
+  alert('✅ Demo school seeded — Check SUBSCRIPTIONS + SCHOOLS');
+};
+onSnapshot(collection(db,'users'), (s)=>{ users=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'subscriptions'), (s)=>{ subs=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'donations'), (s)=>{ donations=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'books'), (s)=>{ books=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(query(collection(db,'records'), orderBy('createdAt','desc')), (s)=>{ records=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'pricing'), (s)=>{ pricing=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onAuthStateChanged(auth, async(u)=>{ if(u && !session){ let snap=await getDoc(doc(db,'users',u.uid)); if(snap.exists()){ let d=snap.data(); if(String(d.role||'').toUpperCase()!=='SUPER_ADMIN' && String(d.role||'').toUpperCase()!=='ADMIN'){ alert('⛔ Only Super Admin can view this page'); location.href='superadmin-login.html'; return; } session={uid:u.uid, name:d.name||u.email, email:u.email, role:String(d.role||''), emis:String(d.emis||'700310854'), department:String(d.department||''), classes:Array.isArray(d.classes)?d.classes:[]}; localStorage.setItem('makhanani_session', JSON.stringify(session)); location.reload(); } } });
+renderAll();
 </script></body></html>
