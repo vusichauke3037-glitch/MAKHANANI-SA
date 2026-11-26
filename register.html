@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Register — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-3"><div class="max-w-md w-full">
+<div class="bg-black text-white rounded-2xl p-4 text-center"><img src="logo.png" class="w-16 h-16 object-contain bg-white rounded-full p-1 mx-auto"><p class="text-[10px] font-black tracking-widest text-yellow-400 mt-2">XINTIMANI GROUP • 2026/934898/07 • MAKHANANI LTSM</p><h1 class="font-black text-2xl">📝 Register</h1><p class="text-xs text-gray-300">Create your account — Makhanani LTSM — Joy. Cherished. Mercy.</p></div>
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<label class="block text-xs font-black">FULL NAME *</label><input id="rName" placeholder="e.g. Lerato Mokoena" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="block text-xs font-black mt-3">EMAIL *</label><input id="rEmail" type="email" placeholder="you@school.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="block text-xs font-black mt-3">PASSWORD * (min 6 characters)</label><input id="rPassword" type="password" placeholder="••••••••" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="block text-xs font-black mt-3">CONFIRM PASSWORD *</label><input id="rPassword2" type="password" placeholder="••••••••" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="flex items-center gap-2 mt-3 text-xs font-bold"><input type="checkbox" id="showPw"> Show password</label>
+<label class="block text-xs font-black mt-3">ROLE *</label><select id="rRole" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<option value="TEACHER">🧑🏾‍🏫 Teacher</option>
+<option value="HOD">👩🏾‍💼 HOD</option>
+<option value="LIBRARIAN">👩🏾‍🏫 Librarian</option>
+<option value="PRINCIPAL">🏫 Principal</option>
+<option value="PARENT">👨🏾‍👩🏾‍👧 Parent</option>
+<option value="SUPER_ADMIN">👑 Super Admin</option></select>
+<label class="block text-xs font-black mt-3">SCHOOL EMIS *</label><select id="rEmis" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="700310854">Wordsworth High School — 700310854</option><option value="911360870">George Sonto High School — 911360870</option><option value="911360825">SHIRILELE HIGH SCHOOL — 911360825</option></select>
+<input id="rEmisCustom" placeholder="OR type other EMIS — e.g. 123456789" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="block text-xs font-black mt-3">SCHOOL NAME</label><input id="rSchool" placeholder="e.g. Wordsworth High School" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<div id="teacherFields">
+<label class="block text-xs font-black mt-3">DEPARTMENT (Teacher / HOD)</label><select id="rDept" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="">— Pick Department —</option><option>Mathematics</option><option>English</option><option>Afrikaans</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>Technology</option><option>EMS</option><option>Life Orientation</option></select>
+<label class="block text-xs font-black mt-3">MY CLASS (Teacher — you can ONLY request for this class)</label><select id="rClass" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="">— No fixed class —</option><option>8A</option><option>8B</option><option>8C</option><option>9A</option><option>9B</option><option>9C</option><option selected>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>11C</option><option>12A</option><option>12B</option><option>12C</option></select>
+</div>
+<button id="regBtn" class="bg-blue-600 text-white w-full py-3 rounded-lg font-black mt-4">📝 CREATE ACCOUNT →</button><p id="regMsg" class="text-sm font-bold mt-2 text-center"></p>
+<div class="bg-yellow-50 border rounded-xl p-3 mt-3 text-xs"><b>Where will you go after Register?</b><br>👑 Super Admin → <b>superadmin-dashboard.html</b><br>📚 Librarian / Principal → <b>librarian-dashboard.html</b><br>🧑🏾‍🏫 Teacher → <b>librarian-dashboard.html#request</b><br>👩🏾‍💼 HOD → <b>librarian-dashboard.html#hod</b><br>👨🏾‍👩🏾‍👧 Parent → <b>dashboard.html</b></div>
+<div class="grid grid-cols-2 gap-2 mt-3"><a href="login.html" class="bg-black text-white py-2 rounded-lg font-bold text-sm text-center">🔐 BACK TO LOGIN</a><a href="index.html" class="bg-gray-100 py-2 rounded-lg font-bold text-sm text-center">← HOME</a></div></div>
+<div class="text-center text-xs text-gray-400 mt-3">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • 293 Smit Street, Hillbrow</div></div>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+const S=(v,fb='')=> (v===undefined||v===null)? String(fb) : String(v);
+function goForRole(role){ let r=String(role||'').toUpperCase(); if(r==='SUPER_ADMIN'||r==='ADMIN') return 'superadmin-dashboard.html'; if(r==='PRINCIPAL'||r==='LIBRARIAN') return 'librarian-dashboard.html'; if(r==='HOD') return 'librarian-dashboard.html#hod'; if(r==='TEACHER') return 'librarian-dashboard.html#request'; if(r==='PARENT') return 'dashboard.html'; return 'dashboard.html'; }
+// Load real departments for selected EMIS into rDept
+async function loadDepts(){
+  let emis=S(document.getElementById('rEmisCustom').value.trim()||document.getElementById('rEmis').value);
+  try{
+    let snap=await getDocs(query(collection(db,'departments'), where('emis','==',emis)));
+    let depts=snap.docs.map(d=>d.data().name).sort();
+    let sel=document.getElementById('rDept'); let cur=sel.value;
+    if(depts.length){ sel.innerHTML='<option value="">— Pick Department —</option>'+depts.map(n=>`<option>${n}</option>`).join(''); if(cur) sel.value=cur; }
+  }catch(e){}
+}
+document.getElementById('rEmis').addEventListener('change', loadDepts);
+document.getElementById('rEmisCustom').addEventListener('input', loadDepts);
+loadDepts();
+document.getElementById('showPw').addEventListener('change', (e)=>{ let t=e.target.checked?'text':'password'; document.getElementById('rPassword').type=t; document.getElementById('rPassword2').type=t; });
+document.getElementById('rRole').addEventListener('change', (e)=>{ document.getElementById('teacherFields').style.display = ['TEACHER','HOD'].includes(e.target.value) ? 'block' : 'none'; });
+async function doRegister(){
+  let name=S(document.getElementById('rName').value.trim());
+  let email=S(document.getElementById('rEmail').value.trim());
+  let pw=S(document.getElementById('rPassword').value);
+  let pw2=S(document.getElementById('rPassword2').value);
+  let role=S(document.getElementById('rRole').value);
+  let emis=S(document.getElementById('rEmisCustom').value.trim()||document.getElementById('rEmis').value);
+  let school=S(document.getElementById('rSchool').value.trim());
+  let dept=S(document.getElementById('rDept').value);
+  let cls=S(document.getElementById('rClass').value);
+  if(!name||!email||!pw){ document.getElementById('regMsg').innerHTML='❌ Fill Name + Email + Password'; return; }
+  if(pw.length<6){ document.getElementById('regMsg').innerHTML='❌ Password must be at least 6 characters'; return; }
+  if(pw!==pw2){ document.getElementById('regMsg').innerHTML='❌ Passwords do not match'; return; }
+  if(!emis){ document.getElementById('regMsg').innerHTML='❌ Pick / Type EMIS'; return; }
+  if((role==='TEACHER'||role==='HOD') && !dept){ document.getElementById('regMsg').innerHTML='❌ Pick Department for Teacher / HOD'; return; }
+  document.getElementById('regMsg').innerHTML='⏳ Creating account...'; document.getElementById('regBtn').disabled=true;
+  try{
+    let cred=await createUserWithEmailAndPassword(auth, email, pw);
+    let u=cred.user;
+    let session={ uid:u.uid, name, email, role, emis, school, department:dept, classes: cls? [cls] : [] };
+    await setDoc(doc(db,'users',u.uid), { ...session, createdAt:new Date().toISOString() });
+    localStorage.setItem('makhanani_session', JSON.stringify(session));
+    let dest=goForRole(role);
+    document.getElementById('regMsg').innerHTML='✅ Welcome '+name+' • '+role+' → Going to '+dest;
+    setTimeout(()=>{ location.href=dest; }, 600);
+  }catch(e){
+    document.getElementById('regBtn').disabled=false;
+    let msg=e.message||'Register failed';
+    if(msg.includes('email-already-in-use')) msg='❌ This email is already registered — Tap BACK TO LOGIN and login instead.';
+    if(msg.includes('invalid-email')) msg='❌ Email looks wrong — check it, e.g. you@school.co.za';
+    if(msg.includes('weak-password')) msg='❌ Password too weak — use at least 6 characters.';
+    document.getElementById('regMsg').innerHTML=msg;
+  }
+}
+document.getElementById('regBtn').addEventListener('click', doRegister);
+</script></body></html>
