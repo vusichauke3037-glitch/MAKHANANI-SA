@@ -5,7 +5,11 @@
 <div class="bg-white rounded-2xl p-4 mt-3 shadow"><p class="font-black">Welcome back</p><p class="text-xs text-gray-500">Login with your school email + password. Your role decides where you go.</p>
 <label class="block text-xs font-black mt-3">EMAIL</label><input id="email" type="email" placeholder="you@school.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
 <label class="block text-xs font-black mt-3">PASSWORD</label><input id="password" type="password" placeholder="••••••••" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
-<label class="flex items-center gap-2 mt-3 text-xs font-bold"><input type="checkbox" id="showPw"> Show password</label>
+<div class="flex justify-between items-center mt-3">
+<label class="flex items-center gap-2 text-xs font-bold"><input type="checkbox" id="showPw"> Show password</label>
+<button id="forgotBtn" type="button" class="text-xs font-bold text-blue-600 underline">Forgot Password?</button>
+</div>
+<p id="forgotMsg" class="text-xs font-bold mt-1 text-center"></p>
 <button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-3">🔐 LOGIN →</button><p id="loginMsg" class="text-sm font-bold mt-2 text-center"></p>
 <div class="bg-yellow-50 border rounded-xl p-3 mt-3 text-xs"><b>🔑 Demo / First Login?</b><br>Ask Super Admin to create you in <b>superadmin-dashboard.html</b>, or use Register below.<br><b>Super Admin</b> → <b>superadmin-dashboard.html</b><br><b>Librarian / Principal</b> → <b>librarian-dashboard.html</b><br><b>Teacher / HOD</b> → <b>librarian-dashboard.html#request</b></div>
 <div class="grid grid-cols-2 gap-2 mt-3"><a href="index.html" class="bg-gray-100 py-2 rounded-lg font-bold text-sm text-center">← HOME</a><a href="register.html" class="bg-blue-600 text-white py-2 rounded-lg font-bold text-sm text-center">📝 REGISTER</a></div>
@@ -14,13 +18,29 @@
 <div class="text-center text-xs text-gray-400 mt-3">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • 293 Smit Street, Hillbrow</div></div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 const S=(v,fb='')=> (v===undefined||v===null)? String(fb) : String(v);
 function goForRole(role){ let r=String(role||'').toUpperCase(); if(r==='SUPER_ADMIN'||r==='ADMIN') return 'superadmin-dashboard.html'; if(r==='PRINCIPAL'||r==='LIBRARIAN') return 'librarian-dashboard.html'; if(r==='HOD') return 'librarian-dashboard.html#hod'; if(r==='TEACHER') return 'librarian-dashboard.html#request'; if(r==='PARENT') return 'dashboard.html'; return 'dashboard.html'; }
 document.getElementById('showPw').addEventListener('change', (e)=>{ document.getElementById('password').type = e.target.checked ? 'text' : 'password'; });
+// FORGOT PASSWORD
+document.getElementById('forgotBtn').addEventListener('click', async()=>{
+  let email=S(document.getElementById('email').value.trim());
+  if(!email){ document.getElementById('forgotMsg').innerHTML='❌ Type your Email above first, then tap Forgot Password'; return; }
+  document.getElementById('forgotMsg').innerHTML='⏳ Sending reset email to '+email+'...';
+  try{
+    await sendPasswordResetEmail(auth, email);
+    document.getElementById('forgotMsg').innerHTML='✅ Check your inbox! Reset link sent to '+email+' — Check Spam too. Link expires in 1 hour.';
+  }catch(e){
+    let msg=e.message||'Failed';
+    if(msg.includes('user-not-found')) msg='❌ No account with '+email+' — Tap REGISTER instead.';
+    if(msg.includes('invalid-email')) msg='❌ Email looks wrong — check it.';
+    if(msg.includes('too-many-requests')) msg='⛔ Too many resets — wait 1 minute.';
+    document.getElementById('forgotMsg').innerHTML=msg;
+  }
+});
 async function doLogin(){ let email=S(document.getElementById('email').value.trim()); let pw=S(document.getElementById('password').value); if(!email||!pw){ document.getElementById('loginMsg').innerHTML='❌ Enter Email + Password'; return; } document.getElementById('loginMsg').innerHTML='⏳ Logging in...'; document.getElementById('loginBtn').disabled=true; try{ let cred=await signInWithEmailAndPassword(auth, email, pw); let u=cred.user; let snap=await getDoc(doc(db,'users',u.uid)); let d=snap.exists()? snap.data() : {}; let role=String(d.role||'TEACHER').toUpperCase(); let session={ uid:u.uid, name:S(d.name||u.email), email:u.email, role:role, emis:S(d.emis||'700310854'), school:S(d.school||''), department:S(d.department||''), classes:Array.isArray(d.classes)? d.classes : [] }; localStorage.setItem('makhanani_session', JSON.stringify(session)); let dest=goForRole(role); document.getElementById('loginMsg').innerHTML='✅ Welcome '+S(session.name)+' • '+role+' → Going to '+dest; setTimeout(()=>{ location.href=dest; }, 600); }catch(e){ document.getElementById('loginBtn').disabled=false; let msg=e.message||'Login failed'; if(msg.includes('invalid-credential')||msg.includes('wrong-password')||msg.includes('user-not-found')) msg='❌ Wrong Email or Password — check caps lock, or Register / ask Super Admin to create your account.'; if(msg.includes('too-many-requests')) msg='⛔ Too many attempts — wait 1 minute and try again.'; document.getElementById('loginMsg').innerHTML=msg; } }
 document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('password').addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
