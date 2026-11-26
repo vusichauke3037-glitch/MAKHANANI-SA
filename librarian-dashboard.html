@@ -47,9 +47,23 @@ let allBooks=[], allCopies=[], allLearners=[], allReq=[], allTx=[];
 let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
 let emis=session?.emis||'700310854'; let myRole=String(session?.role||'GUEST').toUpperCase();
 let prefix=()=> emis==='700310854'?'WHS':emis==='911360870'?'GSH':'SCH';
-// FIX: S() = never send undefined to Firebase — converts undefined/null to safe string/number
 const S=(v,fb='')=> (v===undefined||v===null)? String(fb) : String(v);
 const N=(v,fb=0)=>{ let n=Number(v); return isNaN(n)? fb : n; };
+// FIX: Clean Grade + Infer Dept from Title for old books with missing dept / "Grade 12" grade
+const cleanGrade=(g)=> String(g||'').replace(/grade\s*/gi,'').trim() || '12';
+const inferDept=(b)=>{
+  let d = S(b.department||b.dept||b.Department||'').trim();
+  if(d && d!=='Mathematics') return d;
+  let t = S(b.title,'').toLowerCase();
+  if(t.includes('tourism')||t.includes('history')||t.includes('geography')||t.includes('dalene')||t.includes('dramatic')||t.includes('sesotho')&&t.includes('history')) return 'Humanities';
+  if(t.includes('english')||t.includes('afrikaans')||t.includes('xhosa')||t.includes('zulu')||t.includes('sotho')||t.includes('in context')||t.includes('sepedi')||t.includes('tswana')) return 'Languages';
+  if(t.includes('life sciences')||t.includes('physical sciences')||t.includes('natural sciences')||t.includes('physics')||t.includes('chemistry')||t.includes('biology')) return 'Sciences';
+  if(t.includes('accounting')||t.includes('business')||t.includes('economics')||t.includes('ems')) return 'Commerce';
+  if(t.includes('computer')||t.includes('cat ')||t.includes('technology')||t.includes('technical')) return 'Technology';
+  if(t.includes('life orientation')) return 'Life Orientation';
+  if(t.includes('mathematical literacy')||t.includes('maths')||t.includes('mathematics')) return 'Mathematics';
+  return 'Mathematics';
+};
 function touch(){ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(); }
 function can(roles){ if(myRole==='SUPER_ADMIN'||myRole==='ADMIN') return true; return roles.includes(myRole); }
 function applyRoleUI(){
@@ -72,7 +86,7 @@ function renderCounts(){
 }
 function renderStock(){
   let fD=document.getElementById('fDept').value, fG=document.getElementById('fGrade').value, fC=document.getElementById('fCat').value, fS=document.getElementById('fStatus').value, q=(document.getElementById('globalSearch').value||'').toLowerCase();
-  let books=allBooks.filter(b=>String(b.emis)===String(emis) && (!fD||S(b.department)===fD) && (!fG||String(b.grade)===String(fG)) && (!fC||S(b.category)===fC));
+  let books=allBooks.filter(b=>String(b.emis)===String(emis) && (!fD||inferDept(b)===fD) && (!fG||cleanGrade(b.grade)===String(fG)) && (!fC||S(b.category)===fC));
   if(q) books=books.filter(b=>S(b.title).toLowerCase().includes(q)||S(b.barcode).toLowerCase().includes(q));
   let el=document.getElementById('stockList');
   if(!books.length){ el.innerHTML='<p class="text-gray-500">No books yet for this school — Add one above.</p>'; return; }
@@ -80,9 +94,9 @@ function renderStock(){
     let copies=allCopies.filter(c=>c.bookId===b.id); let avail=copies.filter(c=>c.status==='AVAILABLE').length; let packed=copies.filter(c=>c.status==='PACKED').length; let issued=copies.filter(c=>c.status==='ISSUED').length;
     let low = avail<=5 ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ LOW STOCK</span>' : '';
     let show = fS==='AVAILABLE'? avail>0 : fS==='PACKED'? packed>0 : fS==='ISSUED'? issued>0 : fS==='LOW'? avail<=5 : true; if(!show) return '';
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(b.title)}</b> • ${S(b.department,'Mathematics')} • Grade ${S(b.grade)} • ${S(b.subject)} • ${S(b.category)} ${low}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Author: ${S(b.author,'-')} • Total Copies: ${copies.length} • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(b.title)}</b> • ${inferDept(b)} • Grade ${cleanGrade(b.grade)} • ${S(b.subject||inferDept(b))} • ${S(b.category)} ${low}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Author: ${S(b.author,'-')} • Total Copies: ${copies.length} • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
   }).join('');
-  let sel=document.getElementById('rBook'); sel.innerHTML=books.map(b=>`<option value="${b.id}">${S(b.title)} — Grade ${S(b.grade)} — ${S(b.department,'Mathematics')}</option>`).join('');
+  let sel=document.getElementById('rBook'); sel.innerHTML=books.map(b=>`<option value="${b.id}">${S(b.title)} — Grade ${cleanGrade(b.grade)} — ${inferDept(b)}</option>`).join('');
 }
 window._reqBook=(id)=>{ document.getElementById('rBook').value=id; document.querySelector('[data-tab="request"]').click(); };
 window._delBook=async(id)=>{ if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; } if(!confirm('Delete this book + its copies?')) return; await deleteDoc(doc(db,'books',id)); allCopies.filter(c=>c.bookId===id).forEach(async c=>{ await deleteDoc(doc(db,'bookCopies',c.id)); }); };
@@ -90,7 +104,7 @@ document.getElementById('addBookBtn').addEventListener('click', async()=>{
   if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only — Teachers cannot add stock'); return; }
   let title=S(document.getElementById('bTitle').value.trim()); if(!title){ document.getElementById('addBookMsg').innerHTML='❌ Enter Title'; return; }
   let qty=N(document.getElementById('bQty').value,1); let cat=S(document.getElementById('bCategory').value,'Learners Book'); if(cat==='Workbook') qty=1;
-  let dept=S(document.getElementById('bDept').value,'Mathematics'); let grade=S(document.getElementById('bGrade').value,'10'); let subj=S(document.getElementById('bSubject').value.trim(),dept); let author=S(document.getElementById('bAuthor').value.trim(),'');
+  let dept=S(document.getElementById('bDept').value,'Mathematics'); let grade=cleanGrade(document.getElementById('bGrade').value); let subj=S(document.getElementById('bSubject').value.trim(),dept); let author=S(document.getElementById('bAuthor').value.trim(),'');
   let start=N(document.getElementById('bStart').value,0); if(!start){ let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let n=Number(String(c.barcode||'').replace(prefix(),''))||0; if(n>max) max=n; }); start=max+1; }
   try{
     let ref=await addDoc(collection(db,'books'), {emis:String(emis), school:S(emis==='700310854'?'Wordsworth High School':'George Sonto High School'), title:title, author:author, department:dept, grade:grade, subject:subj, category:cat, quantity:qty, barcode:prefix()+String(start).padStart(6,'0'), createdAt:new Date().toISOString(), by:S(session?.name,'Librarian')});
@@ -103,7 +117,7 @@ document.getElementById('assignBtn').addEventListener('click', ()=>{ alert('Assi
 document.getElementById('bulkBtn').addEventListener('click', async()=>{
   if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian only'); return; }
   let lines=document.getElementById('bulkCsv').value.trim().split('\n').filter(Boolean); let done=0;
-  for(let line of lines){ let parts=line.split(',').map(s=>S((s||'').trim())); let [title,author,grade,qty,cat,dept,subj]=parts; if(!title) continue; qty=N(qty,1); if(cat==='Workbook') qty=1; cat=S(cat,'Learners Book'); dept=S(dept,'Mathematics'); grade=S(grade,'10'); subj=S(subj,dept); author=S(author,''); let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let n=Number(String(c.barcode||'').replace(prefix(),''))||0; if(n>max) max=n; }); let start=max+1+done*100; let ref=await addDoc(collection(db,'books'), {emis:String(emis), title, author, grade, quantity:qty, category:cat, department:dept, subject:subj, barcode:prefix()+String(start).padStart(6,'0'), createdAt:new Date().toISOString(), by:S(session?.name,'Bulk')}); for(let i=0;i<qty;i++){ await addDoc(collection(db,'bookCopies'), {bookId:ref.id, emis:String(emis), barcode:prefix()+String(start+i).padStart(6,'0'), title, department:dept, grade, category:cat, subject:subj, status:'AVAILABLE', createdAt:new Date().toISOString()}); } done++; }
+  for(let line of lines){ let parts=line.split(',').map(s=>S((s||'').trim())); let [title,author,grade,qty,cat,dept,subj]=parts; if(!title) continue; qty=N(qty,1); if(cat==='Workbook') qty=1; cat=S(cat,'Learners Book'); dept=S(dept,'Mathematics'); grade=cleanGrade(grade); subj=S(subj,dept); author=S(author,''); let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let n=Number(String(c.barcode||'').replace(prefix(),''))||0; if(n>max) max=n; }); let start=max+1+done*100; let ref=await addDoc(collection(db,'books'), {emis:String(emis), title, author, grade, quantity:qty, category:cat, department:dept, subject:subj, barcode:prefix()+String(start).padStart(6,'0'), createdAt:new Date().toISOString(), by:S(session?.name,'Bulk')}); for(let i=0;i<qty;i++){ await addDoc(collection(db,'bookCopies'), {bookId:ref.id, emis:String(emis), barcode:prefix()+String(start+i).padStart(6,'0'), title, department:dept, grade, category:cat, subject:subj, status:'AVAILABLE', createdAt:new Date().toISOString()}); } done++; }
   document.getElementById('bulkMsg').innerHTML='✅ Bulk added '+done+' titles';
 });
 document.getElementById('globalSearch').addEventListener('input', renderStock); ['fDept','fGrade','fCat','fStatus','fLowOnly'].forEach(id=>document.getElementById(id).addEventListener('change', renderStock));
@@ -113,13 +127,12 @@ function renderReq(){
   if(myRole==='HOD' && session?.department) list=list.filter(r=>S(r.department)===session.department);
   let el=document.getElementById('myReqList'); el.innerHTML=list.length? list.map(r=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(r.bookTitle)}</b> • Class ${S(r.className)} • Qty ${N(r.qty)} • By ${S(r.teacher)} • ${S(r.status)}</div><span class="text-xs">${r.createdAt?new Date(r.createdAt).toLocaleString():''}</span></div>`).join('') : '<p class="text-gray-500">No requests yet.</p>';
 }
-// FIXED REQUEST — never sends undefined department/grade/subject
 document.getElementById('reqBtn').addEventListener('click', async()=>{
   let bookId=document.getElementById('rBook').value; let book=allBooks.find(b=>b.id===bookId); if(!book){ document.getElementById('reqMsg').innerHTML='❌ Pick a book'; return; }
   let className=S(document.getElementById('rClass').value); let qty=N(document.getElementById('rQty').value,1);
   if(myRole==='TEACHER' && session?.classes?.length && !session.classes.includes(className)){ document.getElementById('reqMsg').innerHTML='⛔ Teacher — You can only request for YOUR classes: '+session.classes.join(', '); return; }
-  let safeDept = S(book.department || book.dept || book.Department, 'Mathematics');
-  let safeGrade = S(book.grade || book.Grade, '12');
+  let safeDept = inferDept(book);
+  let safeGrade = cleanGrade(book.grade || book.Grade);
   let safeTitle = S(book.title, 'Untitled Book');
   let safeSubject = S(book.subject || safeDept, safeDept);
   try{ await addDoc(collection(db,'requests'), {emis:String(emis), bookId:String(bookId||''), bookTitle:String(safeTitle), department:String(safeDept), grade:String(safeGrade), subject:String(safeSubject), className:String(className||''), qty:qty, approvedQty:0, teacher:String(document.getElementById('rTeacher').value.trim()||session?.name||'Teacher'), teacherUid:String(auth.currentUser?.uid||''), status:'PENDING', createdAt:new Date().toISOString()}); document.getElementById('reqMsg').innerHTML='✅ Request sent to HOD — '+safeTitle+' • '+className+' • Qty '+qty; }catch(e){ document.getElementById('reqMsg').innerHTML='❌ '+e.message; }
@@ -128,7 +141,7 @@ function renderHod(){
   let list=allReq.filter(r=>String(r.emis)===String(emis) && r.status==='PENDING');
   if(myRole==='HOD' && session?.department) list=list.filter(r=>S(r.department)===session.department);
   let deptFilter=document.getElementById('hodDeptFilter').value; if(deptFilter) list=list.filter(r=>S(r.department)===deptFilter);
-  let el=document.getElementById('hodList'); el.innerHTML=list.length? list.map(r=>`<div class="border rounded-xl p-3"><b>${S(r.bookTitle)}</b> • ${S(r.department,'Mathematics')} • Grade ${S(r.grade)} • Class ${S(r.className)} • Requested ${N(r.qty)} • By ${S(r.teacher)}<br><div class="flex gap-2 mt-2"><input id="ap-${r.id}" type="number" value="${N(r.qty)}" min="1" max="${N(r.qty)}" class="border-2 rounded px-2 py-1 w-24"><button onclick="window._approve('${r.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">✅ APPROVE</button><button onclick="window._reject('${r.id}')" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">❌ REJECT</button></div></div>`).join('') : '<p class="text-gray-500">No pending requests for your Dept.</p>';
+  let el=document.getElementById('hodList'); el.innerHTML=list.length? list.map(r=>`<div class="border rounded-xl p-3"><b>${S(r.bookTitle)}</b> • ${S(r.department,'Mathematics')} • Grade ${cleanGrade(r.grade)} • Class ${S(r.className)} • Requested ${N(r.qty)} • By ${S(r.teacher)}<br><div class="flex gap-2 mt-2"><input id="ap-${r.id}" type="number" value="${N(r.qty)}" min="1" max="${N(r.qty)}" class="border-2 rounded px-2 py-1 w-24"><button onclick="window._approve('${r.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">✅ APPROVE</button><button onclick="window._reject('${r.id}')" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">❌ REJECT</button></div></div>`).join('') : '<p class="text-gray-500">No pending requests for your Dept.</p>';
 }
 window._approve=async(id)=>{ if(!can(['HOD','PRINCIPAL','LIBRARIAN','SUPER_ADMIN'])){ alert('⛔ HOD / Principal only'); return; } let r=allReq.find(x=>x.id===id); if(myRole==='HOD' && session?.department && S(r.department)!==session.department){ alert('⛔ HOD — You can only approve YOUR Dept: '+session.department); return; } let q=N(document.getElementById('ap-'+id).value, N(r.qty,1)); await updateDoc(doc(db,'requests',id), {status:'APPROVED', approvedQty:q, approvedBy:S(session?.name,'HOD'), approvedAt:new Date().toISOString()}); };
 window._reject=async(id)=>{ if(!can(['HOD','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ HOD only'); return; } await updateDoc(doc(db,'requests',id), {status:'REJECTED', approvedBy:S(session?.name,'HOD')}); };
@@ -158,7 +171,7 @@ async function doIssue(barcode, learnerId, className, by, mode){
     if(copy.status!=='PACKED') return '⛔ HOD Issue Blocked — Book must be PACKED';
     if(myRole==='HOD' && session?.department && S(copy.department)!==session.department) return '⛔ HOD — Book Dept '+S(copy.department)+' ≠ Your Dept '+session.department;
   }
-  let gradeOfLearner=String(learner.grade||learner.className||'').replace(/\D/g,''); let gradeOfBook=String(copy.grade||'').replace(/\D/g,''); if(gradeOfLearner && gradeOfBook && gradeOfLearner!==gradeOfBook) return '⛔ Grade Mismatch — Learner Grade '+gradeOfLearner+' ≠ Book Grade '+gradeOfBook;
+  let gradeOfLearner=String(learner.grade||learner.className||'').replace(/\D/g,''); let gradeOfBook=String(cleanGrade(copy.grade||'')).replace(/\D/g,''); if(gradeOfLearner && gradeOfBook && gradeOfLearner!==gradeOfBook) return '⛔ Grade Mismatch — Learner Grade '+gradeOfLearner+' ≠ Book Grade '+gradeOfBook;
   let already=allTx.find(t=>t.copyId===copy.id && t.type==='ISSUE' && !t.returned && String(t.emis)===String(emis)); if(already) return '⛔ Already ISSUED to '+S(already.learnerName);
   let dup=allTx.find(t=>t.learnerId===learner.id && t.bookId===copy.bookId && t.type==='ISSUE' && !t.returned); if(dup) return '⛔ 1 Learner 1 Title — Learner already has this title';
   await updateDoc(doc(db,'bookCopies',copy.id), {status:'ISSUED', issuedTo:learner.id, issuedToName:S(learner.name), issuedClass:S(className)});
@@ -194,18 +207,18 @@ function doPrintLabels(items, title){
   html+='</div><p style="text-align:center;font-size:11px">Makhanani LTSM • Xintimani Group • '+prefix()+'</p></div>';
   document.getElementById('printSheet').innerHTML=html; window.print();
 }
-document.getElementById('printBooksBtn').addEventListener('click', ()=>{ let sel=[...document.querySelectorAll('.printChk:checked')].map(c=>c.value); if(!sel.length){ alert('Tick at least 1 book'); return; } let items=sel.map(bc=>{ let c=allCopies.find(x=>x.barcode===bc); return {code:bc, label:S(c?.title), sub:S(c?.department)+' • Grade '+S(c?.grade)}; }); doPrintLabels(items, '📚 Book Barcodes — '+prefix()); });
+document.getElementById('printBooksBtn').addEventListener('click', ()=>{ let sel=[...document.querySelectorAll('.printChk:checked')].map(c=>c.value); if(!sel.length){ alert('Tick at least 1 book'); return; } let items=sel.map(bc=>{ let c=allCopies.find(x=>x.barcode===bc); return {code:bc, label:S(c?.title), sub:inferDept(c||{})+' • Grade '+cleanGrade(c?.grade)}; }); doPrintLabels(items, '📚 Book Barcodes — '+prefix()); });
 document.getElementById('printLearnersBtn').addEventListener('click', ()=>{ let learners=allLearners.filter(l=>String(l.emis)===String(emis)); if(!learners.length){ alert('No learners'); return; } let items=learners.slice(0,45).map(l=>({code:S(l.learnerId||l.id), label:S(l.name), sub:S(l.className)})); doPrintLabels(items, '👩‍🎓 Learner IDs — '+prefix()); });
 document.getElementById('addLearnerBtn').addEventListener('click', async()=>{
   let name=S(document.getElementById('lName').value.trim()); if(!name){ document.getElementById('lMsg').innerHTML='❌ Enter Learner Name'; return; }
-  let className=S(document.getElementById('lClass').value); let grade=S(document.getElementById('lGrade').value,'10'); let custom=S(document.getElementById('lId').value.trim().toUpperCase());
+  let className=S(document.getElementById('lClass').value); let grade=cleanGrade(document.getElementById('lGrade').value); let custom=S(document.getElementById('lId').value.trim().toUpperCase());
   let learnerId=custom; if(!learnerId){ let same=allLearners.filter(l=>String(l.emis)===String(emis) && l.className===className); let n=same.length+1; learnerId=className+String(n).padStart(3,'0'); }
   if(allLearners.find(l=>String(l.emis)===String(emis) && l.learnerId===learnerId)){ document.getElementById('lMsg').innerHTML='⛔ Duplicate Learner ID '+learnerId; return; }
   try{ await addDoc(collection(db,'learners'), {emis:String(emis), learnerId:String(learnerId), name:String(name), grade:String(grade), className:String(className), parent:String(document.getElementById('lParent').value.trim()||''), createdAt:new Date().toISOString(), by:String(session?.name||'Librarian')}); document.getElementById('lMsg').innerHTML='✅ Added '+name+' — '+learnerId; document.getElementById('lName').value=''; document.getElementById('lId').value=''; }catch(e){ document.getElementById('lMsg').innerHTML='❌ '+e.message; }
 });
 function renderLearners(){
   let list=allLearners.filter(l=>String(l.emis)===String(emis));
-  let el=document.getElementById('learnerList'); el.innerHTML=list.length? list.map(l=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(l.learnerId)}</b> — ${S(l.name)} • Grade ${S(l.grade)} • ${S(l.className)} ${l.parent?'• Parent: '+S(l.parent):''}</div><span class="text-xs">${l.createdAt?new Date(l.createdAt).toLocaleDateString():''}</span></div>`).join('') : '<p class="text-gray-500">No learners yet.</p>';
+  let el=document.getElementById('learnerList'); el.innerHTML=list.length? list.map(l=>`<div class="border rounded p-2 flex justify-between"><div><b>${S(l.learnerId)}</b> — ${S(l.name)} • Grade ${cleanGrade(l.grade)} • ${S(l.className)} ${l.parent?'• Parent: '+S(l.parent):''}</div><span class="text-xs">${l.createdAt?new Date(l.createdAt).toLocaleDateString():''}</span></div>`).join('') : '<p class="text-gray-500">No learners yet.</p>';
   let opts=list.map(l=>`<option value="${l.id}">${S(l.learnerId)} — ${S(l.name)} • ${S(l.className)}</option>`).join('');
   ['tiLearner','hiLearner','liLearner'].forEach(id=>{ document.getElementById(id).innerHTML=opts; });
 }
