@@ -1,21 +1,22 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Subscriptions — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
 <body class="bg-gray-100 pb-24"><div class="max-w-6xl mx-auto p-3">
-<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • SUBSCRIPTIONS</p><h1 class="font-black text-xl">💳 Subscriptions</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div><div class="flex gap-1 flex-wrap justify-end">
+<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • SUBSCRIPTIONS</p><h1 class="font-black text-xl">💳 Subscriptions</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div></div><div class="flex gap-1 flex-wrap justify-end">
 <a href="superadmin-dashboard.html" class="bg-white text-black px-3 py-1 rounded-lg font-black text-xs">← SUPER ADMIN</a>
-<a href="index.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
+<a href="xintimani.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">✨ XINTIMANI</a>
+<a href="index.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
 <a href="dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📊 DASHBOARD</a>
 <a href="pricing.html" class="bg-purple-600 text-white px-3 py-1 rounded-lg font-black text-xs">💰 PRICING →</a>
-<a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a>
 <a href="login.html" class="bg-blue-600 text-white px-2 py-1 rounded-lg font-black text-xs">🔐 LOGIN</a>
 <button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs hidden">LOGOUT</button></div></div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cTotal">0</p><p class="text-xs text-gray-500">💳 Total Subs</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cActive">0</p><p class="text-xs text-gray-500">✅ Active</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cTrial">0</p><p class="text-xs text-gray-500">🆓 Demo / Trial</p></div>
-<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-red-700" id="cExpired">0</p><p class="text-xs text-gray-500">⛔ Expired / Cancelled</p></div></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-red-700" id="cExpired">0</p><p class="text-xs text-gray-500">⛔ Expired / Cancelled</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-pink-600" id="cDonations">0</p><p class="text-xs text-gray-500">🎁 Donations</p></div></div>
 <div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black text-xl">➕ New / Renew Subscription</h2><p class="text-xs text-gray-500">Super Admin only. Setup fee = ONCE in lifetime. Demo = FREE.</p>
+<h2 class="font-black text-xl">➕ New / Renew Subscription</h2><p class="text-xs text-gray-500">Super Admin only. Setup fee = ONCE in lifetime. Demo = FREE. Donation = Premium FREE 12 months for a school in need.</p>
 <p id="emisBanner" class="hidden bg-green-50 border rounded-lg px-3 py-2 text-sm font-bold mt-2"></p>
 <div class="grid md:grid-cols-2 gap-2 mt-3">
 <select id="subEmis" class="border-2 rounded-lg px-3 py-2"><option value="700310854">Wordsworth High School — 700310854</option><option value="911360870">George Sonto High School — 911360870</option><option value="911360825">SHIRILELE HIGH SCHOOL — 911360825</option></select>
@@ -26,14 +27,17 @@
 <input id="subSetup" type="number" placeholder="Setup Fee R — once only — e.g. 4500" class="border-2 rounded-lg px-3 py-2">
 <select id="subBilling" class="border-2 rounded-lg px-3 py-2"><option value="year">Yearly</option><option value="month">Monthly</option></select>
 <select id="subSetupPaid" class="border-2 rounded-lg px-3 py-2"><option value="NO">Setup NOT Paid</option><option value="YES">Setup Already Paid ✅</option></select>
+<select id="subIsDonation" class="border-2 border-pink-400 rounded-lg px-3 py-2 font-bold"><option value="NO">Normal Subscription</option><option value="YES">🎁 Premium Donation — 12 Months</option></select>
+<input id="subDonor" placeholder="Donor Name / Company — if Donation, e.g. Xintimani Group" class="border-2 rounded-lg px-3 py-2">
 <select id="subPeriod" class="border-2 rounded-lg px-3 py-2"><option value="1">1 Month</option><option value="3">3 Months</option><option value="6">6 Months</option><option value="12" selected>12 Months</option></select>
 <input id="subStart" type="date" class="border-2 rounded-lg px-3 py-2">
 <input id="subNotes" placeholder="Notes — e.g. Paid via EFT, Invoice #123" class="border-2 rounded-lg px-3 py-2"></div>
 <p id="firstTotal" class="text-sm font-black mt-2 bg-yellow-50 border rounded-lg px-3 py-2">First Total: R0 — Setup + Subscription</p>
+<p id="donationNote" class="hidden text-sm font-bold mt-2 bg-pink-50 border border-pink-300 rounded-lg px-3 py-2">🎁 DONATION MODE: This school gets Premium FREE for 12 months. Donor pays R14,500 (Setup R5,500 + Year R9,000). School pays R0.</p>
 <button id="saveSubBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">💾 SAVE SUBSCRIPTION</button><p id="subMsg" class="text-sm font-bold mt-1"></p>
-<div class="bg-purple-50 border rounded-xl p-2 mt-2 text-xs">💡 <b>Pricing:</b> <a href="pricing.html" class="text-purple-700 font-bold underline">pricing.html</a> — Demo FREE • Starter Setup R3,500 + R500/mo or R5,000/yr • Standard Setup R4,500 + R700/mo or R7,000/yr • Premium Setup R5,500 + R900/mo or R9,000/yr. Setup = ONCE.</div></div>
+<div class="bg-purple-50 border rounded-xl p-2 mt-2 text-xs">💡 <b>Pricing:</b> <a href="pricing.html" class="text-purple-700 font-bold underline">pricing.html</a> — Demo FREE • Starter Setup R3,500 + R500/mo or R5,000/yr • Standard Setup R4,500 + R700/mo or R7,000/yr • Premium Setup R5,500 + R900/mo or R9,000/yr • <b>🎁 Donation: Premium 12 Months R14,500 — school gets FREE</b></div></div>
 <div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<div class="flex gap-2 flex-wrap items-center justify-between"><h2 class="font-black text-xl">📋 All Subscriptions</h2><div class="flex gap-2"><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option>ACTIVE</option><option>DEMO</option><option>TRIAL</option><option>EXPIRED</option><option>CANCELLED</option></select><select id="fPlan" class="border-2 rounded-lg px-2 py-2"><option value="">All Plans</option><option>Demo</option><option>Starter</option><option>Standard</option><option>Premium</option></select></div></div>
+<div class="flex gap-2 flex-wrap items-center justify-between"><h2 class="font-black text-xl">📋 All Subscriptions</h2><div class="flex gap-2"><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option>ACTIVE</option><option>DEMO</option><option>TRIAL</option><option>EXPIRED</option><option>CANCELLED</option></select><select id="fPlan" class="border-2 rounded-lg px-2 py-2"><option value="">All Plans</option><option>Demo</option><option>Starter</option><option>Standard</option><option>Premium</option></select><label class="flex items-center gap-1 text-xs font-bold"><input type="checkbox" id="fDonation"> 🎁 Donations Only</label></div></div>
 <div id="subList" class="space-y-2 mt-3 text-sm"></div></div>
 <div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM</div></div>
 <script type="module">
@@ -53,6 +57,8 @@ let urlBilling = new URLSearchParams(location.search).get('billing');
 let urlSetup = new URLSearchParams(location.search).get('setup');
 let urlAmount = new URLSearchParams(location.search).get('amount');
 let urlSetupPaid = new URLSearchParams(location.search).get('setupPaid');
+let urlDonation = new URLSearchParams(location.search).get('donation');
+let urlDonor = new URLSearchParams(location.search).get('donor');
 if(urlEmis){ let sel=document.getElementById('subEmis'); let found=[...sel.options].some(o=>o.value===urlEmis); if(!found){ let opt=document.createElement('option'); opt.value=urlEmis; opt.textContent='School — '+urlEmis; sel.appendChild(opt); } sel.value=urlEmis; let b=document.getElementById('emisBanner'); b.classList.remove('hidden'); b.textContent='📌 Opened from Super Admin / Pricing for EMIS: '+urlEmis; }
 if(urlPlan){ let p=document.getElementById('subPlan'); if(p) p.value=urlPlan; }
 if(urlBilling){ let b=document.getElementById('subBilling'); if(b) b.value=urlBilling; }
@@ -60,6 +66,16 @@ if(urlSetup){ let s=document.getElementById('subSetup'); if(s) s.value=urlSetup;
 if(urlAmount){ let a=document.getElementById('subAmount'); if(a) a.value=urlAmount; }
 if(urlSetupPaid){ let s=document.getElementById('subSetupPaid'); if(s) s.value=urlSetupPaid; }
 if(urlPlan||urlSetup){ let b=document.getElementById('emisBanner'); b.classList.remove('hidden'); b.textContent='📌 From Pricing: Plan '+(urlPlan||'')+' • Setup (once) R'+(urlSetup||'0')+' + '+(urlBilling||'year')+' R'+(urlAmount||'0')+' = First Total R'+(Number(urlSetup||0)+Number(urlAmount||0))+' • Setup Paid: '+(urlSetupPaid||'NO'); }
+if(urlDonation==='YES'){
+  let d=document.getElementById('subIsDonation'); if(d) d.value='YES';
+  let dn=document.getElementById('subDonor'); if(dn) dn.value=decodeURIComponent(urlDonor||'');
+  let b=document.getElementById('emisBanner'); b.classList.remove('hidden');
+  b.textContent='🎁 PREMIUM DONATION — 12 MONTHS • Donor: '+(urlDonor?decodeURIComponent(urlDonor):'Anonymous')+' • Recipient EMIS: '+(urlEmis||'')+' • Setup R5,500 + Premium R9,000 = R14,500 • School gets Premium FREE';
+  let st=document.getElementById('subStatus'); if(st) st.value='ACTIVE';
+  let per=document.getElementById('subPeriod'); if(per) per.value='12';
+  let pl=document.getElementById('subPlan'); if(pl) pl.value='Premium';
+  document.getElementById('donationNote').classList.remove('hidden');
+}
 document.getElementById('who').textContent=(session?.name||'Super Admin')+' • '+myRole;
 if(session) document.getElementById('logoutBtn').classList.remove('hidden');
 document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
@@ -67,28 +83,33 @@ if(myRole!=='SUPER_ADMIN' && myRole!=='ADMIN' && session){ alert('⛔ Super Admi
 let schoolNames={'700310854':'Wordsworth High School','911360870':'George Sonto High School','911360825':'SHIRILELE HIGH SCHOOL'};
 let PLAN_PRICES={Demo:{setup:0,month:0,year:0},Starter:{setup:3500,month:500,year:5000},Standard:{setup:4500,month:700,year:7000},Premium:{setup:5500,month:900,year:9000}};
 function syncSchoolName(){ let emis=document.getElementById('subEmis').value; let known=allSchools.find(s=>String(s.emis)===String(emis)); document.getElementById('subSchool').value=known?.name||schoolNames[emis]||''; }
-function updateFirstTotal(){ let setup=N(document.getElementById('subSetup').value,0); let amt=N(document.getElementById('subAmount').value,0); let paid=document.getElementById('subSetupPaid').value; let effSetup=paid==='YES'?0:setup; document.getElementById('firstTotal').textContent='First Total: R'+(effSetup+amt).toLocaleString()+' — Setup '+(paid==='YES'?'R0 Already Paid ✅':'R'+setup.toLocaleString()+' once')+' + Subscription R'+amt.toLocaleString(); }
+function updateFirstTotal(){
+  let setup=N(document.getElementById('subSetup').value,0); let amt=N(document.getElementById('subAmount').value,0); let paid=document.getElementById('subSetupPaid').value; let isDon=document.getElementById('subIsDonation').value==='YES';
+  let effSetup=paid==='YES'?0:setup;
+  document.getElementById('firstTotal').textContent=(isDon?'🎁 DONATION — Donor Pays: R'+(effSetup+amt).toLocaleString()+' • School Pays: R0 • Premium FREE 12 Months':'First Total: R'+(effSetup+amt).toLocaleString()+' — Setup '+(paid==='YES'?'R0 Already Paid ✅':'R'+setup.toLocaleString()+' once')+' + Subscription R'+amt.toLocaleString());
+  if(isDon) document.getElementById('donationNote').classList.remove('hidden'); else document.getElementById('donationNote').classList.add('hidden');
+}
 document.getElementById('subEmis').addEventListener('change', syncSchoolName);
+document.getElementById('subIsDonation').addEventListener('change', (e)=>{ if(e.target.value==='YES'){ document.getElementById('subPlan').value='Premium'; document.getElementById('subBilling').value='year'; document.getElementById('subSetup').value='5500'; document.getElementById('subAmount').value='9000'; document.getElementById('subPeriod').value='12'; document.getElementById('subStatus').value='ACTIVE'; } updateFirstTotal(); });
 ['subPlan','subBilling','subSetup','subAmount','subSetupPaid'].forEach(id=>document.getElementById(id).addEventListener('change', ()=>{
-  if(id==='subPlan'||id==='subBilling'){
-    let plan=document.getElementById('subPlan').value; let billing=document.getElementById('subBilling').value; let p=PLAN_PRICES[plan];
-    if(p){ document.getElementById('subAmount').value=billing==='year'?p.year:p.month; if(document.getElementById('subSetupPaid').value!=='YES') document.getElementById('subSetup').value=p.setup; }
-  }
+  if(id==='subPlan'||id==='subBilling'){ let plan=document.getElementById('subPlan').value; let billing=document.getElementById('subBilling').value; let p=PLAN_PRICES[plan]; if(p){ document.getElementById('subAmount').value=billing==='year'?p.year:p.month; if(document.getElementById('subSetupPaid').value!=='YES') document.getElementById('subSetup').value=p.setup; } }
   updateFirstTotal();
 }));
 document.getElementById('subStart').value=new Date().toISOString().slice(0,10);
 function render(){
-  let fS=document.getElementById('fStatus').value, fP=document.getElementById('fPlan').value;
-  let list=allSubs.filter(s=> (!fS||s.status===fS) && (!fP||s.plan===fP));
+  let fS=document.getElementById('fStatus').value, fP=document.getElementById('fPlan').value, fD=document.getElementById('fDonation').checked;
+  let list=allSubs.filter(s=> (!fS||s.status===fS) && (!fP||s.plan===fP) && (!fD||s.isDonation==='YES'));
   document.getElementById('cTotal').textContent=allSubs.length;
   document.getElementById('cActive').textContent=allSubs.filter(s=>s.status==='ACTIVE').length;
   document.getElementById('cTrial').textContent=allSubs.filter(s=>s.status==='TRIAL'||s.status==='DEMO').length;
   document.getElementById('cExpired').textContent=allSubs.filter(s=>s.status==='EXPIRED'||s.status==='CANCELLED').length;
+  document.getElementById('cDonations').textContent=allSubs.filter(s=>s.isDonation==='YES').length;
   let el=document.getElementById('subList');
   el.innerHTML=list.length? list.map(s=>{
     let badge=s.status==='ACTIVE'?'bg-green-100 text-green-700':(s.status==='TRIAL'||s.status==='DEMO')?'bg-yellow-100 text-yellow-700':s.status==='CANCELLED'?'bg-gray-100':'bg-red-100 text-red-700';
     let exp=s.expiresAt||s.endDate||'-'; let daysLeft=''; if(exp!=='-'){ let d=Math.ceil((new Date(exp)-new Date())/86400000); daysLeft = d<0? ' • ⛔ Expired '+Math.abs(d)+' days ago' : d<=30? ' • ⚠️ Expires in '+d+' days' : ' • ✅ '+d+' days left'; }
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(s.school||schoolNames[s.emis]||'School')}</b> • EMIS ${S(s.emis)}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${S(s.status)} • ${S(s.plan)}</span> • Sub R${N(s.amount)} • Setup R${N(s.setupFee)} (${S(s.setupPaid||'NO')}) • ${S(s.billing||'year')} • ${S(s.startDate)} → ${exp}${daysLeft}<br>${S(s.notes||'')}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._renew('${s.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">🔁 RENEW +12 MONTHS</button><button onclick="window._activate('${s.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">✅ ACTIVATE</button><button onclick="window._cancel('${s.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">⛔ CANCEL</button><a href="pricing.html?emis=${S(s.emis)}" class="bg-purple-100 text-purple-700 px-3 py-1 rounded font-bold text-xs text-center">💰 PRICING →</a></div></div>`;
+    let donateBadge=s.isDonation==='YES'?' <span class="bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-bold text-xs">🎁 PREMIUM DONATION 12 MONTHS • Donor: '+S(s.donor||'Anonymous')+' • School Pays R0</span>':'';
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(s.school||schoolNames[s.emis]||'School')}</b> • EMIS ${S(s.emis)}${donateBadge}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${S(s.status)} • ${S(s.plan)}</span> • Sub R${N(s.amount)} • Setup R${N(s.setupFee)} (${S(s.setupPaid||'NO')}) • ${S(s.billing||'year')} • ${S(s.startDate)} → ${exp}${daysLeft}<br>${S(s.notes||'')}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._renew('${s.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">🔁 RENEW +12 MONTHS</button><button onclick="window._activate('${s.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">✅ ACTIVATE</button><button onclick="window._cancel('${s.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">⛔ CANCEL</button><a href="pricing.html?emis=${S(s.emis)}" class="bg-purple-100 text-purple-700 px-3 py-1 rounded font-bold text-xs text-center">💰 PRICING →</a></div></div>`;
   }).join('') : '<p class="text-gray-500">No subscriptions yet — add one above.</p>';
 }
 document.getElementById('saveSubBtn').addEventListener('click', async()=>{
@@ -96,20 +117,23 @@ document.getElementById('saveSubBtn').addEventListener('click', async()=>{
   let emis=S(document.getElementById('subEmis').value.trim()); let school=S(document.getElementById('subSchool').value.trim()||schoolNames[emis]||'School');
   let plan=S(document.getElementById('subPlan').value); let status=S(document.getElementById('subStatus').value);
   let amount=N(document.getElementById('subAmount').value,0); let setupFee=N(document.getElementById('subSetup').value,0); let billing=S(document.getElementById('subBilling').value,'year'); let setupPaid=S(document.getElementById('subSetupPaid').value,'NO');
+  let isDonation=S(document.getElementById('subIsDonation').value,'NO'); let donor=S(document.getElementById('subDonor').value.trim(),'');
+  if(isDonation==='YES'){ plan='Premium'; billing='year'; }
   let months=N(document.getElementById('subPeriod').value,12); let start=document.getElementById('subStart').value||new Date().toISOString().slice(0,10); let notes=S(document.getElementById('subNotes').value.trim());
   if(!emis){ document.getElementById('subMsg').innerHTML='❌ Pick EMIS'; return; }
+  if(isDonation==='YES' && !donor){ document.getElementById('subMsg').innerHTML='❌ Enter Donor Name for Donation'; return; }
   let exp=new Date(start); exp.setMonth(exp.getMonth()+months); let expiresAt=exp.toISOString().slice(0,10);
   try{
     let existing=allSubs.find(s=>String(s.emis)===String(emis));
-    let data={school, plan, status, amount, setupFee, setupPaid, billing, startDate:start, expiresAt, notes, updatedAt:new Date().toISOString(), updatedBy:S(session?.name,'Super Admin')};
-    if(existing){ await updateDoc(doc(db,'subscriptions',existing.id), data); document.getElementById('subMsg').innerHTML='✅ Updated '+school+' — '+plan+' • '+status+' • First Total R'+((setupPaid==='YES'?0:setupFee)+amount).toLocaleString()+' • Expires '+expiresAt; }
-    else{ await addDoc(collection(db,'subscriptions'), {...data, emis:String(emis), createdAt:new Date().toISOString(), by:S(session?.name,'Super Admin')}); document.getElementById('subMsg').innerHTML='✅ Saved '+school+' — '+plan+' • '+status+' • First Total R'+((setupPaid==='YES'?0:setupFee)+amount).toLocaleString()+' • Expires '+expiresAt; }
+    let data={school, plan, status, amount, setupFee, setupPaid, billing, isDonation, donor, donationMonths:isDonation==='YES'?12:0, startDate:start, expiresAt, notes, updatedAt:new Date().toISOString(), updatedBy:S(session?.name,'Super Admin')};
+    if(existing){ await updateDoc(doc(db,'subscriptions',existing.id), data); document.getElementById('subMsg').innerHTML='✅ Updated '+school+' — '+plan+' • '+status+(isDonation==='YES'?' • 🎁 DONATION Donor: '+donor+' • School Pays R0':' • First Total R'+((setupPaid==='YES'?0:setupFee)+amount).toLocaleString())+' • Expires '+expiresAt; }
+    else{ await addDoc(collection(db,'subscriptions'), {...data, emis:String(emis), createdAt:new Date().toISOString(), by:S(session?.name,'Super Admin')}); document.getElementById('subMsg').innerHTML='✅ Saved '+school+' — '+plan+' • '+status+(isDonation==='YES'?' • 🎁 DONATION Donor: '+donor:'')+' • Expires '+expiresAt; }
   }catch(e){ document.getElementById('subMsg').innerHTML='❌ '+e.message; }
 });
 window._renew=async(id)=>{ let s=allSubs.find(x=>x.id===id); if(!s) return; let base=new Date(s.expiresAt||new Date()); if(base<new Date()) base=new Date(); base.setMonth(base.getMonth()+12); await updateDoc(doc(db,'subscriptions',id), {status:'ACTIVE', expiresAt:base.toISOString().slice(0,10), renewedAt:new Date().toISOString()}); alert('✅ Renewed '+S(s.school)+' to '+base.toISOString().slice(0,10)+' — Setup NOT charged again (once in lifetime)'); };
 window._activate=async(id)=>{ await updateDoc(doc(db,'subscriptions',id), {status:'ACTIVE', activatedAt:new Date().toISOString()}); };
 window._cancel=async(id)=>{ if(!confirm('Cancel this subscription? School will lose access.')) return; await updateDoc(doc(db,'subscriptions',id), {status:'CANCELLED', cancelledAt:new Date().toISOString()}); };
-document.getElementById('fStatus').addEventListener('change', render); document.getElementById('fPlan').addEventListener('change', render);
+document.getElementById('fStatus').addEventListener('change', render); document.getElementById('fPlan').addEventListener('change', render); document.getElementById('fDonation').addEventListener('change', render);
 onSnapshot(query(collection(db,'subscriptions'), orderBy('createdAt','desc')), (s)=>{ allSubs=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
 onSnapshot(collection(db,'schools'), (s)=>{ allSchools=s.docs.map(d=>({id:d.id,...d.data()})); syncSchoolName(); });
 onAuthStateChanged(auth, async(u)=>{ if(u && !session){ let snap=await getDoc(doc(db,'users',u.uid)); if(snap.exists()){ let d=snap.data(); session={uid:u.uid, name:d.name||u.email, email:u.email, role:String(d.role||'TEACHER'), emis:String(d.emis||'700310854')}; myRole=String(session.role).toUpperCase(); localStorage.setItem('makhanani_session', JSON.stringify(session)); document.getElementById('who').textContent=session.name+' • '+myRole; } } });
