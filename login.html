@@ -1,120 +1,48 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
-<body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • LOGIN</div><div class="text-[11px] text-gray-300">Makhanani LTSM • LIVE Firebase</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><a href="superadmin-login.html" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">👑 Super Admin</a></div></div>
-<div class="max-w-md mx-auto p-4">
-<div class="bg-white rounded-2xl p-5 border-4 border-yellow-400 mt-4">
-<h1 class="font-black text-2xl text-center">🔐 Login</h1>
-<p class="text-xs text-gray-500 text-center mt-1">School Users: Principal / HOD / Teacher / Librarian<br>Super Admin: Use <a href="superadmin-login.html" class="text-red-600 font-bold underline">Super Admin Login</a></p>
-<div class="mt-4 space-y-2">
-<label class="block"><span class="text-xs font-bold">🏫 School / EMIS</span><select id="schoolSelect" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></select><p class="text-[11px] text-gray-500 mt-1">Or type EMIS below if school not listed:</p><input id="emisInput" placeholder="EMIS e.g. 911360870" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></label>
-<label class="block"><span class="text-xs font-bold">📧 Email</span><input id="email" type="email" placeholder="you@school.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></label>
-<label class="block"><span class="text-xs font-bold">🔑 Password</span><input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-1"></label>
-<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black">🔐 LOGIN →</button>
-<p id="msg" class="text-sm font-bold text-center"></p>
-<p class="text-[11px] text-gray-500 text-center">George Sonto: EMIS <b>911360870</b> • Wordsworth: EMIS <b>700310854</b> • SHIRILELE: EMIS <b>911360825</b></p>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Staff Login — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
+<style>@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}.liveDot{animation:pulseDot 1.5s infinite}</style></head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-3"><div class="w-full max-w-md">
+<div class="bg-black text-white rounded-2xl p-5 text-center"><img src="logo.png" class="w-20 h-20 object-contain mx-auto bg-white rounded-full p-2"><p class="text-[11px] font-black tracking-[0.3em] text-yellow-400 mt-2">MAKHANANI LTSM • XINTIMANI GROUP • 2026/934898/07</p><h1 class="font-black text-2xl mt-1">🔐 Role-Based Login</h1><p class="text-xs text-gray-300 mt-1">One login — your Role decides what you see.<br><span class="liveDot inline-block w-2 h-2 bg-green-400 rounded-full"></span> <span class="text-green-400 font-bold">● LIVE</span></p></div>
+<div class="bg-white rounded-2xl p-5 mt-3 shadow">
+<div class="grid grid-cols-3 gap-1 text-[11px] font-bold text-center mb-3"><div class="bg-yellow-50 border rounded p-1">👑 SUPER_ADMIN<br><span class="text-gray-500 font-normal">All Schools</span></div><div class="bg-blue-50 border rounded p-1">🏫 PRINCIPAL<br><span class="text-gray-500 font-normal">Whole School</span></div><div class="bg-green-50 border rounded p-1">📚 LIBRARIAN<br><span class="text-gray-500 font-normal">Whole School</span></div><div class="bg-purple-50 border rounded p-1">✅ HOD<br><span class="text-gray-500 font-normal">Own Dept</span></div><div class="bg-orange-50 border rounded p-1">👩‍🏫 TEACHER<br><span class="text-gray-500 font-normal">Own Classes</span></div><div class="bg-gray-50 border rounded p-1">👨‍👩‍👧 PARENT<br><span class="text-gray-500 font-normal">View Only</span></div></div>
+<label class="text-xs font-black">EMAIL</label><input id="email" type="email" placeholder="e.g. teacher@wordsworth.co.za" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="text-xs font-black mt-3 block">PASSWORD</label><input id="password" type="password" placeholder="Password" class="border-2 rounded-lg px-3 py-2 w-full mt-1">
+<label class="text-xs font-black mt-3 block">SCHOOL (EMIS) — Auto from your profile, or pick to check</label><select id="schoolSel" class="border-2 rounded-lg px-3 py-2 w-full mt-1"><option value="">Auto — Use My Profile School</option><option value="700310854">Wordsworth High School — 700310854 — WHS</option><option value="911360870">George Sonto High School — 911360870 — GSH</option><option value="911360825">SHIRILELE HIGH SCHOOL — 911360825</option></select>
+<button id="loginBtn" class="bg-black text-white w-full py-3 rounded-lg font-black mt-4">🔐 LOGIN BY ROLE →</button>
+<button id="showBtn" class="bg-gray-100 w-full py-2 rounded-lg font-bold text-sm mt-2">👁️ Show / Hide Password</button>
+<p id="loginMsg" class="text-sm font-bold mt-3 text-center"></p>
+<div id="roleCard" class="hidden mt-3 border-2 border-green-500 bg-green-50 rounded-xl p-3 text-sm"><p class="font-black">✅ Logged in as:</p><p id="roleInfo" class="mt-1"></p><p id="rolePerms" class="text-xs text-gray-600 mt-1"></p><button id="continueBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">CONTINUE →</button><a id="manualLink" href="manuals.html" class="bg-blue-600 text-white w-full py-2 rounded-lg font-black mt-2 block text-center">📖 OPEN MY MANUAL</a></div>
 </div>
-</div>
-<div class="bg-white rounded-2xl p-5 border-2 border-blue-500 mt-4">
-<h2 class="font-black text-lg">🆕 Create Account — First Time?</h2>
-<p class="text-xs text-gray-500">Principal / HOD / Teacher / Librarian — Create your Firebase account here.</p>
-<div class="mt-3 space-y-2">
-<input id="regName" placeholder="Full Name e.g. Thabo Mokoena" class="border-2 rounded-lg px-3 py-2 w-full">
-<select id="regRole" class="border-2 rounded-lg px-3 py-2 w-full"><option value="TEACHER">TEACHER</option><option value="PRINCIPAL">PRINCIPAL</option><option value="HOD">HOD</option><option value="LIBRARIAN">LIBRARIAN</option></select>
-<input id="regEmail" type="email" placeholder="Email e.g. thabo@school.co.za" class="border-2 rounded-lg px-3 py-2 w-full">
-<input id="regPass" type="password" placeholder="Password (min 6 chars)" class="border-2 rounded-lg px-3 py-2 w-full">
-<input id="regSubjects" placeholder="Subjects e.g. Maths, English" class="border-2 rounded-lg px-3 py-2 w-full">
-<input id="regClasses" placeholder="Classes e.g. 10A, 10B" class="border-2 rounded-lg px-3 py-2 w-full">
-<p class="text-[11px] text-gray-500">School = Selected School above. Make sure School / EMIS at top is correct.</p>
-<button id="createBtn" class="bg-blue-600 text-white w-full py-3 rounded-lg font-black">🆕 CREATE ACCOUNT</button>
-<p id="regMsg" class="text-sm font-bold text-center"></p>
-</div>
-</div>
-<div class="text-center text-xs text-gray-500 mt-4">© 2026 Xintimani Group • Makhanani LTSM • All books due 30 November</div>
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-4 mt-3 text-sm"><p class="font-black">🔄 How Role-Based Login Works:</p><p class="mt-1">1. You login with Email + Password<br>2. System reads your <b>Role</b> from Firestore <b>users/{uid}</b><br>3. You are sent to the right page for your Role<br>4. Librarian page then hides / blocks what your Role cannot do</p></div>
+<div class="flex gap-2 mt-3"><a href="index.html" class="bg-white flex-1 py-2 rounded-lg font-black text-center text-sm shadow">← HOME</a><a href="manuals.html" class="bg-blue-600 text-white flex-1 py-2 rounded-lg font-black text-center text-sm shadow">📖 MANUALS</a><a href="finance.html" class="bg-green-600 text-white flex-1 py-2 rounded-lg font-black text-center text-sm shadow">💰 FINANCE</a></div>
+<div class="text-center text-xs text-gray-400 mt-3">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • 293 Smit Street, Hillbrow • Directors: Vusi Chauke • Hloniphani Success Masia</div>
 </div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs } from 'firebase/firestore';
-const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a", measurementId: "G-PEST1XFCR8" };
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, doc, getDoc } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-let schools = [];
-function normalizeSchool(s){
-  let schoolName = s.school || s.schoolName || s.name || s.title || s.school_name || '';
-  let emis = s.emis || s.EMIS || s.emisNumber || s.id || '';
-  let prefix = s.prefix || s.schoolPrefix || s.code || s.shortName || '';
-  if(!schoolName) schoolName = 'School ' + emis;
-  if(!prefix || prefix==='undefined' || prefix.length===1){
-    prefix = schoolName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,4);
-    if(!prefix || prefix==='S') prefix = 'SCH';
-  }
-  return {...s, school: schoolName, emis: String(emis), prefix: prefix, status: s.status || 'ACTIVE'};
-}
-function getSelectedEmis(){ let fromSelect=document.getElementById('schoolSelect').value; let fromInput=document.getElementById('emisInput').value.trim(); return fromInput || fromSelect || ''; }
-function getSelectedSchool(emis){ return schools.find(s=>String(s.emis)===String(emis)); }
-function show(msg, isError=true){ let el=document.getElementById('msg'); el.innerHTML=msg; el.style.color=isError?'#dc2626':'#16a34a'; }
-function showReg(msg, isError=true){ let el=document.getElementById('regMsg'); el.innerHTML=msg; el.style.color=isError?'#dc2626':'#16a34a'; }
-function destForRole(role){ role=String(role||'').toUpperCase(); if(role==='PRINCIPAL') return 'principal-dashboard.html'; if(role==='HOD') return 'hod-dashboard.html'; if(role==='TEACHER') return 'teacher-dashboard.html'; if(role==='LIBRARIAN') return 'librarian.html'; if(role==='SUPER_ADMIN') return 'superadmin-dashboard.html'; return 'principal-dashboard.html'; }
-async function loadSchools(){
-  try{ let snap=await getDocs(collection(db,'schools')); schools=snap.docs.map(d=>({id:d.id, ...d.data()})); }catch(e){ schools=[]; }
-  schools = schools.map(normalizeSchool);
-  let seen=new Set(); schools=schools.filter(s=>{ if(seen.has(s.emis)) return false; seen.add(s.emis); return true; });
-  let known=[{emis:'911360870', school:'George Sonto High School', prefix:'GSHS', status:'ACTIVE'},{emis:'700310854', school:'Wordsworth High School', prefix:'WHS', status:'ACTIVE'},{emis:'911360825', school:'SHIRILELE HIGH SCHOOL', prefix:'SHS', status:'ACTIVE'}];
-  known.forEach(k=>{ if(!schools.some(s=>String(s.emis)===k.emis)) schools.push(k); });
-  schools.sort((a,b)=>(a.school||'').localeCompare(b.school||''));
-  document.getElementById('schoolSelect').innerHTML=schools.map(s=>'<option value="'+s.emis+'">'+s.school+' • EMIS '+s.emis+' • '+s.prefix+(s.status==='SUSPENDED'?' • ⛔ SUSPENDED':'')+'</option>').join('');
-  document.getElementById('schoolSelect').addEventListener('change', ()=>{ document.getElementById('emisInput').value=document.getElementById('schoolSelect').value; });
-  if(schools.length) document.getElementById('emisInput').value=schools[0].emis;
-}
-loadSchools();
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-  let emis=getSelectedEmis(); let email=document.getElementById('email').value.trim().toLowerCase(); let pass=document.getElementById('password').value.trim();
-  if(!emis){ show('❌ Select School / Enter EMIS'); return; }
-  if(!email||!pass){ show('❌ Enter Email + Password'); return; }
-  show('⏳ Logging in...', false);
+const SCHOOLS={'911360870':'George Sonto High School','700310854':'Wordsworth High School','911360825':'SHIRILELE HIGH SCHOOL'};
+const ROLE_PERMS={'SUPER_ADMIN':'✅ All Schools • All Users • Suspend Schools • All Dashboards','ADMIN':'✅ All Schools • All Users • All Dashboards','PRINCIPAL':'✅ Whole School • All Departments • All Classes • Approve + Issue + View All','LIBRARIAN':'✅ Whole School • Organise Stock • Package • Issue Any Learner • Retrieve Any Book','HOD':'✅ Own Department Only • Approve Own Dept • Issue Any Class In Own Dept • Retrieve Any Book','TEACHER':'✅ Own Classes Only • Request Own Class • Issue Own Packed + Own Class • Retrieve Any Book','PARENT':'👁️ View Only • See Own Learner Books','LEARNER':'👁️ View Only • See Own Books'};
+const ROLE_MANUAL={'SUPER_ADMIN':'manuals.html#superadmin','ADMIN':'manuals.html#superadmin','PRINCIPAL':'manuals.html#principal','LIBRARIAN':'manuals.html#librarian','HOD':'manuals.html#hod','TEACHER':'manuals.html#teacher','PARENT':'manuals.html#parent','LEARNER':'manuals.html#parent','FINANCE':'manuals.html#finance'};
+function roleTarget(role){ role=String(role||'TEACHER').toUpperCase(); if(['SUPER_ADMIN','ADMIN'].includes(role)) return 'dashboard.html'; if(['PRINCIPAL'].includes(role)) return 'dashboard.html'; if(['LIBRARIAN','HOD','TEACHER'].includes(role)) return 'librarian-dashboard.html'; return 'dashboard.html'; }
+function roleTab(role){ role=String(role||'TEACHER').toUpperCase(); if(role==='HOD') return 'hod'; if(role==='TEACHER') return 'teacherIssue'; if(role==='LIBRARIAN') return 'stock'; return ''; }
+document.getElementById('showBtn').addEventListener('click', ()=>{ let p=document.getElementById('password'); p.type=p.type==='password'?'text':'password'; });
+async function doLogin(){
+  let email=document.getElementById('email').value.trim().toLowerCase(); let pass=document.getElementById('password').value.trim(); let pickedEmis=document.getElementById('schoolSel').value; let msg=document.getElementById('loginMsg');
+  if(!email||!pass){ msg.innerHTML='❌ Enter Email + Password'; return; } msg.innerHTML='⏳ Logging in by Role...';
   try{
-    let schoolSnap=await getDoc(doc(db,'schools', String(emis)));
-    if(schoolSnap.exists()){ let sdata=schoolSnap.data(); if(sdata.status==='SUSPENDED'){ show('⛔ SUBSCRIPTION EXPIRED<br>'+(sdata.school||sdata.schoolName||sdata.name||'This School')+' (EMIS '+emis+') has been suspended.<br>Contact Xintimani Group.'); return; } }
-    let cred=await signInWithEmailAndPassword(auth, email, pass); let uid=cred.user.uid;
-    let userSnap=await getDoc(doc(db,'users', uid));
-    if(!userSnap.exists()){ show('❌ Account found but NO profile in Firestore.<br>Tap CREATE ACCOUNT below.'); await signOut(auth); return; }
-    let profile=userSnap.data();
-    if(profile.role==='SUPER_ADMIN'){ show('👑 Super Admin account.<br>Use <a href="superadmin-login.html" class="underline font-bold">Super Admin Login</a>'); await signOut(auth); return; }
-    if(String(profile.emis)!==String(emis)){ show('❌ EMIS mismatch!<br>Your account is for <b>'+profile.school+' (EMIS '+profile.emis+')</b><br>but you selected EMIS <b>'+emis+'</b>.'); await signOut(auth); return; }
-    try{ let s2=await getDoc(doc(db,'schools', String(emis))); if(s2.exists() && s2.data().status==='SUSPENDED'){ show('⛔ SUBSCRIPTION EXPIRED<br>'+(s2.data().school||profile.school)+' suspended.'); await signOut(auth); return; } }catch(e){}
-    let session={school:profile.school, emis:String(profile.emis), prefix:profile.prefix||'', name:profile.name, role:String(profile.role||'TEACHER').toUpperCase(), subjects:profile.subjects||['General'], classes:profile.classes||[], email:profile.email, uid:uid, isImpersonating:false};
-    localStorage.removeItem('makhanani_superadmin_session'); localStorage.removeItem('makhanani_impersonating');
-    localStorage.setItem('makhanani_session', JSON.stringify(session));
-    show('✅ Welcome '+profile.name+' ('+profile.role+') — '+profile.school+' — Redirecting...', false);
-    setTimeout(()=>{ location.href=destForRole(profile.role); }, 800);
-  }catch(e){
-    let msg=e.message.replace('Firebase: ','');
-    if(msg.includes('invalid-credential')||msg.includes('wrong-password')||msg.includes('user-not-found')) show('❌ Wrong Email or Password.<br>Check Email + Password, or tap CREATE ACCOUNT below.');
-    else if(msg.includes('too-many-requests')) show('❌ Too many attempts. Wait 1 minute.');
-    else if(msg.includes('network')) show('❌ No internet. Check data / WiFi.');
-    else show('❌ '+msg);
-  }
-});
-document.getElementById('createBtn').addEventListener('click', async ()=>{
-  let emis=getSelectedEmis(); let name=document.getElementById('regName').value.trim(); let role=document.getElementById('regRole').value; let email=document.getElementById('regEmail').value.trim().toLowerCase(); let pass=document.getElementById('regPass').value.trim(); let subjectsRaw=document.getElementById('regSubjects').value.trim(); let classesRaw=document.getElementById('regClasses').value.trim();
-  if(!emis){ showReg('❌ Select School / Enter EMIS at top first'); return; }
-  if(!name||!email||pass.length<6){ showReg('❌ Fill Name + Email + Password (min 6)'); return; }
-  let school=getSelectedSchool(emis);
-  let schoolName=school?(school.school||school.schoolName||school.name||'School '+emis):'School '+emis;
-  let prefix=school?(school.prefix||school.schoolPrefix||school.code||emis.slice(-4)):emis.slice(-4);
-  try{ let ss=await getDoc(doc(db,'schools', String(emis))); if(ss.exists() && ss.data().status==='SUSPENDED'){ showReg('⛔ Cannot create — '+ (ss.data().school||schoolName) +' is SUSPENDED.'); return; } }catch(e){}
-  showReg('⏳ Creating account...', false);
-  try{
-    let cred=await createUserWithEmailAndPassword(auth, email, pass);
-    let subjects=subjectsRaw?subjectsRaw.split(',').map(s=>s.trim()).filter(Boolean):['General'];
-    let classes=classesRaw?classesRaw.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean):[];
-    await setDoc(doc(db,'users', cred.user.uid), {uid:cred.user.uid, name:name, email:email, role:role, emis:String(emis), school:schoolName, prefix:prefix, subjects:subjects, classes:classes, createdAt:new Date().toISOString()});
-    if(!school){ try{ await setDoc(doc(db,'schools', String(emis)), {school:schoolName, schoolName:schoolName, name:schoolName, emis:String(emis), prefix:prefix, status:'ACTIVE', plan:'Standard', createdAt:new Date().toISOString()}, {merge:true}); }catch(e){} }
-    showReg('✅ Account Created! '+name+' ('+role+') • '+schoolName+'<br>Now login above.', false);
-    document.getElementById('email').value=email; document.getElementById('password').value=''; document.getElementById('emisInput').value=emis;
-    document.getElementById('regName').value=''; document.getElementById('regEmail').value=''; document.getElementById('regPass').value=''; document.getElementById('regSubjects').value=''; document.getElementById('regClasses').value='';
-    window.scrollTo({top:0, behavior:'smooth'});
-  }catch(e){ let msg=e.message.replace('Firebase: ',''); if(msg.includes('email-already-in-use')) showReg('❌ Email already registered.<br>Try LOGIN above.'); else showReg('❌ '+msg); }
-});
-document.getElementById('password').addEventListener('keypress', (e)=>{ if(e.key==='Enter') document.getElementById('loginBtn').click(); });
+    let cred=await signInWithEmailAndPassword(auth, email, pass); let snap=await getDoc(doc(db,'users',cred.user.uid));
+    if(!snap.exists()){ msg.innerHTML='❌ No profile in users/'+cred.user.uid+' — Ask Admin to create your profile.'; await signOut(auth); return; }
+    let u=snap.data(); let role=String(u.role||'TEACHER').toUpperCase(); let emis=pickedEmis||u.emis||'700310854';
+    if(pickedEmis && u.emis && String(u.emis)!==pickedEmis){ msg.innerHTML='❌ Wrong School — Your profile is for '+(SCHOOLS[u.emis]||u.emis)+' ('+u.emis+')'; await signOut(auth); return; }
+    if(u.status==='SUSPENDED' || u.suspended){ msg.innerHTML='⛔ Account SUSPENDED — Contact Admin / Principal.'; await signOut(auth); return; }
+    let session={uid:cred.user.uid, name:u.name||email, email:email, role:role, emis:String(emis), school:SCHOOLS[emis]||u.school||'', department:u.department||u.dept||'', classes:u.classes||(u.class?[u.class]:[]), subject:u.subject||'', prefix:u.prefix||(String(emis)==='700310854'?'WHS':String(emis)==='911360870'?'GSH':'SCH'), loginAt:new Date().toISOString()};
+    window.MAKHANANI_SESSION=session; localStorage.setItem('makhanani_session', JSON.stringify(session));
+    document.getElementById('roleCard').classList.remove('hidden'); document.getElementById('roleInfo').innerHTML='<b>'+session.name+'</b> • <b>'+role+'</b> • '+(session.school||'')+' ('+session.emis+')'+(session.department?' • Dept: '+session.department:'')+(session.classes.length?' • Classes: '+session.classes.join(', '):''); document.getElementById('rolePerms').textContent=ROLE_PERMS[role]||''; document.getElementById('manualLink').href=ROLE_MANUAL[role]||'manuals.html'; msg.innerHTML='✅ Role: <b>'+role+'</b> — Redirecting...';
+    let target=roleTarget(role); let tab=roleTab(role); document.getElementById('continueBtn').onclick=()=>{ location.href=target+(tab?'#'+tab:''); }; setTimeout(()=>{ location.href=target+(tab?'#'+tab:''); }, 1200);
+  }catch(e){ msg.innerHTML='❌ '+e.message.replace('Firebase: ','').replace('auth/',''); }
+}
+document.getElementById('loginBtn').addEventListener('click', doLogin); document.getElementById('password').addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); }); document.getElementById('email').addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
 </script></body></html>
