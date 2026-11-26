@@ -2,7 +2,6 @@
 <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
 <style>.tabBtn.active{background:#000;color:#fff}.tabBtn{white-space:nowrap}@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%}}</style></head>
 <body class="bg-gray-100 pb-24"><div class="max-w-7xl mx-auto p-3">
-<!-- HEADER -->
 <div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • MAKHANANI LTSM</p><h1 class="font-black text-xl">📚 Librarian Dashboard</h1><p id="who" class="text-xs text-gray-300">Librarian</p></div></div><div class="flex gap-1 flex-wrap justify-end">
 <a href="xintimani.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">✨ XINTIMANI</a>
 <a href="index.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
@@ -12,8 +11,6 @@
 <a href="pricing.html" class="bg-purple-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 PRICING</a>
 <a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a>
 <button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs">LOGOUT</button></div></div>
-
-<!-- STATS -->
 <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mt-3">
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cTotal">0</p><p class="text-xs text-gray-500">📚 Total Books</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cAvail">0</p><p class="text-xs text-gray-500">✅ Available</p></div>
@@ -21,21 +18,17 @@
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-blue-700" id="cIssued">0</p><p class="text-xs text-gray-500">📤 Issued</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-purple-700" id="cLearners">0</p><p class="text-xs text-gray-500">👧🏾 Learners</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cRequests">0</p><p class="text-xs text-gray-500">📝 Requests</p></div></div>
-
-<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-3 text-sm"><b>📌 Workflow — Follow This Order:</b> <span class="font-bold">1. Teacher Requests → 2. HOD Approves → 3. Librarian Packs → 4. Teacher Issues → 5. Retrieve → 6. Print</span><br><span class="text-gray-600">⛔ No HOD = No Pack. ⛔ No Pack = No Issue. ⛔ Wrong Class / Wrong Grade / Already Has Title = Blocked. ✅ Any Teacher Can Retrieve Any Book.</span><br><span id="subBanner" class="font-bold"></span></div>
-
-<!-- CONTROLS -->
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-3 text-sm"><b>📌 Workflow:</b> <span class="font-bold">1. Teacher Requests → 2. HOD Approves → 3. Librarian Packs → 4. Teacher Issues → 5. Retrieve → 6. Print</span><br><span class="text-gray-600">⛔ No HOD = No Pack. ⛔ No Pack = No Issue. ⛔ Wrong Class / Wrong Grade / Already Has Title = Blocked. ✅ Any Teacher Can Retrieve Any Book.</span><br><span id="subBanner" class="font-bold"></span></div>
 <div class="bg-white rounded-2xl p-3 mt-3 shadow flex gap-2 flex-wrap items-center">
 <label class="text-xs font-black">SCHOOL EMIS:</label><select id="emisSel" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="700310854">Wordsworth — 700310854</option><option value="911360870">George Sonto — 911360870</option><option value="911360825">SHIRILELE — 911360825</option></select>
 <label class="text-xs font-black">MY CLASS:</label><select id="myClass" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="">All Classes</option><option>8A</option><option>8B</option><option>8C</option><option>9A</option><option>9B</option><option>9C</option><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>11C</option><option>12A</option><option>12B</option><option>12C</option></select>
-<label class="text-xs font-black">MY DEPT:</label><select id="myDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="">All Depts</option><option>Mathematics</option><option>English</option><option>Afrikaans</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>Technology</option><option>EMS</option><option>Life Orientation</option></select>
+<label class="text-xs font-black">MY DEPT:</label><select id="myDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option value="">All Depts</option></select>
 <label class="text-xs font-black">SEARCH:</label><input id="searchBox" placeholder="Search title / barcode / learner..." class="border-2 rounded-lg px-2 py-2 w-48">
 <button onclick="window._exportCSV()" class="bg-green-600 text-white px-3 py-2 rounded-lg font-black text-xs">⬇️ EXPORT CSV</button>
 <button onclick="window._seedDemo()" class="bg-blue-600 text-white px-3 py-2 rounded-lg font-black text-xs">🌱 SEED DEMO DATA</button></div>
-
-<!-- TABS -->
 <div class="flex gap-1 overflow-x-auto mt-3 pb-1" id="tabs">
 <button data-tab="stock" class="tabBtn active bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📦 STOCK</button>
+<button data-tab="departments" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">🏛️ DEPARTMENTS</button>
 <button data-tab="request" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📝 REQUEST</button>
 <button data-tab="hod" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">✅ HOD</button>
 <button data-tab="package" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📦 PACKAGE</button>
@@ -45,31 +38,40 @@
 <button data-tab="learners" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">👧🏾 LEARNERS</button>
 <button data-tab="records" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📋 RECORDS</button>
 <button data-tab="loan" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📄 LOAN FORM</button></div>
-
 <!-- STOCK -->
 <div id="tab-stock" class="tabPage bg-white rounded-2xl p-4 mt-2 shadow">
-<h2 class="font-black text-xl">📦 Stock — Add / Manage Books</h2><p class="text-xs text-gray-500">Barcode = School Prefix + Number. Example Wordsworth: WHS000001. Renumber fixes gaps after deletes.</p>
+<h2 class="font-black text-xl">📦 Stock — Add / Manage Books</h2><p class="text-xs text-gray-500">Barcode = Prefix + Number. Example Wordsworth: WHS000001. Renumber fixes gaps after deletes.</p>
 <div class="grid md:grid-cols-4 gap-2 mt-3">
 <input id="bTitle" placeholder="Title — e.g. Mathematics Grade 10" class="border-2 rounded-lg px-3 py-2">
 <input id="bAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2">
 <input id="bGrade" placeholder="Grade — e.g. 10" class="border-2 rounded-lg px-3 py-2">
-<select id="bDept" class="border-2 rounded-lg px-3 py-2"><option>Mathematics</option><option>English</option><option>Afrikaans</option><option>Physical Sciences</option><option>Life Sciences</option><option>Social Sciences</option><option>Technology</option><option>EMS</option><option>Life Orientation</option></select>
+<select id="bDept" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick Department —</option></select>
 <input id="bQty" type="number" value="1" placeholder="Qty" class="border-2 rounded-lg px-3 py-2">
 <input id="bPrefix" placeholder="Prefix — e.g. WHS" value="WHS" class="border-2 rounded-lg px-3 py-2">
 <input id="bStartNo" type="number" value="1" placeholder="Start No" class="border-2 rounded-lg px-3 py-2">
 <button id="addBookBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD BOOK(S)</button></div><p id="bookMsg" class="text-sm font-bold mt-1"></p>
-<!-- RENUMBER BAR -->
 <div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3 mt-3">
-<p class="font-black">🔢 Renumber Books</p><p class="text-xs text-gray-600">Tick books below → set Start No. → Renumber Selected. Or Renumber ALL to close gaps. Example: WHS000001, WHS000002, WHS000003...</p>
+<p class="font-black">🔢 Renumber Books</p><p class="text-xs text-gray-600">Tick books below → set Start No. → Renumber Selected. Or Renumber ALL to close gaps.</p>
 <div class="flex gap-2 flex-wrap items-center mt-2">
 <label class="text-xs font-black">START NO:</label><input id="renumStart" type="number" value="1" class="border-2 rounded-lg px-2 py-2 w-24 font-bold">
 <label class="text-xs font-black">PREFIX:</label><input id="renumPrefix" value="WHS" class="border-2 rounded-lg px-2 py-2 w-24 font-bold">
-<button id="renumSelectedBtn" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER SELECTED (Ticked)</button>
+<button id="renumSelectedBtn" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER SELECTED</button>
 <button id="renumAllBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER ALL</button>
 <span id="renumMsg" class="text-sm font-bold"></span></div></div>
 <div class="flex gap-2 mt-3 flex-wrap"><select id="stockFilter" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option>AVAILABLE</option><option>PACKED</option><option>ISSUED</option></select><button onclick="window._selectAllStock()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">☑️ Select All</button><button onclick="window._clearStockSel()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">Clear Selection</button><button onclick="window._deleteSelected()" class="bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold text-xs">🗑️ Delete Selected</button></div>
 <div id="stockList" class="space-y-2 mt-3 text-sm"></div></div>
-
+<!-- DEPARTMENTS -->
+<div id="tab-departments" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
+<h2 class="font-black text-xl">🏛️ Departments — Create / Edit</h2>
+<p class="text-xs text-gray-500">Departments control HOD approval. HOD sees ONLY own Department. Teacher Request uses Book's Department. Departments are per-EMIS (per school).</p>
+<div class="grid md:grid-cols-4 gap-2 mt-3">
+<input id="dName" placeholder="Department Name — e.g. Mathematics" class="border-2 rounded-lg px-3 py-2">
+<input id="dHod" placeholder="HOD Name — e.g. Mr. Dube" class="border-2 rounded-lg px-3 py-2">
+<input id="dCode" placeholder="Code — e.g. MATH" class="border-2 rounded-lg px-3 py-2">
+<button id="addDeptBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD DEPARTMENT</button></div>
+<p id="deptMsg" class="text-sm font-bold mt-1"></p>
+<p class="text-xs bg-yellow-50 border rounded-lg px-2 py-1 mt-2">💡 <b>Default Departments:</b> If none exist for your EMIS, we auto-create: Mathematics, English, Afrikaans, Physical Sciences, Life Sciences, Social Sciences, Technology, EMS, Life Orientation. You can edit / delete them here.</p>
+<div id="deptList" class="space-y-2 mt-3 text-sm"></div></div>
 <!-- REQUEST -->
 <div id="tab-request" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📝 Teacher Request</h2><p class="text-xs text-gray-500">Teacher can ONLY request for OWN class. Pick a book → Qty → SEND TO HOD.</p>
@@ -79,27 +81,23 @@
 <input id="reqQty" type="number" value="10" class="border-2 rounded-lg px-3 py-2"></div>
 <button id="reqBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg font-black mt-2">📝 SEND REQUEST TO HOD →</button><p id="reqMsg" class="text-sm font-bold mt-1"></p>
 <div id="reqList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- HOD -->
 <div id="tab-hod" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">✅ HOD Approval</h2><p class="text-xs text-gray-500">HOD sees ONLY own Department. Set Approved Qty → APPROVE or REJECT. No HOD = No Package.</p>
 <div id="hodList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- PACKAGE -->
 <div id="tab-package" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📦 Package — Librarian Only</h2><p class="text-xs text-gray-500">Librarian packs from AVAILABLE only, up to Approved Qty. Packed books move to ISSUE tab.</p>
 <div id="packageList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- ISSUE -->
 <div id="tab-teacherIssue" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
-<h2 class="font-black text-xl">📤 Teacher Issue</h2><p class="text-xs text-gray-500">Scan / Pick PACKED barcode → Pick Learner in SAME class → ISSUE. 1 Learner = 1 Title. Blocked if: Not Packed / Wrong Class / Wrong Grade / Already Has Title.</p>
+<h2 class="font-black text-xl">📤 Teacher Issue</h2><p class="text-xs text-gray-500">Scan / Pick PACKED barcode → Pick Learner in SAME class → ISSUE. 1 Learner = 1 Title.</p>
 <div class="grid md:grid-cols-3 gap-2 mt-3">
 <select id="issueBook" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick PACKED Book —</option></select>
 <input id="issueScan" placeholder="OR Scan / Type Barcode — e.g. WHS000001" class="border-2 rounded-lg px-3 py-2">
 <select id="issueLearner" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick Learner —</option></select></div>
 <button id="issueBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">📤 ISSUE BOOK →</button><p id="issueMsg" class="text-sm font-bold mt-1"></p>
 <div id="issueList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- RETRIEVE -->
 <div id="tab-retrieve" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">🔁 Retrieve — Bring Book Back</h2><p class="text-xs text-gray-500">ANY Teacher can retrieve ANY book. Scan / Pick ISSUED book → RETRIEVE → Book becomes AVAILABLE again.</p>
@@ -108,14 +106,12 @@
 <input id="retScan" placeholder="OR Scan / Type Barcode" class="border-2 rounded-lg px-3 py-2"></div>
 <button id="retBtn" class="bg-orange-600 text-white w-full py-2 rounded-lg font-black mt-2">🔁 RETRIEVE BOOK →</button><p id="retMsg" class="text-sm font-bold mt-1"></p>
 <div id="retList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- PRINT -->
 <div id="tab-print" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">🖨️ Print Labels — 3×5 on A4 (15 Labels)</h2><p class="text-xs text-gray-500">Tick books / learners → PRINT. Book label: WHS000001 + Title. Learner label: 10A001 + Name.</p>
 <div class="flex gap-2 flex-wrap mt-2"><button onclick="window._printBooks()" class="bg-pink-600 text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT TICKED BOOKS</button><button onclick="window._printLearners()" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT ALL LEARNERS (Current Class)</button><button onclick="window.print()" class="bg-gray-100 px-4 py-2 rounded-lg font-bold text-sm">🖨️ PRINT PAGE</button></div>
 <div id="printArea" class="mt-3"></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3"><div><h3 class="font-black">📚 Books To Print</h3><div id="printBooksList" class="space-y-1 text-sm mt-1 max-h-64 overflow-auto"></div></div><div><h3 class="font-black">👧🏾 Learners To Print</h3><div id="printLearnersList" class="space-y-1 text-sm mt-1 max-h-64 overflow-auto"></div></div></div></div>
-
 <!-- LEARNERS -->
 <div id="tab-learners" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">👧🏾 Learners</h2><p class="text-xs text-gray-500">Learner ID = Class + Number. Example 10A001 = 10A, learner 1. Auto-generated.</p>
@@ -125,12 +121,10 @@
 <input id="lGrade" placeholder="Grade — e.g. 10" value="10" class="border-2 rounded-lg px-3 py-2">
 <button id="addLearnerBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD LEARNER</button></div><p id="learnerMsg" class="text-sm font-bold mt-1"></p>
 <div id="learnerList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- RECORDS -->
 <div id="tab-records" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📋 Records — Who Has What</h2><p class="text-xs text-gray-500">Every Issue / Retrieve is logged here. Use Search to find a learner or book.</p>
 <div id="recordsList" class="space-y-2 mt-3 text-sm"></div></div>
-
 <!-- LOAN FORM -->
 <div id="tab-loan" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📄 Loan Form</h2><p class="text-xs text-gray-500">Print this form, learner signs when they take a book, signs again when they return it.</p>
@@ -141,12 +135,11 @@
 <div class="grid grid-cols-2 gap-4 mt-4"><p>Learner Signature: __________________<br>Date: __________</p><p>Teacher / Librarian Signature: __________________<br>Date: __________</p></div>
 <div class="grid grid-cols-2 gap-4 mt-4"><p>Returned Date: __________________</p><p>Condition: ☐ Good ☐ Damaged ☐ Lost</p></div></div>
 <button onclick="window.print()" class="bg-black text-white w-full py-2 rounded-lg font-black mt-3">🖨️ PRINT LOAN FORM</button></div>
-
 <div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM — Joy. Cherished. Mercy.</div></div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
@@ -158,20 +151,18 @@ document.getElementById('emisSel').value=emis;
 document.getElementById('who').textContent=(session?.name||'Guest')+' • '+myRole+' • EMIS '+emis;
 if(session) { if(session.classes?.length) document.getElementById('myClass').value=session.classes[0]; if(session.department) document.getElementById('myDept').value=session.department; }
 document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-let books=[], learners=[], requests=[], records=[];
+let books=[], learners=[], requests=[], records=[], departments=[];
 let stockSel=new Set(), printBookSel=new Set();
 let currentTab='stock';
 function showTab(t){ currentTab=t; document.querySelectorAll('.tabPage').forEach(p=>p.classList.add('hidden')); let el=document.getElementById('tab-'+t); if(el) el.classList.remove('hidden'); document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===t)); }
 document.querySelectorAll('.tabBtn').forEach(b=>b.addEventListener('click', ()=>showTab(b.dataset.tab)));
-if(location.hash){ let h=location.hash.replace('#',''); if(['stock','request','hod','package','teacherIssue','retrieve','print','learners','records','loan'].includes(h)) showTab(h); }
-// EMIS change
+if(location.hash){ let h=location.hash.replace('#',''); if(['stock','departments','request','hod','package','teacherIssue','retrieve','print','learners','records','loan'].includes(h)) showTab(h); }
 document.getElementById('emisSel').addEventListener('change', (e)=>{ emis=e.target.value; if(session){ session.emis=emis; localStorage.setItem('makhanani_session', JSON.stringify(session)); } document.getElementById('who').textContent=(session?.name||'Guest')+' • '+myRole+' • EMIS '+emis; });
-// Filters
 ['myClass','myDept','searchBox','stockFilter'].forEach(id=>document.getElementById(id).addEventListener('input', renderAll));
 function pad(n){ return String(n).padStart(6,'0'); }
 function filteredBooks(){ let q=S(document.getElementById('searchBox').value).toLowerCase(); let f=document.getElementById('stockFilter').value; return books.filter(b=> String(b.emis)===String(emis) && (!f||b.status===f) && (!q|| (S(b.title).toLowerCase().includes(q)||S(b.barcode).toLowerCase().includes(q))) ); }
 function filteredLearners(){ let q=S(document.getElementById('searchBox').value).toLowerCase(); let cls=document.getElementById('myClass').value; return learners.filter(l=> String(l.emis)===String(emis) && (!cls||l.class===cls) && (!q|| (S(l.name).toLowerCase().includes(q)||S(l.learnerId).toLowerCase().includes(q))) ); }
-function renderAll(){ renderStock(); renderRequests(); renderHod(); renderPackage(); renderIssue(); renderRetrieve(); renderPrint(); renderLearners(); renderRecords(); updateStats(); updateDropdowns(); }
+function renderAll(){ renderStock(); renderDepts(); renderRequests(); renderHod(); renderPackage(); renderIssue(); renderRetrieve(); renderPrint(); renderLearners(); renderRecords(); updateStats(); updateDropdowns(); }
 function updateStats(){ let b=books.filter(x=>String(x.emis)===String(emis)); document.getElementById('cTotal').textContent=b.length; document.getElementById('cAvail').textContent=b.filter(x=>x.status==='AVAILABLE').length; document.getElementById('cPacked').textContent=b.filter(x=>x.status==='PACKED').length; document.getElementById('cIssued').textContent=b.filter(x=>x.status==='ISSUED').length; document.getElementById('cLearners').textContent=learners.filter(x=>String(x.emis)===String(emis)).length; document.getElementById('cRequests').textContent=requests.filter(x=>String(x.emis)===String(emis) && x.status!=='REJECTED').length; }
 function updateDropdowns(){
   let reqSel=document.getElementById('reqBook'); let cur=reqSel.value; reqSel.innerHTML='<option value="">— Pick Book —</option>'+books.filter(b=>String(b.emis)===String(emis)).map(b=>`<option value="${b.id}">${S(b.title)} — ${S(b.barcode)} (${S(b.status)})</option>`).join(''); reqSel.value=cur;
@@ -179,6 +170,53 @@ function updateDropdowns(){
   let retSel=document.getElementById('retBook'); let cur3=retSel.value; retSel.innerHTML='<option value="">— Pick ISSUED Book —</option>'+books.filter(b=>String(b.emis)===String(emis)&&b.status==='ISSUED').map(b=>`<option value="${b.id}">${S(b.barcode)} — ${S(b.title)} — To ${S(b.issuedToName||'')} (${S(b.issuedTo||'')})</option>`).join(''); retSel.value=cur3;
   let learnSel=document.getElementById('issueLearner'); let cur4=learnSel.value; let cls=document.getElementById('myClass').value; learnSel.innerHTML='<option value="">— Pick Learner —</option>'+learners.filter(l=>String(l.emis)===String(emis)&&(!cls||l.class===cls)).map(l=>`<option value="${l.id}">${S(l.learnerId)} — ${S(l.name)} — ${S(l.class)}</option>`).join(''); learnSel.value=cur4;
 }
+// DEPARTMENTS
+const DEFAULT_DEPTS=[{name:'Mathematics',code:'MATH',hod:''},{name:'English',code:'ENG',hod:''},{name:'Afrikaans',code:'AFR',hod:''},{name:'Physical Sciences',code:'PHY',hod:''},{name:'Life Sciences',code:'LIF',hod:''},{name:'Social Sciences',code:'SOC',hod:''},{name:'Technology',code:'TECH',hod:''},{name:'EMS',code:'EMS',hod:''},{name:'Life Orientation',code:'LO',hod:''}];
+async function ensureDefaultDepts(){ if(departments.filter(d=>String(d.emis)===String(emis)).length) return; if(!['SUPER_ADMIN','ADMIN','LIBRARIAN','PRINCIPAL'].includes(myRole) && session) return; for(let d of DEFAULT_DEPTS){ await addDoc(collection(db,'departments'), {emis:String(emis), name:d.name, code:d.code, hod:d.hod||'', createdAt:new Date().toISOString(), by:S(session?.name,'')}); } }
+function renderDepts(){
+  let el=document.getElementById('deptList'); if(!el) return;
+  let list=departments.filter(d=>String(d.emis)===String(emis)).sort((a,b)=>S(a.name).localeCompare(S(b.name)));
+  el.innerHTML=list.length? list.map(d=>{
+    let usedBooks=books.filter(b=>String(b.emis)===String(emis)&&b.department===d.name).length;
+    let usedReq=requests.filter(r=>String(r.emis)===String(emis)&&r.department===d.name).length;
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(d.name)}</b> • Code ${S(d.code||'—')} • HOD ${S(d.hod||'—')}<br><span class="text-xs">Used by ${usedBooks} books • ${usedReq} requests • EMIS ${S(d.emis)}</span></div><div class="flex gap-1 shrink-0 flex-wrap"><button onclick="window._editDept('${d.id}')" class="bg-gray-100 px-2 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._deleteDept('${d.id}')" class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold text-xs">🗑️ DELETE</button></div></div>`;
+  }).join('') : '<p class="text-gray-500">No departments yet — Add one above or wait for auto-create.</p>';
+  let bDept=document.getElementById('bDept'); if(bDept){ let cur=bDept.value; bDept.innerHTML='<option value="">— Pick Department —</option>'+list.map(d=>`<option value="${S(d.name)}">${S(d.name)}</option>`).join(''); if(cur) bDept.value=cur; }
+  let myDept=document.getElementById('myDept'); if(myDept){ let cur2=myDept.value; myDept.innerHTML='<option value="">All Depts</option>'+list.map(d=>`<option value="${S(d.name)}">${S(d.name)}</option>`).join(''); if(cur2) myDept.value=cur2; }
+}
+document.getElementById('addDeptBtn').addEventListener('click', async()=>{
+  let name=S(document.getElementById('dName').value.trim()); let hod=S(document.getElementById('dHod').value.trim()); let code=S(document.getElementById('dCode').value.trim().toUpperCase()||name.slice(0,4).toUpperCase());
+  if(!name){ document.getElementById('deptMsg').innerHTML='❌ Enter Department Name'; return; }
+  if(departments.some(d=>String(d.emis)===String(emis)&&S(d.name).toLowerCase()===name.toLowerCase())){ document.getElementById('deptMsg').innerHTML='⛔ Department "'+name+'" already exists for this EMIS'; return; }
+  if(!['SUPER_ADMIN','ADMIN','LIBRARIAN','PRINCIPAL'].includes(myRole) && session){ document.getElementById('deptMsg').innerHTML='⛔ Only Librarian / Principal / Super Admin can create departments'; return; }
+  await addDoc(collection(db,'departments'), {emis:String(emis), name, hod, code, createdAt:new Date().toISOString(), by:S(session?.name,'')});
+  document.getElementById('deptMsg').innerHTML='✅ Added Department: '+name;
+  document.getElementById('dName').value=''; document.getElementById('dHod').value=''; document.getElementById('dCode').value='';
+});
+window._editDept=async(id)=>{
+  let d=departments.find(x=>x.id===id); if(!d) return;
+  let name=prompt('Department Name', d.name); if(name===null) return;
+  let hod=prompt('HOD Name', d.hod||''); if(hod===null) return;
+  let code=prompt('Code', d.code||''); if(code===null) return;
+  let oldName=d.name;
+  await updateDoc(doc(db,'departments',id), {name:name.trim(), hod:hod.trim(), code:code.trim().toUpperCase()});
+  if(oldName!==name.trim() && confirm('Also rename "'+oldName+'" → "'+name.trim()+'" in existing Books + Requests? (Recommended)')){
+    let toFixBooks=books.filter(b=>String(b.emis)===String(emis)&&b.department===oldName);
+    for(let b of toFixBooks) await updateDoc(doc(db,'books',b.id), {department:name.trim()});
+    let toFixReq=requests.filter(r=>String(r.emis)===String(emis)&&r.department===oldName);
+    for(let r of toFixReq) await updateDoc(doc(db,'requests',r.id), {department:name.trim()});
+    alert('✅ Renamed in '+toFixBooks.length+' books + '+toFixReq.length+' requests');
+  }
+};
+window._deleteDept=async(id)=>{
+  let d=departments.find(x=>x.id===id); if(!d) return;
+  let usedBooks=books.filter(b=>String(b.emis)===String(emis)&&b.department===d.name).length;
+  let usedReq=requests.filter(r=>String(r.emis)===String(emis)&&r.department===d.name).length;
+  if(usedBooks||usedReq){ if(!confirm('⚠️ "'+d.name+'" is used by '+usedBooks+' books + '+usedReq+' requests.\n\nDelete anyway? Books will keep old name but HOD filter will not show them. Better: EDIT instead.\n\nDelete anyway?')) return; }
+  else if(!confirm('Delete Department "'+d.name+'"?')) return;
+  await deleteDoc(doc(db,'departments',id));
+};
+// STOCK
 function renderStock(){
   let el=document.getElementById('stockList'); let list=filteredBooks();
   el.innerHTML=list.length? list.map(b=>{
@@ -193,7 +231,7 @@ window._clearStockSel=()=>{ stockSel.clear(); renderStock(); };
 window._deleteSelected=async()=>{ if(!stockSel.size) return alert('Tick books first'); if(!confirm('Delete '+stockSel.size+' ticked books?')) return; for(let id of [...stockSel]){ await deleteDoc(doc(db,'books',id)); } stockSel.clear(); };
 window._deleteBook=async(id)=>{ if(!confirm('Delete this book?')) return; await deleteDoc(doc(db,'books',id)); };
 window._restoreBook=async(id)=>{ let b=books.find(x=>x.id===id); if(!b) return; await updateDoc(doc(db,'books',id), {status:'AVAILABLE', issuedTo:'', issuedToName:'', issuedToClass:'', packedForClass:'', requestId:''}); alert('♻️ Restored '+S(b.barcode)+' to AVAILABLE'); };
-window._editBook=async(id)=>{ let b=books.find(x=>x.id===id); if(!b) return; let t=prompt('Title', b.title); if(t===null) return; let a=prompt('Author', b.author||''); let g=prompt('Grade', b.grade||''); await updateDoc(doc(db,'books',id), {title:t, author:a||b.author, grade:g||b.grade}); };
+window._editBook=async(id)=>{ let b=books.find(x=>x.id===id); if(!b) return; let t=prompt('Title', b.title); if(t===null) return; let a=prompt('Author', b.author||''); let g=prompt('Grade', b.grade||''); let dept=prompt('Department', b.department||''); await updateDoc(doc(db,'books',id), {title:t, author:a||b.author, grade:g||b.grade, department:dept||b.department}); };
 window._renumberOne=async(id)=>{ let start=N(document.getElementById('renumStart').value,1); let prefix=S(document.getElementById('renumPrefix').value||'WHS'); let b=books.find(x=>x.id===id); if(!b) return; let newCode=prefix+pad(start); if(!confirm('Renumber '+S(b.barcode)+' → '+newCode+' ?\n\nRemember to REPRINT label!')) return; await updateDoc(doc(db,'books',id), {barcode:newCode}); document.getElementById('renumMsg').innerHTML='✅ Renumbered to '+newCode+' — Reprint label!'; };
 document.getElementById('renumSelectedBtn').addEventListener('click', async()=>{
   if(!stockSel.size) return alert('☑️ Tick books first in STOCK list');
@@ -207,13 +245,14 @@ document.getElementById('renumAllBtn').addEventListener('click', async()=>{
   let start=N(document.getElementById('renumStart').value,1); let prefix=S(document.getElementById('renumPrefix').value||'WHS');
   let list=books.filter(b=>String(b.emis)===String(emis)).sort((a,b)=>S(a.barcode).localeCompare(S(b.barcode)));
   if(!list.length) return alert('No books for this EMIS');
-  if(!confirm('Renumber ALL '+list.length+' books for EMIS '+emis+' starting at '+prefix+pad(start)+' ?\n\nThis closes gaps after deletes.')) return;
+  if(!confirm('Renumber ALL '+list.length+' books for EMIS '+emis+' starting at '+prefix+pad(start)+' ?')) return;
   let n=start; for(let b of list){ await updateDoc(doc(db,'books',b.id), {barcode:prefix+pad(n)}); n++; }
   document.getElementById('renumMsg').innerHTML='✅ Renumbered ALL '+list.length+' books: '+prefix+pad(start)+' → '+prefix+pad(n-1)+' — Reprint labels!';
 });
 document.getElementById('addBookBtn').addEventListener('click', async()=>{
   let title=S(document.getElementById('bTitle').value.trim()); let author=S(document.getElementById('bAuthor').value.trim()); let grade=S(document.getElementById('bGrade').value.trim()||'10'); let dept=S(document.getElementById('bDept').value); let qty=N(document.getElementById('bQty').value,1); let prefix=S(document.getElementById('bPrefix').value||'WHS'); let startNo=N(document.getElementById('bStartNo').value,1);
   if(!title){ document.getElementById('bookMsg').innerHTML='❌ Enter Title'; return; }
+  if(!dept){ document.getElementById('bookMsg').innerHTML='❌ Pick Department — create it in 🏛️ DEPARTMENTS if missing'; return; }
   if(!['LIBRARIAN','PRINCIPAL','SUPER_ADMIN','ADMIN'].includes(myRole) && session){ document.getElementById('bookMsg').innerHTML='⛔ Only Librarian / Principal / Super Admin can add stock'; return; }
   let existing=books.filter(b=>String(b.emis)===String(emis)).map(b=>N(String(b.barcode).replace(prefix,''),0));
   let next = startNo; while(existing.includes(next)) next++;
@@ -344,11 +383,11 @@ window._seedDemo=async()=>{
   for(let i=0;i<5;i++){ let lid='10A'+String(i+1).padStart(3,'0'); if(learners.some(l=>l.learnerId===lid)) continue; await addDoc(collection(db,'learners'), {emis:String(emis), name:['Lerato Mokoena','Thabo Nkosi','Naledi Dube','Sipho Khumalo','Anele Smith'][i], class:'10A', grade:'10', learnerId:lid, createdAt:new Date().toISOString()}); }
   alert('✅ Demo data seeded — Check STOCK + LEARNERS');
 };
-// Live listeners
 onSnapshot(collection(db,'books'), (s)=>{ books=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
 onSnapshot(collection(db,'learners'), (s)=>{ learners=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
 onSnapshot(collection(db,'requests'), (s)=>{ requests=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))); renderAll(); });
 onSnapshot(query(collection(db,'records'), orderBy('createdAt','desc')), (s)=>{ records=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+onSnapshot(collection(db,'departments'), (s)=>{ departments=s.docs.map(d=>({id:d.id,...d.data()})); ensureDefaultDepts(); renderDepts(); });
 onSnapshot(collection(db,'subscriptions'), (s)=>{
   let subs=s.docs.map(d=>({id:d.id,...d.data()})); let sub=subs.find(x=>String(x.emis)===String(emis));
   let b=document.getElementById('subBanner');
