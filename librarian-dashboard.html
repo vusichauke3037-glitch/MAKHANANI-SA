@@ -19,11 +19,12 @@
 <button data-tab="records" class="tabBtn bg-gray-100 px-3 py-2 rounded-lg font-black text-sm">📄 RECORDS</button>
 </div>
 <div id="tab-stock" class="tabPanel bg-white rounded-2xl p-4 mt-3 shadow">
-<h2 class="font-black text-xl">📦 Stock — Dept → Grade → Subject → Title</h2><p class="text-xs text-gray-500">Librarian can ADD + EDIT + RESTORE stock. Teacher / HOD cannot edit stock. Assign Numbers: G10 Learners 1 • G10 Workbook 71 • G11 Learners 72 • G11 Workbook 132 • G12 Learners 133 • G12 Workbook 213</p>
-<div class="flex gap-2 mt-2 flex-wrap"><button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">🔄 RESTORE PREVIOUS QUANTITIES — ALL BOOKS</button><button id="restoreReportBtn" class="bg-yellow-400 px-4 py-2 rounded-lg font-black text-sm">📊 CHECK MISSING COPIES</button></div><p id="restoreMsg" class="text-sm font-bold mt-1"></p>
-<div id="editBox" class="hidden border-2 border-blue-500 bg-blue-50 rounded-xl p-3 mt-3"><p class="font-black">✏️ EDIT BOOK — Reassign Correct Department + Quantity</p><p id="editBookLabel" class="text-xs text-gray-600 mt-1"></p><input id="eTitle" placeholder="Title" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="eAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="eDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="eGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><input id="eSubject" placeholder="Subject" class="border-2 rounded-lg px-2 py-2"><select id="eCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="eQty" type="number" min="1" placeholder="Quantity — e.g. 70 (original qty)" class="border-2 rounded-lg px-2 py-2 col-span-2"></div><div class="flex gap-2 mt-2"><button id="saveEditBtn" class="bg-blue-600 text-white flex-1 py-2 rounded-lg font-black">💾 SAVE CHANGES</button><button id="cancelEditBtn" class="bg-gray-200 flex-1 py-2 rounded-lg font-bold">Cancel</button></div><p id="editMsg" class="text-sm font-bold mt-1"></p><p class="text-xs text-gray-500 mt-1">Saving updates Book + ALL its copies. If you increase Qty, missing copies are auto-created. If you lower Qty, no copies are deleted — use Restore to bring back missing ones.</p></div>
+<h2 class="font-black text-xl">📦 Stock — Dept → Grade → Subject → Title</h2><p class="text-xs text-gray-500">Librarian can ADD + EDIT + RESTORE + RENUMBER stock. Tick books to renumber only those. Teacher / HOD cannot edit stock.</p>
+<div class="bg-purple-50 border-2 border-purple-300 rounded-xl p-3 mt-2"><p class="font-black">🔢 Renumber Selected Items</p><p class="text-xs text-gray-600 mt-1">1. Tick ☑️ books below &nbsp; 2. Set Start No. &nbsp; 3. Tap RENUMBER SELECTED — only ticked books change. Unticked books stay untouched.</p><div class="flex gap-2 mt-2 flex-wrap items-center"><label class="text-xs font-black">START No.:</label><input id="renumberStart" type="number" min="1" value="1" class="border-2 rounded-lg px-2 py-2 w-24 font-bold"><button id="renumberSelectedBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER SELECTED (<span id="selCount">0</span>)</button><button id="selectAllStockBtn" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-sm">Select All Shown</button><button id="clearSelStockBtn" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-sm">Clear Selection</button><button id="renumberAllBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER ALL 000001 →</button></div><p id="renumberMsg" class="text-sm font-bold mt-1"></p><p class="text-xs text-gray-500 mt-1">Example: Tick Tourism + History, Start = 133 → Tourism gets 133..., History gets next numbers after Tourism. Order: Grade → Learners → Workbook → Title A-Z.</p></div>
+<div class="flex gap-2 mt-2 flex-wrap"><button id="restoreAllBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">🔄 RESTORE PREVIOUS QUANTITIES</button><button id="restoreReportBtn" class="bg-yellow-400 px-4 py-2 rounded-lg font-black text-sm">📊 CHECK MISSING COPIES</button></div><p id="restoreMsg" class="text-sm font-bold mt-1"></p>
+<div id="editBox" class="hidden border-2 border-blue-500 bg-blue-50 rounded-xl p-3 mt-3"><p class="font-black">✏️ EDIT BOOK — Reassign Correct Department + Quantity</p><p id="editBookLabel" class="text-xs text-gray-600 mt-1"></p><input id="eTitle" placeholder="Title" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="eAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="eDept" class="border-2 rounded-lg px-2 py-2 font-bold"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="eGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><input id="eSubject" placeholder="Subject" class="border-2 rounded-lg px-2 py-2"><select id="eCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="eQty" type="number" min="1" placeholder="Quantity — e.g. 70 (original qty)" class="border-2 rounded-lg px-2 py-2 col-span-2"></div><div class="flex gap-2 mt-2"><button id="saveEditBtn" class="bg-blue-600 text-white flex-1 py-2 rounded-lg font-black">💾 SAVE CHANGES</button><button id="cancelEditBtn" class="bg-gray-200 flex-1 py-2 rounded-lg font-bold">Cancel</button></div><p id="editMsg" class="text-sm font-bold mt-1"></p></div>
 <div class="grid md:grid-cols-2 gap-2 mt-3"><div class="border rounded-xl p-3 bg-yellow-50"><p class="font-black">➕ Add Single Book</p><input id="bTitle" placeholder="Title — e.g. Maths Grade 10 Learners Book" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><input id="bAuthor" placeholder="Author (optional)" class="border-2 rounded-lg px-3 py-2 w-full mt-2"><div class="grid grid-cols-2 gap-2 mt-2"><select id="bDept" class="border-2 rounded-lg px-2 py-2"><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="bGrade" class="border-2 rounded-lg px-2 py-2"><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select><input id="bSubject" placeholder="Subject — e.g. Mathematics" class="border-2 rounded-lg px-2 py-2"><select id="bCategory" class="border-2 rounded-lg px-2 py-2"><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><input id="bQty" type="number" min="1" value="1" placeholder="Qty" class="border-2 rounded-lg px-2 py-2"><input id="bStart" type="number" placeholder="Start No. — e.g. 1 (Assign Numbers)" class="border-2 rounded-lg px-2 py-2"></div><button id="addBookBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD BOOK(S)</button><p id="addBookMsg" class="text-sm font-bold mt-1"></p><div class="flex gap-2 mt-2"><button id="assignBtn" class="bg-yellow-400 flex-1 py-2 rounded-lg font-black text-sm">⚡ ASSIGN NUMBERS 1,71,132,213</button><button onclick="document.getElementById('bulkBox').classList.toggle('hidden')" class="bg-gray-100 flex-1 py-2 rounded-lg font-bold text-sm">📥 Bulk Upload</button></div><div id="bulkBox" class="hidden mt-2"><p class="text-xs font-bold">CSV: title,author,grade,quantity,category,department,subject — one per line</p><textarea id="bulkCsv" rows="4" placeholder="Maths Grade 10 Learners,John,10,70,Learners Book,Mathematics,Mathematics" class="border-2 rounded-lg px-2 py-2 w-full mt-1"></textarea><button id="bulkBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-1">📥 BULK ADD</button><p id="bulkMsg" class="text-xs font-bold mt-1"></p></div></div>
-<div class="border rounded-xl p-3"><p class="font-black">🔍 Filter Stock</p><div class="grid grid-cols-2 gap-2 mt-2"><select id="fDept" class="border-2 rounded-lg px-2 py-2"><option value="">All Dept</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="fGrade" class="border-2 rounded-lg px-2 py-2"><option value="">All Grades</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fCat" class="border-2 rounded-lg px-2 py-2"><option value="">All Categories</option><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option value="AVAILABLE">Available</option><option value="PACKED">Packed</option><option value="ISSUED">Issued</option><option value="LOW">Low Stock (≤5)</option></select></div><label class="flex items-center gap-2 mt-2 text-sm font-bold"><input type="checkbox" id="fLowOnly"> Show Low Stock Only</label><div class="bg-green-50 border rounded-xl p-2 mt-2 text-xs"><b>🔄 Restore Previous Quantities:</b><br>Each book remembers its original Qty (e.g. 70). If copies were deleted / lost, tap <b>🔄 RESTORE</b> on that book, or <b>RESTORE ALL</b> at top — missing copies are recreated with new barcodes, no duplicates.</div></div></div>
+<div class="border rounded-xl p-3"><p class="font-black">🔍 Filter Stock</p><div class="grid grid-cols-2 gap-2 mt-2"><select id="fDept" class="border-2 rounded-lg px-2 py-2"><option value="">All Dept</option><option>Mathematics</option><option>Sciences</option><option>Languages</option><option>Commerce</option><option>Humanities</option><option>Technology</option><option>Life Orientation</option></select><select id="fGrade" class="border-2 rounded-lg px-2 py-2"><option value="">All Grades</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select><select id="fCat" class="border-2 rounded-lg px-2 py-2"><option value="">All Categories</option><option>Learners Book</option><option>Workbook</option><option>Study Guide</option><option>Library Book</option></select><select id="fStatus" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option value="AVAILABLE">Available</option><option value="PACKED">Packed</option><option value="ISSUED">Issued</option><option value="LOW">Low Stock (≤5)</option></select></div><label class="flex items-center gap-2 mt-2 text-sm font-bold"><input type="checkbox" id="fLowOnly"> Show Low Stock Only</label></div></div>
 <div id="stockList" class="space-y-2 mt-3 text-sm"></div>
 </div>
 <div id="tab-request" class="tabPanel hidden bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">📝 Teacher Request — Own Class Only</h2><p class="text-xs text-gray-500">Teacher: pick book → your class → qty → SEND TO HOD. HOD of that Dept approves. <a href="manuals.html#teacher" class="text-blue-600 font-bold">Teacher Manual →</a></p><div class="grid md:grid-cols-2 gap-2 mt-3"><select id="rBook" class="border-2 rounded-lg px-3 py-2"></select><select id="rClass" class="border-2 rounded-lg px-3 py-2"><option>10A</option><option>10B</option><option>10C</option><option>11A</option><option>11B</option><option>12A</option><option>12B</option><option>8A</option><option>9A</option></select><input id="rQty" type="number" min="1" value="10" class="border-2 rounded-lg px-3 py-2" placeholder="Qty"><input id="rTeacher" placeholder="Your Name" class="border-2 rounded-lg px-3 py-2"></div><button id="reqBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">📝 SEND TO HOD →</button><p id="reqMsg" class="text-sm font-bold mt-2"></p><div id="myReqList" class="space-y-2 mt-3 text-sm"></div></div>
@@ -65,7 +66,7 @@ const inferDept=(b)=>{
   if(t.includes('mathematical literacy')||t.includes('maths')||t.includes('mathematics')) return 'Mathematics';
   return 'Mathematics';
 };
-let editingBookId=null;
+let editingBookId=null; let selectedBookIds=new Set();
 function touch(){ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(); }
 function can(roles){ if(myRole==='SUPER_ADMIN'||myRole==='ADMIN') return true; return roles.includes(myRole); }
 function applyRoleUI(){
@@ -86,6 +87,7 @@ function renderCounts(){
   let avail=copies.filter(c=>c.status==='AVAILABLE').length; let issued=copies.filter(c=>c.status==='ISSUED').length; let packed=copies.filter(c=>c.status==='PACKED').length;
   document.getElementById('cBooks').textContent=copies.length; document.getElementById('cLearners').textContent=learners.length; document.getElementById('cAvail').textContent=avail; document.getElementById('cIssued').textContent=issued; document.getElementById('cPacked').textContent=packed;
 }
+function updateSelCount(){ let el=document.getElementById('selCount'); if(el) el.textContent=selectedBookIds.size; }
 function renderStock(){
   let fD=document.getElementById('fDept').value, fG=document.getElementById('fGrade').value, fC=document.getElementById('fCat').value, fS=document.getElementById('fStatus').value, q=(document.getElementById('globalSearch').value||'').toLowerCase();
   let books=allBooks.filter(b=>String(b.emis)===String(emis) && (!fD||inferDept(b)===fD) && (!fG||cleanGrade(b.grade)===String(fG)) && (!fC||S(b.category)===fC));
@@ -96,13 +98,84 @@ function renderStock(){
     let copies=allCopies.filter(c=>c.bookId===b.id); let avail=copies.filter(c=>c.status==='AVAILABLE').length; let packed=copies.filter(c=>c.status==='PACKED').length; let issued=copies.filter(c=>c.status==='ISSUED').length;
     let target=N(b.quantity, copies.length); let missing=Math.max(0, target - copies.length);
     let low = avail<=5 ? '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ LOW STOCK</span>' : '';
-    let missBadge = missing>0 ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ MISSING '+missing+' — Tap Restore</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">✅ Full Qty</span>';
+    let missBadge = missing>0 ? '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-bold">⚠️ MISSING '+missing+'</span>' : '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">✅ Full Qty</span>';
     let show = fS==='AVAILABLE'? avail>0 : fS==='PACKED'? packed>0 : fS==='ISSUED'? issued>0 : fS==='LOW'? avail<=5 : true; if(!show) return '';
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${S(b.title)}</b> • ${inferDept(b)} • Grade ${cleanGrade(b.grade)} • ${S(b.subject||inferDept(b))} • ${S(b.category)} ${low} ${missBadge}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Author: ${S(b.author,'-')} • Original Qty: ${target} • Now: ${copies.length} copies • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._editBook('${b.id}')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._restoreOne('${b.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">🔄 RESTORE</button><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
+    let sortedBarcodes=[...copies].sort((a,c)=>S(a.barcode).localeCompare(S(c.barcode))).map(c=>S(c.barcode)).slice(0,3).join(', ');
+    let checked=selectedBookIds.has(b.id)?'checked':'';
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2 ${checked?'bg-purple-50 border-purple-300':''}"><div class="flex gap-2"><input type="checkbox" class="selBookChk w-5 h-5 mt-1 shrink-0" data-id="${b.id}" ${checked} onchange="window._toggleSel('${b.id}',this.checked)"><div><b>${S(b.title)}</b> • ${inferDept(b)} • Grade ${cleanGrade(b.grade)} • ${S(b.subject||inferDept(b))} • ${S(b.category)} ${low} ${missBadge}<br><span class="text-xs text-gray-500">Barcode: ${S(b.barcode,prefix()+'000001')} • Range: ${sortedBarcodes}${copies.length>3?' ...':''} • Author: ${S(b.author,'-')} • Qty: ${target} • Now: ${copies.length} • ✅ Avail: ${avail} • 📦 Packed: ${packed} • 📤 Issued: ${issued}</span></div></div><div class="flex flex-col gap-1 shrink-0"><button onclick="window._editBook('${b.id}')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold text-xs">✏️ EDIT</button><button onclick="window._restoreOne('${b.id}')" class="bg-green-600 text-white px-3 py-1 rounded font-bold text-xs">🔄 RESTORE</button><button onclick="window._renumberOne('${b.id}')" class="bg-purple-600 text-white px-3 py-1 rounded font-bold text-xs">🔢 RENUMBER</button><button onclick="window._reqBook('${b.id}')" class="bg-black text-white px-3 py-1 rounded font-bold text-xs">📝 REQUEST</button><button onclick="window._delBook('${b.id}')" class="bg-red-100 text-red-700 px-3 py-1 rounded font-bold text-xs">🗑️ Delete</button></div></div>`;
   }).join('');
   let sel=document.getElementById('rBook'); sel.innerHTML=books.map(b=>`<option value="${b.id}">${S(b.title)} — Grade ${cleanGrade(b.grade)} — ${inferDept(b)}</option>`).join('');
+  updateSelCount();
 }
-// RESTORE PREVIOUS QUANTITIES - NEW
+window._toggleSel=(id,checked)=>{ if(checked) selectedBookIds.add(id); else selectedBookIds.delete(id); updateSelCount(); renderStock(); };
+document.getElementById('selectAllStockBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('.selBookChk').forEach(c=>{ selectedBookIds.add(c.dataset.id); c.checked=true; });
+  updateSelCount(); renderStock();
+});
+document.getElementById('clearSelStockBtn').addEventListener('click', ()=>{ selectedBookIds.clear(); updateSelCount(); renderStock(); });
+// RENUMBER - SELECTED / ALL / ONE
+function catOrder(cat){ let c=S(cat,''); if(c==='Learners Book') return 1; if(c==='Workbook') return 2; if(c==='Study Guide') return 3; return 4; }
+function sortBooksForRenumber(list){ return [...list].sort((a,b)=>{ let ga=N(cleanGrade(a.grade),99), gb=N(cleanGrade(b.grade),99); if(ga!==gb) return ga-gb; let ca=catOrder(a.category), cb=catOrder(b.category); if(ca!==cb) return ca-cb; return S(a.title).localeCompare(S(b.title)); }); }
+async function renumberCopies(copiesInOrder, startNum){
+  let n=startNum;
+  for(let c of copiesInOrder){
+    let newBc=prefix()+String(n).padStart(6,'0');
+    if(S(c.barcode)!==newBc){ await updateDoc(doc(db,'bookCopies',c.id), {barcode:newBc, oldBarcode:S(c.barcode), renumberedAt:new Date().toISOString()}); }
+    n++;
+  }
+  return n;
+}
+async function renumberBooksList(books, startNum){
+  let n=startNum; let total=0;
+  for(let b of books){
+    let copies=[...allCopies.filter(c=>c.bookId===b.id)].sort((a,c)=> S(a.barcode).localeCompare(S(c.barcode)));
+    if(!copies.length) continue;
+    let firstBc=prefix()+String(n).padStart(6,'0');
+    n=await renumberCopies(copies, n); total+=copies.length;
+    await updateDoc(doc(db,'books',b.id), {barcode:firstBc, renumberedAt:new Date().toISOString()});
+  }
+  return {total, end:n-1};
+}
+document.getElementById('renumberSelectedBtn').addEventListener('click', async()=>{
+  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
+  if(selectedBookIds.size===0){ alert('☑️ Tick at least 1 book first — tap the checkbox next to the book(s) you want to renumber.'); return; }
+  let start=N(document.getElementById('renumberStart').value,1); if(start<1) start=1;
+  let books=sortBooksForRenumber([...selectedBookIds].map(id=>allBooks.find(b=>b.id===id)).filter(Boolean));
+  let totalCopies=books.reduce((s,b)=> s + allCopies.filter(c=>c.bookId===b.id).length, 0);
+  let end=start+totalCopies-1;
+  // Collision warning: check if new range overlaps unticked books
+  let untickedBarcodes=new Set(allCopies.filter(c=>String(c.emis)===String(emis) && !selectedBookIds.has(c.bookId)).map(c=>N(String(c.barcode||'').replace(prefix(),''),0)));
+  let collisions=[]; for(let i=start;i<=end;i++){ if(untickedBarcodes.has(i)) collisions.push(prefix()+String(i).padStart(6,'0')); }
+  let warn=collisions.length? '\n\n⚠️ WARNING: '+collisions.length+' new numbers already exist on UNticked books (e.g. '+collisions.slice(0,3).join(', ')+').\nThose unticked books will keep their old numbers and you will have DUPLICATES.\n\nPick a FREE Start No. (e.g. after the last used number) or tick those books too.\n\nStill continue?' : '';
+  if(!confirm('🔢 RENUMBER SELECTED — '+books.length+' titles • '+totalCopies+' copies\n\nStart: '+prefix()+String(start).padStart(6,'0')+' → End: '+prefix()+String(end).padStart(6,'0')+'\n\n'+books.map(b=> S(b.title)+' — '+allCopies.filter(c=>c.bookId===b.id).length+' copies').join('\n')+'\n\n⚠️ Old stickers for THESE books will be WRONG — reprint them.'+warn)) return;
+  document.getElementById('renumberMsg').innerHTML='⏳ Renumbering '+totalCopies+' selected copies — please wait...';
+  let res=await renumberBooksList(books, start);
+  document.getElementById('renumberMsg').innerHTML='✅ Renumbered SELECTED '+res.total+' copies — '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(res.end).padStart(6,'0')+' — Now PRINT new labels for ticked books in 🖨️ PRINT 3×5';
+  selectedBookIds.clear(); updateSelCount();
+  alert('✅ Renumber Selected Done!\n\n'+res.total+' copies\n'+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(res.end).padStart(6,'0')+'\n\nNow go to PRINT 3×5 → print labels for those books only.');
+});
+document.getElementById('renumberAllBtn').addEventListener('click', async()=>{
+  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
+  let books=sortBooksForRenumber(allBooks.filter(b=>String(b.emis)===String(emis))); let total=allCopies.filter(c=>String(c.emis)===String(emis)).length;
+  if(total===0){ alert('No copies to renumber'); return; }
+  if(!confirm('🔢 RENUMBER ALL '+total+' copies?\n\nOrder: Grade 8→12, Learners → Workbook → Study Guide, Title A-Z\nStart: '+prefix()+'000001 → '+prefix()+String(total).padStart(6,'0')+'\n\n⚠️ Old barcode stickers will be WRONG — you must PRINT new labels after.\n\nContinue?')) return;
+  document.getElementById('renumberMsg').innerHTML='⏳ Renumbering '+total+' copies — please wait, do not close...';
+  let res=await renumberBooksList(books, 1);
+  document.getElementById('renumberMsg').innerHTML='✅ Renumbered ALL '+res.total+' copies — '+prefix()+'000001 → '+prefix()+String(res.end).padStart(6,'0')+' — Now PRINT new labels in 🖨️ PRINT 3×5';
+  alert('✅ Renumber Done!\n\n'+res.total+' copies renumbered\n'+prefix()+'000001 → '+prefix()+String(res.end).padStart(6,'0')+'\n\nNow go to PRINT 3×5 → Select All → PRINT SELECTED BOOKS');
+});
+window._renumberOne=async(id)=>{
+  if(!can(['LIBRARIAN','PRINCIPAL','SUPER_ADMIN'])){ alert('⛔ Librarian / Principal only'); return; }
+  let b=allBooks.find(x=>x.id===id); if(!b) return;
+  let copies=[...allCopies.filter(c=>c.bookId===id)].sort((a,c)=> S(a.barcode).localeCompare(S(c.barcode)));
+  if(!copies.length){ alert('No copies for this book'); return; }
+  let max=0; allCopies.filter(c=>String(c.emis)===String(emis)).forEach(c=>{ let num=N(String(c.barcode||'').replace(prefix(),''),0); if(num>max) max=num; });
+  let start=max+1;
+  if(!confirm('🔢 Renumber '+S(b.title)+' ('+copies.length+' copies)?\n\nNew range: '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(start+copies.length-1).padStart(6,'0')+'\n\nOld stickers for this title will be wrong — reprint them.\n\nContinue?')) return;
+  let res=await renumberCopies(copies, start);
+  await updateDoc(doc(db,'books',id), {barcode:prefix()+String(start).padStart(6,'0')});
+  alert('✅ Renumbered '+S(b.title)+'\nNew: '+prefix()+String(start).padStart(6,'0')+' → '+prefix()+String(start+copies.length-1).padStart(6,'0'));
+};
 async function restoreBookCopies(b){
   let copies=allCopies.filter(c=>c.bookId===b.id);
   let target=N(b.quantity, copies.length);
@@ -283,7 +356,7 @@ document.getElementById('retBtn').addEventListener('click', async()=>{
 });
 function renderPrint(){
   let copies=allCopies.filter(c=>String(c.emis)===String(emis));
-  let el=document.getElementById('printList'); el.innerHTML=copies.slice(0,200).map(c=>`<label class="flex gap-2 items-center border-b py-1"><input type="checkbox" class="printChk" value="${S(c.barcode)}"> ${S(c.barcode)} — ${S(c.title)} • ${S(c.status)}</label>`).join('') || '<p>No books to print</p>';
+  let el=document.getElementById('printList'); el.innerHTML=copies.slice(0,500).map(c=>`<label class="flex gap-2 items-center border-b py-1"><input type="checkbox" class="printChk" value="${S(c.barcode)}"> ${S(c.barcode)} — ${S(c.title)} • ${S(c.status)}</label>`).join('') || '<p>No books to print</p>';
 }
 document.getElementById('selectAllPrint').addEventListener('click', ()=>{ document.querySelectorAll('.printChk').forEach(c=>c.checked=true); });
 function doPrintLabels(items, title){
