@@ -1,31 +1,32 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Super Admin — Makhanani LTSM • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>.tabBtn.active{background:#000;color:#fff}</style></head>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
 <body class="bg-gray-100 pb-24"><div class="max-w-6xl mx-auto p-3">
-<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • SUPER ADMIN</p><h1 class="font-black text-xl">👑 Super Admin Dashboard</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div><div class="flex gap-1 flex-wrap justify-end">
-<a href="index.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
+<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center sticky top-0 z-50"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 object-contain bg-white rounded-full p-1"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP • SUPER ADMIN</p><h1 class="font-black text-xl">👑 Super Admin Dashboard</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div></div><div class="flex gap-1 flex-wrap justify-end">
+<a href="xintimani.html" class="bg-yellow-400 text-black px-2 py-1 rounded-lg font-black text-xs">✨ XINTIMANI</a>
+<a href="index.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">← HOME</a>
 <a href="dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📊 DASHBOARD</a>
 <a href="librarian-dashboard.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">📚 LIBRARIAN</a>
 <a href="subscriptions.html" class="bg-green-500 text-white px-3 py-1 rounded-lg font-black text-xs">💳 SUBSCRIPTIONS →</a>
 <a href="pricing.html" class="bg-purple-600 text-white px-3 py-1 rounded-lg font-black text-xs">💰 PRICING →</a>
 <a href="finance.html" class="bg-green-600 text-white px-2 py-1 rounded-lg font-black text-xs">💰 FINANCE</a>
-<a href="manuals.html" class="bg-blue-600 text-white px-2 py-1 rounded-lg font-black text-xs">📖 MANUALS</a>
 <button id="logoutBtn" class="bg-red-600 text-white px-2 py-1 rounded-lg font-black text-xs">LOGOUT</button></div></div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black" id="cSchools">0</p><p class="text-xs text-gray-500">🏫 Schools</p></div>
 <div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-green-700" id="cActive">0</p><p class="text-xs text-gray-500">✅ Active Subs</p></div>
-<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cTrial">0</p><p class="text-xs text-gray-500">🆓 Trial</p></div>
-<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-red-700" id="cExpired">0</p><p class="text-xs text-gray-500">⛔ Expired</p></div></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-orange-700" id="cTrial">0</p><p class="text-xs text-gray-500">🆓 Demo / Trial</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-red-700" id="cExpired">0</p><p class="text-xs text-gray-500">⛔ Expired</p></div>
+<div class="bg-white rounded-xl p-3 text-center shadow"><p class="text-2xl font-black text-pink-600" id="cDonations">0</p><p class="text-xs text-gray-500">🎁 Donations</p></div></div>
 <div class="bg-white rounded-2xl p-4 mt-3 shadow">
-<div class="flex gap-2 flex-wrap items-center justify-between"><h2 class="font-black text-xl">🏫 Schools + Subscriptions</h2><div class="flex gap-2"><a href="subscriptions.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">💳 MANAGE SUBSCRIPTIONS →</a><a href="pricing.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm">💰 VIEW PRICING →</a></div></div>
-<p class="text-xs text-gray-500 mt-1">Super Admin only. Status comes from <b>subscriptions</b> collection — same data as subscriptions.html. Setup fee = ONCE in lifetime.</p>
+<div class="flex gap-2 flex-wrap items-center justify-between"><h2 class="font-black text-xl">🏫 Schools + Subscriptions</h2><div class="flex gap-2"><a href="subscriptions.html" class="bg-green-600 text-white px-4 py-2 rounded-lg font-black text-sm">💳 MANAGE SUBSCRIPTIONS →</a><a href="pricing.html" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-black text-sm">💰 VIEW PRICING →</a><a href="pricing.html#donate" class="bg-pink-600 text-white px-4 py-2 rounded-lg font-black text-sm">🎁 DONATE PREMIUM →</a></div></div>
+<p class="text-xs text-gray-500 mt-1">Super Admin only. Status comes from <b>subscriptions</b> collection — same data as subscriptions.html. Setup fee = ONCE in lifetime. Donation = Premium FREE 12 months.</p>
 <div class="grid md:grid-cols-3 gap-2 mt-3"><input id="sName" placeholder="School Name" class="border-2 rounded-lg px-3 py-2"><input id="sEmis" placeholder="EMIS — e.g. 700310854" class="border-2 rounded-lg px-3 py-2"><select id="sPlan" class="border-2 rounded-lg px-3 py-2"><option>Demo</option><option>Starter</option><option selected>Standard</option><option>Premium</option></select></div>
 <button id="addSchoolBtn" class="bg-black text-white w-full py-2 rounded-lg font-black mt-2">➕ ADD SCHOOL + START FREE DEMO</button><p id="sMsg" class="text-sm font-bold mt-1"></p>
 <div id="schoolList" class="space-y-2 mt-3 text-sm"></div></div>
-<div class="bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">💳 Quick Subscription Actions</h2><div class="grid md:grid-cols-3 gap-2 mt-3">
-<a href="subscriptions.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💳</p><b>Subscriptions</b><p class="text-xs text-gray-500">Activate / Renew / Cancel<br>per school</p></a>
+<div class="bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black text-xl">💳 Quick Actions</h2><div class="grid md:grid-cols-4 gap-2 mt-3">
+<a href="subscriptions.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💳</p><b>Subscriptions</b><p class="text-xs text-gray-500">Activate / Renew / Cancel</p></a>
 <a href="pricing.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Pricing</b><p class="text-xs text-gray-500">Demo FREE • Starter R3,500 + R500/mo<br>Standard R4,500 + R700/mo • Premium R5,500 + R900/mo</p></a>
-<a href="finance.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Finance</b><p class="text-xs text-gray-500">Payments + Revenue<br>from subscriptions</p></a></div></div>
+<a href="pricing.html#donate" class="border-2 border-pink-400 rounded-xl p-3 text-center bg-pink-50"><p class="text-2xl">🎁</p><b>Premium Donation</b><p class="text-xs text-gray-500">Donate Premium 12 Months<br>R14,500 — School gets FREE</p></a>
+<a href="finance.html" class="border-2 rounded-xl p-3 text-center"><p class="text-2xl">💰</p><b>Finance</b><p class="text-xs text-gray-500">Payments + Revenue</p></a></div></div>
 <div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • Makhanani LTSM</div></div>
 <script type="module">
 import { initializeApp } from 'firebase/app';
@@ -44,11 +45,13 @@ function render(){
   document.getElementById('cActive').textContent=allSubs.filter(s=>s.status==='ACTIVE').length;
   document.getElementById('cTrial').textContent=allSubs.filter(s=>s.status==='TRIAL'||s.status==='DEMO').length;
   document.getElementById('cExpired').textContent=allSubs.filter(s=>s.status==='EXPIRED'||s.status==='CANCELLED').length;
+  document.getElementById('cDonations').textContent=allSubs.filter(s=>s.isDonation==='YES').length;
   let el=document.getElementById('schoolList');
   el.innerHTML=allSchools.length? allSchools.map(s=>{
     let sub=subFor(s.emis); let st=sub?.status||'NO SUB'; let plan=sub?.plan||s.plan||'Standard';
     let badge=st==='ACTIVE'?'bg-green-100 text-green-700':(st==='TRIAL'||st==='DEMO')?'bg-yellow-100 text-yellow-700':st==='NO SUB'?'bg-gray-100':'bg-red-100 text-red-700';
-    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${s.name||s.school||'School'}</b> • EMIS ${s.emis}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${st} • ${plan}</span> ${sub? '• Expires: '+(sub.expiresAt||sub.endDate||'-')+' • R'+(sub.amount||sub.price||'-')+(sub.setupPaid==='YES'?' • ✅ Setup Paid':' • Setup Not Paid') : '• No subscription yet'}</span></div><div class="flex gap-1 shrink-0 flex-wrap"><a href="subscriptions.html?emis=${s.emis}" class="bg-green-600 text-white px-2 py-1 rounded font-bold text-xs">💳 MANAGE →</a><a href="pricing.html?emis=${s.emis}" class="bg-purple-600 text-white px-2 py-1 rounded font-bold text-xs">💰 PRICING →</a><a href="librarian-dashboard.html" class="bg-black text-white px-2 py-1 rounded font-bold text-xs">📚 OPEN →</a></div></div>`;
+    let donateBadge=sub?.isDonation==='YES'?' <span class="bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-bold text-xs">🎁 PREMIUM DONATION 12 MONTHS • Donor: '+(sub.donor||'Anonymous')+'</span>':'';
+    return `<div class="border rounded-xl p-3 flex justify-between gap-2"><div><b>${s.name||s.school||'School'}</b> • EMIS ${s.emis}${donateBadge}<br><span class="text-xs"><span class="${badge} px-2 py-0.5 rounded font-bold">${st} • ${plan}</span> ${sub? '• Expires: '+(sub.expiresAt||sub.endDate||'-')+' • R'+(sub.amount||sub.price||'-')+(sub.setupPaid==='YES'?' • ✅ Setup Paid':' • Setup Not Paid') : '• No subscription yet'}</span></div><div class="flex gap-1 shrink-0 flex-wrap"><a href="subscriptions.html?emis=${s.emis}" class="bg-green-600 text-white px-2 py-1 rounded font-bold text-xs">💳 MANAGE →</a><a href="pricing.html?emis=${s.emis}" class="bg-purple-600 text-white px-2 py-1 rounded font-bold text-xs">💰 PRICING →</a><a href="librarian-dashboard.html" class="bg-black text-white px-2 py-1 rounded font-bold text-xs">📚 OPEN →</a></div></div>`;
   }).join('') : '<p class="text-gray-500">No schools yet — add one above.</p>';
 }
 document.getElementById('addSchoolBtn').addEventListener('click', async()=>{
@@ -57,7 +60,7 @@ document.getElementById('addSchoolBtn').addEventListener('click', async()=>{
   try{
     await addDoc(collection(db,'schools'), {name, emis:String(emis), plan, createdAt:new Date().toISOString(), by:session?.name||'Super Admin'});
     let exp=new Date(); exp.setDate(exp.getDate()+30);
-    await addDoc(collection(db,'subscriptions'), {emis:String(emis), school:name, plan, status:'DEMO', amount:0, setupFee:0, setupPaid:'YES', billing:'year', startDate:new Date().toISOString().slice(0,10), expiresAt:exp.toISOString().slice(0,10), createdAt:new Date().toISOString()});
+    await addDoc(collection(db,'subscriptions'), {emis:String(emis), school:name, plan, status:'DEMO', amount:0, setupFee:0, setupPaid:'YES', billing:'year', isDonation:'NO', startDate:new Date().toISOString().slice(0,10), expiresAt:exp.toISOString().slice(0,10), createdAt:new Date().toISOString()});
     document.getElementById('sMsg').innerHTML='✅ Added '+name+' — 30-day FREE DEMO started — <a href="subscriptions.html?emis='+emis+'" class="text-green-700 underline">Manage in Subscriptions →</a>';
   }catch(e){ document.getElementById('sMsg').innerHTML='❌ '+e.message; }
 });
