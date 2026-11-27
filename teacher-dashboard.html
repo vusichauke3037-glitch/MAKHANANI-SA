@@ -31,7 +31,6 @@
   </div>
 </div>
 
-<!-- LOCK / SUBSCRIPTION BANNER -->
 <div id="lockBanner" class="hidden bg-red-600 text-white rounded-2xl p-3 mt-3 font-bold text-center"></div>
 
 <!-- ===== TAB: REQUEST ===== -->
@@ -40,37 +39,21 @@
     <h3 class="font-black text-xl">📝 Request Books — Your Department Only</h3>
     <p class="text-xs text-gray-500">🔒 You see ONLY books from your Department. HOD approves ONLY own Department.</p>
     <p id="reqMsg" class="text-sm font-bold text-center min-h-[20px] mt-1"></p>
-
     <div class="grid md:grid-cols-4 gap-2 mt-2">
-      <div>
-        <label class="text-xs font-bold">DEPARTMENT 🔒</label>
-        <select id="reqDept" class="border-2 rounded-lg px-3 py-2 w-full font-bold bg-gray-100" onchange="renderRequestBooks()"></select>
-      </div>
-      <div>
-        <label class="text-xs font-bold">SUBJECT</label>
-        <select id="reqSubject" class="border-2 rounded-lg px-3 py-2 w-full font-bold" onchange="renderRequestBooks()"><option value="ALL">ALL MY SUBJECTS</option></select>
-      </div>
-      <div>
-        <label class="text-xs font-bold">BOOK / TITLE</label>
-        <select id="reqBook" class="border-2 rounded-lg px-3 py-2 w-full"></select>
-      </div>
-      <div>
-        <label class="text-xs font-bold">QTY</label>
-        <input id="reqQty" type="number" placeholder="Qty e.g. 30" class="border-2 rounded-lg px-3 py-2 w-full">
-      </div>
+      <div><label class="text-xs font-bold">DEPARTMENT 🔒</label><select id="reqDept" class="border-2 rounded-lg px-3 py-2 w-full font-bold bg-gray-100" onchange="renderRequestBooks()"></select></div>
+      <div><label class="text-xs font-bold">SUBJECT</label><select id="reqSubject" class="border-2 rounded-lg px-3 py-2 w-full font-bold" onchange="renderRequestBooks()"><option value="ALL">ALL MY SUBJECTS</option></select></div>
+      <div><label class="text-xs font-bold">BOOK / TITLE</label><select id="reqBook" class="border-2 rounded-lg px-3 py-2 w-full"></select></div>
+      <div><label class="text-xs font-bold">QTY</label><input id="reqQty" type="number" placeholder="Qty e.g. 30" class="border-2 rounded-lg px-3 py-2 w-full"></div>
     </div>
     <div class="grid md:grid-cols-2 gap-2 mt-2">
       <input id="reqClass" placeholder="Class e.g. 10A" class="border-2 rounded-lg px-3 py-2 uppercase">
-      <button onclick="submitRequest()" data-lockable class="bg-black text-white py-2 rounded-full font-black">📝 SUBMIT REQUEST</button>
+      <button onclick="submitRequest()" class="bg-black text-white py-2 rounded-full font-black">📝 SUBMIT REQUEST</button>
     </div>
-
     <h4 class="font-black mt-4">📋 My Requests</h4>
     <div id="myRequests" class="grid gap-2 mt-2"></div>
   </div>
-
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">📦 Approved Packages — Ready To Issue</h3>
-    <p class="text-xs text-gray-500">Librarian packed these for you. Go to ISSUE tab to scan and give to learners.</p>
     <div id="myPackages" class="grid gap-2 mt-2"></div>
   </div>
 </div>
@@ -83,9 +66,9 @@
     <div class="grid md:grid-cols-3 gap-2 mt-2">
       <input id="issueBarcode" placeholder="Scan / Type PACKED Barcode" class="border-2 rounded-lg px-3 py-2 uppercase">
       <select id="issueLearner" class="border-2 rounded-lg px-3 py-2"><option value="">Select Learner (Same Class)</option></select>
-      <button onclick="issueBook()" data-lockable class="bg-blue-600 text-white py-2 rounded-full font-black">📤 ISSUE</button>
+      <button onclick="issueBook()" class="bg-blue-600 text-white py-2 rounded-full font-black">📤 ISSUE</button>
     </div>
-    <p class="text-xs text-gray-500 mt-2">Learner list shows ONLY learners in YOUR class. You cannot issue to another class.</p>
+    <p class="text-xs text-gray-500 mt-2">Learner list shows ONLY learners in YOUR class.</p>
     <h4 class="font-black mt-4">📚 Currently Issued (My Class)</h4>
     <div id="issuedList" class="grid gap-2 mt-2"></div>
   </div>
@@ -98,7 +81,7 @@
     <p id="retMsg" class="text-sm font-bold text-center min-h-[20px]"></p>
     <div class="grid md:grid-cols-2 gap-2 mt-2">
       <input id="retBarcode" placeholder="Scan / Type Book Barcode" class="border-2 rounded-lg px-3 py-2 uppercase">
-      <button onclick="retrieveBook()" data-lockable class="bg-green-600 text-white py-2 rounded-full font-black">🔁 RETRIEVE</button>
+      <button onclick="retrieveBook()" class="bg-green-600 text-white py-2 rounded-full font-black">🔁 RETRIEVE</button>
     </div>
     <div id="retrieveList" class="grid gap-2 mt-3"></div>
   </div>
@@ -109,10 +92,20 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firebaseConfig = { apiKey:"AIzaSyD6C2P4PQTENfJp8vZHHbR1yF7w8QyY3k", authDomain:"makhanani-ltsm.firebaseapp.com", projectId:"makhanani-ltsm", storageBucket:"makhanani-ltsm.appspot.com", messagingSenderId:"123456789", appId:"1:123456789:web:abcdef" };
+// ✅ YOUR REAL CONFIG - DO NOT CHANGE
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -123,37 +116,30 @@ let books = [], learners = [], requests = [], packages = [], records = [], depar
 let teacherDept='', teacherSubject='', teacherClass='', teacherGrade='';
 let isLocked = false, lockReason = '';
 
-// ===== TABS =====
 window.showTab = (name)=>{
   document.querySelectorAll('[id^="tab-"]').forEach(d=>d.classList.add('hidden'));
   document.getElementById('tab-'+name)?.classList.remove('hidden');
 };
 
-// ===== AUTH + LOAD PROFILE =====
 onAuthStateChanged(auth, async (user)=>{
   if(!user){ window.location.href='login.html'; return; }
   session.uid = user.uid;
-  // Get fresh profile - this has department / subject / class
   try{
     let snap = await getDoc(doc(db,'users',user.uid));
     if(snap.exists()) session = { ...session, ...snap.data(), uid: user.uid };
     localStorage.setItem('session', JSON.stringify(session));
-  }catch(e){}
+  }catch(e){ console.log('profile load', e); }
   emis = session.emis || '';
   teacherDept = String(session.department||'').toUpperCase();
   teacherSubject = String(session.subject||'').toUpperCase();
   teacherClass = String(session.className||session.class||'').toUpperCase();
   teacherGrade = String(session.grade||teacherClass.replace(/[^0-9]/g,'')) || '';
-
   document.getElementById('teacherInfo').innerHTML = `👤 <b>${session.name||''}</b> • ${session.role||'TEACHER'} • Dept: <b>${teacherDept||'<span class="text-red-400">NOT SET — Ask Librarian</span>'}</b> • Subject: <b>${teacherSubject||'-'}</b> • Class: <b>${teacherClass||'-'}</b> • EMIS: ${emis}`;
   let rc = document.getElementById('reqClass'); if(rc && teacherClass) rc.value = teacherClass;
-
-  // Department dropdown - LOCKED for TEACHER / HOD
   let deptSel = document.getElementById('reqDept');
   if(session.role==='TEACHER' || session.role==='HOD'){
     deptSel.innerHTML = `<option value="${teacherDept}">${teacherDept||'NO DEPARTMENT SET'}</option>`;
     deptSel.disabled = true;
-    deptSel.classList.add('bg-gray-100');
   } else {
     deptSel.innerHTML = '<option value="ALL">ALL DEPARTMENTS</option>';
     deptSel.disabled = false;
@@ -162,14 +148,12 @@ onAuthStateChanged(auth, async (user)=>{
 });
 
 function startListeners(){
-  // BOOKS - filter in render, not in query, so we can show dept filter
   onSnapshot(collection(db,'books'), s=>{ books = s.docs.map(d=>({id:d.id,...d.data()})); renderRequestBooks(); });
   onSnapshot(collection(db,'learners'), s=>{ learners = s.docs.map(d=>({id:d.id,...d.data()})); renderLearners(); renderIssued(); });
   onSnapshot(collection(db,'requests'), s=>{ requests = s.docs.map(d=>({id:d.id,...d.data()})); renderMyRequests(); });
   onSnapshot(collection(db,'packages'), s=>{ packages = s.docs.map(d=>({id:d.id,...d.data()})); renderMyPackages(); });
   onSnapshot(collection(db,'records'), s=>{ records = s.docs.map(d=>({id:d.id,...d.data()})); renderIssued(); renderRetrieveList(); });
   onSnapshot(collection(db,'departments'), s=>{ departments = s.docs.map(d=>({id:d.id,...d.data()})); });
-  // Subscription lock
   onSnapshot(collection(db,'subscriptions'), s=>{
     let sub = s.docs.map(d=>d.data()).find(x=>String(x.emis)===String(emis));
     let banner = document.getElementById('lockBanner');
@@ -178,19 +162,13 @@ function startListeners(){
   });
 }
 
-// ===== FILTERED REQUEST BOOKS — CORE FIX =====
 window.renderRequestBooks = ()=>{
   let deptF = document.getElementById('reqDept')?.value || teacherDept;
   let subjF = document.getElementById('reqSubject')?.value || 'ALL';
   let bookSel = document.getElementById('reqBook');
   if(!bookSel) return;
-
-  // 1. Same EMIS
   let list = books.filter(b=>String(b.emis)===String(emis));
-  // 2. Same Department (TEACHER/HOD) - if deptF is ALL, show all (for Principal)
   if(deptF && deptF!=='ALL') list = list.filter(b=>(b.department||'').toUpperCase()===deptF.toUpperCase());
-  // 3. Subject filter - if teacher picks subject, filter
-  // Build subject list from dept-filtered books BEFORE subject filter
   let subjects = [...new Set(list.map(b=>b.subject||'').filter(Boolean))];
   let subjSel = document.getElementById('reqSubject');
   if(subjSel){
@@ -199,11 +177,7 @@ window.renderRequestBooks = ()=>{
     if(subjects.includes(cur)) subjSel.value = cur;
   }
   if(subjF && subjF!=='ALL') list = list.filter(b=>(b.subject||'').toUpperCase()===subjF.toUpperCase());
-
-  if(list.length===0){
-    bookSel.innerHTML = '<option value="">No books for your Department — Ask Librarian</option>';
-    return;
-  }
+  if(list.length===0){ bookSel.innerHTML = '<option value="">No books for your Department — Ask Librarian</option>'; return; }
   bookSel.innerHTML = list.map(b=>`<option value="${b.id}">${b.title} — ${b.subject||''} • Gr ${b.grade||''} • Avail: ${b.available??b.qty??0} / Total: ${b.total||''}</option>`).join('');
 };
 
@@ -217,7 +191,6 @@ window.submitRequest = async ()=>{
   if(!qty||qty<=0){ msg.innerHTML='❌ Enter Qty'; return; }
   if(!cls){ msg.innerHTML='❌ Enter Class e.g. 10A'; return; }
   let book = books.find(b=>b.id===bookId);
-  // 🔒 Security: Cannot request other dept book even if hacked
   if((session.role==='TEACHER'||session.role==='HOD') && book.department && book.department.toUpperCase()!==teacherDept){
     alert('❌ You can only request books from your own Department: '+teacherDept); return;
   }
@@ -242,7 +215,6 @@ function renderMyPackages(){
 }
 function renderLearners(){
   let sel = document.getElementById('issueLearner'); if(!sel) return;
-  // ONLY learners in MY class
   let list = learners.filter(l=>String(l.emis)===String(emis) && (!teacherClass || String(l.className||l.class||'').toUpperCase()===teacherClass));
   sel.innerHTML = '<option value="">Select Learner (Same Class)</option>' + list.map(l=>`<option value="${l.id}">${l.name} • ${l.className||l.class||''} • ${l.learnerId||''}</option>`).join('');
 }
@@ -255,7 +227,6 @@ window.issueBook = async ()=>{
   let learner = learners.find(l=>l.id===learnerId);
   let pkg = packages.find(p=>String(p.barcode||'').toUpperCase()===barcode);
   if(!pkg){ msg.innerHTML='❌ Barcode not found in PACKED packages'; return; }
-  // 1 Learner = 1 Title check
   let already = records.find(r=>r.learnerId===learnerId && r.bookTitle===pkg.bookTitle && r.status==='ISSUED');
   if(already){ msg.innerHTML='❌ '+learner.name+' already has '+pkg.bookTitle; return; }
   try{
@@ -276,11 +247,7 @@ window.retrieveBook = async ()=>{
   if(!barcode){ msg.innerHTML='❌ Scan barcode'; return; }
   let rec = records.find(r=>String(r.barcode||'').toUpperCase()===barcode && r.status==='ISSUED');
   if(!rec){ msg.innerHTML='❌ Not found as ISSUED'; return; }
-  try{
-    await updateDoc(doc(db,'records',rec.id), { status:'RETURNED', returnedAt:new Date().toISOString() });
-    msg.innerHTML='✅ Retrieved: '+rec.bookTitle+' from '+rec.learnerName;
-    document.getElementById('retBarcode').value='';
-  }catch(e){ msg.innerHTML='❌ '+e.message; }
+  try{ await updateDoc(doc(db,'records',rec.id), { status:'RETURNED', returnedAt:new Date().toISOString() }); msg.innerHTML='✅ Retrieved: '+rec.bookTitle+' from '+rec.learnerName; document.getElementById('retBarcode').value=''; }catch(e){ msg.innerHTML='❌ '+e.message; }
 };
 function renderRetrieveList(){
   let el = document.getElementById('retrieveList'); if(!el) return;
