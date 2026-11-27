@@ -1,45 +1,277 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Principal — Makhanani LTSM LIVE</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
-<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
-<div id="impBanner" style="display:none; background:#dc2626; color:white; text-align:center; padding:10px; font-weight:900; font-size:13px; position:sticky; top:0; z-index:9999;">👀 SUPER ADMIN VIEWING AS <span id="impName"></span> — <button onclick="returnToSuperAdmin()" style="background:white; color:#dc2626; padding:4px 12px; border-radius:999px; font-weight:900; margin-left:8px;">🔙 RETURN TO SUPER ADMIN</button></div>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • PRINCIPAL • <span class="text-green-400">LIVE</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
-<div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-yellow-400"><h1 class="font-black text-2xl">🏫 Principal Dashboard — LIVE Firebase</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"><p class="col-span-4 text-sm text-gray-500">Loading LIVE stats...</p></div><p class="text-[11px] text-green-600 font-bold mt-2">● LIVE — Updates automatically when Librarian / Teacher adds or issues books on any phone</p></div>
-<div class="grid md:grid-cols-3 gap-2 mt-4">
-<a href="hod-dashboard.html" class="bg-blue-600 text-white p-4 rounded-2xl font-black text-center">👥 HOD Dashboard →</a>
-<a href="teacher-dashboard.html" class="bg-green-600 text-white p-4 rounded-2xl font-black text-center">👨‍🏫 Teacher Dashboard →</a>
-<a href="librarian.html" class="bg-purple-600 text-white p-4 rounded-2xl font-black text-center">📚 Librarian →</a>
-<a href="issue.html" class="bg-orange-500 text-white p-4 rounded-2xl font-black text-center">📥 Issue / Retrieval →</a>
-<a href="librarian.html" class="bg-black text-white p-4 rounded-2xl font-black text-center">➕ Add Book / Learner →</a>
-<button onclick="printReport()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black">🖨️ Print Principal Report</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Principal Dashboard — Makhanani LTSM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>*{box-sizing:border-box}html,body{overflow-x:hidden}</style>
+</head>
+<body class="bg-[#FFFDE7] pb-10">
+<div class="max-w-7xl mx-auto p-3">
+
+<!-- HEADER -->
+<div class="bg-black text-white rounded-3xl p-4">
+  <div class="flex gap-3 items-start">
+    <img src="logo.png" class="w-[60px] h-[60px] object-contain bg-white rounded-full p-1 shrink-0">
+    <div class="min-w-0">
+      <p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP HOLDINGS (PTY) LTD • 2026/934898/07</p>
+      <h1 class="font-black text-[28px] leading-[1]">Principal Dashboard</h1>
+      <p id="principalInfo" class="text-sm text-gray-300">Loading...</p>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-2 mt-3 items-center">
+    <label class="text-xs font-bold">SCHOOL EMIS:</label>
+    <select id="emisSelect" class="bg-white text-black px-3 py-2 rounded-full font-black text-sm" onchange="changeEmis(this.value)"><option value="">Select School...</option></select>
+    <span id="emisLabel" class="text-xs bg-yellow-400 text-black px-2 py-1 rounded-full font-black"></span>
+    <span id="subStatus" class="text-xs px-2 py-1 rounded-full font-black bg-green-400 text-black"></span>
+  </div>
+  <div class="flex gap-2 mt-3">
+    <a href="index.html" class="bg-white text-black py-2 rounded-full font-black text-sm text-center flex-1">← HOME</a>
+    <button onclick="logout()" class="bg-red-600 text-white py-2 rounded-full font-black text-sm flex-1">🚪 LOGOUT</button>
+  </div>
 </div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 Retrieval Summary — Due 30 November — LIVE</h2><div id="retrievalBox" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 Users in This School (Firebase)</h2><div id="userList" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Recent Books (Firebase)</h2><div id="recentBooks" class="mt-2 text-sm">Loading...</div></div>
+
+<!-- STATS -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">TOTAL STOCK</p><p id="statTotal" class="font-black text-2xl">0</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">AVAILABLE</p><p id="statAvail" class="font-black text-2xl text-green-600">0</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">ISSUED</p><p id="statIssued" class="font-black text-2xl text-blue-600">0</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">LOST</p><p id="statLost" class="font-black text-2xl text-red-600">0</p></div>
 </div>
-<script>(function(){ try{ let s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); if(s && s.isImpersonating){ document.getElementById('impBanner').style.display='block'; document.getElementById('impName').textContent=s.name+' ('+s.role+') • '+s.school; } }catch(e){} window.returnToSuperAdmin=function(){ let sup=localStorage.getItem('makhanani_superadmin_session'); if(sup){ localStorage.setItem('makhanani_session',sup); localStorage.removeItem('makhanani_superadmin_session'); localStorage.removeItem('makhanani_impersonating'); location.href='superadmin-dashboard.html'; } else { localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; } }; })();</script>
+<div class="grid grid-cols-3 gap-2 mt-2">
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">DEPARTMENTS</p><p id="statDept" class="font-black text-xl">0</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">TEACHERS</p><p id="statTeachers" class="font-black text-xl">0</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><p class="text-xs font-bold text-gray-500">LEARNERS</p><p id="statLearners" class="font-black text-xl">0</p></div>
+</div>
+
+<!-- TABS -->
+<div class="flex flex-wrap gap-2 mt-3">
+  <button onclick="showTab('overview')" class="bg-black text-white px-3 py-2 rounded-full font-black text-xs">📊 OVERVIEW</button>
+  <button onclick="showTab('departments')" class="bg-purple-600 text-white px-3 py-2 rounded-full font-black text-xs">🏛️ DEPARTMENTS</button>
+  <button onclick="showTab('teachers')" class="bg-blue-600 text-white px-3 py-2 rounded-full font-black text-xs">👥 TEACHERS</button>
+  <button onclick="showTab('requests')" class="bg-yellow-400 text-black px-3 py-2 rounded-full font-black text-xs">📝 REQUESTS</button>
+  <button onclick="showTab('reports')" class="bg-green-600 text-white px-3 py-2 rounded-full font-black text-xs">🖨️ REPORTS</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="tab-overview">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">📊 Overview — Per Department</h3>
+    <p class="text-xs text-gray-500">Principal sees ALL Departments in own EMIS. No edit — View only. Librarian edits stock.</p>
+    <div id="deptOverview" class="grid gap-2 mt-2"></div>
+  </div>
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">📦 All Stock — View Only</h3>
+    <div class="overflow-x-auto mt-2">
+      <table class="w-full text-sm"><thead class="bg-black text-white"><tr><th class="p-2 text-left">Department / Title</th><th class="p-2">Total</th><th class="p-2">Avail</th><th class="p-2">Issued</th><th class="p-2">Lost</th></tr></thead><tbody id="stockList"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- DEPARTMENTS -->
+<div id="tab-departments" class="hidden">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">🏛️ Departments — View Only</h3>
+    <p class="text-xs text-gray-500">Librarian creates Departments. Principal views.</p>
+    <div id="deptList" class="grid gap-2 mt-2"></div>
+  </div>
+</div>
+
+<!-- TEACHERS -->
+<div id="tab-teachers" class="hidden">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">👥 Teachers / Staff — View Only</h3>
+    <div class="grid md:grid-cols-3 gap-2 mt-2">
+      <select id="teacherDeptFilter" class="border-2 rounded-lg px-3 py-2 font-bold" onchange="renderTeachers()"><option value="ALL">ALL DEPARTMENTS</option></select>
+      <input id="teacherSearch" placeholder="🔍 Search name" class="border-2 rounded-lg px-3 py-2" oninput="renderTeachers()">
+      <button onclick="renderTeachers()" class="bg-black text-white py-2 rounded-lg font-black">🔄 REFRESH</button>
+    </div>
+    <div id="teacherList" class="grid gap-2 mt-3"></div>
+  </div>
+</div>
+
+<!-- REQUESTS -->
+<div id="tab-requests" class="hidden">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">📝 All Requests — All Departments</h3>
+    <div class="grid md:grid-cols-3 gap-2 mt-2">
+      <select id="reqDeptFilter" class="border-2 rounded-lg px-3 py-2 font-bold" onchange="renderRequests()"><option value="ALL">ALL DEPARTMENTS</option></select>
+      <select id="reqStatusFilter" class="border-2 rounded-lg px-3 py-2 font-bold" onchange="renderRequests()"><option value="ALL">ALL STATUS</option><option value="PENDING">PENDING</option><option value="APPROVED">APPROVED</option><option value="REJECTED">REJECTED</option></select>
+      <button onclick="renderRequests()" class="bg-black text-white py-2 rounded-lg font-black">🔄 REFRESH</button>
+    </div>
+    <div id="requestList" class="grid gap-2 mt-3"></div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div id="tab-reports" class="hidden">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">🖨️ Reports — Print / Download</h3>
+    <p class="text-xs text-gray-500">Print uses browser print. Choose report type.</p>
+    <div class="grid md:grid-cols-3 gap-2 mt-2">
+      <button onclick="printReport('stock')" class="bg-black text-white py-3 rounded-full font-black">🖨️ STOCK REPORT</button>
+      <button onclick="printReport('issued')" class="bg-blue-600 text-white py-3 rounded-full font-black">🖨️ ISSUED REPORT</button>
+      <button onclick="printReport('requests')" class="bg-yellow-400 text-black py-3 rounded-full font-black">🖨️ REQUESTS REPORT</button>
+    </div>
+    <div class="grid md:grid-cols-2 gap-2 mt-2">
+      <button onclick="printReport('departments')" class="bg-purple-600 text-white py-3 rounded-full font-black">🖨️ DEPARTMENTS REPORT</button>
+      <button onclick="printReport('lost')" class="bg-red-600 text-white py-3 rounded-full font-black">🖨️ LOST BOOKS REPORT</button>
+    </div>
+    <div id="reportPreview" class="mt-3 border-2 rounded-xl p-3 text-sm"></div>
+  </div>
+</div>
+
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07</div>
+</div>
+
 <script type="module">
-import { initializeApp } from 'firebase/app'; import { getAuth, signOut } from 'firebase/auth'; import { getFirestore, collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
-let sess=null; try{ sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-if(!sess){ location.href='login.html'; }
-document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis+' • LIVE';
-document.getElementById('schoolLine').textContent=sess.school+' • EMIS '+sess.emis+' • '+sess.prefix;
-let books=[], learners=[], issues=[], users=[];
-function renderStats(){
-  let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let out=Math.max(0,issued-returned); let pct=issued===0?null:(returned/issued*100); let copies=books.reduce((a,b)=>a+(b.totalCopies||0),0);
-  document.getElementById('stats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+copies+'</div><div class="text-xs">Book Copies</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+learners.length+'</div><div class="text-xs">Learners</div></div><div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+issued+'</div><div class="text-xs">Issued</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+(pct===null?'—':pct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval</div></div>';
-  document.getElementById('retrievalBox').innerHTML='<b>Issued:</b> '+issued+' • <b>Returned:</b> '+returned+' • <b>Still Out:</b> '+out+' • <b>Retrieval:</b> '+(pct===null?'— No books yet':pct.toFixed(1)+'%')+' • <b>Due:</b> 30 November';
-  window._lastStats={books:books.length,copies,learners:learners.length,issued,returned,out,pct};
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// ✅ YOUR REAL CONFIG - DO NOT CHANGE
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let session = JSON.parse(localStorage.getItem('session')||'{}');
+let emis = session.emis || '';
+let books=[], learners=[], requests=[], records=[], departments=[], users=[], subscriptions=[];
+
+window.showTab = (name)=>{
+  document.querySelectorAll('[id^="tab-"]').forEach(d=>d.classList.add('hidden'));
+  document.getElementById('tab-'+name)?.classList.remove('hidden');
+  if(name==='departments') renderDepartments();
+  if(name==='teachers') renderTeachers();
+  if(name==='requests') renderRequests();
+};
+window.changeEmis = (v)=>{
+  emis=v; session.emis=v; localStorage.setItem('session', JSON.stringify(session));
+  document.getElementById('emisLabel').innerHTML = v ? 'EMIS: '+v : '';
+  renderAll();
+};
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  try{ let s=await getDoc(doc(db,'users',user.uid)); if(s.exists()) session={...session,...s.data(),uid:user.uid}; localStorage.setItem('session', JSON.stringify(session)); }catch(e){}
+  emis = session.emis || '';
+  document.getElementById('principalInfo').innerHTML = `👤 <b>${session.name||''}</b> • PRINCIPAL • EMIS: ${emis}`;
+  startListeners();
+});
+
+function startListeners(){
+  onSnapshot(collection(db,'books'), s=>{ books=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+  onSnapshot(collection(db,'learners'), s=>{ learners=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+  onSnapshot(collection(db,'requests'), s=>{ requests=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+  onSnapshot(collection(db,'records'), s=>{ records=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+  onSnapshot(collection(db,'departments'), s=>{ departments=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); });
+  onSnapshot(collection(db,'users'), s=>{ users=s.docs.map(d=>({id:d.id,...d.data()})); renderAll(); fillEmisSelect(); });
+  onSnapshot(collection(db,'subscriptions'), s=>{ subscriptions=s.docs.map(d=>({id:d.id,...d.data()})); renderSubStatus(); });
 }
-function renderUsers(){ document.getElementById('userList').innerHTML=users.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.role+' • '+u.email+' • '+(u.subjects||[]).join(', ')+'</div>').join('')||'<p class="text-gray-500">No Firebase users for this school yet.</p>'; }
-function renderBooks(){ document.getElementById('recentBooks').innerHTML=books.slice(0,10).map(b=>'<div class="border rounded p-2 mb-1"><b>'+b.title+'</b> • '+b.subject+' • Grade '+b.grade+' • Copies: '+(b.totalCopies||0)+'</div>').join('')||'<p class="text-gray-500">No books in Firebase yet. Go to Librarian → Add Book.</p>'; }
-window.printReport=function(){ let d=window._lastStats||{copies:0,learners:0,issued:0,returned:0,out:0,pct:null}; document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • PRINCIPAL REPORT • LIVE FIREBASE</h1><p>School: '+sess.school+' • EMIS '+sess.emis+' • Principal: '+sess.name+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>Book Copies</th><th>Learners</th><th>Issued</th><th>Returned</th><th>Still Out</th><th>Retrieval %</th></tr><tr><td>'+d.copies+'</td><td>'+d.learners+'</td><td>'+d.issued+'</td><td>'+d.returned+'</td><td>'+d.out+'</td><td>'+(d.pct===null?'—':d.pct.toFixed(1)+'%')+'</td></tr></table><p>All books due 30 November</p>'; setTimeout(()=>window.print(),100); };
-document.getElementById('logoutBtn').addEventListener('click', async()=>{ if(sess && sess.isImpersonating){ window.returnToSuperAdmin(); return; } await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-onSnapshot(query(collection(db,'books'), where('emis','==',String(sess.emis))), (snap)=>{ books=snap.docs.map(d=>({id:d.id, ...d.data()})); renderStats(); renderBooks(); });
-onSnapshot(query(collection(db,'learners'), where('emis','==',String(sess.emis))), (snap)=>{ learners=snap.docs.map(d=>({id:d.id, ...d.data()})); renderStats(); });
-onSnapshot(query(collection(db,'issues'), where('emis','==',String(sess.emis))), (snap)=>{ issues=snap.docs.map(d=>({id:d.id, ...d.data()})); renderStats(); });
-onSnapshot(query(collection(db,'users'), where('emis','==',String(sess.emis))), (snap)=>{ users=snap.docs.map(d=>({id:d.id, ...d.data()})); renderUsers(); });
-</script></body></html>
+function fillEmisSelect(){
+  let sel=document.getElementById('emisSelect'); if(!sel) return;
+  let emises=[...new Set(users.map(u=>u.emis).filter(Boolean))];
+  if(emis && !emises.includes(emis)) emises.unshift(emis);
+  sel.innerHTML='<option value="">Select School...</option>'+emises.map(e=>`<option value="${e}" ${String(e)===String(emis)?'selected':''}>${e}</option>`).join('');
+  document.getElementById('emisLabel').innerHTML = emis ? 'EMIS: '+emis : '';
+}
+function renderSubStatus(){
+  let sub=subscriptions.find(x=>String(x.emis)===String(emis));
+  let el=document.getElementById('subStatus');
+  if(!sub){ el.innerHTML='SUB: NO RECORD'; el.className='text-xs px-2 py-1 rounded-full font-black bg-gray-300 text-black'; return; }
+  if(sub.status==='EXPIRED'){ el.innerHTML='🔒 SUB: EXPIRED'; el.className='text-xs px-2 py-1 rounded-full font-black bg-red-600 text-white'; }
+  else { el.innerHTML='✅ SUB: '+(sub.status||'ACTIVE'); el.className='text-xs px-2 py-1 rounded-full font-black bg-green-400 text-black'; }
+}
+
+function renderAll(){ renderStats(); renderDeptOverview(); renderStock(); renderDepartments(); renderTeachers(); renderRequests(); renderSubStatus(); }
+
+function renderStats(){
+  let b=books.filter(x=>String(x.emis)===String(emis));
+  let total=b.reduce((a,x)=>a+Number(x.total||0),0);
+  let avail=b.reduce((a,x)=>a+Number(x.available??x.qty??0),0);
+  let issued=b.reduce((a,x)=>a+Number(x.issued||0),0);
+  let lost=b.reduce((a,x)=>a+Number(x.lost||0),0);
+  document.getElementById('statTotal').innerHTML=total;
+  document.getElementById('statAvail').innerHTML=avail;
+  document.getElementById('statIssued').innerHTML=issued;
+  document.getElementById('statLost').innerHTML=lost;
+  document.getElementById('statDept').innerHTML=departments.filter(d=>String(d.emis)===String(emis)).length;
+  document.getElementById('statTeachers').innerHTML=users.filter(u=>String(u.emis)===String(emis) && (u.role==='TEACHER'||u.role==='HOD')).length;
+  document.getElementById('statLearners').innerHTML=learners.filter(l=>String(l.emis)===String(emis)).length;
+}
+function renderDeptOverview(){
+  let el=document.getElementById('deptOverview'); if(!el) return;
+  let depts=departments.filter(d=>String(d.emis)===String(emis));
+  if(depts.length===0){ el.innerHTML='<p class="text-sm text-gray-400">No departments for EMIS '+emis+'. Librarian must create them.</p>'; return; }
+  el.innerHTML=depts.map(d=>{
+    let b=books.filter(x=>String(x.emis)===String(emis) && x.department===d.name);
+    let total=b.reduce((a,x)=>a+Number(x.total||0),0);
+    let avail=b.reduce((a,x)=>a+Number(x.available??x.qty??0),0);
+    let pending=requests.filter(r=>String(r.emis)===String(emis) && r.department===d.name && r.status==='PENDING').length;
+    return `<div class="border-2 rounded-xl p-3 flex justify-between"><div><b>${d.name}</b> <span class="text-xs text-gray-500">HOD: ${d.hod||'-'} • ${d.code||''}</span><br><span class="text-sm">Stock: ${total} • Available: ${avail} • Pending Requests: <b>${pending}</b></span></div><span class="text-xs bg-gray-100 px-2 py-1 rounded-full h-fit font-bold">${b.length} Titles</span></div>`;
+  }).join('');
+}
+function renderStock(){
+  let el=document.getElementById('stockList'); if(!el) return;
+  let list=books.filter(b=>String(b.emis)===String(emis));
+  el.innerHTML=list.map(b=>`<tr class="border-b"><td class="p-2"><b>${b.title}</b><br><span class="text-xs text-gray-500">${b.department||''} • ${b.subject||''} • Gr ${b.grade||''}</span></td><td class="p-2 text-center">${b.total||0}</td><td class="p-2 text-center">${b.available??b.qty??0}</td><td class="p-2 text-center">${b.issued||0}</td><td class="p-2 text-center">${b.lost||0}</td></tr>`).join('')||'<tr><td colspan="5" class="p-3 text-center text-gray-400">No stock.</td></tr>';
+}
+function renderDepartments(){
+  let el=document.getElementById('deptList'); if(!el) return;
+  let list=departments.filter(d=>String(d.emis)===String(emis));
+  el.innerHTML=list.map(d=>`<div class="border-2 rounded-xl p-3"><b>${d.name}</b> • HOD: ${d.hod||'-'} • Code: ${d.code||''}<br><span class="text-xs text-gray-500">Teachers in Dept: ${users.filter(u=>String(u.emis)===String(emis) && u.department===d.name).length} • Titles: ${books.filter(b=>String(b.emis)===String(emis) && b.department===d.name).length}</span></div>`).join('')||'<p class="text-sm text-gray-400">No departments.</p>';
+}
+window.renderTeachers = ()=>{
+  let el=document.getElementById('teacherList'); if(!el) return;
+  let deptF=document.getElementById('teacherDeptFilter')?.value||'ALL';
+  let q=String(document.getElementById('teacherSearch')?.value||'').toLowerCase();
+  let depts=departments.filter(d=>String(d.emis)===String(emis));
+  let sel=document.getElementById('teacherDeptFilter');
+  if(sel){ let cur=sel.value; sel.innerHTML='<option value="ALL">ALL DEPARTMENTS</option>'+depts.map(d=>`<option value="${d.name}">${d.name}</option>`).join(''); if(depts.some(d=>d.name===cur)) sel.value=cur; }
+  let list=users.filter(u=>String(u.emis)===String(emis) && (u.role==='TEACHER'||u.role==='HOD'||u.role==='LIBRARIAN'));
+  if(deptF!=='ALL') list=list.filter(u=>u.department===deptF);
+  if(q) list=list.filter(u=>((u.name||'')+' '+(u.email||'')).toLowerCase().includes(q));
+  el.innerHTML=list.map(u=>`<div class="border rounded-xl p-2 flex justify-between text-sm"><div><b>${u.name}</b> • ${u.role}<br><span class="text-xs text-gray-500">${u.email} • Dept: ${u.department||'NOT SET'} • Subject: ${u.subject||'-'} • Class: ${u.className||'-'}</span></div><span class="text-xs font-bold ${u.department?'text-green-600':'text-red-600'}">${u.department?'✅':'⚠️ NO DEPT'}</span></div>`).join('')||'<p class="text-sm text-gray-400">No teachers.</p>';
+};
+window.renderRequests = ()=>{
+  let el=document.getElementById('requestList'); if(!el) return;
+  let deptF=document.getElementById('reqDeptFilter')?.value||'ALL';
+  let statusF=document.getElementById('reqStatusFilter')?.value||'ALL';
+  let depts=departments.filter(d=>String(d.emis)===String(emis));
+  let sel=document.getElementById('reqDeptFilter');
+  if(sel){ let cur=sel.value; sel.innerHTML='<option value="ALL">ALL DEPARTMENTS</option>'+depts.map(d=>`<option value="${d.name}">${d.name}</option>`).join(''); if(depts.some(d=>d.name===cur)) sel.value=cur; }
+  let list=requests.filter(r=>String(r.emis)===String(emis));
+  if(deptF!=='ALL') list=list.filter(r=>r.department===deptF);
+  if(statusF!=='ALL') list=list.filter(r=>r.status===statusF);
+  el.innerHTML=list.map(r=>`<div class="border rounded-xl p-2 text-sm"><b>${r.bookTitle}</b> • ${r.department} / ${r.subject||''} • ${r.className} • Teacher: ${r.teacher}<br>Qty: ${r.qty} • Approved: ${r.approvedQty||0} • <b>${r.status}</b></div>`).join('')||'<p class="text-sm text-gray-400">No requests.</p>';
+};
+
+window.printReport = (type)=>{
+  let prev=document.getElementById('reportPreview');
+  let b=books.filter(x=>String(x.emis)===String(emis));
+  let html='';
+  if(type==='stock'){ html=`<h3>STOCK REPORT — EMIS ${emis}</h3>`+b.map(x=>`${x.department} • ${x.subject} • ${x.title} — Total: ${x.total} Avail: ${x.available??x.qty} Issued: ${x.issued} Lost: ${x.lost}<br>`).join(''); }
+  if(type==='issued'){ let list=records.filter(r=>String(r.emis)===String(emis) && r.status==='ISSUED'); html=`<h3>ISSUED REPORT — ${list.length} books issued</h3>`+list.map(r=>`${r.bookTitle} • ${r.learnerName} • ${r.className} • ${r.barcode} • Dept: ${r.department}<br>`).join(''); }
+  if(type==='requests'){ let list=requests.filter(r=>String(r.emis)===String(emis)); html=`<h3>REQUESTS REPORT — ${list.length} requests</h3>`+list.map(r=>`${r.bookTitle} • ${r.department} • ${r.teacher} • ${r.className} • Qty: ${r.qty} Approved: ${r.approvedQty||0} • ${r.status}<br>`).join(''); }
+  if(type==='departments'){ let list=departments.filter(d=>String(d.emis)===String(emis)); html=`<h3>DEPARTMENTS REPORT</h3>`+list.map(d=>`${d.name} • HOD: ${d.hod||'-'} • Code: ${d.code||''}<br>`).join(''); }
+  if(type==='lost'){ let list=b.filter(x=>Number(x.lost||0)>0); html=`<h3>LOST BOOKS REPORT</h3>`+list.map(x=>`${x.title} • ${x.department} • Lost: ${x.lost}<br>`).join('')||'No lost books.'; }
+  prev.innerHTML = html + `<br><button onclick="window.print()" class="bg-black text-white px-4 py-2 rounded-full font-black">🖨️ PRINT THIS REPORT</button><p class="text-xs text-gray-500 mt-2">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • EMIS: ${emis}</p>`;
+  // Open print window
+  let w=window.open('','_blank'); w.document.write(`<h2>MAKHANANI LTSM — ${type.toUpperCase()} REPORT</h2><p>EMIS: ${emis} • School: ${session.schoolName||''} • Date: ${new Date().toLocaleDateString()}</p><hr>${html}<hr><p>Xintimani Group Holdings (Pty) Ltd • 2026/934898/07</p>`); w.document.close(); w.print();
+};
+
+window.logout = async ()=>{ localStorage.removeItem('session'); await signOut(auth); window.location.href='login.html'; };
+</script>
+</body>
+</html>
