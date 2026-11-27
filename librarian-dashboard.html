@@ -43,9 +43,8 @@
 <button data-tab="learners" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">👧🏾 LEARNERS</button>
 <button data-tab="records" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📋 RECORDS</button>
 <button data-tab="loan" class="tabBtn bg-gray-200 px-3 py-2 rounded-lg font-bold text-sm">📄 LOAN FORM</button></div>
-<!-- STOCK -->
 <div id="tab-stock" class="tabPage bg-white rounded-2xl p-4 mt-2 shadow">
-<h2 class="font-black text-xl">📦 Stock — Add / Manage Books</h2><p class="text-xs text-gray-500">Barcode = Prefix + Number. Example Wordsworth: WHS000001. Renumber fixes gaps after deletes.</p>
+<h2 class="font-black text-xl">📦 Stock — Per Title + Quantity Edit</h2><p class="text-xs text-gray-500">Grouped by Title. Edit Qty here — it adds / removes real barcoded copies. Barcode = Prefix + Number. Example: WHS000001.</p>
 <div class="grid md:grid-cols-4 gap-2 mt-3">
 <input id="bTitle" placeholder="Title — e.g. Mathematics Grade 10" class="border-2 rounded-lg px-3 py-2">
 <input id="bAuthor" placeholder="Author" class="border-2 rounded-lg px-3 py-2">
@@ -55,6 +54,11 @@
 <input id="bPrefix" placeholder="Prefix — e.g. WHS" value="WHS" class="border-2 rounded-lg px-3 py-2">
 <input id="bStartNo" type="number" value="1" placeholder="Start No" class="border-2 rounded-lg px-3 py-2">
 <button id="addBookBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD BOOK(S)</button></div><p id="bookMsg" class="text-sm font-bold mt-1"></p>
+<div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-3 mt-3">
+<p class="font-black">📚 Stock Per Title — Edit Quantity</p>
+<p class="text-xs text-gray-600">Change Total Qty → System adds new barcodes or deletes ONLY AVAILABLE copies. Issued / Packed copies are protected.</p>
+<div id="titleList" class="space-y-2 mt-2"></div>
+</div>
 <div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-3 mt-3">
 <p class="font-black">🔢 Renumber Books</p><p class="text-xs text-gray-600">Tick books below → set Start No. → Renumber Selected. Or Renumber ALL to close gaps.</p>
 <div class="flex gap-2 flex-wrap items-center mt-2">
@@ -63,9 +67,8 @@
 <button id="renumSelectedBtn" class="bg-yellow-400 text-black px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER SELECTED</button>
 <button id="renumAllBtn" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🔢 RENUMBER ALL</button>
 <span id="renumMsg" class="text-sm font-bold"></span></div></div>
-<div class="flex gap-2 mt-3 flex-wrap"><select id="stockFilter" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option>AVAILABLE</option><option>PACKED</option><option>ISSUED</option></select><button onclick="window._selectAllStock()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">☑️ Select All</button><button onclick="window._clearStockSel()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">Clear Selection</button><button onclick="window._deleteSelected()" class="bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold text-xs">🗑️ Delete Selected</button></div>
+<div class="flex gap-2 mt-3 flex-wrap items-center"><span class="font-black text-sm">🔍 Individual Copies (Barcode level):</span><select id="stockFilter" class="border-2 rounded-lg px-2 py-2"><option value="">All Status</option><option>AVAILABLE</option><option>PACKED</option><option>ISSUED</option></select><button onclick="window._selectAllStock()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">☑️ Select All</button><button onclick="window._clearStockSel()" class="bg-gray-100 px-3 py-2 rounded-lg font-bold text-xs">Clear Selection</button><button onclick="window._deleteSelected()" class="bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold text-xs">🗑️ Delete Selected</button></div>
 <div id="stockList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- DEPARTMENTS -->
 <div id="tab-departments" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">🏛️ Departments — Create / Edit</h2>
 <p class="text-xs text-gray-500">Departments control HOD approval. HOD sees ONLY own Department. Teacher Request uses Book's Department. Departments are per-EMIS (per school).</p>
@@ -77,7 +80,6 @@
 <p id="deptMsg" class="text-sm font-bold mt-1"></p>
 <p class="text-xs bg-yellow-50 border rounded-lg px-2 py-1 mt-2">💡 <b>Default Departments:</b> If none exist for your EMIS, we auto-create: Mathematics, English, Afrikaans, Physical Sciences, Life Sciences, Social Sciences, Technology, EMS, Life Orientation. You can edit / delete them here.</p>
 <div id="deptList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- REQUEST -->
 <div id="tab-request" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📝 Teacher Request</h2><p class="text-xs text-gray-500">Teacher can ONLY request for OWN class. Pick a book → Qty → SEND TO HOD.</p>
 <div class="grid md:grid-cols-3 gap-2 mt-3">
@@ -86,15 +88,12 @@
 <input id="reqQty" type="number" value="10" class="border-2 rounded-lg px-3 py-2"></div>
 <button id="reqBtn" class="bg-blue-600 text-white w-full py-2 rounded-lg font-black mt-2">📝 SEND REQUEST TO HOD →</button><p id="reqMsg" class="text-sm font-bold mt-1"></p>
 <div id="reqList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- HOD -->
 <div id="tab-hod" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">✅ HOD Approval</h2><p class="text-xs text-gray-500">HOD sees ONLY own Department. Set Approved Qty → APPROVE or REJECT. No HOD = No Package.</p>
 <div id="hodList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- PACKAGE -->
 <div id="tab-package" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📦 Package — Librarian Only</h2><p class="text-xs text-gray-500">Librarian packs from AVAILABLE only, up to Approved Qty. Packed books move to ISSUE tab.</p>
 <div id="packageList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- ISSUE -->
 <div id="tab-teacherIssue" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📤 Teacher Issue</h2><p class="text-xs text-gray-500">Scan / Pick PACKED barcode → Pick Learner in SAME class → ISSUE. 1 Learner = 1 Title.</p>
 <div class="grid md:grid-cols-3 gap-2 mt-3">
@@ -103,7 +102,6 @@
 <select id="issueLearner" class="border-2 rounded-lg px-3 py-2"><option value="">— Pick Learner —</option></select></div>
 <button id="issueBtn" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">📤 ISSUE BOOK →</button><p id="issueMsg" class="text-sm font-bold mt-1"></p>
 <div id="issueList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- RETRIEVE -->
 <div id="tab-retrieve" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">🔁 Retrieve — Bring Book Back</h2><p class="text-xs text-gray-500">ANY Teacher can retrieve ANY book. Scan / Pick ISSUED book → RETRIEVE → Book becomes AVAILABLE again.</p>
 <div class="grid md:grid-cols-2 gap-2 mt-3">
@@ -111,13 +109,11 @@
 <input id="retScan" placeholder="OR Scan / Type Barcode" class="border-2 rounded-lg px-3 py-2"></div>
 <button id="retBtn" class="bg-orange-600 text-white w-full py-2 rounded-lg font-black mt-2">🔁 RETRIEVE BOOK →</button><p id="retMsg" class="text-sm font-bold mt-1"></p>
 <div id="retList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- PRINT -->
 <div id="tab-print" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">🖨️ Print Labels — 3×5 on A4 (15 Labels)</h2><p class="text-xs text-gray-500">Tick books / learners → PRINT. Book label: WHS000001 + Title. Learner label: 10A001 + Name.</p>
 <div class="flex gap-2 flex-wrap mt-2"><button onclick="window._printBooks()" class="bg-pink-600 text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT TICKED BOOKS</button><button onclick="window._printLearners()" class="bg-black text-white px-4 py-2 rounded-lg font-black text-sm">🖨️ PRINT ALL LEARNERS (Current Class)</button><button onclick="window.print()" class="bg-gray-100 px-4 py-2 rounded-lg font-bold text-sm">🖨️ PRINT PAGE</button></div>
 <div id="printArea" class="mt-3"></div>
 <div class="grid md:grid-cols-2 gap-3 mt-3"><div><h3 class="font-black">📚 Books To Print</h3><div id="printBooksList" class="space-y-1 text-sm mt-1 max-h-64 overflow-auto"></div></div><div><h3 class="font-black">👧🏾 Learners To Print</h3><div id="printLearnersList" class="space-y-1 text-sm mt-1 max-h-64 overflow-auto"></div></div></div></div>
-<!-- LEARNERS -->
 <div id="tab-learners" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">👧🏾 Learners</h2><p class="text-xs text-gray-500">Learner ID = Class + Number. Example 10A001 = 10A, learner 1. Auto-generated.</p>
 <div class="grid md:grid-cols-4 gap-2 mt-3">
@@ -126,11 +122,9 @@
 <input id="lGrade" placeholder="Grade — e.g. 10" value="10" class="border-2 rounded-lg px-3 py-2">
 <button id="addLearnerBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD LEARNER</button></div><p id="learnerMsg" class="text-sm font-bold mt-1"></p>
 <div id="learnerList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- RECORDS -->
 <div id="tab-records" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📋 Records — Who Has What</h2><p class="text-xs text-gray-500">Every Issue / Retrieve is logged here. Use Search to find a learner or book.</p>
 <div id="recordsList" class="space-y-2 mt-3 text-sm"></div></div>
-<!-- LOAN FORM -->
 <div id="tab-loan" class="tabPage hidden bg-white rounded-2xl p-4 mt-2 shadow">
 <h2 class="font-black text-xl">📄 Loan Form</h2><p class="text-xs text-gray-500">Print this form, learner signs when they take a book, signs again when they return it.</p>
 <div class="border-2 p-4 mt-3 text-sm" id="loanForm">
@@ -147,7 +141,6 @@ import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { getFirestore, collection, doc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
-// ✅ FIXED: Read BOTH session keys - login.html uses 'session', old files use 'makhanani_session'
 let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||localStorage.getItem('session')||'null'); }catch(e){}
 let myRole=String(session?.role||'GUEST').toUpperCase();
 const S=(v,fb='')=> (v===undefined||v===null)? String(fb) : String(v);
@@ -159,8 +152,7 @@ if(session) { if(session.classes?.length) document.getElementById('myClass').val
 document.getElementById('logoutBtn').addEventListener('click', async()=>{ await signOut(auth); localStorage.removeItem('makhanani_session'); localStorage.removeItem('session'); location.href='login.html'; });
 let books=[], learners=[], requests=[], records=[], departments=[];
 let stockSel=new Set(), printBookSel=new Set();
-let currentTab='stock';
-function showTab(t){ currentTab=t; document.querySelectorAll('.tabPage').forEach(p=>p.classList.add('hidden')); let el=document.getElementById('tab-'+t); if(el) el.classList.remove('hidden'); document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===t)); }
+function showTab(t){ document.querySelectorAll('.tabPage').forEach(p=>p.classList.add('hidden')); let el=document.getElementById('tab-'+t); if(el) el.classList.remove('hidden'); document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===t)); }
 document.querySelectorAll('.tabBtn').forEach(b=>b.addEventListener('click', ()=>showTab(b.dataset.tab)));
 if(location.hash){ let h=location.hash.replace('#',''); if(['stock','departments','request','hod','package','teacherIssue','retrieve','print','learners','records','loan'].includes(h)) showTab(h); }
 document.getElementById('emisSel').addEventListener('change', (e)=>{ emis=e.target.value; if(session){ session.emis=emis; localStorage.setItem('makhanani_session', JSON.stringify(session)); localStorage.setItem('session', JSON.stringify(session)); } document.getElementById('who').textContent=(session?.name||'Guest')+' • '+myRole+' • EMIS '+emis; });
@@ -168,7 +160,7 @@ document.getElementById('emisSel').addEventListener('change', (e)=>{ emis=e.targ
 function pad(n){ return String(n).padStart(6,'0'); }
 function filteredBooks(){ let q=S(document.getElementById('searchBox').value).toLowerCase(); let f=document.getElementById('stockFilter').value; return books.filter(b=> String(b.emis)===String(emis) && (!f||b.status===f) && (!q|| (S(b.title).toLowerCase().includes(q)||S(b.barcode).toLowerCase().includes(q))) ); }
 function filteredLearners(){ let q=S(document.getElementById('searchBox').value).toLowerCase(); let cls=document.getElementById('myClass').value; return learners.filter(l=> String(l.emis)===String(emis) && (!cls||l.class===cls) && (!q|| (S(l.name).toLowerCase().includes(q)||S(l.learnerId).toLowerCase().includes(q))) ); }
-function renderAll(){ renderStock(); renderDepts(); renderRequests(); renderHod(); renderPackage(); renderIssue(); renderRetrieve(); renderPrint(); renderLearners(); renderRecords(); updateStats(); updateDropdowns(); }
+function renderAll(){ renderStock(); renderTitleList(); renderDepts(); renderRequests(); renderHod(); renderPackage(); renderIssue(); renderRetrieve(); renderPrint(); renderLearners(); renderRecords(); updateStats(); updateDropdowns(); }
 function updateStats(){ let b=books.filter(x=>String(x.emis)===String(emis)); document.getElementById('cTotal').textContent=b.length; document.getElementById('cAvail').textContent=b.filter(x=>x.status==='AVAILABLE').length; document.getElementById('cPacked').textContent=b.filter(x=>x.status==='PACKED').length; document.getElementById('cIssued').textContent=b.filter(x=>x.status==='ISSUED').length; document.getElementById('cLearners').textContent=learners.filter(x=>String(x.emis)===String(emis)).length; document.getElementById('cRequests').textContent=requests.filter(x=>String(x.emis)===String(emis) && x.status!=='REJECTED').length; }
 function updateDropdowns(){
   let reqSel=document.getElementById('reqBook'); let cur=reqSel.value; reqSel.innerHTML='<option value="">— Pick Book —</option>'+books.filter(b=>String(b.emis)===String(emis)).map(b=>`<option value="${b.id}">${S(b.title)} — ${S(b.barcode)} (${S(b.status)})</option>`).join(''); reqSel.value=cur;
@@ -217,9 +209,98 @@ window._deleteDept=async(id)=>{
   let d=departments.find(x=>x.id===id); if(!d) return;
   let usedBooks=books.filter(b=>String(b.emis)===String(emis)&&b.department===d.name).length;
   let usedReq=requests.filter(r=>String(r.emis)===String(emis)&&r.department===d.name).length;
-  if(usedBooks||usedReq){ if(!confirm('⚠️ "'+d.name+'" is used by '+usedBooks+' books + '+usedReq+' requests.\n\nDelete anyway? Books will keep old name but HOD filter will not show them. Better: EDIT instead.\n\nDelete anyway?')) return; }
+  if(usedBooks||usedReq){ if(!confirm('⚠️ "'+d.name+'" is used by '+usedBooks+' books + '+usedReq+' requests.\n\nDelete anyway?')) return; }
   else if(!confirm('Delete Department "'+d.name+'"?')) return;
   await deleteDoc(doc(db,'departments',id));
+};
+function titleKey(b){ return S(b.title).trim().toLowerCase()+'|'+S(b.department)+'|'+S(b.grade); }
+function renderTitleList(){
+  let el=document.getElementById('titleList'); if(!el) return;
+  let q=S(document.getElementById('searchBox').value).toLowerCase();
+  let groups={};
+  books.filter(b=>String(b.emis)===String(emis)).forEach(b=>{ let k=titleKey(b); if(!groups[k]) groups[k]=[]; groups[k].push(b); });
+  let list=Object.values(groups).sort((a,b)=>S(a[0].title).localeCompare(S(b[0].title)));
+  if(q) list=list.filter(g=> S(g[0].title).toLowerCase().includes(q) || g.some(x=>S(x.barcode).toLowerCase().includes(q)));
+  if(!list.length){ el.innerHTML='<p class="text-sm text-gray-500">No titles yet — Add stock above.</p>'; return; }
+  el.innerHTML=list.map((g,i)=>{
+    let first=g[0]; let total=g.length;
+    let avail=g.filter(x=>x.status==='AVAILABLE').length;
+    let packed=g.filter(x=>x.status==='PACKED').length;
+    let issued=g.filter(x=>x.status==='ISSUED').length;
+    let barcodes=g.map(x=>S(x.barcode)).sort().join(', ');
+    let safeKey=encodeURIComponent(titleKey(first));
+    return `<div class="bg-white border-2 rounded-xl p-3">
+      <div class="flex justify-between gap-2 flex-wrap"><div><b>${S(first.title)}</b> • Grade ${S(first.grade)} • ${S(first.department)} • ${S(first.author||'')}<br><span class="text-xs">Barcodes: ${barcodes.slice(0,120)}${barcodes.length>120?'...':''}</span><br><span class="text-sm font-bold">Total: ${total} • <span class="text-green-700">Available: ${avail}</span> • <span class="text-yellow-700">Packed: ${packed}</span> • <span class="text-blue-700">Issued: ${issued}</span></span></div></div>
+      <div class="flex gap-2 flex-wrap items-center mt-2">
+        <label class="text-xs font-black">NEW TOTAL QTY:</label>
+        <input id="qty-${i}" type="number" value="${total}" min="0" class="border-2 rounded-lg px-2 py-1 w-24 font-bold">
+        <button onclick="window._setTitleQty('${safeKey}', ${i})" class="bg-black text-white px-3 py-1 rounded-lg font-black text-xs">💾 SAVE QTY</button>
+        <button onclick="window._addCopies('${safeKey}')" class="bg-green-600 text-white px-3 py-1 rounded-lg font-black text-xs">➕ + ADD COPIES</button>
+        <button onclick="window._editTitleGroup('${safeKey}')" class="bg-gray-200 px-3 py-1 rounded-lg font-black text-xs">✏️ EDIT TITLE / GRADE / DEPT</button>
+        <button onclick="window._deleteTitleGroup('${safeKey}')" class="bg-red-100 text-red-700 px-3 py-1 rounded-lg font-black text-xs">🗑️ DELETE TITLE</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+window._setTitleQty=async(safeKey, idx)=>{
+  let key=decodeURIComponent(safeKey);
+  let group=books.filter(b=>String(b.emis)===String(emis) && titleKey(b)===key);
+  if(!group.length) return alert('Title not found');
+  let newTotal=N(document.getElementById('qty-'+idx).value, group.length);
+  let cur=group.length;
+  if(newTotal===cur) return alert('Qty already '+cur);
+  if(newTotal<0) return alert('Qty cannot be negative');
+  if(newTotal<cur){
+    let toRemove=cur-newTotal;
+    let availCopies=group.filter(b=>b.status==='AVAILABLE').sort((a,b)=>S(b.barcode).localeCompare(S(a.barcode)));
+    if(availCopies.length<toRemove) return alert('⛔ Cannot reduce to '+newTotal+'. Only '+availCopies.length+' AVAILABLE copies can be deleted. '+(cur-availCopies.length)+' are PACKED / ISSUED and protected. Retrieve / Unpack them first.');
+    if(!confirm('Remove '+toRemove+' AVAILABLE copies of "'+group[0].title+'"? This deletes barcodes: '+availCopies.slice(0,toRemove).map(b=>b.barcode).join(', '))) return;
+    for(let b of availCopies.slice(0,toRemove)) await deleteDoc(doc(db,'books',b.id));
+    alert('✅ Qty reduced: '+cur+' → '+newTotal);
+  } else {
+    let add=newTotal-cur;
+    let qtyStr=prompt('Add '+add+' copies of "'+group[0].title+'"? Confirm Qty', String(add)); if(qtyStr===null) return; add=N(qtyStr, add);
+    let prefix=prompt('Prefix for new copies (e.g. WHS)', S(document.getElementById('bPrefix').value||'WHS')); if(prefix===null) return;
+    let existingNums=books.filter(b=>String(b.emis)===String(emis)).map(b=>N(String(b.barcode).replace(prefix,''),0));
+    let next=1; while(existingNums.includes(next)) next++;
+    let first=group[0];
+    for(let i=0;i<add;i++){ let code=prefix+pad(next+i); await addDoc(collection(db,'books'), {emis:String(emis), title:first.title, author:first.author||'', grade:first.grade, department:first.department, barcode:code, status:'AVAILABLE', createdAt:new Date().toISOString(), by:S(session?.name,'')}); }
+    alert('✅ Added '+add+' copies: '+prefix+pad(next)+' to '+prefix+pad(next+add-1));
+  }
+};
+window._addCopies=async(safeKey)=>{
+  let key=decodeURIComponent(safeKey);
+  let group=books.filter(b=>String(b.emis)===String(emis) && titleKey(b)===key);
+  if(!group.length) return;
+  let add=N(prompt('How many copies to ADD to "'+group[0].title+'"?','5'),0); if(!add||add<=0) return;
+  let prefix=prompt('Prefix (e.g. WHS)', S(document.getElementById('bPrefix').value||'WHS')); if(prefix===null) return;
+  let existingNums=books.filter(b=>String(b.emis)===String(emis)).map(b=>N(String(b.barcode).replace(prefix,''),0));
+  let next=1; while(existingNums.includes(next)) next++;
+  let first=group[0];
+  for(let i=0;i<add;i++){ let code=prefix+pad(next+i); await addDoc(collection(db,'books'), {emis:String(emis), title:first.title, author:first.author||'', grade:first.grade, department:first.department, barcode:code, status:'AVAILABLE', createdAt:new Date().toISOString(), by:S(session?.name,'')}); }
+  alert('✅ Added '+add+' copies');
+};
+window._editTitleGroup=async(safeKey)=>{
+  let key=decodeURIComponent(safeKey);
+  let group=books.filter(b=>String(b.emis)===String(emis) && titleKey(b)===key);
+  if(!group.length) return;
+  let first=group[0];
+  let t=prompt('Title', first.title); if(t===null) return;
+  let a=prompt('Author', first.author||''); if(a===null) return;
+  let g=prompt('Grade', first.grade||''); if(g===null) return;
+  let d=prompt('Department', first.department||''); if(d===null) return;
+  if(!confirm('Update ALL '+group.length+' copies of "'+first.title+'" to "'+t+'"?')) return;
+  for(let b of group) await updateDoc(doc(db,'books',b.id), {title:t, author:a||b.author, grade:g||b.grade, department:d||b.department});
+  alert('✅ Updated '+group.length+' copies');
+};
+window._deleteTitleGroup=async(safeKey)=>{
+  let key=decodeURIComponent(safeKey);
+  let group=books.filter(b=>String(b.emis)===String(emis) && titleKey(b)===key);
+  if(!group.length) return;
+  let avail=group.filter(b=>b.status==='AVAILABLE').length;
+  let busy=group.length-avail;
+  if(busy>0){ if(!confirm('⚠️ '+busy+' copies are PACKED / ISSUED. Delete ONLY '+avail+' AVAILABLE copies?')) return; for(let b of group.filter(x=>x.status==='AVAILABLE')) await deleteDoc(doc(db,'books',b.id)); alert('✅ Deleted '+avail+' AVAILABLE copies. '+busy+' protected copies remain.'); }
+  else { if(!confirm('Delete ALL '+group.length+' copies of "'+group[0].title+'"?')) return; for(let b of group) await deleteDoc(doc(db,'books',b.id)); alert('✅ Deleted title'); }
 };
 function renderStock(){
   let el=document.getElementById('stockList'); let list=filteredBooks();
