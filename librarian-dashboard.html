@@ -22,9 +22,7 @@
   </div>
   <div class="flex flex-wrap gap-2 mt-3 items-center">
     <label class="text-xs font-bold">SCHOOL EMIS:</label>
-    <select id="emisSelect" class="bg-white text-black px-3 py-2 rounded-full font-black text-sm" onchange="changeEmis(this.value)">
-      <option value="">Select School...</option>
-    </select>
+    <select id="emisSelect" class="bg-white text-black px-3 py-2 rounded-full font-black text-sm" onchange="changeEmis(this.value)"><option value="">Select School...</option></select>
     <span id="emisLabel" class="text-xs bg-yellow-400 text-black px-2 py-1 rounded-full font-black"></span>
   </div>
 </div>
@@ -34,24 +32,24 @@
 
 <!-- TABS -->
 <div class="flex flex-wrap gap-2 mt-3">
-  <button onclick="showTab('departments')" class="tabBtn bg-black text-white px-3 py-2 rounded-full font-black text-xs">🏛️ DEPARTMENTS</button>
-  <button onclick="showTab('stock')" class="tabBtn bg-orange-600 text-white px-3 py-2 rounded-full font-black text-xs">📦 EDIT STOCK</button>
-  <button onclick="showTab('users')" class="tabBtn bg-purple-600 text-white px-3 py-2 rounded-full font-black text-xs">👥 USERS / TEACHERS</button>
-  <button onclick="showTab('learners')" class="tabBtn bg-blue-600 text-white px-3 py-2 rounded-full font-black text-xs">🎓 LEARNERS</button>
-  <button onclick="showTab('requests')" class="tabBtn bg-yellow-400 text-black px-3 py-2 rounded-full font-black text-xs">📝 REQUESTS</button>
-  <button onclick="showTab('packages')" class="tabBtn bg-green-600 text-white px-3 py-2 rounded-full font-black text-xs">📦 PACKAGES</button>
-  <button onclick="showTab('issue')" class="tabBtn bg-pink-600 text-white px-3 py-2 rounded-full font-black text-xs">📤 ISSUE / RETRIEVE</button>
+  <button onclick="showTab('departments')" class="bg-black text-white px-3 py-2 rounded-full font-black text-xs">🏛️ DEPARTMENTS</button>
+  <button onclick="showTab('stock')" class="bg-orange-600 text-white px-3 py-2 rounded-full font-black text-xs">📦 EDIT STOCK</button>
+  <button onclick="showTab('users')" class="bg-purple-600 text-white px-3 py-2 rounded-full font-black text-xs">👥 USERS / TEACHERS</button>
+  <button onclick="showTab('learners')" class="bg-blue-600 text-white px-3 py-2 rounded-full font-black text-xs">🎓 LEARNERS</button>
+  <button onclick="showTab('requests')" class="bg-yellow-400 text-black px-3 py-2 rounded-full font-black text-xs">📝 REQUESTS</button>
+  <button onclick="showTab('packages')" class="bg-green-600 text-white px-3 py-2 rounded-full font-black text-xs">📦 PACKAGES</button>
+  <button onclick="showTab('issue')" class="bg-pink-600 text-white px-3 py-2 rounded-full font-black text-xs">📤 ISSUE / RETRIEVE</button>
 </div>
 <div class="flex gap-2 mt-2">
   <a href="index.html" class="bg-white border-2 px-4 py-2 rounded-full font-black text-sm text-center flex-1">← HOME</a>
   <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-full font-black text-sm flex-1">🚪 LOGOUT</button>
 </div>
 
-<!-- ===== TAB: DEPARTMENTS ===== -->
+<!-- DEPARTMENTS -->
 <div id="tab-departments">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">🏛️ Departments — Create / Edit</h3>
-    <p class="text-xs text-gray-500">Departments control HOD approval. HOD sees ONLY own Department. Per-EMIS.</p>
+    <p class="text-xs text-gray-500">Departments control HOD approval. Per-EMIS.</p>
     <p id="deptMsg" class="text-sm font-bold mt-2 text-center min-h-[20px]"></p>
     <div class="grid md:grid-cols-4 gap-2 mt-2">
       <input id="deptName" placeholder="MATHEMATICS" class="border-2 rounded-lg px-3 py-2 w-full uppercase">
@@ -59,12 +57,12 @@
       <input id="deptCode" placeholder="MATHS" class="border-2 rounded-lg px-3 py-2 w-full uppercase">
       <button id="addDeptBtn" class="bg-black text-white py-2 rounded-lg font-black">➕ ADD DEPARTMENT</button>
     </div>
-    <p class="text-xs text-yellow-700 bg-yellow-50 p-2 rounded mt-2">⚠️ Select SCHOOL EMIS at top first. If EMIS = blank / ALL, it will NOT save.</p>
+    <p class="text-xs text-yellow-700 bg-yellow-50 p-2 rounded mt-2">⚠️ Select SCHOOL EMIS at top first. If EMIS = blank, it will NOT save.</p>
     <div id="deptList" class="grid gap-2 mt-3"></div>
   </div>
 </div>
 
-<!-- ===== TAB: EDIT STOCK ===== -->
+<!-- EDIT STOCK -->
 <div id="tab-stock" class="hidden">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">📦 Edit Stock — Per Department / Per Title / Per Subject</h3>
@@ -95,7 +93,7 @@
   </div>
 </div>
 
-<!-- ===== TAB: USERS / TEACHERS — EDIT DEPARTMENT ===== -->
+<!-- USERS -->
 <div id="tab-users" class="hidden">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">👥 Users / Teachers — Set Department / Subject / Class</h3>
@@ -110,7 +108,7 @@
   </div>
 </div>
 
-<!-- ===== TAB: LEARNERS ===== -->
+<!-- LEARNERS -->
 <div id="tab-learners" class="hidden">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">🎓 Learners</h3>
@@ -125,16 +123,15 @@
   </div>
 </div>
 
-<!-- ===== TAB: REQUESTS (HOD APPROVAL VIEW FOR LIBRARIAN) ===== -->
+<!-- REQUESTS -->
 <div id="tab-requests" class="hidden">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">📝 Requests — All Departments</h3>
-    <p class="text-xs text-gray-500">Librarian sees all. HOD sees only own Department (in HOD dashboard).</p>
     <div id="requestList" class="grid gap-2 mt-2"></div>
   </div>
 </div>
 
-<!-- ===== TAB: PACKAGES ===== -->
+<!-- PACKAGES -->
 <div id="tab-packages" class="hidden">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">📦 Packages — Pack From AVAILABLE Only</h3>
@@ -149,7 +146,7 @@
   </div>
 </div>
 
-<!-- ===== TAB: ISSUE / RETRIEVE ===== -->
+<!-- ISSUE / RETRIEVE -->
 <div id="tab-issue" class="hidden">
   <div class="bg-white rounded-3xl p-4 mt-3 shadow">
     <h3 class="font-black text-xl">📤 Issue / 🔁 Retrieve — Any Teacher Can Retrieve Any Book</h3>
@@ -175,7 +172,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, addDoc, getDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firebaseConfig = { apiKey:"AIzaSyD6C2P4PQTENfJp8vZHHbR1yF7w8QyY3k", authDomain:"makhanani-ltsm.firebaseapp.com", projectId:"makhanani-ltsm", storageBucket:"makhanani-ltsm.appspot.com", messagingSenderId:"123456789", appId:"1:123456789:web:abcdef" };
+// ✅ YOUR REAL CONFIG - DO NOT CHANGE
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -192,7 +199,6 @@ window.showTab = (name)=>{
   if(name==='departments') renderDepartments();
   if(name==='users') renderUsers();
 };
-
 window.changeEmis = (v)=>{
   emis = v; session.emis = v; localStorage.setItem('session', JSON.stringify(session));
   document.getElementById('emisLabel').innerHTML = v ? 'EMIS: '+v : '';
@@ -230,7 +236,7 @@ function fillEmisSelect(){
   document.getElementById('emisLabel').innerHTML = emis ? 'EMIS: '+emis : '';
 }
 
-// ===== DEPARTMENTS =====
+// DEPARTMENTS
 window.addDepartment = async ()=>{
   let msg=document.getElementById('deptMsg');
   let name=String(document.getElementById('deptName').value||'').trim().toUpperCase();
@@ -254,7 +260,7 @@ window.renderDepartments = ()=>{
 };
 window.deleteDept = async (id)=>{ if(!confirm('Delete this department?')) return; await deleteDoc(doc(db,'departments',id)); };
 
-// ===== EDIT STOCK =====
+// EDIT STOCK
 function fillStockFilters(){
   let deptSel=document.getElementById('stockDeptFilter'); let newDept=document.getElementById('newDept');
   let deptList=(departments||[]).filter(d=>String(d.emis)===String(emis));
@@ -291,7 +297,7 @@ window.addStockItem = async ()=>{
 };
 window.deleteStock = async (id)=>{ if(!confirm('Delete this stock item?')) return; await deleteDoc(doc(db,'books',id)); };
 
-// ===== USERS — EDIT TEACHER DEPARTMENT =====
+// USERS — EDIT TEACHER DEPARTMENT
 window.renderUsers = ()=>{
   let el=document.getElementById('userList'); if(!el) return;
   let roleF=document.getElementById('userRoleFilter')?.value||'ALL';
@@ -313,7 +319,6 @@ window.renderUsers = ()=>{
     </div>
     <p class="text-xs text-gray-400 mt-1">Current: Dept=${u.department||'-'} Subject=${u.subject||'-'} Class=${u.className||'-'} Grade=${u.grade||'-'}</p>
   </div>`).join('');
-  // Set dropdown to current value
   list.forEach(u=>{ let s=document.getElementById('dept-'+u.id); if(s && u.department) s.value=u.department; });
 };
 window.saveUserDept = async (id)=>{
@@ -326,7 +331,7 @@ window.saveUserDept = async (id)=>{
   try{ await updateDoc(doc(db,'users',id), { department:dept, subject, className, class:className, grade }); if(msg) msg.innerHTML='✅ Updated: Department set to '+dept+' / '+subject+' / '+className; }catch(e){ if(msg) msg.innerHTML='❌ '+e.message; alert(e.message); }
 };
 
-// ===== LEARNERS =====
+// LEARNERS
 window.addLearner = async ()=>{
   let msg=document.getElementById('learnerMsg');
   let name=String(document.getElementById('learnerName').value||'').trim().toUpperCase(); let cls=String(document.getElementById('learnerClass').value||'').trim().toUpperCase(); let lid=String(document.getElementById('learnerId').value||'').trim();
@@ -343,7 +348,7 @@ window.renderLearners = ()=>{
 };
 window.deleteLearner = async (id)=>{ if(!confirm('Delete learner?')) return; await deleteDoc(doc(db,'learners',id)); };
 
-// ===== REQUESTS / PACKAGES =====
+// REQUESTS / PACKAGES
 window.renderRequests = ()=>{
   let el=document.getElementById('requestList'); if(!el) return;
   let list=requests.filter(r=>String(r.emis)===String(emis));
@@ -370,7 +375,7 @@ window.renderPackages = ()=>{
   el.innerHTML=list.map(p=>`<div class="border rounded-xl p-2 text-sm"><b>${p.bookTitle}</b> • ${p.department||''} • ${p.className} • Qty: ${p.qty} • Barcode: <b>${p.barcode}</b> • ${p.status}</div>`).join('')||'<p class="text-sm text-gray-400">No packages.</p>';
 };
 
-// ===== ISSUE / RETRIEVE =====
+// ISSUE / RETRIEVE
 window.issueBook = async ()=>{
   let msg=document.getElementById('issueMsg');
   let barcode=String(document.getElementById('issueBarcode').value||'').trim().toUpperCase(); let learnerId=document.getElementById('issueLearner').value;
