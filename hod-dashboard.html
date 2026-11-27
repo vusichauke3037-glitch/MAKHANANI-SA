@@ -1,50 +1,203 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HOD — Makhanani LTSM LIVE</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
-<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
-<div id="impBanner" style="display:none; background:#dc2626; color:white; text-align:center; padding:10px; font-weight:900; font-size:13px; position:sticky; top:0; z-index:9999;">👀 SUPER ADMIN VIEWING AS <span id="impName"></span> — <button onclick="returnToSuperAdmin()" style="background:white; color:#dc2626; padding:4px 12px; border-radius:999px; font-weight:900; margin-left:8px;">🔙 RETURN TO SUPER ADMIN</button></div>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • HOD • <span class="text-green-400">LIVE</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
-<div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-blue-500"><h1 class="font-black text-2xl">👥 HOD Dashboard — LIVE</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"><p class="col-span-4 text-sm text-gray-500">Loading LIVE stats...</p></div><p class="text-[11px] text-green-600 font-bold mt-2">● LIVE — Updates when Librarian / Teacher issues books</p></div>
-<div class="grid md:grid-cols-3 gap-2 mt-4"><a href="teacher-dashboard.html" class="bg-green-600 text-white p-4 rounded-2xl font-black text-center">👨‍🏫 Teacher View →</a><a href="issue.html" class="bg-orange-500 text-white p-4 rounded-2xl font-black text-center">📥 Issue / Retrieval →</a><button onclick="printReport()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black">🖨️ Print HOD Report</button></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 My Subjects — LIVE Retrieval</h2><div id="subjectBox" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">👥 Teachers in My School (Firebase)</h2><div id="userList" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Books For My Subjects (Firebase)</h2><div id="bookBox" class="mt-2 text-sm">Loading...</div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOD Dashboard — Makhanani LTSM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>*{box-sizing:border-box}html,body{overflow-x:hidden}</style>
+</head>
+<body class="bg-[#FFFDE7] pb-10">
+<div class="max-w-6xl mx-auto p-3">
+
+<!-- HEADER -->
+<div class="bg-black text-white rounded-3xl p-4">
+  <div class="flex gap-3 items-start">
+    <img src="logo.png" class="w-[60px] h-[60px] object-contain bg-white rounded-full p-1 shrink-0">
+    <div class="min-w-0">
+      <p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP HOLDINGS (PTY) LTD • 2026/934898/07</p>
+      <h1 class="font-black text-[28px] leading-[1]">HOD Dashboard</h1>
+      <p id="hodInfo" class="text-sm text-gray-300">Loading...</p>
+    </div>
+  </div>
+  <div class="flex gap-2 mt-3">
+    <a href="index.html" class="bg-white text-black py-2 rounded-full font-black text-sm text-center flex-1">← HOME</a>
+    <button onclick="logout()" class="bg-red-600 text-white py-2 rounded-full font-black text-sm flex-1">🚪 LOGOUT</button>
+  </div>
 </div>
-<script>(function(){ try{ let s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); if(s && s.isImpersonating){ document.getElementById('impBanner').style.display='block'; document.getElementById('impName').textContent=s.name+' ('+s.role+') • '+s.school; } }catch(e){} window.returnToSuperAdmin=function(){ let sup=localStorage.getItem('makhanani_superadmin_session'); if(sup){ localStorage.setItem('makhanani_session',sup); localStorage.removeItem('makhanani_superadmin_session'); localStorage.removeItem('makhanani_impersonating'); location.href='superadmin-dashboard.html'; } else { localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; } }; })();</script>
+
+<div id="lockBanner" class="hidden bg-red-600 text-white rounded-2xl p-3 mt-3 font-bold text-center"></div>
+
+<!-- PENDING -->
+<div class="bg-white rounded-3xl p-4 mt-3 shadow">
+  <h3 class="font-black text-xl">⏳ Pending Requests — MY DEPARTMENT ONLY</h3>
+  <p class="text-xs text-gray-500">🔒 You CANNOT see other Departments. Approve = Librarian can Pack. Reject = Teacher sees Rejected.</p>
+  <p id="hodMsg" class="text-sm font-bold text-center min-h-[20px] mt-1"></p>
+  <div class="grid md:grid-cols-3 gap-2 mt-2">
+    <select id="hodSubjectFilter" class="border-2 rounded-lg px-3 py-2 font-bold" onchange="renderRequests()"><option value="ALL">ALL SUBJECTS IN MY DEPT</option></select>
+    <input id="hodSearch" placeholder="🔍 Search Teacher / Book" class="border-2 rounded-lg px-3 py-2" oninput="renderRequests()">
+    <button onclick="renderRequests()" class="bg-black text-white py-2 rounded-lg font-black">🔄 REFRESH</button>
+  </div>
+  <div id="pendingList" class="grid gap-2 mt-3"></div>
+</div>
+
+<!-- APPROVED / HISTORY -->
+<div class="bg-white rounded-3xl p-4 mt-3 shadow">
+  <h3 class="font-black text-xl">✅ Approved / ❌ Rejected — My Department History</h3>
+  <div id="historyList" class="grid gap-2 mt-2"></div>
+</div>
+
+<!-- MY DEPARTMENT STOCK -->
+<div class="bg-white rounded-3xl p-4 mt-3 shadow">
+  <h3 class="font-black text-xl">📦 My Department Stock — View Only</h3>
+  <p class="text-xs text-gray-500">HOD cannot edit stock. Librarian edits stock. You only approve requests.</p>
+  <div class="overflow-x-auto mt-2">
+    <table class="w-full text-sm bg-white rounded-xl overflow-hidden">
+      <thead class="bg-black text-white"><tr><th class="p-2 text-left">Title / Subject</th><th class="p-2">Total</th><th class="p-2">Available</th><th class="p-2">Issued</th></tr></thead>
+      <tbody id="stockList"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07</div>
+</div>
+
 <script type="module">
-import { initializeApp } from 'firebase/app'; import { getAuth, signOut } from 'firebase/auth'; import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
-let sess=null; try{ sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-if(!sess){ location.href='login.html'; }
-document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis+' • Subjects: '+(sess.subjects||[]).join(', ')+' • LIVE';
-document.getElementById('schoolLine').textContent=sess.school+' • EMIS '+sess.emis+' • '+sess.prefix;
-let books=[], learners=[], issues=[], users=[];
-function render(){
-  let issued=issues.filter(i=>i.action==='Issued').length; let returned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let out=Math.max(0,issued-returned); let pct=issued===0?null:(returned/issued*100); let copies=books.reduce((a,b)=>a+(b.totalCopies||0),0);
-  document.getElementById('stats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+copies+'</div><div class="text-xs">Book Copies</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+learners.length+'</div><div class="text-xs">Learners</div></div><div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+issued+'</div><div class="text-xs">Issued</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+(pct===null?'—':pct.toFixed(1)+'%')+'</div><div class="text-xs">Retrieval</div></div>';
-  window._lastStats={copies,learners:learners.length,issued,returned,out,pct};
-  let mySubjects=sess.subjects||['General'];
-  let html=mySubjects.map(sub=>{
-    let booksForSub = sub==='General' ? books : books.filter(b=>(b.subject||'').toLowerCase().includes(sub.toLowerCase()));
-    let copiesForSub=booksForSub.reduce((a,b)=>a+(b.totalCopies||0),0);
-    // Issues for this subject
-    let issuedForSub = sub==='General' ? issued : issues.filter(i=>(i.subject||'').toLowerCase().includes(sub.toLowerCase()) && i.action==='Issued').length;
-    let returnedForSub = sub==='General' ? returned : issues.filter(i=>(i.subject||'').toLowerCase().includes(sub.toLowerCase()) && (i.action==='Returned'||i.action==='Retrieved')).length;
-    let pctSub = issuedForSub===0?null:(returnedForSub/issuedForSub*100);
-    return '<div class="border rounded p-2 mb-1"><b>'+sub+'</b> • Books: '+copiesForSub+' • Issued: '+issuedForSub+' • Returned: '+returnedForSub+' • Retrieval: '+(pctSub===null?'—':pctSub.toFixed(1)+'%')+' • Due: 30 Nov</div>';
-  }).join('');
-  document.getElementById('subjectBox').innerHTML=html||'No subjects';
-  let teachers=users.filter(u=>u.role==='TEACHER'||u.role==='HOD');
-  document.getElementById('userList').innerHTML=teachers.map(u=>'<div class="border rounded p-2 mb-1"><b>'+u.name+'</b> • '+u.role+' • '+u.email+' • Subjects: '+(u.subjects||[]).join(', ')+' • Classes: '+(u.classes||[]).join(', ')+'</div>').join('')||'<p class="text-gray-500">No teachers yet.</p>';
-  let myBooks = mySubjects.includes('General') ? books : books.filter(b=>mySubjects.some(s=>(b.subject||'').toLowerCase().includes(s.toLowerCase())));
-  document.getElementById('bookBox').innerHTML=myBooks.map(b=>'<div class="border rounded p-2 mb-1"><b>'+b.title+'</b> • '+b.subject+' • Grade '+b.grade+' • Copies: '+(b.totalCopies||0)+'</div>').join('')||'<p class="text-gray-500">No books for your subjects yet.</p>';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// ✅ YOUR REAL CONFIG - DO NOT CHANGE
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let session = JSON.parse(localStorage.getItem('session')||'{}');
+let emis = session.emis || '';
+let books = [], requests = [];
+let hodDept = '', hodSubject = '';
+let isLocked = false;
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  try{
+    let snap = await getDoc(doc(db,'users',user.uid));
+    if(snap.exists()) session = { ...session, ...snap.data(), uid:user.uid };
+    localStorage.setItem('session', JSON.stringify(session));
+  }catch(e){}
+  emis = session.emis || '';
+  hodDept = String(session.department||'').toUpperCase();
+  hodSubject = String(session.subject||'').toUpperCase();
+  document.getElementById('hodInfo').innerHTML = `👤 <b>${session.name||''}</b> • HOD • Dept: <b>${hodDept||'<span class="text-red-400">NOT SET — Ask Librarian</span>'}</b> • Subject: <b>${hodSubject||'-'}</b> • EMIS: ${emis}`;
+  startListeners();
+});
+
+function startListeners(){
+  onSnapshot(collection(db,'requests'), s=>{ requests = s.docs.map(d=>({id:d.id,...d.data()})); renderRequests(); });
+  onSnapshot(collection(db,'books'), s=>{ books = s.docs.map(d=>({id:d.id,...d.data()})); renderStock(); renderRequests(); });
+  onSnapshot(collection(db,'subscriptions'), s=>{
+    let sub = s.docs.map(d=>d.data()).find(x=>String(x.emis)===String(emis));
+    let b = document.getElementById('lockBanner');
+    if(sub && sub.status==='EXPIRED'){ isLocked=true; b.classList.remove('hidden'); b.innerHTML='🔒 LOCKED: Subscription EXPIRED'; }
+    else { isLocked=false; b.classList.add('hidden'); }
+  });
 }
-window.printReport=function(){ let d=window._lastStats||{copies:0,learners:0,issued:0,returned:0,pct:null}; document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • HOD REPORT • LIVE FIREBASE</h1><p>HOD: '+sess.name+' • School: '+sess.school+' • EMIS '+sess.emis+' • Subjects: '+(sess.subjects||[]).join(', ')+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>Book Copies</th><th>Learners</th><th>Issued</th><th>Returned</th><th>Retrieval %</th></tr><tr><td>'+d.copies+'</td><td>'+d.learners+'</td><td>'+d.issued+'</td><td>'+d.returned+'</td><td>'+(d.pct===null?'—':d.pct.toFixed(1)+'%')+'</td></tr></table><p>Due 30 November</p>'; setTimeout(()=>window.print(),100); };
-document.getElementById('logoutBtn').addEventListener('click', async()=>{ if(sess && sess.isImpersonating){ window.returnToSuperAdmin(); return; } await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-onSnapshot(query(collection(db,'books'), where('emis','==',String(sess.emis))), (snap)=>{ books=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(query(collection(db,'learners'), where('emis','==',String(sess.emis))), (snap)=>{ learners=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(query(collection(db,'issues'), where('emis','==',String(sess.emis))), (snap)=>{ issues=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(query(collection(db,'users'), where('emis','==',String(sess.emis))), (snap)=>{ users=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-</script></body></html>
+
+window.renderRequests = ()=>{
+  let subjF = document.getElementById('hodSubjectFilter')?.value || 'ALL';
+  let q = String(document.getElementById('hodSearch')?.value||'').toLowerCase();
+
+  // 🔒 HOD FILTER: SAME EMIS + SAME DEPARTMENT ONLY
+  let myRequests = requests.filter(r=>String(r.emis)===String(emis) && String(r.department||'').toUpperCase()===hodDept);
+
+  // Fill Subject filter from MY dept only
+  let subjects = [...new Set(myRequests.map(r=>r.subject||'').filter(Boolean))];
+  let sel = document.getElementById('hodSubjectFilter');
+  if(sel){
+    let cur = sel.value;
+    sel.innerHTML = '<option value="ALL">ALL SUBJECTS IN MY DEPT</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+    if(subjects.includes(cur)) sel.value = cur;
+  }
+
+  let pending = myRequests.filter(r=>r.status==='PENDING');
+  let history = myRequests.filter(r=>r.status!=='PENDING');
+  if(subjF!=='ALL'){ pending = pending.filter(r=>r.subject===subjF); history = history.filter(r=>r.subject===subjF); }
+  if(q){ pending = pending.filter(r=>((r.teacher||'')+' '+(r.bookTitle||'')).toLowerCase().includes(q)); history = history.filter(r=>((r.teacher||'')+' '+(r.bookTitle||'')).toLowerCase().includes(q)); }
+
+  let pendEl = document.getElementById('pendingList');
+  if(!hodDept){ pendEl.innerHTML = '<p class="text-sm text-red-600 font-bold">⚠️ NO DEPARTMENT SET for your HOD account. Librarian must set Department in USERS tab → SAVE DEPT → Logout / Login again.</p>'; }
+  else if(pending.length===0){ pendEl.innerHTML = '<p class="text-sm text-gray-400">No pending requests for Department <b>'+hodDept+'</b>. Teachers in other Departments are hidden from you.</p>'; }
+  else{
+    pendEl.innerHTML = pending.map(r=>`
+      <div class="border-2 border-yellow-400 rounded-xl p-3 bg-yellow-50">
+        <div class="flex justify-between flex-wrap gap-2"><div><b>${r.bookTitle}</b><br><span class="text-xs text-gray-500">${r.department} • ${r.subject||''} • Grade ${r.grade||''} • Class ${r.className}</span><br><span class="text-sm">Teacher: <b>${r.teacher}</b> • Qty Requested: <b>${r.qty}</b></span><br><span class="text-xs text-gray-500">Requested: ${r.createdAt||''}</span></div><span class="bg-yellow-400 px-2 py-1 rounded-full text-xs font-black h-fit">PENDING</span></div>
+        <div class="grid md:grid-cols-3 gap-2 mt-2">
+          <div><label class="text-xs font-bold">APPROVE QTY</label><input id="qty-${r.id}" type="number" value="${r.qty}" class="border-2 rounded-lg px-2 py-2 w-full font-bold"></div>
+          <button onclick="approveRequest('${r.id}')" class="bg-green-600 text-white py-2 rounded-full font-black">✅ APPROVE</button>
+          <button onclick="rejectRequest('${r.id}')" class="bg-red-600 text-white py-2 rounded-full font-black">❌ REJECT</button>
+        </div>
+        <input id="reason-${r.id}" placeholder="Reason if rejecting (optional)" class="border-2 rounded-lg px-2 py-2 w-full mt-2 text-sm">
+      </div>`).join('');
+  }
+
+  let histEl = document.getElementById('historyList');
+  if(history.length===0){ histEl.innerHTML = '<p class="text-sm text-gray-400">No history yet for '+hodDept+'.</p>'; }
+  else{
+    histEl.innerHTML = history.map(r=>`<div class="border rounded-xl p-2 flex justify-between text-sm"><div><b>${r.bookTitle}</b> • ${r.subject||''} • ${r.className} • Teacher: ${r.teacher}<br>Requested: ${r.qty} • Approved: ${r.approvedQty||0} • <b>${r.status}</b> ${r.rejectReason ? '• Reason: '+r.rejectReason : ''}</div><span class="font-black ${r.status==='APPROVED'?'text-green-600':'text-red-600'}">${r.status}</span></div>`).join('');
+  }
+};
+
+window.approveRequest = async (id)=>{
+  let msg = document.getElementById('hodMsg');
+  if(isLocked){ msg.innerHTML='🔒 LOCKED'; return; }
+  let r = requests.find(x=>x.id===id);
+  if(!r) return;
+  // Double-check Department
+  if(String(r.department||'').toUpperCase()!==hodDept){ alert('❌ You can only approve your own Department: '+hodDept); return; }
+  let qty = Number(document.getElementById('qty-'+id).value || r.qty);
+  if(!qty || qty<=0){ msg.innerHTML='❌ Enter Approve Qty'; return; }
+  let book = books.find(b=>b.id===r.bookId);
+  if(book && qty > Number(book.available??book.qty??0)){
+    if(!confirm('⚠️ Only '+(book.available??book.qty)+' available for '+book.title+'. Approve '+qty+' anyway?')) return;
+  }
+  try{
+    await updateDoc(doc(db,'requests',id), { status:'APPROVED', approvedQty:qty, approvedBy:session.name||'', approvedAt:new Date().toISOString() });
+    msg.innerHTML = '✅ Approved: '+r.bookTitle+' x'+qty+' for '+r.teacher+' — Librarian can now Pack';
+  }catch(e){ msg.innerHTML='❌ '+e.message; }
+};
+
+window.rejectRequest = async (id)=>{
+  let msg = document.getElementById('hodMsg');
+  let r = requests.find(x=>x.id===id);
+  if(!r) return;
+  if(String(r.department||'').toUpperCase()!==hodDept){ alert('❌ You can only reject your own Department'); return; }
+  let reason = String(document.getElementById('reason-'+id)?.value||'').trim();
+  if(!confirm('Reject '+r.bookTitle+' for '+r.teacher+'?')) return;
+  try{
+    await updateDoc(doc(db,'requests',id), { status:'REJECTED', approvedQty:0, rejectReason:reason, rejectedBy:session.name||'', rejectedAt:new Date().toISOString() });
+    msg.innerHTML = '❌ Rejected: '+r.bookTitle+' for '+r.teacher;
+  }catch(e){ msg.innerHTML='❌ '+e.message; }
+};
+
+window.renderStock = ()=>{
+  let el = document.getElementById('stockList'); if(!el) return;
+  let list = books.filter(b=>String(b.emis)===String(emis) && String(b.department||'').toUpperCase()===hodDept);
+  if(!hodDept){ el.innerHTML='<tr><td colspan="4" class="p-3 text-center text-red-500 font-bold">No Department Set</td></tr>'; return; }
+  if(list.length===0){ el.innerHTML='<tr><td colspan="4" class="p-3 text-center text-gray-400">No stock for Department '+hodDept+' yet. Librarian must add stock.</td></tr>'; return; }
+  el.innerHTML = list.map(b=>`<tr class="border-b"><td class="p-2"><b>${b.title}</b><br><span class="text-xs text-gray-500">${b.subject||''} • Gr ${b.grade||''}</span></td><td class="p-2 text-center font-bold">${b.total||0}</td><td class="p-2 text-center">${b.available??b.qty??0}</td><td class="p-2 text-center">${b.issued||0}</td></tr>`).join('');
+};
+
+window.logout = async ()=>{ localStorage.removeItem('session'); await signOut(auth); window.location.href='login.html'; };
+</script>
+</body>
+</html>
