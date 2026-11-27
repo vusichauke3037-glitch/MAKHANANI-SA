@@ -1,54 +1,112 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Makhanani LTSM — Books Go Out. Books Come Back. • Xintimani</title><script src="https://cdn.tailwindcss.com"></script>
-<style>*{box-sizing:border-box}html,body{overflow-x:hidden;max-width:100%}img{max-width:100%;height:auto}.no-scroll{scrollbar-width:none}.no-scroll::-webkit-scrollbar{display:none}</style></head>
-<body class="bg-[#FFFDE7] pb-10"><div class="max-w-7xl mx-auto p-3">
-<!-- HEADER - FIXED: wraps on phone -->
-<div class="bg-black text-white rounded-3xl p-4">
-<div class="flex flex-wrap gap-3 items-start justify-between">
-<div class="flex gap-3 items-start min-w-0 flex-1">
-<img src="logo.png" class="w-16 h-16 object-contain bg-white rounded-full p-1 shrink-0">
-<div class="min-w-0"><p class="text-[11px] font-black tracking-widest text-yellow-400 leading-tight">XINTIMANI<br>GROUP<br>HOLDINGS<br>(PTY) LTD •<br>2026/934898/07<br>✨</p><h1 class="font-black text-3xl leading-none mt-1">Xintimani<br>Group</h1><p class="text-sm text-gray-300 leading-tight mt-1">Makhanani<br>LTSM — Joy.<br>Cherished.<br>Mercy.</p></div></div>
-<div class="flex flex-col gap-2 shrink-0">
-<a href="index.html" class="bg-yellow-400 text-black px-4 py-2 rounded-full font-black text-sm text-center">← HOME</a>
-<a href="login.html" class="bg-blue-600 text-white px-4 py-2 rounded-full font-black text-sm text-center">🔐 LOGIN</a>
-<a href="pricing.html" class="bg-purple-600 text-white px-4 py-2 rounded-full font-black text-sm text-center">💰 PRICING</a>
-<a href="subscriptions.html" class="bg-pink-600 text-white px-4 py-2 rounded-full font-black text-sm text-center">🎁 DONATE</a>
-<a href="superadmin-login.html" class="bg-white text-black px-4 py-2 rounded-full font-black text-sm text-center">👑 SUPER ADMIN</a>
-</div></div></div>
-<!-- HERO - FIXED: no overflow, buttons stack -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makhanani LTSM — Xintimani Group Holdings</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>*{box-sizing:border-box}html,body{overflow-x:hidden}</style>
+</head>
+<body class="bg-[#FFFDE7] pb-10">
+<div class="max-w-5xl mx-auto p-3">
+
+<!-- HERO -->
+<div class="bg-black text-white rounded-3xl p-5 text-center">
+  <img src="logo.png" class="w-[110px] h-[110px] object-contain bg-white rounded-full p-1 mx-auto">
+  <p class="text-[10px] font-black tracking-widest text-yellow-400 mt-3">XINTIMANI GROUP HOLDINGS (PTY) LTD • 2026/934898/07</p>
+  <h1 class="font-black text-[36px] leading-[1] mt-1">MAKHANANI LTSM</h1>
+  <p class="text-sm text-gray-300">Learner Teacher Support Material • Library • Stock • Issue • Retrieve</p>
+  <p id="welcomeMsg" class="text-sm font-bold text-yellow-400 mt-2"></p>
+  <div class="grid grid-cols-2 gap-2 mt-4 max-w-md mx-auto">
+    <a href="login.html" class="bg-yellow-400 text-black py-3 rounded-full font-black">🔑 LOGIN</a>
+    <a href="register.html" class="bg-white text-black py-3 rounded-full font-black">✅ REGISTER</a>
+  </div>
+  <div id="myDashboardBox" class="hidden mt-3">
+    <a id="myDashboardLink" href="login.html" class="bg-green-500 text-white px-6 py-2 rounded-full font-black text-sm inline-block">Go To My Dashboard →</a>
+    <button onclick="logoutHome()" class="bg-red-600 text-white px-4 py-2 rounded-full font-black text-sm ml-2">Logout</button>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
 <div class="bg-white rounded-3xl p-4 mt-3 shadow">
-<div class="inline-block bg-yellow-400 px-4 py-2 rounded-full font-black text-sm">⭐ #1 SCHOOL LTSM SYSTEM IN SA ⭐</div>
-<h2 class="font-black text-4xl leading-[1.05] mt-3">Books Go Out.<br>Books Come Back.<br><span class="text-green-600">No Book Gets Lost.</span></h2>
-<p class="text-gray-600 mt-3 leading-relaxed">Makhanani LTSM tracks every book — Teacher Request → HOD Approval → Librarian Package → Issue → Retrieve — with a barcode. <b>1 Learner. 1 Title. 1 Scan.</b></p>
-<div class="flex flex-col gap-2 mt-4">
-<a href="register.html" class="bg-yellow-400 text-black px-4 py-3 rounded-full font-black text-center w-full">🆓 START FREE DEMO →</a>
-<a href="login.html" class="bg-black text-white px-4 py-3 rounded-full font-black text-center w-full">🔐 LOGIN →</a>
-<a href="xintimani.html" class="bg-gray-100 px-4 py-3 rounded-full font-black text-center w-full">▶️ See How It Works</a>
-<a href="subscriptions.html" class="bg-pink-600 text-white px-4 py-3 rounded-full font-black text-center w-full">🎁 DONATE PREMIUM →</a></div>
-<div class="grid grid-cols-3 gap-2 mt-4 text-center">
-<div class="bg-gray-50 rounded-xl p-2"><p class="font-black text-xl">100%</p><p class="text-xs text-gray-500">Tracked</p></div>
-<div class="bg-gray-50 rounded-xl p-2"><p class="font-black text-xl">1 Scan</p><p class="text-xs text-gray-500">Issue / Retrieve</p></div>
-<div class="bg-gray-50 rounded-xl p-2"><p class="font-black text-xl">0 Lost</p><p class="text-xs text-gray-500">Goal</p></div></div></div>
-<!-- HOW IT WORKS - 6 STEPS, stacked -->
-<div class="bg-white rounded-3xl p-4 mt-3 shadow"><h3 class="font-black text-2xl">📚 How It Works — 6 Steps</h3><p class="text-xs text-gray-500">No HOD = No Pack. No Pack = No Issue.</p>
-<div class="grid gap-2 mt-3">
-<div class="border-2 rounded-2xl p-3"><b>1. 📝 Teacher Requests</b><p class="text-sm text-gray-600">Teacher picks book + class + qty. Only for OWN class.</p></div>
-<div class="border-2 rounded-2xl p-3"><b>2. ✅ HOD Approves</b><p class="text-sm text-gray-600">HOD sees ONLY own Department. Sets Approved Qty.</p></div>
-<div class="border-2 rounded-2xl p-3"><b>3. 📦 Librarian Packs</b><p class="text-sm text-gray-600">Packs from AVAILABLE only, up to Approved Qty.</p></div>
-<div class="border-2 rounded-2xl p-3"><b>4. 📤 Teacher Issues</b><p class="text-sm text-gray-600">Scan PACKED barcode → Pick Learner in SAME class → Issue. 1 Learner = 1 Title.</p></div>
-<div class="border-2 rounded-2xl p-3"><b>5. 🔁 Retrieve</b><p class="text-sm text-gray-600">ANY Teacher can retrieve ANY book. Book becomes AVAILABLE again.</p></div>
-<div class="border-2 rounded-2xl p-3"><b>6. 🖨️ Print</b><p class="text-sm text-gray-600">Print 3×5 labels: Book + Learner. Loan Form signed.</p></div></div>
-<a href="xintimani.html" class="block bg-black text-white py-3 rounded-full font-black text-center mt-3">✨ See Cartoons →</a></div>
-<!-- PRICING TEASER -->
-<div class="bg-black text-white rounded-3xl p-4 mt-3"><h3 class="font-black text-2xl">💰 Simple Pricing</h3><p class="text-sm text-gray-300">Setup ONCE + Monthly / Yearly. Demo FREE.</p>
-<div class="grid gap-2 mt-3">
-<div class="bg-white text-black rounded-2xl p-3"><b>🆓 DEMO — FREE</b><p class="text-sm">Try it. 30 days. No card.</p><a href="register.html" class="block bg-yellow-400 text-black py-2 rounded-full font-black text-center mt-2">Start Demo →</a></div>
-<div class="bg-white text-black rounded-2xl p-3"><b>💳 MONTHLY</b><p class="text-sm">Setup R2,500 ONCE + R500 / month.</p><a href="pricing.html" class="block bg-black text-white py-2 rounded-full font-black text-center mt-2">See Pricing →</a></div>
-<div class="bg-yellow-400 text-black rounded-2xl p-3"><b>🎁 DONATE PREMIUM — R14,500</b><p class="text-sm">Donor pays. School pays R0. Premium 12 months.</p><a href="subscriptions.html" class="block bg-black text-white py-2 rounded-full font-black text-center mt-2">Donate →</a></div></div></div>
+  <h3 class="font-black text-xl text-center">🔄 How Makhanani LTSM Works</h3>
+  <div class="grid md:grid-cols-4 gap-2 mt-3 text-center text-sm">
+    <div class="border-2 rounded-xl p-3"><b>1. TEACHER</b><br>Requests books<br>ONLY own Dept</div>
+    <div class="border-2 rounded-xl p-3"><b>2. HOD</b><br>Approves<br>ONLY own Dept</div>
+    <div class="border-2 rounded-xl p-3"><b>3. LIBRARIAN</b><br>Packs from<br>AVAILABLE stock</div>
+    <div class="border-2 rounded-xl p-3"><b>4. ISSUE</b><br>1 Learner = 1 Title<br>Scan + Retrieve</div>
+  </div>
+  <p class="text-xs text-center text-gray-500 mt-2">🔒 Department Lock: Teacher sees ONLY own Department. HOD approves ONLY own Department. Principal sees ALL. Super Admin controls Subscription Lock.</p>
+</div>
+
 <!-- DASHBOARDS -->
-<div class="bg-white rounded-3xl p-4 mt-3 shadow"><h3 class="font-black text-2xl">📊 Go To Dashboards</h3><div class="flex flex-col gap-2 mt-3">
-<a href="login.html" class="bg-blue-600 text-white py-3 rounded-full font-black text-center">🔐 LOGIN →</a>
-<a href="register.html" class="bg-yellow-400 text-black py-3 rounded-full font-black text-center">📝 REGISTER →</a>
-<a href="librarian-dashboard.html" class="bg-gray-100 py-3 rounded-full font-black text-center">📚 Librarian Dashboard</a>
-<a href="superadmin-login.html" class="bg-red-600 text-white py-3 rounded-full font-black text-center">👑 Super Admin Login</a>
-<a href="dashboard.html" class="bg-gray-100 py-3 rounded-full font-black text-center">📊 General Dashboard</a></div></div>
-<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07 • 293 Smit Street, Hillbrow • Makhanani LTSM — Joy. Cherished. Mercy.</div></div></body></html>
+<div class="bg-white rounded-3xl p-4 mt-3 shadow">
+  <h3 class="font-black text-xl text-center">📱 Dashboards — Choose Your Role</h3>
+  <div class="grid md:grid-cols-3 gap-2 mt-3">
+    <a href="teacher-dashboard.html" class="bg-yellow-400 text-black p-4 rounded-2xl font-black text-center">👩‍🏫 TEACHER<br><span class="text-xs font-normal">Request • Issue • Retrieve</span></a>
+    <a href="hod-dashboard.html" class="bg-green-600 text-white p-4 rounded-2xl font-black text-center">✅ HOD<br><span class="text-xs font-normal">Approve ONLY My Dept</span></a>
+    <a href="librarian-dashboard.html" class="bg-black text-white p-4 rounded-2xl font-black text-center">📚 LIBRARIAN<br><span class="text-xs font-normal">Stock • Departments • Pack</span></a>
+    <a href="principal-dashboard.html" class="bg-blue-600 text-white p-4 rounded-2xl font-black text-center">🏫 PRINCIPAL<br><span class="text-xs font-normal">View All • Reports</span></a>
+    <a href="super-admin.html" class="bg-purple-600 text-white p-4 rounded-2xl font-black text-center">👑 SUPER ADMIN<br><span class="text-xs font-normal">Schools • Subscriptions • Lock</span></a>
+    <a href="register.html" class="bg-white border-2 border-black p-4 rounded-2xl font-black text-center">✍️ NEW USER<br><span class="text-xs font-normal">Register with Dept / Subject</span></a>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="grid md:grid-cols-3 gap-2 mt-3">
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><b>🏛️ Departments</b><p class="text-xs text-gray-500">Per-EMIS. HOD sees only own Dept.</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><b>📦 Stock Control</b><p class="text-xs text-gray-500">Total / Available / Issued / Lost per Title.</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><b>📤 Issue / Retrieve</b><p class="text-xs text-gray-500">Barcode scan. Any teacher can retrieve any book.</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><b>🔒 Subscription Lock</b><p class="text-xs text-gray-500">Super Admin can EXPIRE / LOCK a school.</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><b>🖨️ Loan Forms</b><p class="text-xs text-gray-500">Print loan form per learner.</p></div>
+  <div class="bg-white rounded-2xl p-3 shadow text-center"><b>📊 Reports</b><p class="text-xs text-gray-500">Stock / Issued / Lost / Requests for Principal.</p></div>
+</div>
+
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07<br>Makhanani LTSM • Built for South African Schools</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// ✅ YOUR REAL CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",
+  authDomain: "makhanani-ltsm.firebaseapp.com",
+  databaseURL: "https://makhanani-ltsm-default-rtdb.firebaseio.com",
+  projectId: "makhanani-ltsm",
+  storageBucket: "makhanani-ltsm.firebasestorage.app",
+  messagingSenderId: "247180363183",
+  appId: "1:247180363183:web:4e5a399d4e306192e01b5a",
+  measurementId: "G-PEST1XFCR8"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, async (user)=>{
+  if(!user) return;
+  try{
+    let snap = await getDoc(doc(db,'users',user.uid));
+    if(!snap.exists()) return;
+    let u = snap.data();
+    let session = { uid:user.uid, name:u.name||'', role:u.role||'', emis:String(u.emis||''), department:u.department||'' };
+    localStorage.setItem('session', JSON.stringify(session));
+    document.getElementById('welcomeMsg').innerHTML = `Welcome back, ${u.name||''} (${u.role||''}${u.department?' • Dept: '+u.department:''})`;
+    let link = document.getElementById('myDashboardLink');
+    let box = document.getElementById('myDashboardBox');
+    let r = String(u.role||'').toUpperCase();
+    if(r==='TEACHER') link.href='teacher-dashboard.html';
+    else if(r==='HOD') link.href='hod-dashboard.html';
+    else if(r==='LIBRARIAN') link.href='librarian-dashboard.html';
+    else if(r==='PRINCIPAL') link.href='principal-dashboard.html';
+    else if(r==='SUPER_ADMIN') link.href='super-admin.html';
+    else link.href='login.html';
+    box.classList.remove('hidden');
+  }catch(e){}
+});
+window.logoutHome = async ()=>{ localStorage.removeItem('session'); await signOut(auth); window.location.reload(); };
+</script>
+</body>
+</html>
