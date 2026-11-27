@@ -1,45 +1,297 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Teacher — Makhanani LTSM LIVE</title><script src="https://cdn.tailwindcss.com"></script><script src="subscription-guard.js"></script><script src="impersonate-banner.js"></script>
-<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
-<style>@media print{ body *{visibility:hidden!important;} #printArea,#printArea *{visibility:visible!important;} #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,sans-serif;color:#000;background:#fff;} #printArea table{width:100%;border-collapse:collapse;font-size:12px;} #printArea th,#printArea td{border:1px solid #000;padding:6px;text-align:left;} } #printArea{display:none;} @media print{ #printArea{display:block!important;} }</style></head>
-<body class="bg-gray-100 min-h-screen"><div id="printArea"></div>
-<div id="impBanner" style="display:none; background:#dc2626; color:white; text-align:center; padding:10px; font-weight:900; font-size:13px; position:sticky; top:0; z-index:9999;">👀 SUPER ADMIN VIEWING AS <span id="impName"></span> — <button onclick="returnToSuperAdmin()" style="background:white; color:#dc2626; padding:4px 12px; border-radius:999px; font-weight:900; margin-left:8px;">🔙 RETURN TO SUPER ADMIN</button></div>
-<div class="bg-black text-white py-2 px-4 flex items-center gap-3 sticky top-0 z-50"><img src="logo.png" class="h-10 w-10 rounded-full bg-white border-2 border-yellow-400 p-1"><div><div class="font-black">XINTIMANI <span class="text-yellow-500">GROUP</span> • TEACHER • <span class="text-green-400">LIVE</span></div><div class="text-[11px] text-gray-300" id="topStatus">Loading...</div></div><div class="ml-auto flex gap-2"><a href="index.html" class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">🏠 Home</a><button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded font-bold text-xs">Logout</button></div></div>
-<div class="max-w-6xl mx-auto p-4">
-<div class="bg-white rounded-2xl p-4 border-4 border-green-500"><h1 class="font-black text-2xl">👨‍🏫 Teacher Dashboard — LIVE</h1><p class="text-xs text-gray-500" id="schoolLine"></p><div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-center"><p class="col-span-4 text-sm text-gray-500">Loading LIVE stats...</p></div><p class="text-[11px] text-green-600 font-bold mt-2">● LIVE — Updates when Librarian issues / returns books</p></div>
-<div class="grid md:grid-cols-3 gap-2 mt-4"><a href="issue.html" class="bg-orange-500 text-white p-4 rounded-2xl font-black text-center">📥 Issue / Return Books →</a><a href="librarian.html" class="bg-purple-600 text-white p-4 rounded-2xl font-black text-center">📚 View Books →</a><button onclick="printReport()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black">🖨️ Print My Classes Report</button></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 My Classes & Subjects — LIVE</h2><div id="classBox" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📥 My Classes — Issued / Outstanding — LIVE</h2><div id="issueBox" class="mt-2 text-sm">Loading...</div></div>
-<div class="bg-white rounded-2xl p-4 mt-4"><h2 class="font-black">📚 Books For My Subjects</h2><div id="bookBox" class="mt-2 text-sm">Loading...</div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — Makhanani LTSM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>*{box-sizing:border-box}html,body{overflow-x:hidden}</style>
+</head>
+<body class="bg-[#FFFDE7] pb-10">
+<div class="max-w-6xl mx-auto p-3">
+
+<!-- HEADER -->
+<div class="bg-black text-white rounded-3xl p-4">
+  <div class="flex gap-3 items-start">
+    <img src="logo.png" class="w-[60px] h-[60px] object-contain bg-white rounded-full p-1 shrink-0">
+    <div class="min-w-0">
+      <p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI GROUP HOLDINGS (PTY) LTD • 2026/934898/07</p>
+      <h1 class="font-black text-[28px] leading-[1]">Teacher Dashboard</h1>
+      <p id="teacherInfo" class="text-sm text-gray-300">Loading...</p>
+    </div>
+  </div>
+  <div class="grid grid-cols-3 gap-2 mt-3">
+    <button onclick="showTab('request')" class="bg-yellow-400 text-black py-2 rounded-full font-black text-sm">📝 REQUEST</button>
+    <button onclick="showTab('issue')" class="bg-blue-600 text-white py-2 rounded-full font-black text-sm">📤 ISSUE</button>
+    <button onclick="showTab('retrieve')" class="bg-green-600 text-white py-2 rounded-full font-black text-sm">🔁 RETRIEVE</button>
+  </div>
+  <div class="grid grid-cols-2 gap-2 mt-2">
+    <a href="index.html" class="bg-white text-black py-2 rounded-full font-black text-sm text-center">← HOME</a>
+    <button onclick="logout()" class="bg-red-600 text-white py-2 rounded-full font-black text-sm">🚪 LOGOUT</button>
+  </div>
 </div>
-<script>(function(){ try{ let s=JSON.parse(localStorage.getItem('makhanani_session')||'null'); if(s && s.isImpersonating){ document.getElementById('impBanner').style.display='block'; document.getElementById('impName').textContent=s.name+' ('+s.role+') • '+s.school; } }catch(e){} window.returnToSuperAdmin=function(){ let sup=localStorage.getItem('makhanani_superadmin_session'); if(sup){ localStorage.setItem('makhanani_session',sup); localStorage.removeItem('makhanani_superadmin_session'); localStorage.removeItem('makhanani_impersonating'); location.href='superadmin-dashboard.html'; } else { localStorage.removeItem('makhanani_session'); location.href='superadmin-login.html'; } }; })();</script>
+
+<!-- LOCK / SUBSCRIPTION BANNER -->
+<div id="lockBanner" class="hidden bg-red-600 text-white rounded-2xl p-3 mt-3 font-bold text-center"></div>
+
+<!-- ===== TAB: REQUEST ===== -->
+<div id="tab-request">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">📝 Request Books — Your Department Only</h3>
+    <p class="text-xs text-gray-500">🔒 You see ONLY books from your Department. HOD approves ONLY own Department.</p>
+    <p id="reqMsg" class="text-sm font-bold text-center min-h-[20px] mt-1"></p>
+
+    <div class="grid md:grid-cols-4 gap-2 mt-2">
+      <div>
+        <label class="text-xs font-bold">DEPARTMENT 🔒</label>
+        <select id="reqDept" class="border-2 rounded-lg px-3 py-2 w-full font-bold bg-gray-100" onchange="renderRequestBooks()"></select>
+      </div>
+      <div>
+        <label class="text-xs font-bold">SUBJECT</label>
+        <select id="reqSubject" class="border-2 rounded-lg px-3 py-2 w-full font-bold" onchange="renderRequestBooks()"><option value="ALL">ALL MY SUBJECTS</option></select>
+      </div>
+      <div>
+        <label class="text-xs font-bold">BOOK / TITLE</label>
+        <select id="reqBook" class="border-2 rounded-lg px-3 py-2 w-full"></select>
+      </div>
+      <div>
+        <label class="text-xs font-bold">QTY</label>
+        <input id="reqQty" type="number" placeholder="Qty e.g. 30" class="border-2 rounded-lg px-3 py-2 w-full">
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-2 mt-2">
+      <input id="reqClass" placeholder="Class e.g. 10A" class="border-2 rounded-lg px-3 py-2 uppercase">
+      <button onclick="submitRequest()" data-lockable class="bg-black text-white py-2 rounded-full font-black">📝 SUBMIT REQUEST</button>
+    </div>
+
+    <h4 class="font-black mt-4">📋 My Requests</h4>
+    <div id="myRequests" class="grid gap-2 mt-2"></div>
+  </div>
+
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">📦 Approved Packages — Ready To Issue</h3>
+    <p class="text-xs text-gray-500">Librarian packed these for you. Go to ISSUE tab to scan and give to learners.</p>
+    <div id="myPackages" class="grid gap-2 mt-2"></div>
+  </div>
+</div>
+
+<!-- ===== TAB: ISSUE ===== -->
+<div id="tab-issue" class="hidden">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">📤 Issue To Learner — 1 Learner = 1 Title</h3>
+    <p id="issueMsg" class="text-sm font-bold text-center min-h-[20px]"></p>
+    <div class="grid md:grid-cols-3 gap-2 mt-2">
+      <input id="issueBarcode" placeholder="Scan / Type PACKED Barcode" class="border-2 rounded-lg px-3 py-2 uppercase">
+      <select id="issueLearner" class="border-2 rounded-lg px-3 py-2"><option value="">Select Learner (Same Class)</option></select>
+      <button onclick="issueBook()" data-lockable class="bg-blue-600 text-white py-2 rounded-full font-black">📤 ISSUE</button>
+    </div>
+    <p class="text-xs text-gray-500 mt-2">Learner list shows ONLY learners in YOUR class. You cannot issue to another class.</p>
+    <h4 class="font-black mt-4">📚 Currently Issued (My Class)</h4>
+    <div id="issuedList" class="grid gap-2 mt-2"></div>
+  </div>
+</div>
+
+<!-- ===== TAB: RETRIEVE ===== -->
+<div id="tab-retrieve" class="hidden">
+  <div class="bg-white rounded-3xl p-4 mt-3 shadow">
+    <h3 class="font-black text-xl">🔁 Retrieve Book — Any Teacher Can Retrieve Any Book</h3>
+    <p id="retMsg" class="text-sm font-bold text-center min-h-[20px]"></p>
+    <div class="grid md:grid-cols-2 gap-2 mt-2">
+      <input id="retBarcode" placeholder="Scan / Type Book Barcode" class="border-2 rounded-lg px-3 py-2 uppercase">
+      <button onclick="retrieveBook()" data-lockable class="bg-green-600 text-white py-2 rounded-full font-black">🔁 RETRIEVE</button>
+    </div>
+    <div id="retrieveList" class="grid gap-2 mt-3"></div>
+  </div>
+</div>
+
+<div class="text-center text-xs text-gray-400 mt-4">Xintimani Group Holdings (Pty) Ltd • 2026/934898/07</div>
+</div>
+
 <script type="module">
-import { initializeApp } from 'firebase/app'; import { getAuth, signOut } from 'firebase/auth'; import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
-const firebaseConfig={apiKey:"AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA",authDomain:"makhanani-ltsm.firebaseapp.com",databaseURL:"https://makhanani-ltsm-default-rtdb.firebaseio.com",projectId:"makhanani-ltsm",storageBucket:"makhanani-ltsm.firebasestorage.app",messagingSenderId:"247180363183",appId:"1:247180363183:web:4e5a399d4e306192e01b5a",measurementId:"G-PEST1XFCR8"};
-const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
-let sess=null; try{ sess=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
-if(!sess){ location.href='login.html'; }
-document.getElementById('topStatus').textContent=sess.name+' • '+sess.school+' • EMIS '+sess.emis+' • Subjects: '+(sess.subjects||[]).join(', ')+' • Classes: '+(sess.classes||[]).join(', ')+' • LIVE';
-document.getElementById('schoolLine').textContent=sess.school+' • EMIS '+sess.emis+' • '+sess.prefix;
-let books=[], learners=[], issues=[];
-function render(){
-  let myClasses=(sess.classes||[]).map(c=>String(c).toUpperCase());
-  let mySubjects=(sess.subjects||[]).map(s=>String(s).toLowerCase());
-  let myLearners = myClasses.length ? learners.filter(l=>myClasses.includes(String(l.class||'').toUpperCase())) : learners;
-  // My subjects books
-  let myBooks = mySubjects.includes('general') || mySubjects.length===0 ? books : books.filter(b=>mySubjects.some(s=>(b.subject||'').toLowerCase().includes(s)));
-  // Issues for my classes
-  let myIssues = myClasses.length ? issues.filter(i=>myClasses.includes(String(i.learnerClass||'').toUpperCase())) : issues;
-  let issued=myIssues.filter(i=>i.action==='Issued').length; let returned=myIssues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let pct=issued===0?null:(returned/issued*100);
-  let totalIssued=issues.filter(i=>i.action==='Issued').length; let totalReturned=issues.filter(i=>i.action==='Returned'||i.action==='Retrieved').length; let totalPct=totalIssued===0?null:(totalReturned/totalIssued*100);
-  document.getElementById('stats').innerHTML='<div class="bg-blue-50 rounded p-2"><div class="font-black text-xl">'+myBooks.length+'</div><div class="text-xs">My Subject Titles</div></div><div class="bg-green-50 rounded p-2"><div class="font-black text-xl">'+myLearners.length+'</div><div class="text-xs">My Learners</div></div><div class="bg-yellow-50 rounded p-2"><div class="font-black text-xl">'+issued+'</div><div class="text-xs">My Classes Issued</div></div><div class="bg-purple-50 rounded p-2"><div class="font-black text-xl">'+(pct===null?'—':pct.toFixed(1)+'%')+'</div><div class="text-xs">My Retrieval</div></div>';
-  document.getElementById('classBox').innerHTML='<b>Subjects:</b> '+(sess.subjects||[]).join(', ')+'<br><b>Classes:</b> '+((sess.classes||[]).join(', ')||'All Classes')+'<br><b>Learners in my classes (Firebase):</b> '+myLearners.length+'<br><b>School Retrieval:</b> '+(totalPct===null?'—':totalPct.toFixed(1)+'%')+' ('+totalReturned+'/'+totalIssued+') • Due: 30 November';
-  document.getElementById('issueBox').innerHTML=myIssues.slice(0,30).map(i=>'<div class="border rounded p-2 mb-1"><b>'+i.learnerName+'</b> ('+i.learnerClass+') • '+i.bookTitle+' • <b>'+i.action+'</b> • '+(i.date||'')+'</div>').join('')||'<p class="text-gray-500">No issues for your classes yet. Go to Issue page.</p>';
-  document.getElementById('bookBox').innerHTML=myBooks.map(b=>'<div class="border rounded p-2 mb-1"><b>'+b.title+'</b> • '+b.subject+' • Grade '+b.grade+' • Copies: '+(b.totalCopies||0)+'</div>').join('')||'<p class="text-gray-500">No books for your subjects yet.</p>';
-  window._lastStats={myLearners:myLearners.length, issued, returned, pct, totalIssued, totalReturned, totalPct};
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = { apiKey:"AIzaSyD6C2P4PQTENfJp8vZHHbR1yF7w8QyY3k", authDomain:"makhanani-ltsm.firebaseapp.com", projectId:"makhanani-ltsm", storageBucket:"makhanani-ltsm.appspot.com", messagingSenderId:"123456789", appId:"1:123456789:web:abcdef" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let session = JSON.parse(localStorage.getItem('session')||'{}');
+let emis = session.emis || '';
+let books = [], learners = [], requests = [], packages = [], records = [], departments = [];
+let teacherDept='', teacherSubject='', teacherClass='', teacherGrade='';
+let isLocked = false, lockReason = '';
+
+// ===== TABS =====
+window.showTab = (name)=>{
+  document.querySelectorAll('[id^="tab-"]').forEach(d=>d.classList.add('hidden'));
+  document.getElementById('tab-'+name)?.classList.remove('hidden');
+};
+
+// ===== AUTH + LOAD PROFILE =====
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){ window.location.href='login.html'; return; }
+  session.uid = user.uid;
+  // Get fresh profile - this has department / subject / class
+  try{
+    let snap = await getDoc(doc(db,'users',user.uid));
+    if(snap.exists()) session = { ...session, ...snap.data(), uid: user.uid };
+    localStorage.setItem('session', JSON.stringify(session));
+  }catch(e){}
+  emis = session.emis || '';
+  teacherDept = String(session.department||'').toUpperCase();
+  teacherSubject = String(session.subject||'').toUpperCase();
+  teacherClass = String(session.className||session.class||'').toUpperCase();
+  teacherGrade = String(session.grade||teacherClass.replace(/[^0-9]/g,'')) || '';
+
+  document.getElementById('teacherInfo').innerHTML = `👤 <b>${session.name||''}</b> • ${session.role||'TEACHER'} • Dept: <b>${teacherDept||'<span class="text-red-400">NOT SET — Ask Librarian</span>'}</b> • Subject: <b>${teacherSubject||'-'}</b> • Class: <b>${teacherClass||'-'}</b> • EMIS: ${emis}`;
+  let rc = document.getElementById('reqClass'); if(rc && teacherClass) rc.value = teacherClass;
+
+  // Department dropdown - LOCKED for TEACHER / HOD
+  let deptSel = document.getElementById('reqDept');
+  if(session.role==='TEACHER' || session.role==='HOD'){
+    deptSel.innerHTML = `<option value="${teacherDept}">${teacherDept||'NO DEPARTMENT SET'}</option>`;
+    deptSel.disabled = true;
+    deptSel.classList.add('bg-gray-100');
+  } else {
+    deptSel.innerHTML = '<option value="ALL">ALL DEPARTMENTS</option>';
+    deptSel.disabled = false;
+  }
+  startListeners();
+});
+
+function startListeners(){
+  // BOOKS - filter in render, not in query, so we can show dept filter
+  onSnapshot(collection(db,'books'), s=>{ books = s.docs.map(d=>({id:d.id,...d.data()})); renderRequestBooks(); });
+  onSnapshot(collection(db,'learners'), s=>{ learners = s.docs.map(d=>({id:d.id,...d.data()})); renderLearners(); renderIssued(); });
+  onSnapshot(collection(db,'requests'), s=>{ requests = s.docs.map(d=>({id:d.id,...d.data()})); renderMyRequests(); });
+  onSnapshot(collection(db,'packages'), s=>{ packages = s.docs.map(d=>({id:d.id,...d.data()})); renderMyPackages(); });
+  onSnapshot(collection(db,'records'), s=>{ records = s.docs.map(d=>({id:d.id,...d.data()})); renderIssued(); renderRetrieveList(); });
+  onSnapshot(collection(db,'departments'), s=>{ departments = s.docs.map(d=>({id:d.id,...d.data()})); });
+  // Subscription lock
+  onSnapshot(collection(db,'subscriptions'), s=>{
+    let sub = s.docs.map(d=>d.data()).find(x=>String(x.emis)===String(emis));
+    let banner = document.getElementById('lockBanner');
+    if(sub && sub.status==='EXPIRED'){ isLocked=true; lockReason='Subscription EXPIRED'; banner.classList.remove('hidden'); banner.innerHTML='🔒 LOCKED: Subscription EXPIRED — Contact Super Admin'; }
+    else { isLocked=false; banner.classList.add('hidden'); }
+  });
 }
-window.printReport=function(){ let d=window._lastStats||{myLearners:0,issued:0,returned:0,pct:null}; document.getElementById('printArea').innerHTML='<h1>XINTIMANI GROUP • TEACHER REPORT • LIVE FIREBASE</h1><p>Teacher: '+sess.name+' • School: '+sess.school+' • EMIS '+sess.emis+' • Subjects: '+(sess.subjects||[]).join(', ')+' • Classes: '+(sess.classes||[]).join(', ')+' • Date: '+new Date().toLocaleString()+'</p><table><tr><th>My Learners</th><th>Issued (My Classes)</th><th>Returned</th><th>Retrieval %</th></tr><tr><td>'+d.myLearners+'</td><td>'+d.issued+'</td><td>'+d.returned+'</td><td>'+(d.pct===null?'—':d.pct.toFixed(1)+'%')+'</td></tr></table><p>All books due 30 November</p>'; setTimeout(()=>window.print(),100); };
-document.getElementById('logoutBtn').addEventListener('click', async()=>{ if(sess && sess.isImpersonating){ window.returnToSuperAdmin(); return; } await signOut(auth); localStorage.removeItem('makhanani_session'); location.href='login.html'; });
-onSnapshot(query(collection(db,'books'), where('emis','==',String(sess.emis))), (snap)=>{ books=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(query(collection(db,'learners'), where('emis','==',String(sess.emis))), (snap)=>{ learners=snap.docs.map(d=>({id:d.id, ...d.data()})); render(); });
-onSnapshot(query(collection(db,'issues'), where('emis','==',String(sess.emis))), (snap)=>{ let list=snap.docs.map(d=>({id:d.id, ...d.data()})); list.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')); issues=list; render(); });
-</script></body></html>
+
+// ===== FILTERED REQUEST BOOKS — CORE FIX =====
+window.renderRequestBooks = ()=>{
+  let deptF = document.getElementById('reqDept')?.value || teacherDept;
+  let subjF = document.getElementById('reqSubject')?.value || 'ALL';
+  let bookSel = document.getElementById('reqBook');
+  if(!bookSel) return;
+
+  // 1. Same EMIS
+  let list = books.filter(b=>String(b.emis)===String(emis));
+  // 2. Same Department (TEACHER/HOD) - if deptF is ALL, show all (for Principal)
+  if(deptF && deptF!=='ALL') list = list.filter(b=>(b.department||'').toUpperCase()===deptF.toUpperCase());
+  // 3. Subject filter - if teacher picks subject, filter
+  // Build subject list from dept-filtered books BEFORE subject filter
+  let subjects = [...new Set(list.map(b=>b.subject||'').filter(Boolean))];
+  let subjSel = document.getElementById('reqSubject');
+  if(subjSel){
+    let cur = subjSel.value;
+    subjSel.innerHTML = '<option value="ALL">ALL MY SUBJECTS</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+    if(subjects.includes(cur)) subjSel.value = cur;
+  }
+  if(subjF && subjF!=='ALL') list = list.filter(b=>(b.subject||'').toUpperCase()===subjF.toUpperCase());
+
+  if(list.length===0){
+    bookSel.innerHTML = '<option value="">No books for your Department — Ask Librarian</option>';
+    return;
+  }
+  bookSel.innerHTML = list.map(b=>`<option value="${b.id}">${b.title} — ${b.subject||''} • Gr ${b.grade||''} • Avail: ${b.available??b.qty??0} / Total: ${b.total||''}</option>`).join('');
+};
+
+window.submitRequest = async ()=>{
+  let msg = document.getElementById('reqMsg');
+  if(isLocked){ msg.innerHTML='🔒 LOCKED: '+lockReason; return; }
+  let bookId = document.getElementById('reqBook').value;
+  let qty = Number(document.getElementById('reqQty').value||0);
+  let cls = String(document.getElementById('reqClass').value||'').toUpperCase();
+  if(!bookId){ msg.innerHTML='❌ No book selected — No stock for your Department'; return; }
+  if(!qty||qty<=0){ msg.innerHTML='❌ Enter Qty'; return; }
+  if(!cls){ msg.innerHTML='❌ Enter Class e.g. 10A'; return; }
+  let book = books.find(b=>b.id===bookId);
+  // 🔒 Security: Cannot request other dept book even if hacked
+  if((session.role==='TEACHER'||session.role==='HOD') && book.department && book.department.toUpperCase()!==teacherDept){
+    alert('❌ You can only request books from your own Department: '+teacherDept); return;
+  }
+  try{
+    await addDoc(collection(db,'requests'), { emis:String(emis), bookId:book.id, bookTitle:book.title, department:book.department||teacherDept, subject:book.subject||'', grade:book.grade||'', teacher:session.name, teacherId:session.uid||'', className:cls, qty, approvedQty:0, status:'PENDING', createdAt:new Date().toISOString() });
+    msg.innerHTML='✅ Request sent: '+book.title+' x'+qty+' for '+cls+' — Waiting for HOD ('+ (book.department||teacherDept) +')';
+    document.getElementById('reqQty').value='';
+  }catch(e){ msg.innerHTML='❌ '+e.message; }
+};
+
+function renderMyRequests(){
+  let el = document.getElementById('myRequests'); if(!el) return;
+  let list = requests.filter(r=>String(r.emis)===String(emis) && (r.teacherId===session.uid || r.teacher===session.name));
+  if(list.length===0){ el.innerHTML='<p class="text-sm text-gray-400">No requests yet.</p>'; return; }
+  el.innerHTML = list.map(r=>`<div class="border-2 rounded-xl p-2 flex justify-between"><div><b>${r.bookTitle}</b> <span class="text-xs text-gray-500">• ${r.department||''} / ${r.subject||''} • ${r.className}</span><br><span class="text-xs">Qty: ${r.qty} • Approved: ${r.approvedQty||0} • <b>${r.status}</b></span></div><span class="text-xs font-black ${r.status==='APPROVED'?'text-green-600':r.status==='PENDING'?'text-yellow-600':'text-gray-500'}">${r.status}</span></div>`).join('');
+}
+function renderMyPackages(){
+  let el = document.getElementById('myPackages'); if(!el) return;
+  let list = packages.filter(p=>String(p.emis)===String(emis) && (p.teacherId===session.uid || p.teacher===session.name));
+  if(list.length===0){ el.innerHTML='<p class="text-sm text-gray-400">No packages yet. Wait for HOD + Librarian.</p>'; return; }
+  el.innerHTML = list.map(p=>`<div class="border-2 rounded-xl p-2"><b>${p.bookTitle||p.title||''}</b> • ${p.department||''} / ${p.subject||''} • Qty Packed: ${p.qty||p.packedQty||''} • Barcode: <b>${p.barcode||''}</b> • Status: <b>${p.status||''}</b></div>`).join('');
+}
+function renderLearners(){
+  let sel = document.getElementById('issueLearner'); if(!sel) return;
+  // ONLY learners in MY class
+  let list = learners.filter(l=>String(l.emis)===String(emis) && (!teacherClass || String(l.className||l.class||'').toUpperCase()===teacherClass));
+  sel.innerHTML = '<option value="">Select Learner (Same Class)</option>' + list.map(l=>`<option value="${l.id}">${l.name} • ${l.className||l.class||''} • ${l.learnerId||''}</option>`).join('');
+}
+window.issueBook = async ()=>{
+  let msg = document.getElementById('issueMsg');
+  if(isLocked){ msg.innerHTML='🔒 LOCKED'; return; }
+  let barcode = String(document.getElementById('issueBarcode').value||'').trim().toUpperCase();
+  let learnerId = document.getElementById('issueLearner').value;
+  if(!barcode||!learnerId){ msg.innerHTML='❌ Scan barcode + Select Learner'; return; }
+  let learner = learners.find(l=>l.id===learnerId);
+  let pkg = packages.find(p=>String(p.barcode||'').toUpperCase()===barcode);
+  if(!pkg){ msg.innerHTML='❌ Barcode not found in PACKED packages'; return; }
+  // 1 Learner = 1 Title check
+  let already = records.find(r=>r.learnerId===learnerId && r.bookTitle===pkg.bookTitle && r.status==='ISSUED');
+  if(already){ msg.innerHTML='❌ '+learner.name+' already has '+pkg.bookTitle; return; }
+  try{
+    await addDoc(collection(db,'records'), { emis:String(emis), bookId:pkg.bookId||'', bookTitle:pkg.bookTitle||'', barcode, learnerId, learnerName:learner.name, className:learner.className||teacherClass, department:pkg.department||teacherDept, subject:pkg.subject||'', teacher:session.name, status:'ISSUED', issuedAt:new Date().toISOString() });
+    msg.innerHTML='✅ Issued: '+(pkg.bookTitle||'')+' to '+learner.name;
+    document.getElementById('issueBarcode').value='';
+  }catch(e){ msg.innerHTML='❌ '+e.message; }
+};
+function renderIssued(){
+  let el = document.getElementById('issuedList'); if(!el) return;
+  let list = records.filter(r=>String(r.emis)===String(emis) && r.status==='ISSUED' && (!teacherClass || String(r.className||'').toUpperCase()===teacherClass));
+  if(list.length===0){ el.innerHTML='<p class="text-sm text-gray-400">No books issued in your class.</p>'; return; }
+  el.innerHTML = list.map(r=>`<div class="border rounded-xl p-2 flex justify-between"><div><b>${r.bookTitle}</b> • ${r.learnerName} • ${r.className} • ${r.barcode}</div><button onclick="printLoan('${r.id}')" class="bg-black text-white px-2 py-1 rounded-full text-xs font-black">🖨️ LOAN FORM</button></div>`).join('');
+}
+window.retrieveBook = async ()=>{
+  let msg = document.getElementById('retMsg');
+  let barcode = String(document.getElementById('retBarcode').value||'').trim().toUpperCase();
+  if(!barcode){ msg.innerHTML='❌ Scan barcode'; return; }
+  let rec = records.find(r=>String(r.barcode||'').toUpperCase()===barcode && r.status==='ISSUED');
+  if(!rec){ msg.innerHTML='❌ Not found as ISSUED'; return; }
+  try{
+    await updateDoc(doc(db,'records',rec.id), { status:'RETURNED', returnedAt:new Date().toISOString() });
+    msg.innerHTML='✅ Retrieved: '+rec.bookTitle+' from '+rec.learnerName;
+    document.getElementById('retBarcode').value='';
+  }catch(e){ msg.innerHTML='❌ '+e.message; }
+};
+function renderRetrieveList(){
+  let el = document.getElementById('retrieveList'); if(!el) return;
+  let list = records.filter(r=>String(r.emis)===String(emis) && r.status==='ISSUED');
+  el.innerHTML = list.map(r=>`<div class="border rounded-xl p-2 flex justify-between text-sm"><div><b>${r.bookTitle}</b> • ${r.learnerName} • ${r.className} • ${r.barcode}</div><button onclick="document.getElementById('retBarcode').value='${r.barcode}'; retrieveBook();" class="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-black">RETRIEVE</button></div>`).join('');
+}
+window.printLoan = (id)=>{
+  let r = records.find(x=>x.id===id); if(!r) return;
+  let w = window.open('','_blank'); w.document.write(`<h2>MAKHANANI LTSM — LOAN FORM</h2><p>Xintimani Group Holdings (Pty) Ltd • 2026/934898/07</p><p>Book: <b>${r.bookTitle}</b><br>Barcode: ${r.barcode}<br>Learner: ${r.learnerName}<br>Class: ${r.className}<br>Department: ${r.department||''} / Subject: ${r.subject||''}<br>Date: ${r.issuedAt||''}</p><br><p>Learner Signature: _______________ &nbsp; Teacher Signature: _______________</p><p><i>1 Learner. 1 Title. Return book in good condition.</i></p>`); w.document.close(); w.print();
+};
+window.logout = async ()=>{ localStorage.removeItem('session'); await signOut(auth); window.location.href='login.html'; };
+</script>
+</body>
+</html>
