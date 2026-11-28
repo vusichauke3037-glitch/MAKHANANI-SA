@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Structure — Makhanani LTSM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/auth":"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script>
+</head>
+<body class="bg-gray-100 pb-24"><div class="max-w-5xl mx-auto p-3">
+<div class="bg-black text-white rounded-2xl p-4 flex justify-between items-center"><div><p class="text-[10px] font-black tracking-widest text-yellow-400">XINTIMANI • MAKHANANI LTSM</p><h1 class="font-black text-xl">🏗️ Register Structure</h1><p id="who" class="text-xs text-gray-300">Super Admin</p></div><div class="flex gap-1"><a href="super-admin.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">← SUPER ADMIN</a><a href="index.html" class="bg-white text-black px-2 py-1 rounded-lg font-black text-xs">HOME</a></div></div>
+
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-3 mt-3 text-sm"><b>📌 RULE — Read first:</b> Department name must be <b>EXACTLY</b> the same everywhere. If Teacher is <b>Humanities</b>, then Subject History must also be <b>Humanities</b> — NOT Social Sciences. If it mismatches, Teacher sees <b>Avail: 0 / Total: blank</b> like your screenshot.</div>
+
+<div class="bg-white rounded-2xl p-4 mt-3 shadow">
+<h2 class="font-black">1. Pick School</h2>
+<div class="grid md:grid-cols-3 gap-2 mt-2">
+<select id="regEmis" class="border-2 rounded-lg px-3 py-3 font-bold"><option value="700310854">Wordsworth — 700310854</option><option value="911360870">George Sonto — 911360870</option><option value="911360825">SHIRILELE — 911360825</option></select>
+<button onclick="window._seedOne()" class="bg-black text-white px-4 py-3 rounded-lg font-black text-sm">🌱 SEED THIS SCHOOL ONLY</button>
+<button onclick="window._seedAll()" class="bg-yellow-400 px-4 py-3 rounded-lg font-black text-sm">🌱 SEED ALL 3 SCHOOLS</button>
+</div>
+<p class="text-xs text-gray-500 mt-1">Seed = 6 Departments + 13 Subjects + 11 Classes for that school. It will NOT duplicate if already exists.</p>
+</div>
+
+<div class="grid md:grid-cols-3 gap-3 mt-3">
+<!-- DEPARTMENT -->
+<div class="bg-white rounded-2xl p-4 shadow"><h2 class="font-black text-lg">📁 Department</h2>
+<input id="dName" placeholder="e.g. Humanities" class="border-2 rounded-lg px-3 py-2 w-full mt-2 font-bold">
+<input id="dHod" placeholder="HOD Name (optional)" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<button onclick="window._addDept()" class="bg-yellow-400 w-full py-2 rounded-lg font-black mt-2">+ REGISTER DEPARTMENT</button>
+<div id="deptList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- SUBJECT -->
+<div class="bg-white rounded-2xl p-4 shadow"><h2 class="font-black text-lg">📖 Subject</h2>
+<input id="sName" placeholder="e.g. History" class="border-2 rounded-lg px-3 py-2 w-full mt-2 font-bold">
+<input id="sCode" placeholder="Code e.g. HIST" class="border-2 rounded-lg px-3 py-2 w-full mt-2 font-bold">
+<label class="text-xs font-black">DEPARTMENT — MUST MATCH TEACHER DEPT</label>
+<select id="sDept" class="border-2 rounded-lg px-3 py-2 w-full mt-1 font-bold"><option value="">— Pick Department —</option></select>
+<button onclick="window._addSubj()" class="bg-blue-600 text-white w-full py-2 rounded-lg font-black mt-2">+ REGISTER SUBJECT</button>
+<div id="subjList" class="space-y-2 mt-3 text-sm"></div></div>
+<!-- CLASS -->
+<div class="bg-white rounded-2xl p-4 shadow"><h2 class="font-black text-lg">🏫 Class</h2>
+<input id="cName" placeholder="e.g. 10A" class="border-2 rounded-lg px-3 py-2 w-full mt-2 font-bold">
+<input id="cGrade" placeholder="Grade e.g. 10" class="border-2 rounded-lg px-3 py-2 w-full mt-2 font-bold">
+<input id="cTeacher" placeholder="Teacher Name (optional)" class="border-2 rounded-lg px-3 py-2 w-full mt-2">
+<button onclick="window._addClass()" class="bg-green-600 text-white w-full py-2 rounded-lg font-black mt-2">+ REGISTER CLASS</button>
+<div id="classList" class="space-y-2 mt-3 text-sm"></div></div>
+</div>
+
+<div class="bg-white rounded-2xl p-4 mt-3 shadow"><h2 class="font-black">🔍 Check — For Selected School</h2><p id="checkBox" class="text-sm mt-2"></p><button onclick="window._fixHistory()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-black text-sm mt-2">🔧 FIX HISTORY: Move History + Geography from Social Sciences → Humanities</button><p class="text-xs text-gray-500 mt-1">Click this if your school uses HUMANITIES (like your screenshot). It fixes the Avail: 0 problem.</p></div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
+const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+let session=null; try{ session=JSON.parse(localStorage.getItem('makhanani_session')||'null'); }catch(e){}
+document.getElementById('who').textContent=(session?.name||'Guest')+' • SUPER_ADMIN • All EMIS';
+let departments=[], subjects=[], classesList=[];
+let emis=()=>document.getElementById('regEmis').value;
+document.getElementById('regEmis').addEventListener('change', render);
+function S(v,fb=''){ return (v===undefined||v===null)? String(fb):String(v); }
+function schoolNameFor(e){ if(String(e)==='911360870') return 'George Sonto'; if(String(e)==='911360825') return 'SHIRILELE'; if(String(e)==='700310854') return 'Wordsworth'; return 'EMIS '+e; }
+function render(){
+  let e=emis();
+  let d=departments.filter(x=>String(x.emis)===String(e));
+  let s=subjects.filter(x=>String(x.emis)===String(e));
+  let c=classesList.filter(x=>String(x.emis)===String(e));
+  document.getElementById('deptList').innerHTML=d.length? d.map(x=>`<div class="border rounded p-2 flex justify-between"><span><b>${S(x.name)}</b><br><span class="text-xs">HOD ${S(x.hod||'—')}</span></span><button onclick="window._del('departments','${x.id}')" class="text-red-600 font-bold">🗑️</button></div>`).join('') : '<p class="text-gray-500">No departments for this school.</p>';
+  document.getElementById('subjList').innerHTML=s.length? s.map(x=>`<div class="border rounded p-2 flex justify-between"><span><b>${S(x.name)}</b> (${S(x.code)})<br><span class="text-xs">Dept: ${S(x.department)}</span></span><button onclick="window._del('subjects','${x.id}')" class="text-red-600 font-bold">🗑️</button></div>`).join('') : '<p class="text-gray-500">No subjects.</p>';
+  document.getElementById('classList').innerHTML=c.length? c.map(x=>`<div class="border rounded p-2 flex justify-between"><span><b>${S(x.name)}</b> • Gr ${S(x.grade)}<br><span class="text-xs">${S(x.teacher||'')}</span></span><button onclick="window._del('classes','${x.id}')" class="text-red-600 font-bold">🗑️</button></div>`).join('') : '<p class="text-gray-500">No classes.</p>';
+  let sel=document.getElementById('sDept'); let cur=sel.value; sel.innerHTML='<option value="">— Pick Department —</option>'+d.map(x=>`<option value="${S(x.name)}">${S(x.name)}</option>`).join(''); if(cur) sel.value=cur;
+  document.getElementById('checkBox').innerHTML=`<b>${schoolNameFor(e)} — EMIS ${e}</b><br>Departments: <b>${d.length}</b> — ${d.map(x=>S(x.name)).join(', ')||'NONE'}<br>Subjects: <b>${s.length}</b><br>Classes: <b>${c.length}</b> — ${c.map(x=>S(x.name)).join(', ')||'NONE'}<br>${s.find(x=>S(x.name)==='History'&&S(x.department)!=='Humanities')? '<span class="text-red-600 font-bold">⚠️ History is under '+S(s.find(x=>S(x.name)==='History').department)+' — NOT Humanities. Click FIX below.</span>' : ''}`;
+}
+window._del=async(col,id)=>{ if(!confirm('Delete this?')) return; await deleteDoc(doc(db,col,id)); };
+window._addDept=async()=>{ let n=S(document.getElementById('dName').value).trim(); if(!n) return alert('Type Department Name'); if(departments.find(x=>String(x.emis)===String(emis())&&S(x.name).toLowerCase()===n.toLowerCase())) return alert('Already exists for this school'); await addDoc(collection(db,'departments'), {emis:String(emis()), name:n, hod:S(document.getElementById('dHod').value).trim(), createdAt:new Date().toISOString()}); document.getElementById('dName').value=''; alert('✅ Department Registered: '+n); };
+window._addSubj=async()=>{ let n=S(document.getElementById('sName').value).trim(); let dept=S(document.getElementById('sDept').value); if(!n||!dept) return alert('Type Subject Name + Pick Department'); await addDoc(collection(db,'subjects'), {emis:String(emis()), name:n, code:S(document.getElementById('sCode').value).trim().toUpperCase(), department:dept, createdAt:new Date().toISOString()}); document.getElementById('sName').value=''; document.getElementById('sCode').value=''; alert('✅ Subject Registered: '+n+' → '+dept); };
+window._addClass=async()=>{ let n=S(document.getElementById('cName').value).trim(); if(!n) return alert('Type Class Name e.g. 10A'); await addDoc(collection(db,'classes'), {emis:String(emis()), name:n, grade:S(document.getElementById('cGrade').value).trim()||n.replace(/[^0-9]/g,''), teacher:S(document.getElementById('cTeacher').value).trim(), createdAt:new Date().toISOString()}); document.getElementById('cName').value=''; alert('✅ Class Registered: '+n); };
+window._seedOne=async()=>{ await seed([emis()]); alert('✅ Seeded '+schoolNameFor(emis())); };
+window._seedAll=async()=>{ await seed(['700310854','911360870','911360825']); alert('✅ Seeded ALL 3 schools'); };
+async function seed(list){
+  let depts=['Languages','Mathematics','Natural Sciences','Humanities','Commerce','Life Orientation'];
+  // NOTE: Humanities NOT Social Sciences — matches your screenshot
+  let subs=[{name:'English',code:'ENG',dept:'Languages'},{name:'Afrikaans',code:'AFR',dept:'Languages'},{name:'Mathematics',code:'MATH',dept:'Mathematics'},{name:'Mathematical Literacy',code:'MLIT',dept:'Mathematics'},{name:'Natural Sciences',code:'NS',dept:'Natural Sciences'},{name:'Life Sciences',code:'LS',dept:'Natural Sciences'},{name:'Physical Sciences',code:'PS',dept:'Natural Sciences'},{name:'Geography',code:'GEO',dept:'Humanities'},{name:'History',code:'HIST',dept:'Humanities'},{name:'Accounting',code:'ACC',dept:'Commerce'},{name:'Business Studies',code:'BS',dept:'Commerce'},{name:'Economics',code:'ECO',dept:'Commerce'},{name:'Life Orientation',code:'LO',dept:'Life Orientation'}];
+  let classes=['8A','8B','9A','9B','10A','10B','10C','11A','11B','12A','12B'];
+  for(let e of list){
+    for(let d of depts){ if(!departments.find(x=>String(x.emis)===String(e)&&S(x.name)===d)) await addDoc(collection(db,'departments'), {emis:String(e), name:d, hod:'', createdAt:new Date().toISOString()}); }
+    for(let s of subs){ if(!subjects.find(x=>String(x.emis)===String(e)&&S(x.name)===s.name)) await addDoc(collection(db,'subjects'), {emis:String(e), name:s.name, code:s.code, department:s.dept, createdAt:new Date().toISOString()}); }
+    for(let c of classes){ if(!classesList.find(x=>String(x.emis)===String(e)&&S(x.name)===c)) await addDoc(collection(db,'classes'), {emis:String(e), name:c, grade:String(c.replace(/[^0-9]/g,'')), teacher:'', createdAt:new Date().toISOString()}); }
+  }
+}
+window._fixHistory=async()=>{
+  let e=emis();
+  let toFix=subjects.filter(x=>String(x.emis)===String(e)&&(S(x.name)==='History'||S(x.name)==='Geography'));
+  if(!toFix.length) return alert('No History / Geography found for this school. Click SEED first.');
+  // Delete old ones under Social Sciences and re-add under Humanities
+  for(let s of toFix){ await deleteDoc(doc(db,'subjects',s.id)); }
+  await addDoc(collection(db,'subjects'), {emis:String(e), name:'History', code:'HIST', department:'Humanities', createdAt:new Date().toISOString()});
+  await addDoc(collection(db,'subjects'), {emis:String(e), name:'Geography', code:'GEO', department:'Humanities', createdAt:new Date().toISOString()});
+  // Ensure Humanities dept exists
+  if(!departments.find(x=>String(x.emis)===String(e)&&S(x.name)==='Humanities')) await addDoc(collection(db,'departments'), {emis:String(e), name:'Humanities', hod:'', createdAt:new Date().toISOString()});
+  alert('✅ FIXED: History + Geography now under Humanities for '+schoolNameFor(e)+'. Teacher must Logout + Login again.');
+};
+onSnapshot(collection(db,'departments'), (s)=>{ departments=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
+onSnapshot(collection(db,'subjects'), (s)=>{ subjects=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
+onSnapshot(collection(db,'classes'), (s)=>{ classesList=s.docs.map(d=>({id:d.id,...d.data()})); render(); });
+render();
+</script></body></html>
