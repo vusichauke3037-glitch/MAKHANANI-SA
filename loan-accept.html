@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan Form Acceptance — Makhanani LTSM</title><script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"}}</script></head>
+<body class="bg-gray-100 p-3"><div class="max-w-2xl mx-auto bg-white rounded-2xl p-5 shadow">
+<div class="text-center"><p class="text-xs font-black tracking-widest text-yellow-600">XINTIMANI GROUP • MAKHANANI LTSM</p>
+<h1 class="font-black text-2xl">📄 Book Loan Form — Parent Acceptance</h1><p class="text-sm text-gray-500">Please read, tick, sign and submit. No printing needed.</p></div>
+<div id="loading" class="text-center py-8 font-bold">Loading loan form...</div>
+<div id="formArea" class="hidden">
+<div class="border-2 rounded-xl p-4 mt-3 text-sm bg-yellow-50" id="details"></div>
+<label class="flex gap-2 items-start mt-4 border rounded-xl p-3"><input type="checkbox" id="agree1" class="mt-1">
+<span>I confirm my child received this book in good condition and I understand we must return it in good condition, or pay for loss / damage.</span></label>
+<label class="flex gap-2 items-start mt-2 border rounded-xl p-3"><input type="checkbox" id="agree2" class="mt-1">
+<span>I agree to the return date shown above and to help my child look after this book.</span></label>
+<div class="grid md:grid-cols-2 gap-2 mt-3">
+<input id="parentName" placeholder="Parent / Guardian Full Name *" class="border-2 rounded-lg px-3 py-2">
+<input id="parentPhone" placeholder="Parent Phone (optional)" class="border-2 rounded-lg px-3 py-2">
+<input id="parentSig" placeholder="Type your full name as Signature *" class="border-2 rounded-lg px-3 py-2 md:col-span-2"></div>
+<p class="text-xs text-gray-500 mt-1">Typing your name here counts as your electronic signature.</p>
+<button id="acceptBtn" class="bg-green-600 text-white w-full py-3 rounded-xl font-black mt-3">✅ ACCEPT & SIGN LOAN FORM</button>
+<p id="msg" class="font-bold text-center mt-2"></p>
+<div id="doneArea" class="hidden text-center mt-4"><p class="text-4xl">✅</p><p class="font-black text-xl text-green-700">Thank you! Loan Form Accepted.</p><p class="text-sm text-gray-500" id="doneText"></p></div>
+</div><p class="text-center text-xs text-gray-400 mt-4">Xintimani Group • Makhanani LTSM — Joy. Cherished. Mercy.</p></div>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+const firebaseConfig = { apiKey: "AIzaSyDPcF5zaCD6Mp9TfpiMPoc3xG0qSPwO7oA", authDomain: "makhanani-ltsm.firebaseapp.com", projectId: "makhanani-ltsm", storageBucket: "makhanani-ltsm.firebasestorage.app", messagingSenderId: "247180363183", appId: "1:247180363183:web:4e5a399d4e306192e01b5a" };
+const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+const msg = document.getElementById('msg');
+if(!id){ document.getElementById('loading').textContent='❌ Invalid link — ask school to resend.'; }
+else {
+  const ref = doc(db,'loanForms',id);
+  const snap = await getDoc(ref);
+  if(!snap.exists()){ document.getElementById('loading').textContent='❌ Loan form not found — ask school to resend.'; }
+  else {
+    const d = snap.data();
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('formArea').classList.remove('hidden');
+    document.getElementById('details').innerHTML = `<b>School:</b> ${d.school||''} (EMIS ${d.emis||''})<br><b>Learner:</b> ${d.learnerName} (${d.learnerId}) • Class ${d.class} • Grade ${d.grade}<br><b>Book:</b> ${d.title} • Barcode <b>${d.barcode}</b><br><b>Date Issued:</b> ${d.dateIssued} • <b>Due Date:</b> ${d.dueDate}<br><b>Status:</b> <span id="statusTxt">${d.status||'PENDING'}</span>`;
+    if(d.status==='ACCEPTED'){ document.getElementById('formArea').innerHTML='<p class="text-center font-black text-green-700 text-xl py-6">✅ Already Accepted by '+d.parentName+' on '+d.acceptedAt+'</p>'; }
+    document.getElementById('acceptBtn').addEventListener('click', async()=>{
+      const name=document.getElementById('parentName').value.trim();
+      const sig=document.getElementById('parentSig').value.trim();
+      const phone=document.getElementById('parentPhone').value.trim();
+      if(!document.getElementById('agree1').checked || !document.getElementById('agree2').checked){ msg.textContent='⛔ Please tick BOTH boxes.'; msg.className='font-bold text-center mt-2 text-red-600'; return; }
+      if(!name || !sig){ msg.textContent='⛔ Enter Parent Name + Signature.'; msg.className='font-bold text-center mt-2 text-red-600'; return; }
+      if(sig.toLowerCase()!==name.toLowerCase()){ if(!confirm('Signature "'+sig+'" does not match Parent Name "'+name+'". Continue anyway?')) return; }
+      await updateDoc(ref,{status:'ACCEPTED', parentName:name, parentPhone:phone, parentSignature:sig, acceptedAt:new Date().toISOString(), acceptedBy:'PARENT'});
+      document.getElementById('doneArea').classList.remove('hidden');
+      document.getElementById('doneText').textContent='Accepted by '+name+' • '+new Date().toLocaleString();
+      document.getElementById('statusTxt').textContent='ACCEPTED';
+      msg.textContent=''; document.getElementById('acceptBtn').disabled=true; document.getElementById('acceptBtn').textContent='✅ ACCEPTED';
+    });
+  }
+}
+</script></body></html>
